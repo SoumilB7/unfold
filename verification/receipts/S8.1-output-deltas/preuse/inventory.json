@@ -1,0 +1,24 @@
+{
+  "directories": [
+    "v1",
+    "v1/capture",
+    "v1/capture/controller",
+    "v1/capture/controller/cases",
+    "v1/capture/controller/cases/llama-7b",
+    "v1/capture/controller/cases/llama-7b/attempt-01",
+    "v1/capture/controller/pytest",
+    "v2",
+    "v2/capture",
+    "v2/capture/controller",
+    "v2/capture/controller/cases",
+    "v2/capture/controller/cases/llama-7b",
+    "v2/capture/controller/cases/llama-7b/attempt-01",
+    "v2/capture/controller/pytest"
+  ],
+  "raw_bytes": 4524409,
+  "roots": {
+    "v1": "/private/tmp/unfold-s81-output-observer-preuse-v1",
+    "v2": "/private/tmp/unfold-s81-output-observer-preuse-v2"
+  },
+  "stream_count": 107
+}

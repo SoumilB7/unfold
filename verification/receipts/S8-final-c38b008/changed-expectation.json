@@ -1,0 +1,36 @@
+{
+  "scope": "Bounded witness expectation for the exact scratch constructor +1 edit, derived from equal existing transformer-block shape footprints in each actual down-attention container; not a general computation interpreter. Changed run must verify these exact paths/counts.",
+  "rows": [
+    {
+      "container": "down_blocks.1.attentions.0.transformer_blocks",
+      "ordinary_repetitions": 2,
+      "expected_added_block": "down_blocks.1.attentions.0.transformer_blocks.2",
+      "expected_added_occurrences": 24,
+      "expected_added_parameters": 10005120
+    },
+    {
+      "container": "down_blocks.1.attentions.1.transformer_blocks",
+      "ordinary_repetitions": 2,
+      "expected_added_block": "down_blocks.1.attentions.1.transformer_blocks.2",
+      "expected_added_occurrences": 24,
+      "expected_added_parameters": 10005120
+    },
+    {
+      "container": "down_blocks.2.attentions.0.transformer_blocks",
+      "ordinary_repetitions": 10,
+      "expected_added_block": "down_blocks.2.attentions.0.transformer_blocks.10",
+      "expected_added_occurrences": 24,
+      "expected_added_parameters": 34755840
+    },
+    {
+      "container": "down_blocks.2.attentions.1.transformer_blocks",
+      "ordinary_repetitions": 10,
+      "expected_added_block": "down_blocks.2.attentions.1.transformer_blocks.10",
+      "expected_added_occurrences": 24,
+      "expected_added_parameters": 34755840
+    }
+  ],
+  "expected_added_transformer_blocks": 4,
+  "expected_added_occurrences": 96,
+  "expected_added_parameters": 89521920
+}

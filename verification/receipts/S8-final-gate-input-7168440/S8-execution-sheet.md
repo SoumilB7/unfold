@@ -1,0 +1,173 @@
+# S8 status sheet — active, NOT DONE
+
+step: S8, UNet family; B5 records SDXL first. S7 remains DONE. Same `audio-composite-support` branch; detached verification trees only. No push or output re-bless. Four unrelated user documents remain untouched.
+
+tree: model/source campaign `c38b008`; component-entry renderer `96d0c1e`; solid strokes `f7baef5`; context-card correction `9712d48`; retained-source closure `5227e9c`; typed terminal records and actual drawing receipts `7168440`. Original family/matrix generation remains attributed to96. The5227 derived39matrix completed and passed integrity/owner checks:25preserved targets, separately replay-validated PixArt, strict saved-evidence SDXL reconciliation, and12actual5227targets. Final716eleven-case source proof/render checks and the derived39matrix now pass;44coverage generation and independent check pass; isolated broad remains pending.
+
+receipt: `unfold-pkg/verification/receipts/S8-final-c38b008/`, `S8-component-render-96d0c1e/`, `S8-family-final-96d0c1e/`. Historical failed runs and exact source/script/render pins remain preserved. This sheet is interim until matrix freshness and isolated broad gates complete. Final owner differential dispositions are recorded; user output blessing is still pending.
+
+## Actual product
+
+The actual SDXL entry now shows seven down/mid/up stages, connected source argument/result routes, conditional bindings to constructed stage/root/conditioning modules, skip concatenations, and shape-backed quantities. Identity links do not invent sequential tensor flow between ModuleList slots. Helpers can have known call ports and target identities while their computation remains opaque; guards and unresolved effects remain visible. The actual overview geometry and conditioning frame were independently inspected and accepted.
+
+Ordinary root static/runtime source SHA256 is `052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26`. The denoiser has 1,930 constructed occurrences and 2,567,463,684 parameters. The c38 ordinary process took 240.717 seconds cold; this is process wall time, not the generator's internal timer or a performance guarantee. These are denoiser quantities, not a full deployment pipeline total.
+
+Actual final pages: [final eleven-case716campaign](../12-design/S8/final-7168440/index.html), [original model/source campaign](../12-design/S8/final-c38b008/render-phase/index.html), [corrected component entries](../12-design/S8/final-c38b008/component-render-96d0c1e/index.html), [decision page](../12-design/S8/index.html). Native SVG/PNG inspection is recorded; no interactive-browser validation is claimed.
+
+## Exit checks
+
+| Check | Status | Exact scope / outstanding work |
+|---|---|---|
+| Existing fact layer and IR; exact runtime/source intersections | PASS bounded review | No parallel IR; conditional binding does not become unconditional execution. |
+| Fourteen original readers each called or deleted | PASS independent final ledger | All fourteen retained with live production callers; sixteen new live modules mapped. |
+| Old UNet author unreachable in ordinary and failed cutover | PASS independent controls | Retained only for private differential flag. |
+| Every projected family fact qualified and cited source archived | PASS actual campaign | Twelve family fact keys; source byte/hash and actual-card linkage checks. |
+| Down/mid/up, skip and conditioning connections | PASS bounded actual review | Actual module target links and argument/result routes visible; no claim that all internal mechanism or execution is closed. |
+| Shape-backed banner | PASS actual HTML | STAGES 7 / WEIGHTED MODULES 1,050 / DENOISER PARAMS 2.57B. Inventory total 1,930 is recorded separately. |
+| Seven SDXL cases (six conditions plus unchanged) | PASS | Ordinary, sparse, misleading, supported rewrite, unchanged, changed, missing; strict reports retained. |
+| Unchanged raw HTML | PASS final716phase | Ordinary/rewrite/unchanged SHA256 `d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06`. Original phase hashes remain in their receipts. |
+| Changed computation correspondence | PASS | Four added transformer blocks /96 occurrences /89,521,920 parameters; total2,656,985,604, no removed or changed existing shapes. |
+| SDXL + SD-v1-4 old/new differential | PASS owner dispositions | SDXL2,004 and SD141,738 exact rows all named; output blessing remains pending. |
+| Three source→fact→card→connection examples | PASS bounded independent review | FFN complete7arrows; ResNet5connections in2fragments with unknown bridge; conditional time-embedding2input+1result call ports. |
+| Final family execution accounting | PASS | SDXL1691observed/239unknown; SD14621observed/88unknown; guarded rows retained separately. |
+| Extra published cases | PASS scope/shape regressions and corrected entry geometry | Refiner/inpainting/DDPM exact source configs; no invented pipeline; DDPM six unbound bookends remain explicit. |
+| 39-model S7 freshness | PASS final716 derived39/check |25preserved original96targets +1separately replay-validated PixArt +1strict saved SDXL reconciliation +12actual5227targets. All117matrix payload bytes and39summaryrows identical to5227; exact38no-op premises plus savedSDXL source/reconciliation. All39construction/relation axes and22ok/17failedrecipe statuses unchanged; no claim of39fresh final executions. |
+| Existing29+15support coverage | PASS716generation and independent check | Final44:645proven/294flagged/0silent versus accepted621/241/0. Other42 complete rows unchanged; SDXL delta+12proven/+37flagged, SD14+12/+16. All44non-silent fields equal5227red; exact per-model comparison and actual public pages retained. Original5227silent620 failure and skipped follow-on check remain historical. |
+| Recursive click coupling | PASS bounded actual SDXL/SD14 correction | Same canonical context card declared in60/15deep drill children; one actual panel9 card added, SVGs/events unchanged. All eleven final716saved-input cases pass all five existing validators plus label/projection audit. |
+| Isolated serial broad gate | NOT RUN final tree | Follows fresh matrix/support coverage; no waiver or preservation re-bless. |
+| Stop before output blessing | PASS | Soumil approval remains required; no push. |
+
+## Controlled corrections and exact phases
+
+The supported rewrite exposed an inherited `__future__.annotations` compiler flag in the scratch loader. c38 uses `compile(..., dont_inherit=True)`; source with its own future directive retains it. Strict worker source/code equality remains. The failed f664 rewrite and nine-test regression log are preserved.
+
+The experiment generator now chooses a fixed mount namespace before real Diagram rendering; normal production keeps random mount isolation. The first four c38 cases were replayed from exact saved ModelIR and producer-authored warning metadata, with fresh JSON equality, parameter-record equality, source manifests and actual HTML equality except the original mount token. Original raw pages remain untouched. Remaining model cases use the separately pinned generator phase; no source evidence is fabricated or normalized away.
+
+The extra raw-denoiser configs exposed invented text encoder/scheduler/VAE components, including the opaque fallback. Component presence now governs both paths. Their long declared formal names then exposed entry-label overlap. The 96d0c1e renderer wraps all names without deleting a character or port; all non-entry SVGs remain identical and a full supplied SDXL page is raw-byte identical. These are separately pinned renderer-only replays, not repeated model builds.
+
+## Evidence, accounting and limits
+
+Final family runs used fresh matching raw observations. SDXL: 1,930 constructed =1,691 observed+239 execution-unresolved, plus1,621 guarded proven-inactive rows, total3,551;1,928 rendered+2nonarchitectural containers. Every accepted S7 positive path remains. The old raw observation already included the root: the prior table dropped empty root address, so1690→1691 repairs the join rather than proves newly executed behavior. Cold process291.398s.
+
+SD-v1-4:709constructed =621observed+88execution-unresolved;379guarded proven-inactive, total1,088;707rendered+2nonarchitectural containers. No accepted S7 execution table exists for this witness, hence no invented prior preservation claim. Cold process306.930s. Both runs have zero family fact findings/wiring issues and unchanged source manifests. Ordinary parsing is not required to probe; these are separate verification observations. Probe choices are not deployment defaults.
+
+SDXL's exact2,004 old/new IR rows remain in `S8-sdxl-final-disposition-map/`; no row is discarded by grouping. The independent aggregate ledger covers53oldcards/101assertions:54carried,10bounded,37named source-traced demotions. Presence-only encoder arrows and the default Image-domain claim are conservatively removed. Supplied encoder internals remain preserved. Source/shape/card integrity is independently checked. The final owner SDXL disposition in `S8-sdxl-owner-disposition/` names every2,004row:1,232 re-proofs/explicit limits and772 config-delta rows. SDXL has zero unexplained deltas, while visible config findings and user output approval remain open. SD14 final owner disposition in `S8-sd14-owner-disposition/` likewise retains all1,738rows with zero unexplained;452config-delta rows remain named debt, not452distinct issues. User output blessing remains pending for both witnesses.
+
+Config accounting remains explicitly incomplete: SDXL45accessed-unprojected+2standing(act_fn,norm_eps)+1audit_incomplete; SD1417+2+1. Exact ship receipts and visible HTML messages exist, with zero migration-claim violations. Retiring the old config author does not let new source-qualified facts falsely discharge the separate consumption ledger. Owner accepts these as surfaced limitations carried into S9 review, not config completion or mechanism proof.
+
+Independent poison receipts retain original false positives and corrections: worker frozen-object/slot contamination; stored-receiver and alias-write temporal premises; helper/wrapper guard compatibility; exact loop slots/None/aliases; source-region history and named writes; descendant primitive/forward identity; and report actual-byte/card/archive linkage. No arbitrary Python interpreter or class-name mechanism rule is claimed. Neutral TryObservation and bounded lookup/property/iterator prerequisites were approved after concrete producer-gap review, not silently expanded.
+
+The later existing solid-boundary validator found18dashed non-arrow elements on SDXL. f7 removes only dash patterns and updates conditional identity captions; all11actual saved-input pairs preserve IR/facts/quantities and canonical render-event sequences, all non-denoiser SVGs and route geometry. Ordinary/rewrite/unchanged are byte-identical at SHA `86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf`. The subsequent click-coupling RETURN is corrected by explicit canonical context-card children, with exact60/15IR reference additions and unchanged SVGs/events. The original96matrix stopped at target27 because it retained the pre-reader source index. The5227context retains only exact immutable observation extensions; strict saved SDXL reconciliation closes all source spans with unchanged signature/observation/relation evidence. Original26artifacts and the failed run remain preserved. PixArt has separately enumerated verification-caller IR metadata/limited-topology changes even though its complete matrix artifact is unchanged. Final matrix lineage and source deltas are explicit; this is not a fresh39model run.
+
+## Three exact implementation-to-drawing chains
+
+1. **Gated FFN.** Archived attention source lines 1725–1742 and GEGLU source lines 103–123, joined to exact constructed Linear/GEGLU/zero-dropout children, establish `root.denoiser.ffn_mechanisms` (`applied_function`) for `down_blocks.1.attentions.0.transformer_blocks.0.ff`. Visible overview stage `instance_down_blocks__1` links its canonical fact-citing FFN card and seven-arrow gated computation drill. Shapes `[5120,640]` and `[640,2560]`, with biases, yield `5120×640+5120+640×2560+640 = 4,920,960` displayed parameters. The complete archived source/hash/value/card chain is in `S8-final-c38b008/sdxl/claim-traces.json` and the independent semantic receipt `S8-final-three-claims-independent/`.
+
+2. **Five residual-cell connections.** Archived ResnetBlock2D lines 326–365 and exact instance selections support `root.denoiser.cell_connections` (`connection`, positive-only) for `down_blocks.0.resnets.0`: `norm1→SiLU→conv1` and `norm2→SiLU→dropout→conv2`. Overview `instance_down_blocks__0` reaches the canonical cell card and its two actual routed SVG fragments (two plus three arrows). The intervening conditioning/return bridge remains unresolved. The card's `2×921,920 + 409,920 + 2×640 = 2,255,040` parameters are construction/shape evidence; inclusion of the time projection does not prove its full connection route. Exact source and actual SVG fragments are retained in the same final trace and independent receipt.
+
+3. **Conditional time-embedding input ports.** Archived UNet source at lines 1083–1084, SHA `052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26`, assigns `get_time_embed(...)` then passes its result and root `timestep_cond` into `time_embedding`. Qualified `root.denoiser.primary_state_ports` (`connection`) retains all seven target-binding conditions. Overview region `unet_primary_region_3` and `instance_time_embedding` link the routed card `unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false`: two argument arrows terminate at the opaque call and one result arrow leaves it. Its target is canonical `instance_time_embedding`; `[1280,320]` and `[1280,1280]` plus two `[1280]` biases give `2,050,560` displayed parameters. Exact value pointer, source archive and conditions are in `S8-third-connection-independent/result.json` and the final campaign trace. This is a call-port connection, not proof of opaque input-to-result computation or deployment guard values.
+
+The old spatial stride-2 example remains a truthful supplemental operation/shape trace. Its one-child containment SVG has zero flow arrows and is not counted as the third connection demonstration.
+
+## Poison and red-output index
+
+The exact address/hash index is `unfold-pkg/verification/receipts/S8-final-poison-index/index.json`. The index names41receipt directories and281exact file/hash addresses. Historical pins and failed outputs remain unchanged; correction receipts carry their own later pins.
+
+| Returned boundary | Exact receipt directories |
+|---|---|
+| R1–R8 member escape/primitive identity/concat/loop/starred-slot poisons | `S8-authority-corrections`, `S8-authority-followup`, `S8-ports-review-independent` |
+| Region history and branch-local named writes | `S8-primary-ports-early-independent`, `S8-primary-ports-followup-independent`, `S8-independent-9fe0868`, `S8-independent-293c2d9` |
+| Observer contamination / original child and slot identity | `S8-attribute-binding-independent`, `S8-attribute-binding-identity-correction`, `S8-attribute-binding-identity-independent` |
+| Try clauses, wrapper exclusion/delegation and inherited helper guard conflict | `S8-try-wrapper-independent`, `S8-wrapper-control-independent`, `S8-lookup-wrapper-followup-independent` |
+| Stored receiver effects and temporal alias writes | `S8-l1-l2-independent`, `S8-storage-alias-independent` |
+| Page/source/qualification/visibility report poisons | `S8-demonstration-review-independent`, `S8-report-integrity-correction`, `S8-trace-alias-correction`, `S8-third-trace-report-correction` |
+| Actual registry, proof-summary and observation-order failures | `S8-final-3693545-blocked`, `S8-final-b44dd25-blocked`, `S8-final-9fe0868-report-stop` |
+| Actual rewrite compiler mismatch / exact namespace control | `S8-final-f664467`, `S8-override-compiler-flags-correction`, `S8-experiment-render-namespace` |
+| Solid structural strokes / recursive context-card coupling | `S8-final-dotted-boundary-return`, `S8-context-click-return`, `S8-context-click-correction` |
+| Retained source-index matrix failure and strict saved-evidence correction | `S8-matrix-96d0c1e-source-index-return`, `S8-retained-closure-correction` |
+| Opaque ghost pipeline and actual entry/overview geometry | `S8-opaque-component-scope`, `S8-opaque-component-scope-correction`, `S8-component-entry-label-return`, `S8-component-entry-label-correction`, `S8-overview-456-correction` |
+
+## Growth, deletion and remaining owners
+
+Against accepted S7 `83140f1`, final7168440 production changes50files +6,827/-102 lines; scripts5files +1,204/-622; test/support26files +3,026/-78. Exact rows and removal units: `S8-final-growth-7168440/` and `S8-caller-growth-refresh-7168440/`; prior5227 counts remain historical in their original receipt. The shared signature recipe includes code moved from the old612-line script responsibility; moved verification code is not wholly new architecture authority. Receipts/images/documentation are excluded from these code totals.
+
+Old ordinary-author entries removed:1; old-author files deleted:0 because exact differential comparison is required. All14original readers remain live. New neutral observations, source/target binding and renderer modules have callers; no unused proposal or parallel IR is retained. The large actual route/card output and config debt remain explicit costs.
+
+Counting units: **temporary comparison bridge modules added 1, retired 0** (`unet_differential.py`, retained for the required comparison); the 17 new live production/prerequisite modules are not labelled temporary merely to imply future deletion. **Current config-finding entries classified 68, eliminated 0** (48 SDXL +20 SD14, counted per witness and exact surfaced finding, not positional delta rows). **Execution-unknown occurrences classified 327** (239 SDXL +88 SD14), not eliminated by static proof. **One historical SDXL root reconciliation omission eliminated**; it was already observed in raw data. These are separate units and are not summed into a misleading single debt score.
+
+Executor owns final coverage/matrix comparisons, artifact commit, isolated serial broad lanes and the completed sheet. Owner independently disposes exact output changes and limits. Soumil alone approves output re-bless. **S8 remains NOT DONE until required final checks and owner dispositions complete; do not bless or push.**
+
+## Final coverage correction phase716
+
+The complete red denominator is retained in `S8-coverage-5227e9c-return`. Optional validated ConstructionSummary and ComponentEntry records replace the four added raw terminal dependencies; the original three consumer-debt fingerprints are restored, not eliminated. Exact census adds two typed authors, two fields and two dict-to-DTO normalizers; no debt row or checker is weakened. The component header now names a declared denoiser interface instead of claiming sampling recurrence.
+
+Raw GELU operation labels now use the existing mathematical activation formatter. Constructor-default/spatial fact receipts require their exact visible card lines; FFN receipts require both the fresh associated graph event and every declared operation node in the returned SVG. Independent discarded/partial-SVG controls reject false receipts. Event deltas are intentional and enumerated in S8-final-render-7168440; earlier full-event equality claims apply only to their historical renderer phases.
+
+All11cases rederived their own three construction proofs from saved inventory/config and exact root/source evidence, with full original values equal and no model execution. Missing nested FFN evidence retains its independently proved2,567,463,684shape count and7stages. The initial rewrite request-address refusal is a retained harness diagnostic; the resumed script supplies the exact original recorded SourceOverride. All11finalactualHTML pages pass5validators+label/projectionaudit; allSVGs preserve5227bytes. Ordinary/rewrite/unchanged rawSHA is `d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06`. The exact3required-line metadata-order differences in saved reproduction preserve unique strings, actual chiporder, fullHTML/eventbytes andtablevalues; they remain explicitly recorded. Actual44generation and independent check pass645/294/0 in1268.451/1231.294seconds with exact source pins unchanged; broad remains pending. Public SDXL/SD14 outputs differ from reviewed pages only by their generated mount; the exact3/31metadata permutations preserve actual HTML/events as recorded in S8-actual-public-output-control-7168440.
+
+Final716growth versus accepted83140:50productionfiles +6,827/−102;5scripts +1,204/−622;26test/supportfiles +3,026/−78. Original14readers remain production-called;17newlive support modules include the qualified summaryfactory, with the shared recipe extraction counted separately. See `S8-caller-growth-refresh-7168440` and `S8-final-growth-7168440`.
+
+## Open handoff (§15.4)
+
+| Open item | Accountable owner and destination | Bounded next action and retained limit |
+| --- | --- | --- |
+|239SDXL and88SD14 execution-unresolved occurrences | Verification executor → original S7 execution-closure box through2026-09-25; root reviews dispositions; S9 may consume/review the findings | Carry exact occurrence rows and recipe IDs from the family receipts. Seek only evidence for the named missing invocation paths; retain typed `execution_unresolved` where an actual observation or complete source proof is absent. Rendering/shape proof never discharges this axis. |
+| Partial ResNet connection fragments, opaque helper computation and conditional invocation targets | Evidence reader executor → S9 partial-cell/closure review box; root approves any bounded contract extension | Start from the exact remaining route/guard findings. Preserve the two ResNet fragments and explicit wrapper/config/branch conditions; prove only the missing bridge or guard before strengthening a connection. A known callable target does not prove its input-to-output computation. No general interpreter is authorized. |
+|68denoiser config-accounting findings, plus2already-visible SD14 pipeline unread fields (`feature_extractor`, `safety_checker`) | Config-accounting executor → S9 consumption-ledger review box; root owns the named-debt disposition | Trace each exact accessed/default/unused occurrence to a lawful typed consumption or explicit ignored/limited receipt. Existing48SDXL/20SD14denoiser findings remain open, with2separate pipeline fields. Do not fabricate consumption from source facts or describe the audit as complete. |
+| DDPM exploratory6unbound bookends and unresolved stage/invocation limits | Generalization executor → S9 exploratory-case triage box; root controls support-set scope | Retain the actual288occurrence/35,746,307parameter witness and four declared inputs. The six unbound paths are `conv_in`, `time_proj`, `time_embedding`, `conv_norm_out`, `conv_act`, `conv_out`; whole-callable CFG coverage and unconditional inter-loop stage order remain open. Investigate only these source binding limitations if this case is selected for further work. It is not silently added to the formal corpus or declared fully wired by containment. |
+| Temporary comparison bridge and old author files | Cutover executor → S10 deletion-close box after approved output baseline; root verifies callers | Retire `unet_differential.py` and obsolete legacy authors only when the required comparison and explicit output approval make them unnecessary. Their current retention is not reported as deletion. |
+
+These handoffs classify remaining work; they do not claim its completion or authorize an expanded model-support campaign. Soumil retains output re-bless approval.
+
+## Per-model coverage denominator (§15.4)
+
+Actual716 generation uses the same29corpus+15unseen inputs as accepted83140f1. Counts measure coverage facts and surfaced findings. Exact complete before/after rows, input hashes and findings are in `S8-final-coverage-7168440/per-model-comparison.json` and `S8-coverage-owner-final-7168440/`; the independent live check also passes all44 inputs. Delta columns are final minus accepted.
+
+| Model | Cohort | Proven | Flagged | Silent | Δproven | Δflagged | Δsilent |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| AuraFlow-v0.3 | corpus | 9 | 0 | 0 | +0 | +0 | +0 |
+| bloom | corpus | 22 | 0 | 0 | +0 | +0 | +0 |
+| CogVideoX-5b | corpus | 7 | 0 | 0 | +0 | +0 | +0 |
+| dbrx-base | corpus | 22 | 0 | 0 | +0 | +0 | +0 |
+| DeepSeek-V3 | corpus | 25 | 0 | 0 | +0 | +0 | +0 |
+| FLUX.2-dev | corpus | 10 | 0 | 0 | +0 | +0 | +0 |
+| FluxTransformer2DModel | corpus | 9 | 0 | 0 | +0 | +0 | +0 |
+| gemma-2-2b-it | corpus | 24 | 0 | 0 | +0 | +0 | +0 |
+| GLM-4.5 | corpus | 29 | 0 | 0 | +0 | +0 | +0 |
+| gpt-oss-20b | corpus | 24 | 0 | 0 | +0 | +0 | +0 |
+| granite-3.0-8b-instruct | corpus | 24 | 2 | 0 | +0 | +0 | +0 |
+| HunyuanVideo | corpus | 20 | 0 | 0 | +0 | +0 | +0 |
+| llama-7b | corpus | 23 | 0 | 0 | +0 | +0 | +0 |
+| LTX-Video | corpus | 7 | 0 | 0 | +0 | +0 | +0 |
+| Lumina-Image-2.0 | corpus | 9 | 0 | 0 | +0 | +0 | +0 |
+| mochi-1-preview | corpus | 3 | 0 | 0 | +0 | +0 | +0 |
+| musicgen-small | corpus | 14 | 0 | 0 | +0 | +0 | +0 |
+| OLMo-2-1124-7B | corpus | 25 | 0 | 0 | +0 | +0 | +0 |
+| PixArt-Sigma-XL-2-1024-MS | corpus | 1 | 0 | 0 | +0 | +0 | +0 |
+| prxpixel-t2i | corpus | 7 | 0 | 0 | +0 | +0 | +0 |
+| Qwen-Image | corpus | 7 | 0 | 0 | +0 | +0 | +0 |
+| Qwen2-VL-7B-Instruct | corpus | 19 | 0 | 0 | +0 | +0 | +0 |
+| Qwen3.5-27B text component | corpus | 22 | 0 | 0 | +0 | +0 | +0 |
+| Qwen3-8B | corpus | 25 | 0 | 0 | +0 | +0 | +0 |
+| Sana_1600M_1024px_diffusers | corpus | 7 | 0 | 0 | +0 | +0 | +0 |
+| stable-diffusion-3.5-large | corpus | 1 | 0 | 0 | +0 | +0 | +0 |
+| stable-diffusion-xl-base-1.0 | corpus | 12 | 48 | 0 | +12 | +37 | +0 |
+| stablelm-2-1_6b | corpus | 25 | 0 | 0 | +0 | +0 | +0 |
+| Wan2.2-T2V-A14B-Diffusers | corpus | 4 | 0 | 0 | +0 | +0 | +0 |
+| CohereLabs/c4ai-command-a-03-2025 | unseen | 20 | 9 | 0 | +0 | +0 | +0 |
+| deepseek-ai/DeepSeek-Coder-V2-Lite-Base | unseen | 17 | 17 | 0 | +0 | +0 | +0 |
+| THUDM/glm-4-9b | unseen | 1 | 8 | 0 | +0 | +0 | +0 |
+| EleutherAI/gpt-neox-20b | unseen | 22 | 7 | 0 | +0 | +0 | +0 |
+| Tencent-Hunyuan/HunyuanDiT-v1.2-Diffusers | unseen | 3 | 8 | 0 | +0 | +0 | +0 |
+| ai21labs/Jamba-v0.1 | unseen | 1 | 15 | 0 | +0 | +0 | +0 |
+| LiquidAI/LFM2-1.2B | unseen | 20 | 20 | 0 | +0 | +0 | +0 |
+| MiniMaxAI/MiniMax-M2 | unseen | 25 | 14 | 0 | +0 | +0 | +0 |
+| Qwen/Qwen3.5-27B | unseen | 21 | 16 | 0 | +0 | +0 | +0 |
+| Qwen/Qwen3.6-35B-A3B | unseen | 19 | 19 | 0 | +0 | +0 | +0 |
+| Qwen/Qwen3-Omni-30B-A3B-Instruct | unseen | 1 | 78 | 0 | +0 | +0 | +0 |
+| Qwen/Qwen3-VL-235B-A22B-Instruct | unseen | 17 | 10 | 0 | +0 | +0 | +0 |
+| Efficient-Large-Model/SANA1.5_4.8B_1024px_diffusers | unseen | 7 | 0 | 0 | +0 | +0 | +0 |
+| CompVis/stable-diffusion-v1-4 | unseen | 12 | 22 | 0 | +12 | +16 | +0 |
+| ByteDance-Seed/Seed-OSS-36B-Instruct | unseen | 23 | 1 | 0 | +0 | +0 | +0 |
+
+Total:645proven/294flagged/0silent, Δ+24/+53/0. Other42 complete rows are unchanged; no denominator expansion or baseline blessing.

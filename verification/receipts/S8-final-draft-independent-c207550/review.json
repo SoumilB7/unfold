@@ -1,0 +1,23 @@
+{
+  "status": "PENDING_DRAFT_REVIEW_TWO_LINEAGE_CLARIFICATIONS",
+  "draft_sha256": "b411d310a0ae9b986c0871f4fe437aaf9e7aecd8a2beb1a173e0e59e04aa045a",
+  "scope": "Read-only review; not canonical sheet or acceptance of pending workers2 outcome",
+  "corrections": [
+    {
+      "line": 124,
+      "text": "Pin the independent live44 check explicitly to716; distinguish final29+1+14 derivation from current-source execution."
+    },
+    {
+      "line": 173,
+      "text": "Scope no baseline blessing to coverage counts/denominator; approved output baselines are now installed."
+    }
+  ],
+  "supported": [
+    "User output approval and scoped installation are represented as complete",
+    "Original c207 fullRED and52preservationPASS remain separate",
+    "Three unchanged isolated diagnostics are not called historical cause proof",
+    "Existing workers2 scheduling change is disclosed with all targets/assertions/childlimits retained",
+    "Execution/partialmechanism/config accounting/optionalnavigation limits retained"
+  ],
+  "reviewer_ran_models_tests_or_render": false
+}

@@ -1,0 +1,74 @@
+{
+  "approved_scope": {
+    "coverage_after": {
+      "flagged": 294,
+      "models": 44,
+      "proven": 671,
+      "silent": 0
+    },
+    "coverage_before": {
+      "flagged": 294,
+      "models": 44,
+      "proven": 645,
+      "silent": 0
+    },
+    "coverage_cause": "one newly proven fact per text model - model.hidden_size, config_declared - the same fact the owner enumerated as 14 additions on the 29 preservation witnesses, over the 44-model coverage denominator (26 text models). flagged unchanged, silent 0.",
+    "example_architecture_svg_identical": true,
+    "example_files_changed": 8,
+    "example_hero_png_rerasterized": false,
+    "example_hunk_causes": {
+      "banner": 7,
+      "chip": 1,
+      "compact_transport_digest": 3,
+      "css": 8,
+      "html_unknown": 8
+    },
+    "preservation_surface_change_counts": {
+      "html_meta": 29,
+      "ir": 29,
+      "ledgers": 29,
+      "sable": 29
+    },
+    "preservation_unchanged_surfaces": [
+      "expanded",
+      "gallery",
+      "params"
+    ],
+    "preservation_views_changed": 0,
+    "preservation_witnesses": 29,
+    "readme_and_s5_constant": "645 -> 671 proven in README.md line 73 and tests/test_s5_release.py lines 125-126; the assertion floor rises (stricter), nothing is relaxed",
+    "unit": "S9-A + S10-1 approved output delta"
+  },
+  "approved_scope_sha256": "69eaaabd8e879407c8091f195d9de6edd137dd7dded69604a257ede433300ee4",
+  "arbiter_approval": {
+    "covers": [
+      "Q10",
+      "Q11"
+    ],
+    "date": "2026-09-12",
+    "presented_as": "z-docs/12-design/S9-schema/owner/index.html",
+    "record": "z-docs/12-design/00-design-decisions-verbatim.md, section 'S9-A output delta (Q10) and S10-1 S7 source stamp (Q11)'",
+    "verbatim": "i approve both",
+    "who": "Soumil"
+  },
+  "decision": "ACCEPT",
+  "evidence_sha256": {
+    "verification/receipts/S9-A-owner-review-37/cause-audit-r3-summary.json": "513fc7374fe2367b51c323c234e72cb39cb82106b0d394c1a1c129f4257ab333",
+    "verification/receipts/S9-A-owner-review-37/cause-audit-reconciliation.json": "0e72eb3e5f62d09d51a14278e69b29177323e6630177cb6b6867de2e1b00c2a9",
+    "verification/receipts/S9-A-owner-review-37/output_delta_audit.json": "b44c17226efb548961dac10460c03c22d91dbc567ec33f4251fc6dba989b523c"
+  },
+  "implementer": "executor (Claude Fable 5.1)",
+  "limits": [
+    "Exact enumerated output installation only. No source or model change, no release, no gallery re-bless, no S7 matrix row regeneration.",
+    "Linux green at the pushed head still closes S9-A and S10-1; this verdict does not.",
+    "The README / test_s5_release constant renewal is the one item beyond the literal 29-witness enumeration; it is the mechanical consequence of the approved delta and raises the proven floor."
+  ],
+  "persisted_by": "Soumil (arbiter), 2026-09-12: \"i approve both\"",
+  "reviewed_at": "2026-09-12",
+  "reviewed_tree": "working changes over fff99e22 = frozen37, source manifest ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99; committed as bce87b3f + c4e3f8f9 + 6db1f5f9",
+  "reviewer": "owner (Claude), z-docs/11-execution/S9-A-review.md",
+  "reviewer_is_not_implementer": true,
+  "reviewer_review_document": "z-docs/11-execution/S9-A-review.md",
+  "reviewer_second_document": "z-docs/11-execution/S10-1-review.md",
+  "scope": "Install the enumerated S9-A output delta on the 29 preservation witnesses (html_meta / ir / ledgers / sable: chips, unknown reasons, claim kinds, 14 model.hidden_size facts, two schedule statuses code_proven -> code_and_config, the two new Sable checks pending_design + presentation_census), the equivalent stale release examples, and the coverage manifest. No drawing, SVG, gallery, view, expanded or params surface changes."
+}

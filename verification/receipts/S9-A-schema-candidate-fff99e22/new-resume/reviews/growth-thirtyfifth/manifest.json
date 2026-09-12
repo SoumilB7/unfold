@@ -1,0 +1,53 @@
+{
+  "scope": "Saved-source35 composition/growth/debt",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "bbb8e536fbe68f71b66ee040a4ca06dba2d10d5f3853456f6c5fda088867ec66"
+    },
+    {
+      "path": "authority-bridges-debt.json",
+      "sha256": "53ed753da834fa428f266c798daf3cc02bf2440a488dba8b76623fd4db5b74d5"
+    },
+    {
+      "path": "baseline-source-inventory.json",
+      "sha256": "ec3a0f5741676e76171c3b89d47abb9e398e992b0f9ac5ea7a7c4fcc93db2dc9"
+    },
+    {
+      "path": "candidate-source-inventory.json",
+      "sha256": "a3450037714435bd14f5a522a3934039adb1d8c05a8f409953274af645ceb032"
+    },
+    {
+      "path": "composition-review.json",
+      "sha256": "b729c34fa0d3424f18b7f42d4bcd453b1993e1be57b57353eefcd3ce7f4855b7"
+    },
+    {
+      "path": "debt-rows.json",
+      "sha256": "cd8e9207f44909565a3d4545d442564b06776f8ed0b576ab6be66f8f62df75e7"
+    },
+    {
+      "path": "fixture-relocation.json",
+      "sha256": "1c5de3b4f41778b29be85059bffcf38b4673e211c8f15eb852cd1561cdac94c5"
+    },
+    {
+      "path": "latency-metadata-deltas.json",
+      "sha256": "a3aa9c13988d78ba6eb8d2344886e1355919e58469a3a369770430ef1119ec13"
+    },
+    {
+      "path": "line-growth.json",
+      "sha256": "df7d95aa824f7c409f8c292c5abbdd59007c009ffb700d32d5523a0a188ae6ea"
+    },
+    {
+      "path": "retained-producers.json",
+      "sha256": "d9a144a4165b9c05d4e1eac8f01b590a6e12ba4afc71f3a36601fbf8b5a0328a"
+    },
+    {
+      "path": "sheet-ready.md",
+      "sha256": "e3578f067e181a9b1755fd88fe40d55f16f2bcdbeca559ae4a62d4e620d39d1e"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "49b8b644995cff98f0bc0519120ccd7bd91c65e39e63949fd59a028bdd7b281a"
+    }
+  ]
+}

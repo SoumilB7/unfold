@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "ecde4b82c11487a5b6a59c5c842bbc10f57ec64bc622771910392315b977739a",
+  "input": "tests/sable_test_corpus/qwen-image.json",
+  "input_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_qwenimage",
+    "qualname": "QwenImageTransformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

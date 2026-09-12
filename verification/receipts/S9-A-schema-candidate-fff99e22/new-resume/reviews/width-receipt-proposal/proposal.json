@@ -1,0 +1,60 @@
+{
+  "decision": "PROPOSE exact existing stats-banner VALUE receipt; no product edit performed",
+  "reviewer": "resume_review",
+  "failure_log": {
+    "path": "/private/tmp/unfold-s9a-twentyeighth/full-bracket/batches/batch-017.log",
+    "sha256": "7071064ae1a80a84d69b5ddd475f4af2bd258f8f3896ada940c24d57f2e7a8db",
+    "tests": [
+      "tests/test_receipts.py::test_qwen2vl_positive_one_exact_chain",
+      "tests/test_receipts.py::test_u8_layer_schedules_are_receipted_by_the_real_layer_map"
+    ]
+  },
+  "earliest_cause": "The S9-A model.hidden_size VALUE consumer now emits model/model_hidden_size_value obligations in a registered receipted scope. Its registry routes name parser IR/embed and params authors, but those paths do not emit an actual renderer receipt for the displayed scalar. Existing per-layer/projector receipts are intact; the extra unmet obligation is the width scalar. Switching consume to consume_decision does not fix the downstream emission.",
+  "actual_saved_display": [
+    {
+      "slug": "llama-7b",
+      "scope": "Actual saved26 data; not a28 reproduction",
+      "model_hidden_size": 4096,
+      "hidden_banner_cells": [
+        "4,096"
+      ],
+      "page_gzip_sha256": "b6ea9959b3ac154bd079f8ed30af3458e644a629dccf3dc617b074fd206888fd",
+      "page_sha256": "11a43384be09356b0bcc49c0b36045f5cc9e1766da897c1f20e23c1ffba54572",
+      "ir_gzip_sha256": "6c2dccf899f984fb368a7d112fd13f44d1eca7b5c498c7b00fd20e550f7fbc91"
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "scope": "Actual saved26 data; not a28 reproduction",
+      "model_hidden_size": 3584,
+      "hidden_banner_cells": [
+        "3,584"
+      ],
+      "page_gzip_sha256": "dd2b2f53bf6c1d6aecc24061d9d170683eca11d175c43b1cf927a67bd4c9f3de",
+      "page_sha256": "2c9cb0edf5a0ac0bfff2591f9e36e6cd6193d88c91195985460b808b21af4a11",
+      "ir_gzip_sha256": "f1e8eb23f8f88df27caf62803ba36977314c17192e4c621670afec5714425c9b"
+    }
+  ],
+  "proposed_scope": [
+    "Add one exact ProjectionRoute for model/model_hidden_size_value to HTML structural target stats_banner.hidden_size, node_ids=(stats_banner.hidden_size,), projection_kind=field, projector_symbol=renderers.html.sections._stats_banner. These are a logical address for the existing cell; no new HTML attribute or drawing is required. Keep scope/join validation blocking.",
+    "Emit inside _stats_banner only after it appends the actual Hidden stat cell. Use the canonical ir.hidden_size scalar that supplied that cell, never fact_rows value. Cite only the evidence status from the original render-context fact row, through receipts_from_projects; let the render context stamp its own token.",
+    "Bind receipt issuance to a visibly numeric, lossless emitted cell: raw scalar must be an exact int (not bool), and the actual text placed in uf-stat-val must equal its ordinary comma-formatted integer spelling. A missing/placeholder/approximate/changed cell must not acquire a success receipt. Alternatively decode the exact rendered numeric text and hash that displayed scalar so a changed rendering fails the fact join. Do not merely assert that a HIDDEN label is somewhere in the page.",
+    "Use current_render_context and note_facts_projected in the same pattern as the existing layer-map emitter; declare only model.hidden_size. This is VALUE exposure, not embedding execution, shape propagation, parameter geometry or a connection proof.",
+    "If diffusion construction_summary replaces Hidden with Stages/Weighted modules, no Hidden receipt is emitted from that banner. Any actual obligation not drawn there remains a concrete finding unless a separately audited existing exact scalar surface receipts it. Do not add a family/name exception or invent a scalar card.",
+    "Keep existing parser routes and raw-consume debt thresholds unchanged in this bounded correction; no need to re-author a model fact or normalize output. Review any truly stale routes separately if the lawful route census requires it."
+  ],
+  "required_tests": [
+    "The two failed actual-chain tests must pass with one new canonical width HTML receipt; existing projector/schedule targets remain exact.",
+    "Explicit root and nested text_config supplying paths close the same displayed scalar through their real consumption events, fact and context-stamped receipt. Sparse default retains class_default and no checkpoint path.",
+    "Different rendered scalar versus fact cannot pass: mutate canonical IR or rendered numeric text while retaining the fact; join must report mismatch or missing receipt. Equal labels alone cannot clear the obligation.",
+    "Omit the actual Hidden item or return a placeholder/noninteger cell: no Hidden success receipt. Missing or foreign fact/context, wrong route/projector/node identity remain rejected.",
+    "Compare standalone HTML before/after at each witness: this correction changes only receipt/event metadata, no stat text/order/layout. Preserve literal UUID differences separately; no blanket normalization or self-bless."
+  ],
+  "source_pins": {
+    "model_unfolder/evidence/registry.py": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615",
+    "model_unfolder/evidence/receipts.py": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a",
+    "model_unfolder/renderers/html/sections.py": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+    "model_unfolder/renderers/html/views.py": "04232b0952d12e16111d13f29cf3e7e56894a626af2cb3cc74c9a54cc6e4db9d",
+    "model_unfolder/renderers/html/render_context.py": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+  },
+  "limitations": "Read-only source and saved-data review. No model/test/runtime, no producer correction, no route approval/blessing implied. Parent owns next implementation decision."
+}

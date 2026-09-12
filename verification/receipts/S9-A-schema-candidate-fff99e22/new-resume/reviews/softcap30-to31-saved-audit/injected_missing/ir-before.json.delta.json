@@ -1,0 +1,1636 @@
+[
+  {
+    "after": {
+      "presentation_reference": {
+        "claim_proof": null,
+        "completeness": "partial",
+        "fact_key": "decoder.attention.logit_softcap",
+        "owner": "decoder.attention",
+        "status": "unknown",
+        "value_status_hash": "99416b5d747a826c"
+      },
+      "source": "decoder_attention_logit_softcap_for_path",
+      "status": "unknown",
+      "unknown_reason": {
+        "concrete_reason": "softcap_operand_unavailable",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value": null
+    },
+    "kind": "add",
+    "path": "/extras/fact_provenance/decoder.attention.logit_softcap"
+  },
+  {
+    "after": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/injected_missing/model.py",
+    "before": "/private/tmp/unfold-s9a-thirtieth/softcap-diagnostic/capture/injected_missing/model.py",
+    "kind": "replace",
+    "path": "/extras/source_provenance/components/root/files/0"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/0/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/0/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      0,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/0/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/0/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/1/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/1/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      1,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/1/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/1/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/2/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/2/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      2,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/2/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/2/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/3/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/3/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      3,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/3/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/3/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/4/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/4/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      4,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/4/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/4/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/5/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/5/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      5,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/5/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/5/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/6/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/6/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      6,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/6/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/6/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/7/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/7/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      7,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/7/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/7/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/8/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/8/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      8,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/8/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/8/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/9/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/9/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      9,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/9/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/9/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/10/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/10/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      10,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/10/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/10/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/11/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/11/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      11,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/11/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/11/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/12/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/12/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      12,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/12/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/12/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/13/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/13/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      13,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/13/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/13/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/14/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/14/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      14,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/14/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/14/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/15/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/15/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      15,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/15/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/15/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/16/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/16/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      16,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/16/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/16/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/17/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/17/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      17,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/17/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/17/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/18/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/18/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      18,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/18/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/18/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/19/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/19/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      19,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/19/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/19/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/20/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/20/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      20,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/20/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/20/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/21/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/21/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      21,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/21/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/21/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/22/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/22/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      22,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/22/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/22/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/23/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/23/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      23,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/23/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/23/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/24/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/24/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      24,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/24/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/24/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/25/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/25/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      25,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/25/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/25/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/26/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/26/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      26,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/26/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/26/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/27/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/27/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      27,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/27/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/27/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/28/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/28/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      28,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/28/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/28/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/29/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/29/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      29,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/29/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/29/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/30/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/30/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      30,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/30/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/30/blocks/0/source_fact_keys"
+  },
+  {
+    "after": [],
+    "kind": "add",
+    "path": "/layers/31/blocks/0/presentation_aliases"
+  },
+  {
+    "after": [
+      {
+        "chip_kind": "unresolved",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": null,
+            "completeness": "partial",
+            "fact_key": "decoder.attention.logit_softcap",
+            "owner": "decoder.attention",
+            "status": "unknown",
+            "value_status_hash": "99416b5d747a826c"
+          }
+        ],
+        "text": "logit_softcap: softcap_operand_unavailable",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        }
+      }
+    ],
+    "kind": "add",
+    "path": "/layers/31/blocks/0/presentation_chips"
+  },
+  {
+    "after": [
+      "layers",
+      31,
+      "blocks",
+      0
+    ],
+    "kind": "add",
+    "path": "/layers/31/blocks/0/presentation_path"
+  },
+  {
+    "after": [
+      "decoder.attention.logit_softcap"
+    ],
+    "kind": "add",
+    "path": "/layers/31/blocks/0/source_fact_keys"
+  },
+  {
+    "after": "Unresolved code-defined facts (drawn honestly, never asserted): activation, bias, final norm kind, logit softcap, mask, mechanism, norm kind, norm placement, parallel norm count, residual topology \u2014 modeling source is present but unresolved.",
+    "before": "Unresolved code-defined facts (drawn honestly, never asserted): activation, bias, final norm kind, mask, mechanism, norm kind, norm placement, parallel norm count, residual topology \u2014 modeling source is present but unresolved.",
+    "kind": "replace",
+    "path": "/warnings/1"
+  }
+]

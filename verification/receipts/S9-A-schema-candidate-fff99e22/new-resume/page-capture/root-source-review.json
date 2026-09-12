@@ -1,0 +1,16 @@
+{
+  "decision": "ACCEPT bounded capture harness source; execution pending after matrix",
+  "manifest_sha256": "c5734e5154749d31b838185de6a0a820f53a54b88cd8a0f25d09036124d195fb",
+  "checks": [
+    "Exact active39 target and resolved class addresses retained",
+    "No historical unqualified citation denominator or missing temp dependency",
+    "Available original proofs validated; absent proofs listed without qualification",
+    "IR preserved before and after actual renderer; actualpage bytes immediatelypublished; existingmodelpage refused",
+    "Outputstatus CAPTURED not proof acceptance; independentvisualverdict pending",
+    "External capture script and frozen source/protectedartifacts bracketed"
+  ],
+  "limits": [
+    "Capture is not preservation approval, S7 reconciliation exit or browser visual judgment",
+    "Root owns execution and will retain every failure"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d",
+  "reference26_seal": "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d",
+  "scope": "Actual32 source index;26 is a comparison reference, not a32 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "auraflow_transformer_2d.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "0ccded96c3413486160b066044d8118c78d18a54cdb05e12a0ff2171e5d3a11b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_umt5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "9fd668395003d0fe6a2697e47ba41e616578ffd59b6d8ed4b4d5ac17b9f10e81",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_umt5.py"
+    }
+  ],
+  "source_node_count": 5
+}

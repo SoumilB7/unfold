@@ -1,0 +1,11 @@
+{
+  "name": "schema-proof-metadata",
+  "returncode": 0,
+  "duration": 62.99471283284947,
+  "before": "ec509a680b999ac7faa31d8016e63ab11721e1c6d304af8188e9c71cb578ae64",
+  "after": "ec509a680b999ac7faa31d8016e63ab11721e1c6d304af8188e9c71cb578ae64",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "schema-proof-metadata.log",
+  "passed": true
+}

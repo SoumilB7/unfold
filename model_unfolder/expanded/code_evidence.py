@@ -2,8 +2,9 @@
 
 The evidence package may evolve its on-disk shape; we accept either the
 modern ``detections`` map or the legacy ``findings`` list and project to
-a stable shape that callers (and ``attention``/``ffn`` ``trace`` fields)
-can index by ``(kind, value)``.
+a stable, standalone diagnostic section.  Structural attention/FFN traces do
+not query these global buckets: only an exact owner-qualified fact receipt may
+be attached to a structural claim.
 """
 from __future__ import annotations
 

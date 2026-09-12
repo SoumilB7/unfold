@@ -1,0 +1,42 @@
+{
+  "captured": 39,
+  "failed": 0,
+  "facts": 665,
+  "validated_proofs": 520,
+  "undeclared": {
+    "bloom": [
+      "decoder.attention.position_schedule"
+    ],
+    "musicgen-small": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  "proof_absent_counts_by_key": {
+    "decoder.ffn.activation": 22,
+    "decoder.attention.scores_scale": 24,
+    "decoder.layer.parallel_norm_count": 23,
+    "decoder.attention.position_schedule": 1,
+    "decoder.layer.norm_placement": 8,
+    "decoder.attention.bias": 7,
+    "decoder.attention.mask": 8,
+    "decoder.layer.residual_topology": 8,
+    "decoder.attention.cross_attention_schedule": 1,
+    "model.final_norm_kind": 8,
+    "decoder.layer.norm_kind": 3,
+    "decoder.ffn.expert.expert_activation_formula": 4,
+    "decoder.ffn.routing_policy": 6,
+    "decoder.attention.projection_mode": 7,
+    "decoder.attention.mechanism": 6,
+    "decoder.ffn.expert.shared_expert_count": 2,
+    "model.tie_word_embeddings": 1,
+    "root.vision.projector_in_features": 1,
+    "root.vision.projector_out_features": 2,
+    "root.video.projector_out_features": 1,
+    "decoder.attention.gated_delta_geometry": 2
+  },
+  "families": {
+    "transformer": 24,
+    "diffusion": 14,
+    "unet": 1
+  }
+}

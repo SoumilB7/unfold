@@ -1,0 +1,92 @@
+--- before/model_unfolder/evidence/reconciliation.py
++++ after/model_unfolder/evidence/reconciliation.py
+@@ -903,6 +903,12 @@
+                 f"render event cites facts absent from the typed ledger: {missing}")
+         candidates: dict[str, dict[str, EvidenceFact]] = {}
+         for key in event_facts:
++            if event.view == "stats_banner" and key == "model.hidden_size":
++                # This exact scalar surface proves only the displayed width.
++                # Its default-source spans never place constructor occurrences.
++                # Keep the event/receipt for fact accounting; direct canonical
++                # occurrence citations above still establish R4 placement.
++                continue
+             fact = facts[key]
+             if key not in fact_claim_cache:
+                 fact_claim_cache[key] = _fact_static_claims(index, fact, static_claims)
+--- before/tests/test_s9_width_banner_receipts.py
++++ after/tests/test_s9_width_banner_receipts.py
+@@ -82,10 +82,73 @@
+     validate_fact_claim(fact, fact.claim_evidence)
+     assert fact.status == "class_default" and fact.config_paths == ()
+     rows = {"model.hidden_size": {"value": fact.value, "status": fact.status}}
+-    html, receipts, _render_context = _render(ir.to_dict(), rows)
++    html, receipts, render_context = _render(ir.to_dict(), rows)
+     assert '<div class="uf-stat-val">64</div>' in html
+     assert len(receipts) == 1
+     assert receipts[0].fact_value_status_hash == value_status_hash(64, "class_default")
++
++    # Actual default-reader spans reach the source constructor. A numeric cell
++    # must not turn that legacy class/span match into a drawn module.
++    from pathlib import Path
++    from model_unfolder.evidence.component_owner import resolve_component_root
++    from model_unfolder.evidence.config_access import checkpoint_fingerprint
++    from model_unfolder.evidence.reconciliation import (
++        ProjectionFactFinding, _fact_static_claims,
++        projection_claims_from_product, static_claims_from_owner_graph,
++    )
++    from physics.instance_inventory import ModuleNode, ResolvedClass, SourceFile
++    from test_support.s9_fixtures.s7_reconciliation import _inventory
++    root = resolve_component_root(index, result.claim_witness.bundle, "root")
++    assert root.status == "resolved"
++    static_claims = static_claims_from_owner_graph(root.graph)
++    assert any(claim.path_pattern == () for claim in
++               _fact_static_claims(index, fact, static_claims))
++    symbol = root.graph.root.symbol
++    class_ref = ResolvedClass(Path(symbol.source.canonical_path).stem,
++                              symbol.qualified_name)
++    source = SourceFile(class_ref.module, symbol.source.canonical_path,
++                        symbol.source.content_fingerprint)
++    base_inventory = _inventory(count=1)
++    inventory = replace(base_inventory,
++        provenance=replace(base_inventory.provenance, source_files=(source,),
++            config_sha256=checkpoint_fingerprint(checkpoint),
++            resolved_class=class_ref,
++            requested_factory=f"{class_ref.module}.{class_ref.qualname}",
++            constructor_used=f"{class_ref.module}.{class_ref.qualname}(config)"),
++        modules=(ModuleNode("", class_ref, class_ref.module, (class_ref,),
++                            (), (), {}, ()),), repetition_groups=())
++    assert len(render_context.events) == 1
++    event = render_context.events[0]
++    assert event.view == "stats_banner" and event.block_path == ()
++    assert event.facts_projected == frozenset({fact.ledger_key()})
++    assert event.receipts == tuple(receipts)
++    arguments = dict(index=index, inventory=inventory, static_claims=static_claims,
++                     ir=ir, facts={fact.ledger_key(): fact})
++    assert projection_claims_from_product(**arguments, render_events=()) == ()
++    assert projection_claims_from_product(
++        **arguments, render_events=render_context.events) == ()
++    assert render_context.events == [event]  # Scalar denominator/receipt retained.
++
++    # Validate referenced fact identities before applying the scalar boundary.
++    with pytest.raises(ValueError, match="facts absent from the typed ledger"):
++        projection_claims_from_product(**arguments, render_events=(replace(
++            event, facts_projected=frozenset({"model.absent_scalar"})),))
++
++    # The same source-default fact can accompany a real canonical occurrence
++    # citation; R4 keeps that block drawn even if its semantic stamp is missing.
++    ir.extras.setdefault("render", {}).setdefault("model_blocks", []).append({
++        "id": "actual_root_card", "kind": "opaque", "label": "Actual root",
++        "source_instance_path": "", "source_fact_keys": [fact.ledger_key()]})
++    for projected_fact in (fact, replace(fact, claim_evidence=None,
++                                         claim_document_token="")):
++        explicit = projection_claims_from_product(
++            **{**arguments, "facts": {fact.ledger_key(): projected_fact}},
++            render_events=render_context.events)
++        assert len(explicit) == 1 and explicit[0].instance_path == ""
++        assert explicit[0].axis.kind == "rendered"
++        expected_findings = (() if projected_fact.claim_evidence is not None else
++                             (ProjectionFactFinding(fact.ledger_key()),))
++        assert explicit[0].axis.fact_findings == expected_findings
+ 
+ 
+ @pytest.mark.parametrize("formatted", ["65", "~64", "?"])

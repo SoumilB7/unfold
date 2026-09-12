@@ -1,0 +1,16 @@
+{
+  "status": "ACCEPT bounded static test-contract correction; execution pending",
+  "source_sha256": "1d17e13fba9927112af280a896392e930909d163eca0da7a118126f407063722",
+  "production_physics_equal_29c6236": true,
+  "original_view_description_children_static_branches_preserved": true,
+  "no_blanket_facts_truthy_escape": true,
+  "unique_nonself_target_same_occurrence_path_required": true,
+  "exact_primary_fact_key_code_proven_and_exact_explanation_required": true,
+  "target_own_content_required_no_recursive_reference_escape": true,
+  "actual_own_svg_node_card_title_fact_span_required": true,
+  "global_block_tree_click_coupling_unchanged": true,
+  "negative_controls": 9,
+  "positive_controls": 1,
+  "no_canonical_target_navigation_claim": true,
+  "own_test_or_model_runs": 0
+}

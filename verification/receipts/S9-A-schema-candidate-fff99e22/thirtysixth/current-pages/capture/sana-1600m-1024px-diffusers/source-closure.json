@@ -1,0 +1,53 @@
+{
+  "actual_portable_seal": "5a50434c45935ec0916b41e4496917f6d62957d32c215cbac2350d26e88c4016",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "5a50434c45935ec0916b41e4496917f6d62957d32c215cbac2350d26e88c4016",
+  "reference26_seal": "5a50434c45935ec0916b41e4496917f6d62957d32c215cbac2350d26e88c4016",
+  "scope": "Actual36 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4cdcf5eadc79cc6b1f43c4e3ec3f89d0786cf2bc4a0f9f18ae0511b70ee3a2c3",
+      "external": false,
+      "external_provenance": "",
+      "locator": "sana_transformer.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "d81e5abd688436da573ae299a65598d01ea871a8874d0cabeb5149967855ca07",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 6
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "static-import-cleanup",
+    "manifest_sha256": "c95494ce9416cf2a51cecd1e3c892ad5347bc3a3dac92b9bc13a4af7e3d268b9"
+  },
+  {
+    "name": "ffn-unbound-fix",
+    "manifest_sha256": "ea687da8a167a355677cdb1a0aa0ea33cc17545f2d3e1b6534bc5017b82bfff2"
+  },
+  {
+    "name": "latency-receipt-pointer",
+    "manifest_sha256": "a6d6261870dd1163947722ededd29067f3fa6daa2cbc837a62c3de101455dee7"
+  }
+]

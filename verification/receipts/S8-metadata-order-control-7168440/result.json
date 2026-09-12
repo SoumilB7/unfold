@@ -1,0 +1,34 @@
+{
+  "actual_card_facts_order_unchanged": true,
+  "actual_html_byte_identical": true,
+  "actual_html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "actual_parser_ir_exact_after_only_metadata_permutation": true,
+  "actual_render_event_bytes_identical": true,
+  "blessed": false,
+  "both_lists_unique_same_exact_strings": true,
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 7.166,
+  "event_uncompressed_sha256": "693fdeb6319cd875e776ce485176792e873a31583603acf1d3bf3e46ad195237",
+  "no_model_or_pytest": true,
+  "parameters_and_warnings_preserved": true,
+  "production_commit": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "saved_fact_json_order": [
+    "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+    "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+    "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+  ],
+  "source_order": [
+    "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+    "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+    "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,39 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:21:45.758575+00:00",
+  "model": "llama-7b",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "4015be3286774c4c736600061e47ed51"
+    },
+    {
+      "label": "architecture",
+      "hash": "e52c423d42c8caa434948f640344f933"
+    },
+    {
+      "label": "attn",
+      "hash": "a65da01ede616359451f87a5fda7620e"
+    },
+    {
+      "label": "ffn",
+      "hash": "d3314cccdb744f3767be47b560187b9c"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "8ccdd725d23a6c88f3b07b30da8c6ec11bf459ef71b4a99db21accdbcd20e53b",
+  "gallery_manifest_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+  "pixel_review_sha256": "2eeee4c7fcb847038ee6537d37dab01a73ba8ced5647a690ecfda6564e4230a8",
+  "her_eyes_review_sha256": "4c9098374d7ba0c26884363770938952d39f9b32dabdcd4667a573ac500e1efa",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

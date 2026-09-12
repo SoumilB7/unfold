@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62",
+  "reference26_seal": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62",
+  "scope": "Actual36 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "a72489447f87907a5797c699a333199c2b742bf60d43ddfeda180e667ba816ca",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_glm4_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "476514bb523f9939d56bbd538e488a395b047a190d8a027b04d5ba5190592db9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_glm4_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

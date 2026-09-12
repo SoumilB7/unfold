@@ -1,0 +1,47 @@
+{
+  "bundle": {
+    "architecture": "LTXVideoTransformer3DModel",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "LTXVideoTransformer3DModel",
+      "text_encoder": "T5EncoderModel"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_ltx.py"
+      ],
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py"
+      ]
+    },
+    "component_model_types": {
+      "text_encoder": "t5"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_ltx.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py"
+    ],
+    "import_roots": {
+      "root": [
+        {
+          "package": "diffusers",
+          "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+        }
+      ]
+    },
+    "model_id": "Lightricks/LTX-Video",
+    "model_type": null,
+    "pipeline_components": [
+      "text_encoder"
+    ],
+    "source": "local",
+    "supporting_files": {
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/configuration_t5.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

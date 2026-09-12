@@ -1,0 +1,146 @@
+{
+  "capture_script_sha256": "2928a4401618179618897ffd62470e2ec1c254e2b664619e50da490f7da3d5f0",
+  "checkout": "/private/tmp/unfold-s8-diagnostic-736fdab",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/kandinsky-published.json",
+        "--output",
+        "{CAMPAIGN}/kandinsky-published",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "kandinsky-published"
+    },
+    {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/kandinsky-original-invalid.json",
+        "--output",
+        "{CAMPAIGN}/kandinsky-original-invalid",
+        "--expect-construction",
+        "failed"
+      ],
+      "case": "kandinsky-original-invalid"
+    },
+    {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/if-first-original-invalid.json",
+        "--output",
+        "{CAMPAIGN}/if-first-original-invalid",
+        "--expect-construction",
+        "failed"
+      ],
+      "case": "if-first-original-invalid"
+    },
+    {
+      "argv": [
+        "python3",
+        "/private/tmp/unfold-s8-diagnostic-736fdab/verification/receipts/S8-queued-capture-preparation/scripts/capture_diffusion.py",
+        "--checkout",
+        "/private/tmp/unfold-s8-diagnostic-736fdab",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-head-input-capture-preparation/inputs/if-first-synthetic-default-head.json",
+        "--output",
+        "{CAMPAIGN}/if-first-synthetic-default-head",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "if-first-synthetic-default-head"
+    }
+  ],
+  "common_script_sha256": "e6c19b155ae05f503eb1623ad7cbcbb51f70fb25e5ad4c8ba54bc891920d80cd",
+  "inputs": [
+    {
+      "case": "kandinsky-published",
+      "expected_constructor": "ok",
+      "file": "inputs/kandinsky-published.json",
+      "publisher": {
+        "cached_revision": "9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3",
+        "minimal_synthetic_change": {
+          "add": "attention_head_dim:64",
+          "remove": "num_attention_heads:64"
+        },
+        "published_attention_head_dim": 64,
+        "published_block_out_channels": [
+          384,
+          768,
+          1152,
+          1536
+        ],
+        "published_num_attention_heads_present": false,
+        "published_resnet_time_scale_shift": "scale_shift",
+        "scope": "This repair is a deliberately different synthetic constructor input. It is not equivalent to64 heads and not the exact published model. Full publisher config is retained for a publisher witness.",
+        "sha256": "4f30206052776397195b5f1c9df9d7f7e34f50b1cb1ad9a027856021a94b62d6",
+        "source_path": "/Users/soumil/.cache/huggingface/hub/models--kandinsky-community--kandinsky-2-2-decoder/snapshots/9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3/unet/config.json",
+        "source_url": "https://huggingface.co/kandinsky-community/kandinsky-2-2-decoder/blob/9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3/unet/config.json",
+        "test_block_out_channels": [
+          384,
+          768,
+          1536,
+          3072
+        ],
+        "test_resnet_time_scale_shift": "omitted; installed default default"
+      },
+      "reviewer_source_file": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-publisher-head-input-independent/kandinsky-publisher-config.json",
+      "scope": "Exact complete publisher config at pinned revision; component-only reconstruction.",
+      "sha256": "4f30206052776397195b5f1c9df9d7f7e34f50b1cb1ad9a027856021a94b62d6"
+    },
+    {
+      "case": "kandinsky-original-invalid",
+      "expected_constructor": "failed",
+      "file": "inputs/kandinsky-original-invalid.json",
+      "original_a83_test_lines": [
+        623
+      ],
+      "reviewer_source_file": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-publisher-head-input-independent/kandinsky-original-invalid.json",
+      "scope": "Exact original rejected test dictionary, not the publisher config.",
+      "sha256": "400112179f4e03ba35c3aabb3b8d3393ce82418651ef10725f4be66d01fefc5b"
+    },
+    {
+      "case": "if-first-original-invalid",
+      "expected_constructor": "failed",
+      "file": "inputs/if-first-original-invalid.json",
+      "original_a83_test_lines": [
+        715
+      ],
+      "reviewer_source_file": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-publisher-head-input-independent/deepfloyd-original-invalid.json",
+      "scope": "Exact first IF-like rejected fixture; distinct from already tested second IF fixture.",
+      "sha256": "9286ff18d1e853fcb0416d503298005d3594967e1b73ea0e89b3504576260c74"
+    },
+    {
+      "case": "if-first-synthetic-default-head",
+      "expected_constructor": "ok",
+      "file": "inputs/if-first-synthetic-default-head.json",
+      "reviewer_source_file": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8-publisher-head-input-independent/simple-cross-text-default-head-counterpart.json",
+      "scope": "Explicit synthetic first-IF counterpart: removes only rejected num_attention_heads, leaving attention_head_dim omitted. No publisher claim.",
+      "sha256": "b9541fed442f6c56600a01ac33865287de599a06ef8ff3bf078ac1490eb53eaa"
+    }
+  ],
+  "no_alias_assumption": true,
+  "no_model_run_yet": true,
+  "original_test_source_sha256": "23409140e9fe55098674abf9d72cf6c19cce3489af35058cc0f293b2d2f06559",
+  "source_commit": "736fdab"
+}

@@ -1,0 +1,21 @@
+{
+  "verdict": "ACCEPT core recovery design; add after-capture source verification before relying on run",
+  "preparation_pins": {
+    "capture_sidecar.py": "c927f0af793c7934aac03e4b326d34f31b2fb47533f14a11abba7077752c3743",
+    "source-snapshot.json": "ce811085ea4af288f31b1ae7c7c1dc14ba7f8c9761a2bdc9ff66deff9bb61b94",
+    "README.md": "a087e6f32ce317b38cbce57f9c623ebf7d0d37ca9e4caade9b9578ebefc31512"
+  },
+  "verified": {
+    "all_333_snapshot_bytes_match_exact_git_83140f1_and_manifest": true,
+    "no_unpinned_snapshot_files": true,
+    "expected_manifest_matches_current_committed_expected_manifest": true,
+    "U0_baseline_inputs_absent": true,
+    "actual_parser_and_comparator_paths_checked": true,
+    "actual_single_parse_IR_and_canonical_sidecar_preserved": true,
+    "stops_first_unrecovered_expected_hash": true,
+    "no_baseline_or_reviewed_output_write": true
+  },
+  "required_before_use": "Repeat exact source checks after each capture, including mismatch path; retain the source-state verdict. Present snapshot checks only run before unfold.",
+  "limits": "External modeling/runtime packages not byte pinned by preparation; a mismatch remains diagnostic and cannot be normalized or accepted by version labels. Recovery is only for ledger sidecar, not other preservation surfaces.",
+  "execution": "stdlib source/byte checks only; no model/pytest"
+}

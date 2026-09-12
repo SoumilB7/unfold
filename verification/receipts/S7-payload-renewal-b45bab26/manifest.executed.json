@@ -1,0 +1,520 @@
+{
+  "approved_scope": {
+    "files": {
+      "matrix_json_byte_identical_fields": [
+        "sources (394 entries, equal to the Q11 stamp)",
+        "denominator",
+        "schema"
+      ],
+      "matrix_json_fields_changed": {
+        "artifacts": "39/39",
+        "logical_artifacts": "39/39",
+        "logical_relation_artifacts": "19/39",
+        "models_rows": "35/39",
+        "observation_artifacts": "1/39",
+        "relation_artifacts": "20/39"
+      },
+      "payloads_changed": 60,
+      "payloads_changed_by_group": {
+        "models": 39,
+        "observations": 1,
+        "relations": 20
+      },
+      "payloads_total": 117,
+      "payloads_unchanged": 57,
+      "rows_regenerated_by_hand": false,
+      "targets_json": "byte-identical",
+      "total_installed": 61
+    },
+    "fresh_equals_candidate37": {
+      "matrix_model_rows_equal": true,
+      "model_payloads_byte_identical": "39/39",
+      "note": "byte-identical, i.e. stronger than the logical identity the owner required against the matrix he audited in S9-A-review.md section 2",
+      "observations_byte_identical": "39/39",
+      "relations_byte_identical": "39/39",
+      "sources_map_equal": true
+    },
+    "not_in_scope": [
+      "No production source, renderer, gallery, example, coverage, preservation manifest or latency budget changes; all pinned as writer controls.",
+      "The sources map installed under Q11 stays byte-identical."
+    ],
+    "projection_kind_changes": {
+      "drawing_identical": {
+        "architecture_svg_sha_both": "806af6b0ab8acae7",
+        "cards": 13,
+        "checked_by": "owner (Claude), rendering deepseek-v4-flash on the pre-S9-A baseline worktree verify-s9-a-closure-baseline (fff99e22) and on HEAD",
+        "nodes": 7,
+        "svgs": 4
+      },
+      "leaves": "43 model.layers.N.input_layernorm + 43 model.layers.N.post_attention_layernorm",
+      "matrix_summary_row_effect": "rendered 2 -> 88; projection_unresolved 1413 -> 1327; structure_unaccounted 1413 -> 1327; blocking_findings 1604 -> 1431",
+      "model": "deepseek-v4-flash",
+      "occurrences_that_became_unresolved": 0,
+      "placed_by": "the decoder-norm reader's exact occurrence citation; proof kind retained_reader_projection, reader decoder_norm_kind_for_path",
+      "reason_class": "structure_unaccounted -> cleared (None)",
+      "ruling": "INSIDE the Q12 scope. Accounting only: already-drawn norm blocks now cite their occurrences. These are the '86 DeepSeek-V4 direct norm placements ... named re-proofs' the S9-A sheet named. The owner corrected the S9-A-review.md section 2 row that had claimed projection kind was identical on every occurrence, and added a section 9 addendum.",
+      "total_occurrences": 86,
+      "transition": "projection_unresolved -> rendered"
+    },
+    "reconciliation_vs_owner_matrix_audit": {
+      "blocking_findings": "70,186 -> 54,257",
+      "citations_removed": 0,
+      "claim_kinds_changed_on_existing_citations": 0,
+      "every_item_agrees_with_the_owner_audit": true,
+      "formerly_unqualified_now_qualified": 16324,
+      "identity_order_construction_execution_schedules": "identical on all 39 models",
+      "new_unqualified": "481, all scores_scale",
+      "newly_cited": 18565,
+      "occurrences": "44,088 = 44,088",
+      "provenance": "additive only, on 17 models",
+      "relations": "counts equal on all 39; five tying rows gain config_paths (bloom, command-a-03-2025, gemma-2-2b-it, granite-3-0-8b-instruct, lfm2-1-2b)",
+      "still_unqualified_from_that_denominator": 0
+    },
+    "regenerated_from": "a fresh full 39-model S7 shadow run on the committed head b45bab26 with a clean tree; lane rc 0, 1355.83 s, source bracket 4c1ca4691fb95f5a... and artifact bracket 5aed5480485a877c... equal before and after; active_matrix_renewed false",
+    "unit": "S7 payload renewal on the committed head b45bab26 (Q12)",
+    "why": "The committed verification/s7 payloads are stale against S9-A's claim-kind stamping. The Linux gate scripts/generate_s7_shadow.py --ci-shadow caught it on auraflow-v0-3 (committed 1823 blocking findings, live 1784). Only the source stamp was renewed under Q11; the payloads were not."
+  },
+  "archive": "/private/tmp/unfold-s9a-s7-renewal-b45bab26/matrix",
+  "base_commit": "b45bab26539eca773c2f03519ebfd72ca7719d93",
+  "branch": "audio-composite-support",
+  "checkout": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg",
+  "control_sha256": {
+    "README.md": "5badf766333a9496f29702da0bf24b30b0683687782918973d58ae69055f1c7e",
+    "coverage.json": "d5610ec1f866f0348f53a5d6c94420960f4ca63761b25dc05b47dd71b6c7f70a",
+    "examples/deepseek-v3.html": "9c5595b33836fc39b2811aba12db79680fa793178ae247f16c88afb5e4f510af",
+    "examples/granite-3-0-8b-instruct.html": "b67167db5a96f1bf3b6ffbefef96197137ad1f6d5cb16e22be0b391cb818b593",
+    "examples/hunyuanvideo.html": "a77af2aab3f8025d53e4ddf2afba150f6ff051f37652ca7e6421eae0741928f0",
+    "examples/images/llama-7b.png": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69",
+    "examples/llama-7b.html": "50f3ae92bb7456d57b5b1a3da8f9de61f8f68711f4bf3b5b6c619394e3f18565",
+    "examples/manifest.json": "81dd0e051c4de0ef987ffb73de764fb5e0204aa46d92ec6254d620d1134c3e0a",
+    "examples/musicgen-small.html": "1a52287ca73ecdf9e68468a70b8a8eab497bff988f5586a056e2d9a6bff72f82",
+    "examples/pixart-sigma-xl-2-1024-ms.html": "34d90344411da070f2a4382b7393d6b77a3584bed04e02e6e15725c8f9efebb9",
+    "examples/qwen2-vl-7b-instruct.html": "2ed408d9a8ecb16e2cf17800a49df7908d1dbb21f9210fe948db34b8a990b913",
+    "examples/stable-diffusion-xl-base-1-0.html": "fd64a99bb57e231f53101b738d7ddce3332fc94169af6bc53b76934132a1e60d",
+    "scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "tests/preservation_expected_manifest.json": "80e239f7d1c63eb3a670f65696c4d0ac329febeb22b5f63c8e055ac3b829523e",
+    "tests/preservation_manifest.json": "e9ed0476d0e158fb46bb182a8fd314518d9951bdc231f200cb5278add160e283",
+    "tests/test_s5_release.py": "9a97192b4630e31b70d8e8da8e8876935b65e79b808d35aa11593b2fd412d838",
+    "verification/latency_budgets.json": "c54f86d62df83ce357564ba098817b8a640fd90a2f8e5abf8aac8d6c0d278431",
+    "verification/s7/observations/auraflow-v0-3.json.gz": "7b3913a52a4a982c32c3474bf4573ebad3b27f24f2e9e540e24ede25a3a61727",
+    "verification/s7/observations/bloom.json.gz": "890bf4a2aaf45d9730f5c0f3934ef999ed52fce9ac94fbc2ed136722ff96a053",
+    "verification/s7/observations/cogvideox-5b.json.gz": "df0e5a8976d71f7d1dc4cb268fea6327c4fb4635d174464342bc2662ac4a2770",
+    "verification/s7/observations/command-a-03-2025.json.gz": "df7a09848ef870eda0e557b275009b71502f3819dcc0777470d39c510adf553a",
+    "verification/s7/observations/dbrx-base.json.gz": "854a62a1d0872a5b6e5454c5badc921d73d21b430285217bdca28e512ea71172",
+    "verification/s7/observations/deepseek-coder-v2-lite.json.gz": "9eaaa3c01f7d5520edb98933379e2ec00bb0f2c330ab05cf06a84f196e518cb1",
+    "verification/s7/observations/deepseek-v3.json.gz": "610c78cbfb00def06c5597c2784f6fc02a3e6627bcf84b04ad9dd1d25eaa4c58",
+    "verification/s7/observations/deepseek-v4-flash.json.gz": "8bb275e8a50305dc41ebcce45f4ea5f05af3d16091fbaaed14ab743549c64896",
+    "verification/s7/observations/flux-2-dev.json.gz": "1e91389bc141518f69980786dd5de0e99c2457cf6a4751f6a8715b3ec398fe42",
+    "verification/s7/observations/fluxtransformer2dmodel.json.gz": "2b18569c851b27d3cf2c56e3ffddaf06a7f67ebfbd99d1acd15abc6e76f3d02a",
+    "verification/s7/observations/gemma-2-2b-it.json.gz": "8a6647292fb944578bc911e3f435d166c113633ca349a20b3a9ef038a9556dd7",
+    "verification/s7/observations/gemma-3n-e2b.json.gz": "12c7302971c4546dea4d4481a72d520e842c6ce3849d2210044b57269b58f057",
+    "verification/s7/observations/glm-4-5.json.gz": "3df3b8abaf7404691f66f7b1178627ab28a4e3350a8f040ab0eca5f6128f0049",
+    "verification/s7/observations/gpt-oss-20b.json.gz": "18aaf4b5d1472db6bce122e66ec283826a078d00458f42e17dbd0bc852c4bf64",
+    "verification/s7/observations/granite-3-0-8b-instruct.json.gz": "201af3d6cef8dda32fd47c72f5e4654fcf08eeddb435450a79d484d170f22828",
+    "verification/s7/observations/hunyuanvideo.json.gz": "0db31600cbee64e49cbb33f2e3c784594ffe37bcf8d7138400cd389bb242a0e7",
+    "verification/s7/observations/jamba-v0-1.json.gz": "c6ddb93bd49f895b6827af06ad881a284aa659aeb9cd56d19051df6c56410308",
+    "verification/s7/observations/lfm2-1-2b.json.gz": "a53722d27d07e9768afef66a6bc26a43557923f132c6dc286bdac01e7d934b16",
+    "verification/s7/observations/llama-7b.json.gz": "03185d866c843c336f9cc0c77291c2e5628277afecd0db538940f192350c28c4",
+    "verification/s7/observations/ltx-video.json.gz": "30cfda4252f86d51deb3f08d74214dbf351969058037f0637a27eca42a93b999",
+    "verification/s7/observations/lumina-image-2-0.json.gz": "3b0890e4f675ee13a7733c23e005f71d09330bc8e29b2c031b6b79c7eddfbdbe",
+    "verification/s7/observations/mochi-1-preview.json.gz": "cd55f3ab471b118b0cd77050d518bd84a6149138f2096e3b085c0aef0212548e",
+    "verification/s7/observations/musicgen-small.json.gz": "99c0f2f23736a50843bc37c9347383b45afa9949ffc5f3ab9f0b8d70debd168f",
+    "verification/s7/observations/nemotron-h-8b.json.gz": "a127e7adedfe0c77159660cfa5c5f1990a59bbb6bdfd2a83c096561197e3f593",
+    "verification/s7/observations/olmo-2-1124-7b.json.gz": "ce23da99fceb66c9af7c6bf9a9eeb846190cd62ac1e4cfb419de0bfde899648f",
+    "verification/s7/observations/pixart-sigma-xl-2-1024-ms.json.gz": "ee206d9651fa8a3e367aaa39a2aa2061af84262199c568970ad81c84f4ee0f07",
+    "verification/s7/observations/prxpixel-t2i.json.gz": "fe26340c719e7101ceb462242ddc9095be0de0bfa9229c12d0d810f9c4ac56b7",
+    "verification/s7/observations/qwen-image.json.gz": "f770d6112a9ae0e3f6ff4dc6766b48f2248731f523e41bb5add842df504df494",
+    "verification/s7/observations/qwen2-vl-7b-instruct.json.gz": "cf87f84f0f4f73b3000c2dd7611311c6ca0ca61ac544a2cbefe05458fc50737e",
+    "verification/s7/observations/qwen3-5-27b-text.json.gz": "a6d9378e6f99e7e4589f1b4339af5f8baf0b9b662f4cc6e4ea23545f9d89b377",
+    "verification/s7/observations/qwen3-5-27b.json.gz": "6bc80e871e92ab085e125944bb41e26f77560988e5b20ac8dcec477068246130",
+    "verification/s7/observations/qwen3-8b.json.gz": "420d3b0341b7e1c0bad0ba92eaa0394617a63cf66dc5f58b8c45083217317294",
+    "verification/s7/observations/qwen3-omni-30b.json.gz": "c9600633af739db82eda77faf9143301eae4cc8c056e01bf9a60e948cf3887a1",
+    "verification/s7/observations/qwen3-vl-235b.json.gz": "6cf2bc63da90ededcf332216bbd3107b5ad0416355fa0080e184921895409058",
+    "verification/s7/observations/sana-1600m-1024px-diffusers.json.gz": "3a228c057097e18cbdf5f4abee283a87a507d66d136e0d5792ca69feb72c0fd1",
+    "verification/s7/observations/stable-diffusion-3-5-large.json.gz": "edb52aef8c62dd29c71c302f7b109551f497e9174bd40a855d1f378162c72644",
+    "verification/s7/observations/stablelm-2-1-6b.json.gz": "ac02978e083e82cd119c6d8d343b4bb87d10f6e6861751269a6824b0ac35e61d",
+    "verification/s7/observations/wan2-2-t2v-a14b-diffusers.json.gz": "cdca4c3186e614f21029b4bdd7fee8e8c6b20ffd377e0fae604837e4e7f98040",
+    "verification/s7/relations/auraflow-v0-3.json.gz": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "verification/s7/relations/bloom.json.gz": "987f4afbd9edd9f85db6498e136c8ebc971ac80616a8a12a3c8a2046883132ad",
+    "verification/s7/relations/cogvideox-5b.json.gz": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "verification/s7/relations/dbrx-base.json.gz": "4efe6fdfb473b4eccd213e31625548f18a8f57d847fd7d3e159f476625e33888",
+    "verification/s7/relations/flux-2-dev.json.gz": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "verification/s7/relations/fluxtransformer2dmodel.json.gz": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e",
+    "verification/s7/relations/gpt-oss-20b.json.gz": "b885d0c4b645bfe90f82f39bfd665f922955c0f9e500419a79c95298087cabfb",
+    "verification/s7/relations/hunyuanvideo.json.gz": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "verification/s7/relations/lfm2-1-2b.json.gz": "9eb5cbbc417cbbfa7b34823441375a050a1f233f84d24f3e81953cd0423b86df",
+    "verification/s7/relations/ltx-video.json.gz": "b3b76bb6f250d4b1d926708cc36dc33e6091d2e3ea4058f9e7c5485795b03608",
+    "verification/s7/relations/lumina-image-2-0.json.gz": "744d6fc9f0a0dce13732045dcb5c18cbeae1d855467fd58fb1bec2304de145a8",
+    "verification/s7/relations/mochi-1-preview.json.gz": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "verification/s7/relations/musicgen-small.json.gz": "3b425d3b65fe33d1977951d63ff0d8c88b16659a5710cb152f33ffa94b391b3c",
+    "verification/s7/relations/pixart-sigma-xl-2-1024-ms.json.gz": "a93689857654acff60b823d1debdba84d4e32b6c76fe7109a05d5d28bd07e94e",
+    "verification/s7/relations/qwen-image.json.gz": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e",
+    "verification/s7/relations/qwen3-omni-30b.json.gz": "a93689857654acff60b823d1debdba84d4e32b6c76fe7109a05d5d28bd07e94e",
+    "verification/s7/relations/sana-1600m-1024px-diffusers.json.gz": "41d6aa25d3020b487f478b790a68a906b75402da901855cf1a8955378e8864c4",
+    "verification/s7/relations/stable-diffusion-3-5-large.json.gz": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "verification/s7/relations/wan2-2-t2v-a14b-diffusers.json.gz": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "verification/s7/targets.json": "3e84fb0a83061d664ab05483a64c8225031b8461ea11dba2a317a01fbec82805"
+  },
+  "enumeration": {
+    "allowed_disagree": [
+      "projection kind changed on 86 occurrences: {\"deepseek-v4-flash.json.gz\": {\"projection_unresolved->rendered\": 86}}"
+    ],
+    "allowed_projection_kind_changes": {
+      "deepseek-v4-flash.json.gz": {
+        "projection_unresolved->rendered": 86
+      }
+    },
+    "kind": "s7_payload_renewal",
+    "path": "/private/tmp/unfold-s9a-s7-renewal-b45bab26/renewal-reconciliation.json",
+    "ruling": "the single DISAGREE entry is the 86 DeepSeek-V4-flash norm placements, ruled INSIDE the Q12 scope by the owner in z-docs/11-execution/S9-A-review.md \u00a79",
+    "sha256": "15f887c3c6b2ebb289ce0f10211ef035a929f3e7151c27b7a2b20ccc64110cf1"
+  },
+  "files": {
+    "verification/s7/matrix.json": {
+      "candidate_path": "matrix.json",
+      "new_sha256": "716fb5f5e7646546700dc9267ad883dfa87ec0bf1159f173a4eeb1a28dfb56dd",
+      "old_sha256": "6c29d740dd849a63397940da3cebacfbb462a3ddfe37ac519d6fc85142933be1"
+    },
+    "verification/s7/models/auraflow-v0-3.json.gz": {
+      "candidate_path": "models/auraflow-v0-3.json.gz",
+      "new_sha256": "df7f93f585b92351eb68dd895de031c7b42992b1d33ea537ff2ad220f1acd076",
+      "old_sha256": "8167e09a2d06030e9f03420abe39103b0688a8c097a01b3b62f6dddd07a90b19"
+    },
+    "verification/s7/models/bloom.json.gz": {
+      "candidate_path": "models/bloom.json.gz",
+      "new_sha256": "4a833a9cd0251f632e264397b66608c4fbc8d3ffd5a01998e958d8e433249cb1",
+      "old_sha256": "2084053b6452acd007ca98145c5a87e8e97260a9b8485aa5ce8288714ae6c11e"
+    },
+    "verification/s7/models/cogvideox-5b.json.gz": {
+      "candidate_path": "models/cogvideox-5b.json.gz",
+      "new_sha256": "15203302d067cfae8c8dc193d2209059bf7a125fe81cb16149c6c2ad3fecdd40",
+      "old_sha256": "5cf8c2f80c884c625298898dce5115e25ea1feaa38744fdcb76ee61df0feb1c2"
+    },
+    "verification/s7/models/command-a-03-2025.json.gz": {
+      "candidate_path": "models/command-a-03-2025.json.gz",
+      "new_sha256": "ae5672a8b70395ebfdd5edfcbdddf11cf991e6119a86043590eb2ec1652afc7f",
+      "old_sha256": "8ab56ea4f4f256e8fd022d75ef715aed5ebca6913933270ef9464f45ed9c518d"
+    },
+    "verification/s7/models/dbrx-base.json.gz": {
+      "candidate_path": "models/dbrx-base.json.gz",
+      "new_sha256": "91fe7e5491353ee15e576776f705a5ad11603d479923e2b9b5562676c74a1971",
+      "old_sha256": "3f66c0d48aa93566dac93ac90edad53a11bbf06e4d3047e0311fcaebd0cc8e64"
+    },
+    "verification/s7/models/deepseek-coder-v2-lite.json.gz": {
+      "candidate_path": "models/deepseek-coder-v2-lite.json.gz",
+      "new_sha256": "bafca5800bd84812936941a81dc4273a3d7fa690617442a3edc851f6b3c266ea",
+      "old_sha256": "b6e7386ea4adcd37e81b2365b69effdaca8265e5ce74d0143c7ca329aa570080"
+    },
+    "verification/s7/models/deepseek-v3.json.gz": {
+      "candidate_path": "models/deepseek-v3.json.gz",
+      "new_sha256": "a6545a0ad111db6d2aa8e220ac1858329c7826e7a665d9135beaf4fc96868a29",
+      "old_sha256": "919e7fde0ba86a904020f9b063d52a60783c1d056454107badf73750f0856650"
+    },
+    "verification/s7/models/deepseek-v4-flash.json.gz": {
+      "candidate_path": "models/deepseek-v4-flash.json.gz",
+      "new_sha256": "9c33880709290a285e3f9d418d182eabe0fbd6d3da9479c3f08bdec723353df6",
+      "old_sha256": "a37b47b71c6560ee89a4bb798a1bd45586c4b2b3af7ef8049a93270e1f199c8d"
+    },
+    "verification/s7/models/flux-2-dev.json.gz": {
+      "candidate_path": "models/flux-2-dev.json.gz",
+      "new_sha256": "a94344840822859e9965c0767fb4121c844e93efedfd8c0d2c299a802624d2c7",
+      "old_sha256": "f177bc038678622fda7bdc0a1388e241ca667e487fb7b0dbc8aac35805724c93"
+    },
+    "verification/s7/models/fluxtransformer2dmodel.json.gz": {
+      "candidate_path": "models/fluxtransformer2dmodel.json.gz",
+      "new_sha256": "e3f0abf0d51a9ffae6d6c7ed3f0c1e701498e856a9726bee73952e8fb11dba07",
+      "old_sha256": "ed2cddcd8786c0b6ff7f67934f566b836e6de3cd9d25600d358599381b65a1d6"
+    },
+    "verification/s7/models/gemma-2-2b-it.json.gz": {
+      "candidate_path": "models/gemma-2-2b-it.json.gz",
+      "new_sha256": "5f9d92321eaf7b006175d3d15a671171a66204864576ad77ff5a399d1d33e23e",
+      "old_sha256": "5b18a901ec6f8e8b11da08c7e576b0b93945511b8300ac8ae815ba6746e400e5"
+    },
+    "verification/s7/models/gemma-3n-e2b.json.gz": {
+      "candidate_path": "models/gemma-3n-e2b.json.gz",
+      "new_sha256": "143a02673468988225c2037bfcc42bd43a9148ab47332d73d6c69ca3166502e6",
+      "old_sha256": "a6c5d11fcc4635053514fe5689c2a8ab8a25a9fa025a6a3b55c96befdb83c39d"
+    },
+    "verification/s7/models/glm-4-5.json.gz": {
+      "candidate_path": "models/glm-4-5.json.gz",
+      "new_sha256": "a84a0f679516fd80543d5f1d4b0a267733c63f055c2b72c1356cc66b83968877",
+      "old_sha256": "bc9977ce587541649f0a6ee57637cb3e5b65313797ba2dc059b8d840d7fc2fe2"
+    },
+    "verification/s7/models/gpt-oss-20b.json.gz": {
+      "candidate_path": "models/gpt-oss-20b.json.gz",
+      "new_sha256": "139ebd1348cabe7cc4cfd8690e4097b2a24f9cbc7456f0f62b7a2c0b66731794",
+      "old_sha256": "e0a436dc338a43b9b5cab21100d2689494acb5b5684f0aa2a8ddd0b25c1ad843"
+    },
+    "verification/s7/models/granite-3-0-8b-instruct.json.gz": {
+      "candidate_path": "models/granite-3-0-8b-instruct.json.gz",
+      "new_sha256": "e60fa43e5b937b603cc59e012e10b5f2996691e4bcee3ba495bd1e3db6972bd2",
+      "old_sha256": "5b49c1c0067d8943724d814c4cf354145a5f5ddcc56bc6cd20aa34024aea886a"
+    },
+    "verification/s7/models/hunyuanvideo.json.gz": {
+      "candidate_path": "models/hunyuanvideo.json.gz",
+      "new_sha256": "c63a20426d059764e9bdfc9b7c7ae606e60de2c6ccf50094cae87b62b4e7299e",
+      "old_sha256": "9e8f62cbb34bcef863ec6bd71a9849625787a2b9e655ff546fd0d4a9e4e273e1"
+    },
+    "verification/s7/models/jamba-v0-1.json.gz": {
+      "candidate_path": "models/jamba-v0-1.json.gz",
+      "new_sha256": "451a95082068ec674bc948b6e118d24d33ed73ffa8e355c9f8e07a81c5553341",
+      "old_sha256": "64f748d3f0ff43eaf718addc5803b5be02dcc8d1d01ea872eacb9706388a0839"
+    },
+    "verification/s7/models/lfm2-1-2b.json.gz": {
+      "candidate_path": "models/lfm2-1-2b.json.gz",
+      "new_sha256": "43129e6a883cf0be388833c3db95184bb6720c8de1878f5fabe1e3c537fa36ff",
+      "old_sha256": "f9b42e45f9b185f0b21ccf53136df98a48ad631d0adca4b8106a1c745c628a57"
+    },
+    "verification/s7/models/llama-7b.json.gz": {
+      "candidate_path": "models/llama-7b.json.gz",
+      "new_sha256": "e064b81cde0dbebb58f1fdfe795925e7175c4b441d990ffd2047f1b7a5fb4482",
+      "old_sha256": "67ccd19edd95d4aa9db20e037150f2b07211e547bc43f3465ea646cb98d9fe15"
+    },
+    "verification/s7/models/ltx-video.json.gz": {
+      "candidate_path": "models/ltx-video.json.gz",
+      "new_sha256": "d2ab61e30bd5ba7469fa6f2d1923182df47408540fca4cf88d0caa65bcc86dc1",
+      "old_sha256": "7ec5531d5f46ef7e8899350204cc38b098ab6cb04b8d0872216f08bf39f54077"
+    },
+    "verification/s7/models/lumina-image-2-0.json.gz": {
+      "candidate_path": "models/lumina-image-2-0.json.gz",
+      "new_sha256": "886c11c266a381d3a098d256b38b1f68d1a0d7e32645798eb7eca1c8ed03c13e",
+      "old_sha256": "4a2c2a89265fa0901c85bdabdd746009197d9908765ea4bbebcca92bb542d60b"
+    },
+    "verification/s7/models/mochi-1-preview.json.gz": {
+      "candidate_path": "models/mochi-1-preview.json.gz",
+      "new_sha256": "9e02d9feaac00419cfa2c182a38c472c4f08e3930639b7834611172207be54ab",
+      "old_sha256": "4cbafebf87810a3b34f41804bb52e68e1130b048f3973b5d9ecbae27494ac752"
+    },
+    "verification/s7/models/musicgen-small.json.gz": {
+      "candidate_path": "models/musicgen-small.json.gz",
+      "new_sha256": "132827ed783dc28036d9fd6dba6b0a99ab47429f67be91d0bbd551839b1eb206",
+      "old_sha256": "25d06db6a19173e12e613727ffbad8338919aacdf30941abf6ec22cabc9b200c"
+    },
+    "verification/s7/models/nemotron-h-8b.json.gz": {
+      "candidate_path": "models/nemotron-h-8b.json.gz",
+      "new_sha256": "6721447e5de6064ebae6295ed474722eab32471718b0712897c069392df59257",
+      "old_sha256": "34fe03766a7cde6f03456b2f863afaea667787aa883fbf2cf48c7af936b91ef6"
+    },
+    "verification/s7/models/olmo-2-1124-7b.json.gz": {
+      "candidate_path": "models/olmo-2-1124-7b.json.gz",
+      "new_sha256": "273e24b8f4caf46c0508057e10ab7924e6d89ae4adb82bb8226ccbf37540609a",
+      "old_sha256": "0a156df173ae38a9edd3216071bbd7ece6142c64f0f2d25492d88e82570a9547"
+    },
+    "verification/s7/models/pixart-sigma-xl-2-1024-ms.json.gz": {
+      "candidate_path": "models/pixart-sigma-xl-2-1024-ms.json.gz",
+      "new_sha256": "40349a88f3aaebab42d2096651f1808954e6c61a3f091e716482cf1557d79926",
+      "old_sha256": "588dfc1c39435dda33c25f935aef1482290aa9624ee95845c4af2b41c0b9ab7b"
+    },
+    "verification/s7/models/prxpixel-t2i.json.gz": {
+      "candidate_path": "models/prxpixel-t2i.json.gz",
+      "new_sha256": "dc0a280a1a10a6f8e4b28de76c13359145e7a130b5b7cb4af91717f6fc6ff254",
+      "old_sha256": "971083b330e246d0a833572310daefcdc146d1d682a8a8ee54edd093fafc192c"
+    },
+    "verification/s7/models/qwen-image.json.gz": {
+      "candidate_path": "models/qwen-image.json.gz",
+      "new_sha256": "d1b7f502944ed8037f3ca7fbf9356bc3dd227c201fc2040366c2466292b6ae39",
+      "old_sha256": "ecde4b82c11487a5b6a59c5c842bbc10f57ec64bc622771910392315b977739a"
+    },
+    "verification/s7/models/qwen2-vl-7b-instruct.json.gz": {
+      "candidate_path": "models/qwen2-vl-7b-instruct.json.gz",
+      "new_sha256": "f6a0e27a1a14c2606a33f12e2902b173bb1e86970e286ec2068f454294555320",
+      "old_sha256": "28eac3822fe1fb37b376ad0c6918f4382800e475390e4058d25c1355790b5fca"
+    },
+    "verification/s7/models/qwen3-5-27b-text.json.gz": {
+      "candidate_path": "models/qwen3-5-27b-text.json.gz",
+      "new_sha256": "409fba1b8c3a1719101af1640eeee09769f425ded3d11df1d9209a3ea03dcd57",
+      "old_sha256": "9c7f1b9fe1e05467e653bf4e4cc4b560e109eb22eeb7a1f8ef09ef29e1e52d2b"
+    },
+    "verification/s7/models/qwen3-5-27b.json.gz": {
+      "candidate_path": "models/qwen3-5-27b.json.gz",
+      "new_sha256": "25cafae8ed7ae63a9c6143bf5e810c91c2f510d8ad1a3fd348b539ce6c6cf475",
+      "old_sha256": "87e8ca83858be43474be729fd3aaf4ec315695466bbf8e3679460de40a84fc5b"
+    },
+    "verification/s7/models/qwen3-8b.json.gz": {
+      "candidate_path": "models/qwen3-8b.json.gz",
+      "new_sha256": "4a29ecbf66396de40ed267af823bc641d99b3f8f41282d89d1a8875fb54a4488",
+      "old_sha256": "cb5adee17843cabaf024ce42ee042c723164d9ae5ce888bd8f7850d849d239f2"
+    },
+    "verification/s7/models/qwen3-omni-30b.json.gz": {
+      "candidate_path": "models/qwen3-omni-30b.json.gz",
+      "new_sha256": "942b79a3755a990c2bc32f40d9c050c2f54a13811e2760dad296813b38a56bc9",
+      "old_sha256": "c9e06559d6c43013f2a8f87a28d9c8bb1f423f1dc8f3c64d68373eb41e6cf8ff"
+    },
+    "verification/s7/models/qwen3-vl-235b.json.gz": {
+      "candidate_path": "models/qwen3-vl-235b.json.gz",
+      "new_sha256": "29f030c410c283a708bdd5492b1fcf7a9e728e0600bfc571fd506b22a31bddad",
+      "old_sha256": "50f7bf923aa9812921984ac26027942943a7465d38aee8b2427bbffe4d03ad3b"
+    },
+    "verification/s7/models/sana-1600m-1024px-diffusers.json.gz": {
+      "candidate_path": "models/sana-1600m-1024px-diffusers.json.gz",
+      "new_sha256": "efba4a8695370011dc360e11c6e7981e71913d68bf2960a49cef9af1ed7580a3",
+      "old_sha256": "2f52fe21d1e6fcb3c2d5c28ad90fc361c30cafd11df4060d050cd46d025d83de"
+    },
+    "verification/s7/models/stable-diffusion-3-5-large.json.gz": {
+      "candidate_path": "models/stable-diffusion-3-5-large.json.gz",
+      "new_sha256": "be0f216ffcadf98be279d9f34e44383a782f4da5773e191512660787bf04b6b5",
+      "old_sha256": "49072e18c66da422b7fdf44c3fb1e1b41c541157fd204e4260de262817e32776"
+    },
+    "verification/s7/models/stable-diffusion-xl-base-1-0.json.gz": {
+      "candidate_path": "models/stable-diffusion-xl-base-1-0.json.gz",
+      "new_sha256": "1dd2680d701f13ff05b4e4484ce6e99ea3245f01b59ff08c4a972fdad6ac9d39",
+      "old_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd"
+    },
+    "verification/s7/models/stablelm-2-1-6b.json.gz": {
+      "candidate_path": "models/stablelm-2-1-6b.json.gz",
+      "new_sha256": "db331fefb8d807df2abdb774c2f38aecd27af7d7652436ea12635342c371f021",
+      "old_sha256": "b4e7a3363a538c6b909ed84ee29b250c8e758fbb794f13c140d3bf99e1d82788"
+    },
+    "verification/s7/models/wan2-2-t2v-a14b-diffusers.json.gz": {
+      "candidate_path": "models/wan2-2-t2v-a14b-diffusers.json.gz",
+      "new_sha256": "a92f8309b276c2c27830da4abde00295f032bdf6c2b8046e78734ff6a2baf71e",
+      "old_sha256": "7cec883955f7e6619e41b75a9cbe515e191f53e8dc7abf437cbc41711837286a"
+    },
+    "verification/s7/observations/stable-diffusion-xl-base-1-0.json.gz": {
+      "candidate_path": "observations/stable-diffusion-xl-base-1-0.json.gz",
+      "new_sha256": "f6301d9ba3c785ceb770929f0dd2941cb7aa36c0fb40c673859ddb2b980c4f45",
+      "old_sha256": "718b3a49aa1f21a5ce540db24631ce7730fc8aea23c58d69ba9b073c5bb371cf"
+    },
+    "verification/s7/relations/command-a-03-2025.json.gz": {
+      "candidate_path": "relations/command-a-03-2025.json.gz",
+      "new_sha256": "dbd36c31bd4f70f0c9ce1d21221d3d29376d1ddd07edcd02d9fda9fcac17af71",
+      "old_sha256": "8f9a3fc045fdf200a92e22ba0dc3ac9b662bb7c9dc6706389737fcbdb3e44f99"
+    },
+    "verification/s7/relations/deepseek-coder-v2-lite.json.gz": {
+      "candidate_path": "relations/deepseek-coder-v2-lite.json.gz",
+      "new_sha256": "9bd57442381b9cf44e690fb30441a34a7f06b1b13a753cfbd02045d57b7add7f",
+      "old_sha256": "fdfec0359f6ec2c878542d514e5da151a37d65828c19c76765defde879e6056c"
+    },
+    "verification/s7/relations/deepseek-v3.json.gz": {
+      "candidate_path": "relations/deepseek-v3.json.gz",
+      "new_sha256": "100ea9bd421c6b67330c29733b575c541d43db4c1ce66104ced0d0ce39331dba",
+      "old_sha256": "063038dc51d7e28695bfb2618e6b583f3a1b6ed6128bce02b31a903525fd498d"
+    },
+    "verification/s7/relations/deepseek-v4-flash.json.gz": {
+      "candidate_path": "relations/deepseek-v4-flash.json.gz",
+      "new_sha256": "89879129859d0e8f3aa78273f9bc550d2f6f3b2a300744e070cb69ca33264b66",
+      "old_sha256": "f6df973395a20ea1a63363ea286a98e433ed3c29ee87dc2c1c4856d64f9ca53c"
+    },
+    "verification/s7/relations/gemma-2-2b-it.json.gz": {
+      "candidate_path": "relations/gemma-2-2b-it.json.gz",
+      "new_sha256": "b2953bec36d556647c748084524d3f436268141980571895c396b3eb2b5e4e56",
+      "old_sha256": "f547eb8b61f06a9c16bad9e9f19b0f24bd7db7cc83bfe211e4397a01c8edb728"
+    },
+    "verification/s7/relations/gemma-3n-e2b.json.gz": {
+      "candidate_path": "relations/gemma-3n-e2b.json.gz",
+      "new_sha256": "9e71df60965ff0d923f9d8173e8722c25366c26b863e9546069781abefe014c7",
+      "old_sha256": "1b3ccce12290c43f2700fbf1ffecb57602d13d5e6ab24b2f5dbad3d778e0ece6"
+    },
+    "verification/s7/relations/glm-4-5.json.gz": {
+      "candidate_path": "relations/glm-4-5.json.gz",
+      "new_sha256": "8b12a6a0e9f9b2247e5f290a470200cf8bb4a3dd961b0f25c2c8d4157c585c83",
+      "old_sha256": "d641f24feca0c713e61e828aa4436d3a13fa7abb469dfba47f62da1f88186958"
+    },
+    "verification/s7/relations/granite-3-0-8b-instruct.json.gz": {
+      "candidate_path": "relations/granite-3-0-8b-instruct.json.gz",
+      "new_sha256": "dac025ffca6621cf33ed447e9192e81fdc4018afb8cb0d8e6f99282dd0b970f0",
+      "old_sha256": "67be2724eb51be3e6047ac82418e2cf509be003e6f8ee2ef89ffc7b5409b0c44"
+    },
+    "verification/s7/relations/jamba-v0-1.json.gz": {
+      "candidate_path": "relations/jamba-v0-1.json.gz",
+      "new_sha256": "66958d0b969bc2458e72034e35e9f7f273845bbc8c57913ada97a924a9fc462c",
+      "old_sha256": "bc2b33174824dee1ea6285eff62ddf9a86e119efab13a80ca87ac49ab0198d0b"
+    },
+    "verification/s7/relations/llama-7b.json.gz": {
+      "candidate_path": "relations/llama-7b.json.gz",
+      "new_sha256": "ef4305dc4ad66bacbe99e62d5e8bdca6a9fa0602c58fe58770c2b1c2f89060b9",
+      "old_sha256": "5bfdfe8e055705bffb950c260fe17327add29220e5ac5ac9eecb773e0da2dd90"
+    },
+    "verification/s7/relations/nemotron-h-8b.json.gz": {
+      "candidate_path": "relations/nemotron-h-8b.json.gz",
+      "new_sha256": "a248dce9e74cd73e5a304242388f8d67ad6395d0d642263fda19cece546eca2d",
+      "old_sha256": "812840fc13823355e5c577549c579ac0490608477832f357ce314a64976d65eb"
+    },
+    "verification/s7/relations/olmo-2-1124-7b.json.gz": {
+      "candidate_path": "relations/olmo-2-1124-7b.json.gz",
+      "new_sha256": "267207a25d3959f16ab26dec08d8add1491c7f3e60ceeeb4890a4f57480a6b3e",
+      "old_sha256": "48cb9646715aa980cfd15c33d48032868d321bfc83fc41992ff5e6511ff013e7"
+    },
+    "verification/s7/relations/prxpixel-t2i.json.gz": {
+      "candidate_path": "relations/prxpixel-t2i.json.gz",
+      "new_sha256": "1da5cd8ca4ef10ba1575c293da5cfbb1c625f4ce5daf8b4b9693658f34cc3c61",
+      "old_sha256": "e431bbf78088daf02cb6c90b970d55814e8cf531e29ce86c14e2c7b9962a5c85"
+    },
+    "verification/s7/relations/qwen2-vl-7b-instruct.json.gz": {
+      "candidate_path": "relations/qwen2-vl-7b-instruct.json.gz",
+      "new_sha256": "a849f66fb5182495d18ea29f6d69ea10063c984f057ba775e54380ac49e31e80",
+      "old_sha256": "b073c2c84ff31de346087893ba6db40399f8200fe04fe83a86809f88da6f92c2"
+    },
+    "verification/s7/relations/qwen3-5-27b-text.json.gz": {
+      "candidate_path": "relations/qwen3-5-27b-text.json.gz",
+      "new_sha256": "282741e11f64a0f60b9656205da67c2950883370f8facfc696721256c9e2ea29",
+      "old_sha256": "88f908b32e172ae8c47fc7383d14c8d1d1c1b06353599c91c9bc00315a589140"
+    },
+    "verification/s7/relations/qwen3-5-27b.json.gz": {
+      "candidate_path": "relations/qwen3-5-27b.json.gz",
+      "new_sha256": "22691471af6b86340bf2c9a02da4f89f53f9f505596a88545bef4a0578c3f1e2",
+      "old_sha256": "e3032d5e4c2d3ba469ee7602801407ee63dee460f3dcd8b30974f1df9c660cee"
+    },
+    "verification/s7/relations/qwen3-8b.json.gz": {
+      "candidate_path": "relations/qwen3-8b.json.gz",
+      "new_sha256": "5210a06ac100df79e3189c0c1bf4dda4f8f6988f8e83fe2a119f0a0a54f5fe7f",
+      "old_sha256": "d41af71d2d7659a587cfb3e532a07a19901c54f1bf98fa6e2bad28a2ea5d7f68"
+    },
+    "verification/s7/relations/qwen3-vl-235b.json.gz": {
+      "candidate_path": "relations/qwen3-vl-235b.json.gz",
+      "new_sha256": "0fb1ac3383ef8aae589b43bf2fb2438fd98528c32c241a623566d6bf377ccecc",
+      "old_sha256": "4f9e12cae471cbd34711519fa464b4f9770df84fcfe57b3ae71fb34ecce086b3"
+    },
+    "verification/s7/relations/stable-diffusion-xl-base-1-0.json.gz": {
+      "candidate_path": "relations/stable-diffusion-xl-base-1-0.json.gz",
+      "new_sha256": "09daad03a0e4e00a63754ab0b89fcd6939ab90dc463bb64458111495efbcb79f",
+      "old_sha256": "d74b8d629d02b6199cb97eec2efab08ec2277ea408ecab89a84e98a7eaa9b77f"
+    },
+    "verification/s7/relations/stablelm-2-1-6b.json.gz": {
+      "candidate_path": "relations/stablelm-2-1-6b.json.gz",
+      "new_sha256": "93a5d91d6f70f735188d45ff395daa0c556f58cbf7d10b06a8afca6e48dbccff",
+      "old_sha256": "872d2577468c1f075a2a1303b6e0da64dea3d6eeef887a8108eb8a793e5ab6c3"
+    }
+  },
+  "implementer": "executor (Claude Fable 5.1)",
+  "installer_sha256": "b72fde5a63f0940f3b5fc414f407363fd7866370a07cd9d7720317bcdf5cd11e",
+  "invariants": {
+    "payloads_changed": 60,
+    "payloads_total": 117,
+    "payloads_unchanged": 57,
+    "sources_map_byte_identical": true,
+    "targets_json_byte_identical": true
+  },
+  "prior_untracked_count": 12,
+  "prior_untracked_sha256": {
+    "docs/U0_U1_FINAL_RECOVERY_CORRECTION_PLAN.md": "7ef6fe6984d848fba29aba5ae7fd8e07bdcd71057f28bcee9545e8aa6ac6f870",
+    "docs/U0_U1_RECOVERY_EXECUTION_PLAN.md": "6f4c16629b0a6f8238620d178b0fadca1f6fa595633119b0f746e21d3cae24de",
+    "docs/U2_DEFINITIVE_COMPLETION_SPEC.md": "381271a2eeffbf5696675ec7c55075ebf5dc94761e316c86f2c1a32a3dce9472",
+    "docs/architecture_atlas.html": "29a732d2e0e505c498bc89c82f4dad79880e144853eca2b90af9dcaae7fb7501",
+    "verification/receipts/S7-payload-renewal-b45bab26/generate-matrix.py": "bd613bb7904dd58b151f8a9155e49589129f5e8a806dbb5d07a634690328e34d",
+    "verification/receipts/S7-payload-renewal-b45bab26/matrix-lane-result.json": "64a4fb14f61cac44384bf932f85f030e2850e69bd80289be00819a1d3fa4d2b9",
+    "verification/receipts/S7-payload-renewal-b45bab26/owner-verdict.json": "cd51764b8c12faf77c0d62e0a0fd6ba84d9da21a7be927cb1b9d614fa8ca40e0",
+    "verification/receipts/S7-payload-renewal-b45bab26/payload-split.json": "faefefc7f07a0fb3344c01a032f3e945f583a11425786e4fa9d4ce259fd32b51",
+    "verification/receipts/S7-payload-renewal-b45bab26/reconcile.py": "1d99fcaf7a63936a327150507a422931a30883589d097d78f57ffab707202f21",
+    "verification/receipts/S7-payload-renewal-b45bab26/renewal-reconciliation.json": "15f887c3c6b2ebb289ce0f10211ef035a929f3e7151c27b7a2b20ccc64110cf1",
+    "verification/receipts/S7-payload-renewal-b45bab26/run-matrix.py": "b7e668e7271b48781f626f585562491d591ab089322ea64d1a2fd7c4729b769c",
+    "verification/receipts/S7-payload-renewal-b45bab26/scratch-check-result.json": "f029fb222a3509a2a6407551698834df73cdd355dce01d8af643444ddbb1af86"
+  },
+  "status": "OWNER_VERDICT_AND_ARBITER_APPROVAL_BOUND",
+  "unit": "S7 payload renewal on b45bab26 (Q12)",
+  "verdict": {
+    "covers": [
+      "Q12"
+    ],
+    "evidence_sha256": {
+      "verification/receipts/S7-payload-renewal-b45bab26/renewal-reconciliation.json": "15f887c3c6b2ebb289ce0f10211ef035a929f3e7151c27b7a2b20ccc64110cf1",
+      "verification/receipts/S9-A-owner-review-37/matrix_audit.json": "514ecbd5644006438c43db793c744062d163168c675d84d6fc79904ac912b45d"
+    },
+    "path": "/private/tmp/unfold-s9a-s7-renewal-b45bab26/owner-verdict.json",
+    "persisted_by": "Soumil (arbiter), 2026-09-12: \"I approve the S7 payload renewal for S9-A.\"",
+    "repo_copy": "verification/receipts/S7-payload-renewal-b45bab26/owner-verdict.json",
+    "review_document": "z-docs/11-execution/S9-A-review.md",
+    "reviewer": "owner (Claude), z-docs/11-execution/S9-A-review.md",
+    "sha256": "cd51764b8c12faf77c0d62e0a0fd6ba84d9da21a7be927cb1b9d614fa8ca40e0"
+  }
+}

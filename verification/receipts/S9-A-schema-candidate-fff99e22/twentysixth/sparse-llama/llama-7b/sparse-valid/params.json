@@ -1,0 +1,10 @@
+{
+  "total": 6738415616,
+  "active": 6738415616,
+  "total_h": "6.74B",
+  "active_h": "6.74B",
+  "is_sparse": false,
+  "assumptions": [
+    "embedding-stage normalization not proven — its parameters omitted"
+  ]
+}

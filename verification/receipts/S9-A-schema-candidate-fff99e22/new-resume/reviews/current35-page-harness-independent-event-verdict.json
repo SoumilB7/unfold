@@ -1,0 +1,37 @@
+{
+  "capture_controls": "Required explicit source pin; original PreparedDocument/actual native proof validation; exact source/input/inventory/resolved class address checks; complete source membership and negative deletion brackets; original actual HTML publication, full LOCAL_ONLY RenderContext and finite presentation census preserved.",
+  "comparison": "Saved audit uses actually executed34 pages as its immediate reference; latest executed32 matrix remains a separate historical record. Native differences remain enumerated, not asserted equal. Sparse diagnostics and subsequent35 matrix are not replaced by this ordinary39 capture.",
+  "negative_deletion_paths_verified": [
+    "model_unfolder/adapters/diffusor/unet.py",
+    "model_unfolder/adapters/diffusor/unet_differential.py",
+    "model_unfolder/everchanging/diffusor/conditioning.yaml"
+  ],
+  "output_approval": false,
+  "reviewed": {
+    "current35-capture-template": {
+      "files": {
+        "capture_contract.py": "59124dd9dff966be942258ab2fb18dc383b0e0ed8797367649b3ad18bf41a1e4",
+        "census.py": "25c75b3c032356a605fc13e6ac0157a7d9eb6e77c80a0e4b6e63e5bb75972874",
+        "contract.json": "65471367b0f4554c3f25c1778961a1d5c86750ec12a0fb5d1d0e479e3e631bba",
+        "plan.json": "1adbc040b94eb13405c91d04d19bd30e3df448749395d5e865402ab2b3b19eeb",
+        "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+        "run-census.py": "28c2d15cba72773d04927e3090078ef1be401f0229c8bb623acdc28e1a3126ac"
+      },
+      "manifest_sha256": "1e214d9b4b641f8153a73a32ae8c129b5c8bf3af61db97809576f8714a6336c8"
+    },
+    "reviews/current35-saved-audit": {
+      "files": {
+        "README.md": "e1c31cff6a9b3662362da87b65b2cb34bad021da5bb9b5e176033047c7dc0868",
+        "audit.py": "9d9f34dcbc08289b3978ea71e508dda73ad711a7f88b226dbe05b5c34e531a71",
+        "plan.json": "7022bb91b9d56b5e93be3fa14bd44e323b2ca3108b93c1fe3ac23b4f5ddffc5c"
+      },
+      "manifest_sha256": "284184907d4da0b4f8a9ca52f941ec004156253a549bdc581df241f0d8e9137b"
+    }
+  },
+  "source_diff": "All executable files are exact accepted34 source after only current-generation coordinate substitution. No feature, proof, schema, rendering or comparison behavior change.",
+  "source_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "source_only_no_product_imports_models_or_tests": true,
+  "source_rows_verified": 198,
+  "target_addresses_verified": 39,
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT35_PAGE_CAPTURE"
+}

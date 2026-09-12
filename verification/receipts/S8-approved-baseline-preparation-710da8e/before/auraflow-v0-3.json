@@ -1,0 +1,260 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "AuraFlowTransformer2DModel",
+    "_diffusers_version": "0.31.0.dev0",
+    "_name_or_path": "fal/AuraFlow-v0.3",
+    "_pipeline_class_name": "AuraFlowPipeline",
+    "_repo_id": "fal/AuraFlow-v0.3",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.30.0.dev0",
+      "num_train_timesteps": 1000,
+      "shift": 1.73
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "/raid/.cache/huggingface/models--fal--AuraFlow/snapshots/edf69bec4c8c57f5278a655aaca3ceb60d82c0b4/text_encoder",
+        "architectures": [
+          "UMT5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 5120,
+        "d_kv": 64,
+        "d_model": 2048,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 2,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "umt5",
+        "num_decoder_layers": 24,
+        "num_heads": 32,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "scalable_attention": true,
+        "tie_word_embeddings": false,
+        "tokenizer_class": "LlamaTokenizerFast",
+        "torch_dtype": "float16",
+        "transformers_version": "4.41.2",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.30.0.dev0",
+      "_name_or_path": "/raid/.cache/huggingface/models--fal--AuraFlow/snapshots/edf69bec4c8c57f5278a655aaca3ceb60d82c0b4/vae",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 0.13025,
+      "shift_factor": null,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": true,
+      "use_quant_conv": true
+    },
+    "attention_head_dim": 256,
+    "caption_projection_dim": 3072,
+    "in_channels": 4,
+    "joint_attention_dim": 2048,
+    "num_attention_heads": 12,
+    "num_mmdit_layers": 4,
+    "num_single_dit_layers": 32,
+    "out_channels": 4,
+    "patch_size": 2,
+    "pos_embed_max_size": 9216,
+    "sample_size": 64,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "UMT5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "LlamaTokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "AuraFlowTransformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "091e485d4e137e6561ed0409726c881d",
+    "0f8d4b98dad7501ea5d7f11c8ee4ccf0",
+    "0f942b2dfc5527d1e808cd12e61d9b80",
+    "233bf3d1111aa040940edb49a84a4b9d",
+    "2fdd903168e065742048cd88d4072a8d",
+    "3c70eea8619a9915e77ad36a381f00b5",
+    "48e134ef4c919df87a42c8ac83b85ba6",
+    "494b981a572306132a61c18bc290e26b",
+    "8a70c0aa3f949557ca0901cfcf8aa72b",
+    "a0bfa030b3ecbd9b2c89578218afb1d0",
+    "a71d3f755a31dd4fc49f037f44024797",
+    "be4ece54ce9dc5f680647a9215d96b35",
+    "c50009c8594dfe7524fc253c00ea8da9",
+    "e025c723298cace8275df42568f631a6",
+    "f8bac308906a322c389514c1e3b6de2e"
+  ],
+  "model": "AuraFlow-v0.3",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "0f942b2dfc5527d1e808cd12e61d9b80",
+    "1a3d6bda4e340dbfb04840cb92c31c64",
+    "1b1973ed51ddef1055fa900401a9c21c",
+    "1fbcf9eff4635e42f5074333b12979db",
+    "273c67b8e41bcbaf59ebb258dcbace9a",
+    "48e134ef4c919df87a42c8ac83b85ba6",
+    "494b981a572306132a61c18bc290e26b",
+    "5d3b553a834bd18ff5da0e9ab9ea10f1",
+    "86ee089bd2cb942c9b1e82cacd4f8b75",
+    "a0bfa030b3ecbd9b2c89578218afb1d0",
+    "a71d3f755a31dd4fc49f037f44024797",
+    "be4ece54ce9dc5f680647a9215d96b35",
+    "c50009c8594dfe7524fc253c00ea8da9",
+    "ea61700651015fdfb98974aaa2d1281a",
+    "f8bac308906a322c389514c1e3b6de2e"
+  ],
+  "view_signature": [
+    {
+      "hash": "0f8d4b98dad7501ea5d7f11c8ee4ccf0",
+      "label": "architecture"
+    },
+    {
+      "hash": "8a70c0aa3f949557ca0901cfcf8aa72b",
+      "label": "architecture"
+    },
+    {
+      "hash": "f8bac308906a322c389514c1e3b6de2e",
+      "label": "attn"
+    },
+    {
+      "hash": "3c70eea8619a9915e77ad36a381f00b5",
+      "label": "denoiser"
+    },
+    {
+      "hash": "e025c723298cace8275df42568f631a6",
+      "label": "denoiser"
+    },
+    {
+      "hash": "233bf3d1111aa040940edb49a84a4b9d",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "494b981a572306132a61c18bc290e26b",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "091e485d4e137e6561ed0409726c881d",
+      "label": "ffn"
+    },
+    {
+      "hash": "2fdd903168e065742048cd88d4072a8d",
+      "label": "ffn"
+    },
+    {
+      "hash": "a71d3f755a31dd4fc49f037f44024797",
+      "label": "scheduler"
+    },
+    {
+      "hash": "c50009c8594dfe7524fc253c00ea8da9",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "0f942b2dfc5527d1e808cd12e61d9b80",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "a0bfa030b3ecbd9b2c89578218afb1d0",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "48e134ef4c919df87a42c8ac83b85ba6",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "be4ece54ce9dc5f680647a9215d96b35",
+      "label": "vae_decoder_block_4"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/auraflow-v0-3",
+    "manifest": true,
+    "png_count": 15
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "architecture": "GptOssForCausalLM",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "GptOssForCausalLM"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gpt_oss/modeling_gpt_oss.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "gpt_oss"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gpt_oss/modeling_gpt_oss.py"
+  ],
+  "import_roots": {},
+  "model_id": "openai/gpt-oss-20b",
+  "model_type": "gpt_oss",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gpt_oss/configuration_gpt_oss.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": [
+    "Could not infer model_type for Transformers component 'quantization_config'."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "preservation-current31",
+  "returncode": 1,
+  "duration": 588.0069841250006,
+  "before": "f914480fda2cc445d36f0e3332489d3e3afcdc2e58e086932debf97dc6d12d3c",
+  "after": "f914480fda2cc445d36f0e3332489d3e3afcdc2e58e086932debf97dc6d12d3c",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyfirst/preservation-current31/preservation-current31.log",
+  "pins_equal": true,
+  "packet_complete": true,
+  "preservation_passed": false,
+  "authority": "Original test failures preserved. A complete packet does not mean preservation passed or approval."
+}

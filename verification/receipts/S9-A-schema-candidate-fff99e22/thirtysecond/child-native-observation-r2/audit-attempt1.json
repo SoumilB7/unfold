@@ -1,0 +1,5 @@
+{
+  "scope": "stdlib saved-data audit, no model runtime",
+  "result": "audit assertion too narrow",
+  "reason": "Root JSON serialization also changes SDXL EvidenceWarning(str) subclasses to plain str;48 exact unchanged warning strings. Tuple-to-list is not the only observed type change. Raw archive is unchanged; exhaustive deltas retained."
+}

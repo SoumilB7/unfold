@@ -1,0 +1,84 @@
+{
+  "verdict": "PASS exact saved-source composition and accounting with one predecessor-metadata clarification; no runtime, output approval or stage acceptance",
+  "source_manifest_sha256": "153982d5541dbd6aa50c2bdfe3dee2fa9c4b92b93f7c26d11c203de1dc1d1a01",
+  "archive_map_sha256": "bc6916bd8c4b16821cf407460c17fa7c3c31f0b35267b186df66e4f25d7fbdf3",
+  "composition_sha256": "7288748b1cefee39809a0908898f89cb46b9884f828fb95fe3ac6ff98ba3cab4",
+  "manifest_paths": 193,
+  "archive_members": 190,
+  "all_manifest_and_archive_hashes_verified": true,
+  "changed_python_files_vs30": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+      "after_sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d",
+      "added": 58,
+      "deleted": 5,
+      "handoff": [
+        "softcap-missing-operand-proposal-r2"
+      ]
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "before_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+      "after_sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b",
+      "added": 8,
+      "deleted": 4,
+      "handoff": [
+        "softcap-missing-operand-proposal-r2"
+      ]
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "before_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "after_sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b",
+      "added": 9,
+      "deleted": 2,
+      "handoff": [
+        "softcap-missing-operand-proposal-r2"
+      ]
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+      "after_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "added": 100,
+      "deleted": 0,
+      "handoff": [
+        "softcap-missing-operand-proposal-r2"
+      ]
+    },
+    {
+      "path": "tests/test_submodel_parity.py",
+      "before_sha256": "c61214436b02ff2e2e242719f08ad926967fa2bbbddcd3ac82a364fdc7439d12",
+      "after_sha256": "1f4aea881d5b35b9a3aae638421a4142a666fc4172ab61c976385601b241d1a1",
+      "added": 42,
+      "deleted": 2,
+      "handoff": [
+        "submodel-parity-boundary-r2"
+      ]
+    }
+  ],
+  "predecessor_metadata_clarification": [
+    {
+      "path": "tests/test_submodel_parity.py",
+      "recorded_frozen30_sha256": null,
+      "actual_frozen30_sha256": "c61214436b02ff2e2e242719f08ad926967fa2bbbddcd3ac82a364fdc7439d12",
+      "cause": "File exists in inherited tracked source but was absent from frozen30 changed-path manifest. Full source inventory supplies actual predecessor; not a module addition."
+    }
+  ],
+  "outside_these_five_full_python_inventory_changes": 0,
+  "source_review": [
+    "Three production files implement only the reviewed finite source-present softcap missing-operand limitation, its paired registry acceptance and exclusion from graph-authorship facts. Existing numeric and proven guard-inactive paths remain.",
+    "The softcap test retains strict operand rejection, adds canonical unknown/chip assertions and finite declaration poisons.",
+    "The parity test now compares both public prepared boundaries; separate direct-parse controls require absent width/bias evidence to remain limited and prove actual class-default binding only under preparation. Production parity code is unchanged."
+  ],
+  "independence_limit": "Reviewer authored softcap proposal; its independent source verdict is placement reviewer SHA 5f99cc7240a4719d522d953bdc7ebc953f1b52742cf516e317d055a934468b10. This audit independently verifies frozen composition, not a second independent semantic approval of authored code.",
+  "same_as30": [
+    "fixture relocation",
+    "retained reader declarations",
+    "structural debt",
+    "three identified compatibility paths",
+    "separate S10 source base and sole latency receipt pointer delta"
+  ],
+  "runtime": "Pending root-owned current31 verification; pages remain actual30."
+}

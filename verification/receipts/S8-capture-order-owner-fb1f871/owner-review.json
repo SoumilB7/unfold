@@ -1,0 +1,194 @@
+{
+  "baseline_or_comparator_changed": false,
+  "remaining_actual_gate": "unchanged canonical_surfaces order in broad preservation; no current27pre-renderIR equality claim from postrender snapshots",
+  "rows": [
+    {
+      "actual_postrender_ir_path": "/private/tmp/unfold-s8-current-captures-fb1f871/flux-2-dev/surface-docs/ir.json.gz",
+      "actual_postrender_ir_sha256": "29bbe22a123a3e65ae2b274ab68933a348698b1532aa83a0e4de643b5ac73102",
+      "actual_prerender_capture": false,
+      "added_children": [
+        {
+          "description": "First residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op0",
+          "title": "ResNet"
+        },
+        {
+          "description": "Spatial self-attention in the decoder bottleneck.",
+          "facts": [
+            "spatial attention"
+          ],
+          "id": "vae_mid_block_op1",
+          "title": "Attention"
+        },
+        {
+          "description": "Second residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op2",
+          "title": "ResNet"
+        }
+      ],
+      "cause": "existing lazy card population occurred before diagnostic IR snapshot; comparator takes snapshot before rendering",
+      "derived_prerender_expected_sha256": "ca61566bf3b11f03ecdb053adc5e7d937c075bcffa53798006ed359b66908cf7",
+      "derived_whole_hash_matches": true,
+      "only_added_path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        7,
+        "children",
+        3,
+        "children"
+      ],
+      "product_delta_approval_required_for_this_capture_order_difference": false,
+      "slug": "flux-2-dev"
+    },
+    {
+      "actual_postrender_ir_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/hunyuanvideo/ir.json.gz",
+      "actual_postrender_ir_sha256": "96207aede0780ff870a776da08c3c76bcb4af88e14e6e5251e0d230e164bf890",
+      "actual_prerender_capture": false,
+      "added_children": [
+        {
+          "description": "First residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op0",
+          "title": "ResNet"
+        },
+        {
+          "description": "Spatial self-attention in the decoder bottleneck.",
+          "facts": [
+            "spatial attention"
+          ],
+          "id": "vae_mid_block_op1",
+          "title": "Attention"
+        },
+        {
+          "description": "Second residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op2",
+          "title": "ResNet"
+        }
+      ],
+      "cause": "existing lazy card population occurred before diagnostic IR snapshot; comparator takes snapshot before rendering",
+      "derived_prerender_expected_sha256": "b2cd9af1e5c78f07c399eb54274c8347d2624626724b8b1e13174da68a59e1ea",
+      "derived_whole_hash_matches": true,
+      "only_added_path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        8,
+        "children",
+        2,
+        "children"
+      ],
+      "product_delta_approval_required_for_this_capture_order_difference": false,
+      "slug": "hunyuanvideo"
+    },
+    {
+      "actual_postrender_ir_path": "/private/tmp/unfold-s8-current-captures-fb1f871/lumina-image-2-0/surface-docs/ir.json.gz",
+      "actual_postrender_ir_sha256": "08f808fe7fcc0fbf87836f4812af126e7735b2041cc87335452467cede5d057e",
+      "actual_prerender_capture": false,
+      "added_children": [
+        {
+          "description": "First residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op0",
+          "title": "ResNet"
+        },
+        {
+          "description": "Spatial self-attention in the decoder bottleneck.",
+          "facts": [
+            "spatial attention"
+          ],
+          "id": "vae_mid_block_op1",
+          "title": "Attention"
+        },
+        {
+          "description": "Second residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op2",
+          "title": "ResNet"
+        }
+      ],
+      "cause": "existing lazy card population occurred before diagnostic IR snapshot; comparator takes snapshot before rendering",
+      "derived_prerender_expected_sha256": "ed9a2b74c7b41b37b887901594ae031f02cb6a698012f3d5949c77a1b1d07650",
+      "derived_whole_hash_matches": true,
+      "only_added_path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        7,
+        "children",
+        2,
+        "children"
+      ],
+      "product_delta_approval_required_for_this_capture_order_difference": false,
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "actual_postrender_ir_path": "/private/tmp/unfold-s8-current-captures-fb1f871/stable-diffusion-3-5-large/surface-docs/ir.json.gz",
+      "actual_postrender_ir_sha256": "5df57e332a3b40a7a66b74d473ec51a4193cfc2ba2182d2095c559cfd3b4721b",
+      "actual_prerender_capture": false,
+      "added_children": [
+        {
+          "description": "First residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op0",
+          "title": "ResNet"
+        },
+        {
+          "description": "Spatial self-attention in the decoder bottleneck.",
+          "facts": [
+            "spatial attention"
+          ],
+          "id": "vae_mid_block_op1",
+          "title": "Attention"
+        },
+        {
+          "description": "Second residual cell in the VAE decoder mid block.",
+          "facts": [],
+          "id": "vae_mid_block_op2",
+          "title": "ResNet"
+        }
+      ],
+      "cause": "existing lazy card population occurred before diagnostic IR snapshot; comparator takes snapshot before rendering",
+      "derived_prerender_expected_sha256": "ceba5be7aaf9bfdebff43ce190eeedbd2ccfc830e6dc23e4ecd8832d034b083b",
+      "derived_whole_hash_matches": true,
+      "only_added_path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        9,
+        "children",
+        2,
+        "children"
+      ],
+      "product_delta_approval_required_for_this_capture_order_difference": false,
+      "slug": "stable-diffusion-3-5-large"
+    }
+  ],
+  "source_proofs": [
+    {
+      "AST_unchanged_since_accepted_S7": true,
+      "current_file_sha256": "7604fb18b3b72c17ec22d1d1142271c36179e160bd0af31fe61da8cc6ac998d4",
+      "file": "model_unfolder/renderers/html/metadata.py",
+      "function": "_ensure_declared_op_cards",
+      "function_ast_sha256": "7907e074273145eb42d73ab4e4e406fd48ef326fa281da24af82c0b39ae64551"
+    },
+    {
+      "AST_unchanged_since_accepted_S7": true,
+      "current_file_sha256": "7604fb18b3b72c17ec22d1d1142271c36179e160bd0af31fe61da8cc6ac998d4",
+      "file": "model_unfolder/renderers/html/metadata.py",
+      "function": "_block_lookup",
+      "function_ast_sha256": "ef194b194aa763b1a856f2b04fc894ccc4aec4e5ae26540221f570ad2f0acb6b"
+    },
+    {
+      "AST_unchanged_since_accepted_S7": true,
+      "current_file_sha256": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8",
+      "file": "model_unfolder/adapters/diffusor/blocks.py",
+      "function": "_vae_decoder_children",
+      "function_ast_sha256": "127e2eab30947d7d65a74097ae4d60d9b3dc1eab86378409aa3f0b58fc563276"
+    }
+  ],
+  "status": "ACCEPT exact capture-order explanation, not a new mechanism or actual pre-render run"
+}

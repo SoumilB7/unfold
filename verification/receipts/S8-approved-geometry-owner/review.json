@@ -1,0 +1,195 @@
+{
+  "reviewer": "root",
+  "date": "2026-09-08",
+  "status": "Independent owner image inspection of all23changed native views; complete regenerated gallery reviews remain separate",
+  "scope": "22views across17models plus Bloom, implementing agent not the signatory",
+  "images": [
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/00-dbrx-base/current.png",
+      "sha256": "f7285584f4d318573e2f206b935e5e2ba7f00fa340175cc56b96b9f6a946e9b2",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/01-flux-2-dev/current.png",
+      "sha256": "9b097663098fabf89799f5b55f0b9480bf5f14fdb0b97a6632c4a46cdef60154",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/02-gemma-2-2b-it/current.png",
+      "sha256": "34105fa93ff6f8a96cb2245c21da6d786efa5a2abc57d235a10bc5070cc17c91",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/03-gemma-2-2b-it/current.png",
+      "sha256": "c5b4f8ac2cfd5e5608be817b63054723ca5b046ab4b2a5158f4489d8f05c3465",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/04-glm-4-5/current.png",
+      "sha256": "3891afb7b1db706c4a360779741ddb79f34a82836f304c5ee3faf88467296d17",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/05-glm-4-5/current.png",
+      "sha256": "bc822f897d6202ad66b01520c3887978badf59cdaa9c581f96bd086b681b2b90",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "The split-to-multiply bypass and activation branch are both visible with one shared stem; the multiplication inputs are spatially separate."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/06-gpt-oss-20b/current.png",
+      "sha256": "085a3f17c7724214c15183902dd989a4ab5e35fe574aef767aa7719b94f89bf7",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/07-gpt-oss-20b/current.png",
+      "sha256": "01994a37316bc4300e99afc76ad773201ce568438a2384c2ba4bb67147b440f4",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/08-lumina-image-2-0/current.png",
+      "sha256": "34105fa93ff6f8a96cb2245c21da6d786efa5a2abc57d235a10bc5070cc17c91",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/09-lumina-image-2-0/current.png",
+      "sha256": "c5b4f8ac2cfd5e5608be817b63054723ca5b046ab4b2a5158f4489d8f05c3465",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/10-olmo-2-1124-7b/current.png",
+      "sha256": "8555d631c3e9358daccb17f9b445d9dd601a8131fce81e1b1cfef22f1a1af436",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/11-prxpixel-t2i/current.png",
+      "sha256": "66167b5e235fc8dcc0faa95b08b5ca68c4ade4a5fdd4ba2dc8686218a10254d4",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/12-qwen3-5-27b-text/current.png",
+      "sha256": "e6589da6c331fdbad5940a149f84debd417a2f9b241c58fbc7a13843b25af5d8",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes. Existing Sigmoid gate line remains behind the scores box, exactly as disclosed and approved; no whole-view clearance claim."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/13-qwen3-8b/current.png",
+      "sha256": "40e140747f3c52834d3a455d4a4f7de0d8ed0669cd96eb5201150d99490a13d4",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/14-sana-1600m-1024px-diffusers/current.png",
+      "sha256": "34105fa93ff6f8a96cb2245c21da6d786efa5a2abc57d235a10bc5070cc17c91",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/15-sana-1600m-1024px-diffusers/current.png",
+      "sha256": "c5b4f8ac2cfd5e5608be817b63054723ca5b046ab4b2a5158f4489d8f05c3465",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/16-stablelm-2-1-6b/current.png",
+      "sha256": "2032e8ccc815ddd0b28d2d3e47dd1fe44966955edb2cde7af8907e93970f2a48",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/17-deepseek-v3/current.png",
+      "sha256": "10cf116cff9f27cddb176809234dc61d355b62b7988c078149ed7aa386c39548",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "The split-to-multiply bypass and activation branch are both visible with one shared stem; the multiplication inputs are spatially separate."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/18-granite-3-0-8b-instruct/current.png",
+      "sha256": "8b946056d03b0c62a8b81ee87fd2aca6277411e668ead47f790dad454ee50c2b",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/19-hunyuanvideo/current.png",
+      "sha256": "d91c79f40321a36d08eadab01998fd470185d1c951bcfea183c67d80db93eb44",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/20-llama-7b/current.png",
+      "sha256": "bcf888b9fa0d92cbddcd65cf506406b8588ed2080a01f6adc29972c838789574",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes."
+    },
+    {
+      "image": "verification/receipts/S8-nonunet-view-geometry-independent-fb1f871/21-musicgen-small/current.png",
+      "sha256": "ecf1c2691d45e5bfaf833bce45d1111b068910f45d05691e7cdab01ae59195f5",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Restored branch and shared stem are visible; route clears intermediate computation boxes. Two scores-input arrowheads are very close at the lower centre; retain both real inputs and carry a spacing suggestion to S12. This is the exact approved current image, not a new output delta."
+    },
+    {
+      "image": "verification/receipts/S8-empty-lane-geometry/bloom-attention.after.png",
+      "sha256": "685ce5747c34c205181cd1d33e289455a7890730cbf3009d6836be595571e75c",
+      "inspected_by": "root",
+      "inspection": "actual individual PNG via view_image",
+      "verdict": "ACCEPT bounded approved output",
+      "note": "Cache shared stem and the two canonical connections are visible; right value rail clears scores and Softmax. Prior source and graph proofs remain the semantic basis."
+    }
+  ],
+  "output_approval": "Soumil: yes go ahead; recorded in 12-design/00-design-decisions-verbatim.md",
+  "new_model_execution": false,
+  "new_architecture_mechanism_proof": false
+}

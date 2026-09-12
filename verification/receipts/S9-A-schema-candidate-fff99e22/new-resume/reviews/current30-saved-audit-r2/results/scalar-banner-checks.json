@@ -1,0 +1,592 @@
+{
+  "scope": "Supplemental finite saved HTML comparison to actual Diagram IR and native declaration; no source/product changes.",
+  "initial_check_correction": "Initial supplemental assertion incorrectly expected every scalar HTML marker to have a native fact. Source _stats_banner adds marker for an exact int but emits receipt only when model.hidden_size exists in current context. Retained distinction, no counter normalization or invented fact.",
+  "counts": {
+    "markers": 38,
+    "fact_backed_markers": 24,
+    "marker_only_without_fact": 14,
+    "pending_design_rows": 0
+  },
+  "rows": [
+    {
+      "slug": "auraflow-v0-3",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "bloom",
+      "canonical_hidden_size": 14336,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "14,336"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "cogvideox-5b",
+      "canonical_hidden_size": 3072,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "3,072"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "command-a-03-2025",
+      "canonical_hidden_size": 12288,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "12,288"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "dbrx-base",
+      "canonical_hidden_size": 6144,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "6,144"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "canonical_hidden_size": 2048,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,048"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "deepseek-v3",
+      "canonical_hidden_size": 7168,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "7,168"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "flux-2-dev",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "canonical_hidden_size": 2304,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,304"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "canonical_hidden_size": 2048,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,048"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "glm-4-5",
+      "canonical_hidden_size": 5120,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "5,120"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "canonical_hidden_size": 2880,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,880"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "hunyuanvideo",
+      "canonical_hidden_size": 3072,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "3,072"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "jamba-v0-1",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "canonical_hidden_size": 2048,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,048"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "llama-7b",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "ltx-video",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "mochi-1-preview",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "musicgen-small",
+      "canonical_hidden_size": 1024,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "1,024"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen-image",
+      "canonical_hidden_size": 3072,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "3,072"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "canonical_hidden_size": 3584,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "3,584"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "canonical_hidden_size": 5120,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "5,120"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "canonical_hidden_size": 5120,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "5,120"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen3-8b",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "canonical_hidden_size": 2048,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,048"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "canonical_hidden_size": 4096,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "4,096"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "canonical_hidden_size": null,
+      "banner_cells": [],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "canonical_hidden_size": 2048,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "2,048"
+        ]
+      ],
+      "has_native_fact": true,
+      "drawn_fact_key": true,
+      "native_hidden_size_proof_kind": "value",
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "canonical_hidden_size": 0,
+      "banner_cells": [
+        [
+          "HIDDEN",
+          "0"
+        ]
+      ],
+      "has_native_fact": false,
+      "drawn_fact_key": false,
+      "native_hidden_size_proof_kind": null,
+      "pending_design_rows": 0,
+      "scalar_only": "Marker is not a receipt; absent native fact emits no fact receipt. No occurrence placement inference; exact30 reconciliation matrix remains required."
+    }
+  ]
+}

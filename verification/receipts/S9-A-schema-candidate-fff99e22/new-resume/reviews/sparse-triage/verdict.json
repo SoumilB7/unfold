@@ -1,0 +1,31 @@
+{
+  "decision": "ACCEPT bounded causes for frozen26 sparse deltas; raw FAIL and approval boundary unchanged",
+  "reviewer": "resume_review",
+  "triage_sha256": "61a36c1c97a9f1f49bffd98be84d4885d0ab6de8eae9400fada22e3b775e601b",
+  "checks_sha256": "2886b99f0fefc91e1bab42e8c15b0f4ab0a648722517e434c791374562ccd407",
+  "check_script_sha256": "0b101d68b3e3418d5b4aadafb6e1680fa40cc4c840b9243bff5f9417dda42ebb",
+  "scope": "Independent offline source/data checks of all 225 unadmitted pre-render IR leaves and the one unadmitted native-fact leaf, against exact saved ordinary/sparse artifacts. Not a whole-unit or output-bless verdict.",
+  "findings": [
+    "All 225 raw IR paths are accounted for exactly once: 97 census leaves, 122 checkpoint projection-obligation leaves, three activation provenance/hash leaves, and three hidden-size chip/address fields. Raw values and before/after presence match the actual saved IR at every path.",
+    "Each of the six census lists is sorted and duplicate-free. Only hidden_act, hidden_size and num_attention_heads change between checkpoint occurrence census and absent-default census. Retained entries preserve their relative order; no arbitrary set conversion concealed duplicate removal or reorder.",
+    "Projection-obligation identities are unique in both conditions and retain exact relative order. Of 22 old rows, four omitted-checkpoint rows are absent, 15 are identical, and three differ only in expected_value_status_hash, which matches the exact final native fact in each condition. No added row and no retained state/reason/target/source/mechanism change.",
+    "Each of the four removed checkpoint obligations has exactly one saved sparse absent_default counterpart with matching path/target/mechanism, class_default provenance, exact path, and final fact hash. ConfigAccessLedger.projection_obligations enumerates consumed checkpoint occurrences only; this is a domain change due to actual omission, not a declaration that those mechanisms became proven.",
+    "All 25 native fact keys, values, kinds, completeness and unknown reasons remain equal; no existing semantic proof becomes missing. Activation remains applied_function/uninspected/null proof in both conditions. Its code_and_config to class_default tier explains the single unadmitted fact leaf and three transported IR leaves, without qualifying application.",
+    "The embedding block differs only by presentation_chips, presentation_aliases and presentation_path. It gains exactly one class_default hidden_size:4096 chip whose reference equals the saved qualified hidden-size VALUE fact reference byte-for-byte under JSON equality; all existing block fields are identical."
+  ],
+  "limitations": [
+    "Semantic rekeying is used only for explanatory comparison here; no original artifact, ordering or raw delta was rewritten.",
+    "Removed checkpoint projection rows remain explicit in checks.json alongside their default-event counterparts. This does not establish default projection receipt completeness or close stronger application proof debt.",
+    "The existing 48 admitted IR leaves are not being re-approved by this 225-leaf cause verdict. Prior source/default-proof reviews and capture validation remain their separate authority.",
+    "No product import, model execution, renderer run or browser review by this reviewer. No matrix acceptance, preservation bless, output renewal or S9-A completion.",
+    "Keep raw sparse FAIL. Cause accounting and successful event association are separate from qualified mechanism completeness and Soumil output approval."
+  ],
+  "checkpoint_obligation_source": {
+    "path": ".claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/config_access.py",
+    "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4",
+    "reviewed_sections": [
+      "ConfigAccessLedger.projection_obligations",
+      "present-only occurrence identity"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+# S8.1 helper focused controls
+
+The corrected bounded run passed: **64 latency/workflow/S2 controls**, **20 supervisor fake-process/sidecar controls**, and pyflakes. The exact original fixture-only RED (63 PASS / 1 FAIL) is preserved separately. The failure came from a test subprocess mock intercepting `platform.platform()`; the correction pins that fixture's platform string. No production assertion was weakened.
+
+The single native test `tests/test_s81_supervisor.py::test_real_noisy_child_cannot_deadlock_on_full_stdout_and_stderr_pipes` was explicitly deselected by the owner while host pressure persisted. No model construction, native RSS child test, or twelve-process cold/warm latency campaign ran here. This receipt is not a completed performance acceptance.
+
+`corrected/result.json` retains exact commands, actual logs, and identical before/finally manifests of the selected runner/tests/budget and complete model_unfolder/physics Python source membership. The executed wrapper records the exact deselection. Independent static source reviews are included with their exact reviewed versions; the final CPU helper supplement is distinct. The integrated worker/cache source snapshot includes executor-owned integration; helper ownership was only the supervisor function, timing helper and dedicated tests.
+
+The supervision change retains both continuous bounded output drains, the tuple API, sampled process-tree RSS limit, group termination and deadline. It replaces 20ms sleeps with timed waits of at most 100ms, shortened to the remaining deadline. Census overhead is additional. CPython timed wait observes exit by polling; no event-driven immediate-wakeup or kernel address-space-cap claim is made. The optional child timing sidecar records own process wall and CPU intervals outside canonical DTOs; process CPU is not descendant aggregate CPU.
+
+All streams use injective appended `.gzip` paths. Every stored stream was decompressed and compared byte-for-byte with the original; raw/stored sizes and SHA-256 values are in `artifact-map.json`. Both RED and corrected artifacts remain separately attributable. The existing S2 budgets remain unchanged; no actual latency samples were invented.

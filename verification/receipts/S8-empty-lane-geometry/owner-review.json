@@ -1,0 +1,20 @@
+{
+  "verdict": "bounded geometry correction ACCEPT; output baseline unapproved",
+  "source_sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+  "actual_native_png_inspected": "bloom-attention.after.png",
+  "before_native_png_inspected_earlier": "S8-bloom-actual-736fdab current attention",
+  "checks": [
+    "right value rail clears both intervening boxes",
+    "one cache-to-branch stem",
+    "both canonical edges retained; Graph/Region unchanged",
+    "same SVG bounds and nine arrow paths",
+    "both FFN SVG controls byte-identical",
+    "all recorded production/test pins and six SVG byte hashes independently checked"
+  ],
+  "focused": "6 passed in 0.03s; source-pins timing explicitly post-run",
+  "limits": [
+    "no new model construction",
+    "17 other nonUNet witnesses with changed preservation views still need per-witness cause/geometry review",
+    "S8 NOT DONE; final broad and approval boundary remain"
+  ]
+}

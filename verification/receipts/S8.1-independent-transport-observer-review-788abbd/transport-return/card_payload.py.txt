@@ -1,0 +1,328 @@
+"""Lossless presentation transport for lazily materialised inspect cards.
+
+Canonical rendering and evidence events precede this codec. It shares exact
+strings with reversible identity slots; it never interprets model semantics.
+"""
+from __future__ import annotations
+
+import hashlib
+from html import unescape
+import json
+import re
+
+_SLOT = "@@UNFOLD_CARD_SLOT_"
+_SLOT_RE = re.compile(r"@@UNFOLD_CARD_SLOT_(\d+)@@")
+_ID_RE = re.compile(r'\b(?:id|data-id|data-card-id)="([^"]+)"')
+_ATTR_RE = re.compile(r'(\b[\w:-]+)="([^"]*)"')
+_URL_RE = re.compile(r'url\(#([^)]*)\)')
+_MIN_PACK_BYTES = 1_000_000
+_SVG_RE = re.compile(r"<svg\b.*?</svg>", re.S)
+_PAYLOAD_RE = re.compile(r'<script type="application/json" data-uf-card-payload="([0-9a-f]{64})">(.*?)</script>', re.S)
+_VOID = frozenset("area base br col embed hr img input link meta param source track wbr".split())
+_TAGS = re.compile(
+    r'<!--.*?-->|<(?P<opaque>svg|script|style)\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>'
+    r'.*?</(?P=opaque)\s*>|<(?P<close>/)?(?P<tag>[a-zA-Z][\w:-]*)'
+    r'(?P<attrs>(?:[^>"\']|"[^"]*"|\'[^\']*\')*)>', re.S | re.I)
+_SCAN_ATTRS = re.compile(r'''([^\s=/'">]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))''')
+
+
+class _Cards:
+    """Find card placements without parsing opaque SVG or script payloads.
+
+    This is a span scanner for our already serialized HTML, not an HTML
+    sanitiser. Quoted attributes and comments cannot introduce false tags.
+    Every untouched source span is retained by the transport inverse.
+    """
+    def __init__(self, source: str):
+        self.source = source
+        self.stack: list[dict] = []
+        self.cards: list[dict] = []
+
+    def feed(self, source: str):
+        if source != self.source:
+            raise ValueError("Card span scanner requires its exact source")
+        for match in _TAGS.finditer(source):
+            if match.group("opaque") or match.group("tag") is None:
+                continue
+            tag = match.group("tag").lower()
+            if match.group("close"):
+                for i in range(len(self.stack) - 1, -1, -1):
+                    if self.stack[i]["tag"] == tag:
+                        entry = self.stack[i]
+                        del self.stack[i:]
+                        if entry["card"]:
+                            entry["end"] = match.end()
+                            self.cards.append(entry)
+                        break
+                continue
+            attrs = match.group("attrs")
+            attr = {m.group(1).lower(): unescape(next(v for v in m.groups()[1:] if v is not None))
+                    for m in _SCAN_ATTRS.finditer(attrs)}
+            parent = self.stack[-1] if self.stack else None
+            classes = attr.get("class", "").split()
+            depth = parent["depth"] if parent else None
+            if "uf-inspect-panel" in classes:
+                depth = int(attr["data-depth"])
+            entry = {"tag": tag, "attrs": attr, "start": match.start(),
+                     "depth": depth, "parent": parent,
+                     "card": "uf-card-detail" in classes}
+            if tag not in _VOID and not attrs.rstrip().endswith("/"):
+                self.stack.append(entry)
+
+
+def _index(value, size):
+    if type(value) is not int or not 0 <= value < size:
+        raise ValueError("Invalid card-payload reference")
+    return value
+
+
+def _list(value):
+    if not isinstance(value, list):
+        raise ValueError("Invalid card-payload sequence")
+    return value
+
+
+def _text(value):
+    if not isinstance(value, str):
+        raise ValueError("Invalid card-payload text")
+    return value
+
+
+def _decode(payload: dict) -> tuple[list[str], list[str]]:
+    """Strict shared inverse, including every occurrence and its panel binding."""
+    if not isinstance(payload, dict) or type(payload.get("version")) is not int or payload.get("version") != 1:
+        raise ValueError("Unknown card-payload version")
+    identities = []
+    previous = ""
+    for row in _list(payload.get("identities")):
+        if not isinstance(row, list) or len(row) != 2:
+            raise ValueError("Invalid identity prefix row")
+        count, suffix = row
+        if type(count) is not int or not 0 <= count <= len(previous):
+            raise ValueError("Invalid identity prefix length")
+        previous = previous[:count] + _text(suffix)
+        identities.append(previous)
+    svgs = [_text(v) for v in _list(payload.get("svgs"))]
+    templates = []
+    slots = []
+    for parts in _list(payload.get("templates")):
+        template = "".join(_text(v) if isinstance(v, str) else
+                           svgs[_index(v, len(svgs))] for v in _list(parts))
+        if _SLOT in _SLOT_RE.sub("", template):
+            raise ValueError("Malformed card identity slot")
+        used = {int(m.group(1)) for m in _SLOT_RE.finditer(template)}
+        if used != set(range(len(used))):
+            raise ValueError("Non-contiguous card identity slots")
+        templates.append(template)
+        slots.append(len(used))
+    cards = []
+    for row in _list(payload.get("cards")):
+        if not isinstance(row, list) or len(row) != 3:
+            raise ValueError("Invalid card record")
+        template_id, binding, own_slot = row
+        template_id = _index(template_id, len(templates))
+        binding = _list(binding)
+        if len(binding) != slots[template_id]:
+            raise ValueError("Card binding count differs from template")
+        values = [identities[_index(v, len(identities))] for v in binding]
+        _index(own_slot, len(values))
+        card = _SLOT_RE.sub(lambda m: values[_index(int(m.group(1)), len(values))],
+                            templates[template_id])
+        match = re.search(r'\bdata-card-id="([^"]+)"', card)
+        if match is None or match.group(1) != values[own_slot]:
+            raise ValueError("Card identity binding does not match its markup")
+        cards.append(card)
+    placed = []
+    for container in _list(payload.get("containers")):
+        if not isinstance(container, list) or len(container) != 2:
+            raise ValueError("Invalid card container")
+        depth, indices = container
+        if type(depth) is not int or depth < 2:
+            raise ValueError("Invalid card panel depth")
+        placed.extend(_index(v, len(cards)) for v in _list(indices))
+    if sorted(placed) != list(range(len(cards))):
+        raise ValueError("Card occurrence placement is missing or duplicated")
+    canonical = []
+    ordered = []
+    for piece in _list(payload.get("canonical")):
+        if isinstance(piece, str):
+            canonical.append(piece)
+        else:
+            index = _index(piece, len(cards))
+            ordered.append(index)
+            canonical.append(cards[index])
+    if ordered != list(range(len(cards))):
+        raise ValueError("Canonical card placement order differs")
+    restored = "".join(canonical)
+    scan = _Cards(restored)
+    scan.feed(restored)
+    entries = sorted(scan.cards, key=lambda entry: entry["start"])
+    if len(entries) != len(cards):
+        raise ValueError("Canonical card count differs")
+    parents, expected_containers = {}, []
+    for index, entry in enumerate(entries):
+        if restored[entry["start"]:entry["end"]] != cards[index]:
+            raise ValueError("Canonical card span differs")
+        parent = id(entry["parent"])
+        if parent not in parents:
+            parents[parent] = len(parents)
+            expected_containers.append([entry["depth"], []])
+        expected_containers[parents[parent]][1].append(index)
+    if payload["containers"] != expected_containers:
+        raise ValueError("Card container differs from canonical parent placement")
+    return cards, canonical
+
+
+def expand_card_payloads(document: str) -> str:
+    """Recover exact pre-transport HTML for exhaustive offline inspection.
+
+    This explicit audit projection never replaces raw HTML preservation hashes.
+    The original interaction script is returned as bytes, never executed here.
+    """
+    matches = list(_PAYLOAD_RE.finditer(document))
+    for match in reversed(matches):
+        digest, serialized = match.groups()
+        payload = json.loads(serialized)
+        _, canonical = _decode(payload)
+        restored = "".join(canonical)
+        if hashlib.sha256(restored.encode()).hexdigest() != digest:
+            raise ValueError("Card payload canonical digest mismatch")
+        begin = f"<!--uf-packed-start:{digest}-->"
+        end = f"<!--uf-packed-end:{digest}-->"
+        start = document.rfind(begin, 0, match.start())
+        finish = document.find(end, match.end())
+        if start < 0 or finish < 0:
+            raise ValueError("Missing card payload envelope")
+        from .interactions import _click_script
+
+        old_script = _click_script(_text(payload.get("mount_id")))
+        if restored.count(old_script) != 1:
+            raise ValueError("Canonical card interaction script differs")
+        first_cards = {row[1][0]: i for i, row in enumerate(payload["containers"]) if row[1]}
+        shell_parts = []
+        for piece in payload["canonical"]:
+            if isinstance(piece, str):
+                shell_parts.append(piece)
+            elif piece in first_cards:
+                shell_parts.append(f'<template data-uf-card-container="{first_cards[piece]}"></template>')
+        expected_shell = "".join(shell_parts).replace(old_script, "")
+        if document[start + len(begin):match.start()] != expected_shell:
+            raise ValueError("Compact shell differs from canonical card placement")
+        document = document[:start] + restored + document[finish + len(end):]
+    if "data-uf-card-payload=" in document:
+        raise ValueError("Malformed or unsupported card payload envelope")
+    return document
+
+
+def pack_card_payloads(fragment: str, mount_id: str) -> str:
+    """Pack substantial pages by default, retaining small eager pages unchanged."""
+    if len(fragment.encode()) < _MIN_PACK_BYTES:
+        return fragment
+    from .interactions import _click_script, _lazy_click_script
+
+    old_script = _click_script(mount_id)
+    if fragment.count(old_script) != 1:
+        raise ValueError("Expected one canonical interaction script")
+    scan = _Cards(fragment)
+    scan.feed(fragment)
+    entries = sorted(scan.cards, key=lambda e: e["start"])
+    if not entries:
+        return fragment
+    if _SLOT in fragment:
+        # Keep arbitrary supplied text literal; never mistake it for codec slots.
+        return fragment
+    templates: dict[str, int] = {}
+    records = []
+    identities: dict[str, int] = {}
+    containers: list[list] = []
+    parent_ids: dict[int, int] = {}
+    canonical = []
+    compact = []
+    cursor = 0
+    for record_id, entry in enumerate(entries):
+        if entry["start"] < cursor or entry["depth"] is None:
+            raise ValueError("Nested or unscoped inspect card")
+        body = fragment[entry["start"]:entry["end"]]
+        values = list(dict.fromkeys(m.group(1) for m in _ID_RE.finditer(body)))
+        own = re.search(r'\bdata-card-id="([^"]+)"', body)
+        if own is None:
+            raise ValueError("Inspect card has no identity")
+        slots = {value: f"{_SLOT}{i}@@" for i, value in enumerate(values)}
+        def substitute_attribute(match):
+            name, value = match.groups()
+            if value in slots:
+                value = slots[value]
+            elif name == "class":
+                value = " ".join(
+                    "uf-card-" + slots[token[8:]]
+                    if token.startswith("uf-card-") and token[8:] in slots else token
+                    for token in value.split(" "))
+            elif value.startswith("#") and value[1:] in slots:
+                value = "#" + slots[value[1:]]
+            elif "url(#" in value:
+                value = _URL_RE.sub(
+                    lambda m: "url(#" + slots.get(m.group(1), m.group(1)) + ")", value)
+            else:
+                return match.group(0)
+            return name + '="' + value + '"'
+
+        template = _ATTR_RE.sub(substitute_attribute, body)
+        records.append([templates.setdefault(template, len(templates)),
+                        [identities.setdefault(v, len(identities)) for v in values],
+                        values.index(own.group(1))])
+        parent = id(entry["parent"])
+        new_container = parent not in parent_ids
+        container_id = parent_ids.setdefault(parent, len(parent_ids))
+        if new_container:
+            containers.append([entry["depth"], []])
+        containers[container_id][1].append(record_id)
+        gap = fragment[cursor:entry["start"]]
+        canonical.extend([gap, record_id])
+        compact.append(gap)
+        if new_container:
+            compact.append(f'<template data-uf-card-container="{container_id}"></template>')
+        cursor = entry["end"]
+    canonical.append(fragment[cursor:])
+    compact.append(fragment[cursor:])
+    svgs: dict[str, int] = {}
+    split_templates = []
+    for template in templates:
+        parts = []
+        cursor = 0
+        for match in _SVG_RE.finditer(template):
+            parts.extend([template[cursor:match.start()],
+                          svgs.setdefault(match.group(0), len(svgs))])
+            cursor = match.end()
+        parts.append(template[cursor:])
+        split_templates.append(parts)
+    old_identities = list(identities)
+    ordered_identities = sorted(identities)
+    positions = {value: i for i, value in enumerate(ordered_identities)}
+    prefix_rows = []
+    previous = ""
+    for value in ordered_identities:
+        count, limit = 0, min(len(previous), len(value))
+        while count < limit:
+            middle = (count + limit + 1) // 2
+            if previous[:middle] == value[:middle]:
+                count = middle
+            else:
+                limit = middle - 1
+        prefix_rows.append([count, value[count:]])
+        previous = value
+    for record in records:
+        record[1] = [positions[old_identities[i]] for i in record[1]]
+    payload = {"version": 1, "mount_id": mount_id, "svgs": list(svgs), "templates": split_templates,
+               "identities": prefix_rows, "cards": records,
+               "containers": containers, "canonical": canonical}
+    serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    serialized = serialized.replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
+    digest = hashlib.sha256(fragment.encode()).hexdigest()
+    shell = "".join(compact).replace(old_script, "")
+    output = (f"<!--uf-packed-start:{digest}-->" + shell
+              + f'<script type="application/json" data-uf-card-payload="{digest}">{serialized}</script>'
+              + _lazy_click_script(mount_id, digest)
+              + f"<!--uf-packed-end:{digest}-->")
+    if len(output.encode()) >= len(fragment.encode()):
+        return fragment
+    return output

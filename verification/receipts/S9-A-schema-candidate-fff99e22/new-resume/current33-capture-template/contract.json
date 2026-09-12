@@ -1,0 +1,33 @@
+{
+  "status": "HELD_TEMPLATE_NOT_EXECUTED_NO_CURRENT_RESULTS",
+  "source_pin": "Root must supply the exact immutable33 source-manifest SHA256 on the launcher command line; it is required again by the child. No default, placeholder, copied28 pin, or automatic discovery exists.",
+  "command_template": "python3 <receipt>/run-census.py --source-manifest-sha256 <owner-reviewed exact32 manifest SHA256>",
+  "preserved_controls": [
+    "Exact 39 ordered active-S7 addresses, checkpoint hashes, inventory hashes and resolved-class equality.",
+    "Real ParseContext/config_to_ir and actual retained root DocumentBinding; no reconstructed fact/proof authority.",
+    "Validate every non-null original live fact proof. Missing proofs stay missing.",
+    "Diagram IR before/after actual standalone HTML, active RenderContext and presentation_census on the exact dictionary rendered with original typed facts.",
+    "Full portable source multiset and production seal equality, original parse failures retained. Reference26 differences remain explicit/nonzero; no source delta autoaccepted.",
+    "Actual HTML bytes are published immediately after rendering under S9-family/schema-thirtythird; later census/closure failure leaves them visible with a failed capture row. Existing phase model pages refuse overwrite.",
+    "Launcher and child verify explicit source-manifest pin, every source row, all production Python files, held script/plan hashes and all target inputs before/after. Standard verify_commit lane bracket retained.",
+    "Every target attempted; actual capture/proof/presentation/reference errors remain nonzero. No normalization, output blessing, counter rewriting or sheet mutation.",
+    "Explicit null source-manifest deletion rows require exact path absence, including no broken symlink, and remain null in both bracket maps; deletions are never skipped.",
+    "Full actual RenderContext dataclass fields are stored separately as LOCAL_ONLY, including individual events/receipts/chips/unknown annotations/fact rows and process-local tokens. Snapshot occurs after immediate page publication and before census; it is never replayed as proof or used as portable identity."
+  ],
+  "pipeline_coordination": [
+    "Freeze32 only after banner/address/source reviews and source/test fixes. Record its exact source manifest and verify the immutable worktree matches it.",
+    "Root runs the chosen verification lanes serially and records their exact source/artifact brackets. This template itself establishes no gate result.",
+    "Generate the current33 all39 S7 matrix in a separate fresh scratch output using the same frozen tree and target inputs; never replace active S7 address artifacts during measurement. Retain per-target failures and source/recipe records.",
+    "Run this page/declaration capture serially against that same frozen33 tree, with immediate family publication; its active-S7 inputs supply addresses only and are not the freshly reconciled matrix.",
+    "After both complete, compare each captured source seal/multiset and claim/occurrence references to the corresponding new32 matrix payload. Require exact same target population; enumerate differences and reasons rather than substituting old26/28 counts.",
+    "Enumerate raw before/after IR/HTML differences against the clean baseline and keep previous captures immutable. Source-cause attribution and independent browser review/owner output approval remain separate steps."
+  ],
+  "limits": [
+    "No source32 manifest exists in this template and no32 result is claimed. A required pin argument is not a validation receipt; the exact manifest bytes and all rows are checked at runtime.",
+    "Counts from presentation_census are in-process consistency evidence, not browser visibility/CSS/click proof or architecture completeness.",
+    "Old26 source seals are comparison references only. All39 current matrix reconciliation remains separate and must be joined after execution.",
+    "Template hard-codes the intended thirtythird worktree/output/publish generation. If root chooses other locations, update and independently re-pin this source template before execution.",
+    "Existing root proof binding/validation controls are preserved; none upgrades an absent proof or manufactures a child ledger.",
+    "The local render-context snapshot has process-local tokens and source addresses by design. It is diagnostic transport, never a normalized output or portable authority artifact."
+  ]
+}

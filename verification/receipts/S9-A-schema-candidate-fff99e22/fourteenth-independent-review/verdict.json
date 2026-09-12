@@ -1,0 +1,34 @@
+{
+  "decision": "RETURN",
+  "scope": "Fourteenth frozen A5 source-only review",
+  "manifest_sha256": "35cc45beaed180a8d1b4eae97dddfd56191b0f0f50e694ab1e83bdddc91c8c69",
+  "source_pins": {
+    "model_unfolder/evidence/activation_registry.py": "47cbe0073e014becc8e593910f727d5d1fa3f6d8ec9e9c9b306607490b637aa9",
+    "tests/test_reader_claims.py": "337a01cb36a757d6018a15543d128abf8e4d374bbfc0b480a2dd59d9cd38ccd9",
+    "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+  },
+  "manifest_delta_from_thirteenth": [
+    "model_unfolder/evidence/activation_registry.py",
+    "tests/test_reader_claims.py"
+  ],
+  "closed": [
+    "Direct protected-field keyword arguments, nested returned fields and container embedding now traversed recursively.",
+    "Existing direct nested getter mutator checks remain independent of alias introduction.",
+    "Excluding old RHS field reads addresses the stated self.dtype=getattr(torch,self.dtype) collision in a single ordinary assignment."
+  ],
+  "findings": [
+    {
+      "id": "A5-field-to-local-escape",
+      "location": "activation_registry.py:_ancestor_read_has_local_mutation field_aliases derivation",
+      "source": "self.member = getattr(torch, requested)\nalias = self.member\nsink(value=alias)  # alternatively return [alias]",
+      "reason": "Transitive aliases retains alias, but field_aliases drops every one-part path, losing field-origin protection. Recursive escape checks use field_aliases. Preserve protected lineage through direct aliases without changing the separately allowed direct-local-getter boundary."
+    },
+    {
+      "id": "A5-chained-target-order",
+      "location": "activation_registry.py:_ancestor_read_has_local_mutation origin.span exclusion",
+      "source": "self.member = self.member.ReLU = getattr(torch, requested)  # requested is nn",
+      "reason": "Python assigns targets left-to-right. First target binds the reflected torch.nn namespace; second writes its ReLU attribute. All origin accesses including targets are currently skipped, not just RHS reads of the previous field value. Refuse/account for overlapping chained targets or restrict old-value exclusion to appropriate RHS reads."
+    }
+  ],
+  "evidence_limits": "Both are source-derived falsifiers, not runtime results. No tests/models/output blessing. Earlier A3/S1/A4/P1 and separate ConfigResolution acceptance unchanged. Subsequent corrections require separate review."
+}

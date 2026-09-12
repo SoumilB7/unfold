@@ -1,0 +1,14 @@
+[
+  {
+    "after": "e7a0ec6939204a53904ff13260194c62",
+    "before": "6326438740d443d493ce58a26e71bf27",
+    "kind": "replace",
+    "path": "/True/1/receipts/0/context_token"
+  },
+  {
+    "after": "e7a0ec6939204a53904ff13260194c62",
+    "before": "6326438740d443d493ce58a26e71bf27",
+    "kind": "replace",
+    "path": "/True/3/receipts/0/context_token"
+  }
+]

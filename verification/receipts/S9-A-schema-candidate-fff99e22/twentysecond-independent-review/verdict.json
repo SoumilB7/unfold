@@ -1,0 +1,18 @@
+{
+  "decision": "ACCEPT_SOURCE_ONLY",
+  "scope": "S7 config fallback preserves validated existing proof; two-file90bf35a7 handoff",
+  "manifest_sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f",
+  "findings": [],
+  "accepted_boundaries": [
+    "Existing qualified facts are passed through validate_fact_claim against their original proof before returning the exact fact object. No source VALUE proof is replaced by a new config proof, and stale document/value/reader mismatches remain validator errors.",
+    "For unqualified VALUE facts, the selected candidate event reader set must exactly equal the fact declared reader tuple before construction. Another consumer with equal value/path cannot supply the missing proof. Original path, exact event value/status, raw checkpoint value, fingerprint and document-token checks remain unchanged.",
+    "S7 passes the prepared root document for its fallback over aggregate facts. Preserved source proofs keep their original supplying document; this branch does not rebind them to that fallback document or mint any new token. Requiring every existing child-source proof to become root-scoped would be incorrect.",
+    "Three controls inspect actual diffusion source proof object identity, stale existing config proof rejection, and same-value foreign consumer refusal. Assertions not executed by reviewer."
+  ],
+  "caller_source_sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+  "limits": [
+    "Original twentyfirst S7 generator failure remains historical actual evidence; source correction does not relabel it.",
+    "No runtime/model/test execution, artifact regeneration or output approval by reviewer.",
+    "Existing proof variant semantics and validator scope are unchanged; this review accepts the fallback behavior only."
+  ]
+}

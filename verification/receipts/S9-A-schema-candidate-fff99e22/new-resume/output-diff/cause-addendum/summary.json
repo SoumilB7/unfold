@@ -1,0 +1,716 @@
+{
+  "activation_content_additions_explained": 62,
+  "counts": {
+    "activation": 32,
+    "chip": 3,
+    "embedding": 24,
+    "geometry": 89,
+    "legacy_unknown": 88,
+    "mechanism": 133,
+    "native_unknown": 1,
+    "references": 641,
+    "scope": 1677,
+    "tie": 38,
+    "unknown": 8492,
+    "width": 112
+  },
+  "limits": [
+    "Source cause attribution does not independently execute or validate proof object internals; original actual parser validation and reviewer verdict remain necessary.",
+    "Nested event facts not published in enclosing IR retain explicit fact-hash verification limits.",
+    "Full HTML deltas beyond finite SVG identity audit are not covered by this IR/source report.",
+    "Original delta paths/bytes are retained unchanged; supplementary scope/source multiset comparisons explain ordering, never normalize acceptance."
+  ],
+  "models": [
+    {
+      "counts": {
+        "activation": 1,
+        "references": 9,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 74,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 130,
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "geometry": 2,
+        "legacy_unknown": 1,
+        "mechanism": 2,
+        "references": 23,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 77,
+      "slug": "bloom"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 2,
+        "references": 7,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 86,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 144,
+      "slug": "cogvideox-5b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 20,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 77,
+      "slug": "command-a-03-2025"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 3,
+        "mechanism": 4,
+        "references": 25,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 84,
+      "slug": "dbrx-base"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "legacy_unknown": 4,
+        "references": 21,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 28,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 102,
+      "slug": "deepseek-coder-v2-lite"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 6,
+        "legacy_unknown": 2,
+        "mechanism": 27,
+        "references": 27,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 112,
+      "slug": "deepseek-v3"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "legacy_unknown": 9,
+        "references": 14,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 88,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 159,
+      "slug": "deepseek-v4-flash"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 4,
+        "references": 10,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 113,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 176,
+      "slug": "flux-2-dev"
+    },
+    {
+      "counts": {
+        "activation": 2,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 9,
+        "scope": 43,
+        "unknown": 115,
+        "width": 4
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 180,
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 25,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "legacy_unknown": 8,
+        "references": 20,
+        "scope": 43,
+        "unknown": 62,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 138,
+      "slug": "gemma-3n-e2b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 30,
+        "scope": 43,
+        "tie": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 87,
+      "slug": "glm-4-5"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 2,
+        "mechanism": 4,
+        "references": 26,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 84,
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 25,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "counts": {
+        "activation": 2,
+        "geometry": 5,
+        "mechanism": 6,
+        "references": 20,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 121,
+        "width": 4
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 202,
+      "slug": "hunyuanvideo"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "legacy_unknown": 11,
+        "references": 12,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 66,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 137,
+      "slug": "jamba-v0-1"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 3,
+        "mechanism": 4,
+        "references": 23,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 17,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 98,
+      "slug": "lfm2-1-2b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 24,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 82,
+      "slug": "llama-7b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 2,
+        "references": 7,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 85,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 143,
+      "slug": "ltx-video"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 9,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 62,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 125,
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 2,
+        "references": 3,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 49,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 103,
+      "slug": "mochi-1-preview"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 2,
+        "legacy_unknown": 6,
+        "mechanism": 2,
+        "references": 20,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 74,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 153,
+      "slug": "musicgen-small"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "legacy_unknown": 9,
+        "references": 12,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 105,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 174,
+      "slug": "nemotron-h-8b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 26,
+        "scope": 43,
+        "tie": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 2,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 2,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 53,
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 7,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 49,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 110,
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 7,
+        "scope": 43,
+        "tie": 2,
+        "unknown": 121,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 183,
+      "slug": "qwen-image"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 2,
+        "mechanism": 4,
+        "references": 21,
+        "scope": 43,
+        "tie": 2,
+        "unknown": 2,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 82,
+      "slug": "qwen2-vl-7b-instruct"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 3,
+        "mechanism": 4,
+        "references": 24,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 2,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 85,
+      "slug": "qwen3-5-27b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 2,
+        "mechanism": 4,
+        "references": 24,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 26,
+        "scope": 43,
+        "tie": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "qwen3-8b"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "legacy_unknown": 11,
+        "references": 12,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 98,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 169,
+      "slug": "qwen3-omni-30b"
+    },
+    {
+      "counts": {
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 5,
+        "mechanism": 4,
+        "native_unknown": 1,
+        "references": 23,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 96,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 180,
+      "slug": "qwen3-vl-235b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 3,
+        "mechanism": 4,
+        "references": 7,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 62,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 123,
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "geometry": 2,
+        "mechanism": 2,
+        "references": 1,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 2,
+        "width": 6
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 58,
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "chip": 3,
+        "geometry": 2,
+        "mechanism": 2,
+        "references": 12,
+        "scope": 43,
+        "unknown": 6863,
+        "width": 4
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 6930,
+      "slug": "stable-diffusion-xl-base-1-0"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "embedding": 1,
+        "geometry": 3,
+        "legacy_unknown": 1,
+        "mechanism": 4,
+        "references": 26,
+        "scope": 43,
+        "tie": 1,
+        "width": 3
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [
+        "model.hidden_size"
+      ],
+      "raw_deltas": 83,
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "counts": {
+        "activation": 1,
+        "references": 4,
+        "scope": 43,
+        "tie": 1,
+        "unknown": 41,
+        "width": 2
+      },
+      "existing_fact_triples_unchanged": true,
+      "new_fact_keys": [],
+      "raw_deltas": 92,
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "raw_ir_deltas_per_phase": 11330,
+  "remaining_findings": [],
+  "verdict": "CAUSE_AUDIT_NOT_OUTPUT_ACCEPTANCE"
+}

@@ -1,0 +1,294 @@
+{
+  "slug": "qwen3-8b",
+  "inputs": [
+    {
+      "path": "actual-emission-counts.json",
+      "sha256": "7cb81e151b36b11a5847596ef7a002a3e6fdd76663f738e07e772069ff84d4cc"
+    },
+    {
+      "path": "address-evidence.json",
+      "sha256": "89429d44cbc446230e84e00d7db4f23e41f2350ee09df907faa72e821049dd68"
+    },
+    {
+      "path": "declarations.json",
+      "sha256": "92554ca4dfac34f91b2d337f6d0089eeb353bea4b5d8767bfb808e6645de5d56"
+    },
+    {
+      "path": "diagram-ir-after-render.json.gz",
+      "sha256": "28f856af18f168a524d15b98ad929f3cee69a32ca0434d3165e6d6aee56970e9"
+    },
+    {
+      "path": "diagram-ir-before-render.json.gz",
+      "sha256": "28f856af18f168a524d15b98ad929f3cee69a32ca0434d3165e6d6aee56970e9"
+    },
+    {
+      "path": "facts.json",
+      "sha256": "5ab47f6934350a153585913ccc1fb4e80fc865807fb695d58f5f5a32d1ba55a2"
+    },
+    {
+      "path": "input.json",
+      "sha256": "6ff8e14cce781075568111fd904a58dab025b195cb864214244d431e4fe949ce"
+    },
+    {
+      "path": "ir-after-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa"
+    },
+    {
+      "path": "ir-before-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa"
+    },
+    {
+      "path": "page.html.gz",
+      "sha256": "9bf3401acd00041c3829ef31a553b50f81c7af79a2d5e8d145798854c190dcf2"
+    },
+    {
+      "path": "presentation-census.json",
+      "sha256": "e05bf693f7fb1e79180efdb083b9eb48aaf99187f6a3dcfef2c6140b0cef8d26"
+    },
+    {
+      "path": "source-bundle-after-local.json",
+      "sha256": "183b739c47bf09015e23d3d1993f753addfc0727241c56bd466570d98416c47a"
+    },
+    {
+      "path": "source-bundle-before-local.json",
+      "sha256": "183b739c47bf09015e23d3d1993f753addfc0727241c56bd466570d98416c47a"
+    },
+    {
+      "path": "source-closure.json",
+      "sha256": "e0b9654de962bccc8b4c00304b9282610239d3c19cc1d753a5957c9ee63e71c2"
+    }
+  ],
+  "native_before": {
+    "facts": 27,
+    "status": {
+      "code_and_config": 13,
+      "code_proven": 11,
+      "ambiguous": 1,
+      "config_declared": 2
+    },
+    "claim_kind": {
+      "existence": 1,
+      "connection": 6,
+      "relation": 8,
+      "applied_function": 8,
+      "value": 4
+    },
+    "qualified": 24,
+    "qualified_kinds": {
+      "existence": 1,
+      "connection": 6,
+      "relation": 8,
+      "applied_function": 5,
+      "value": 4
+    },
+    "without_proof": 3
+  },
+  "native_after": {
+    "facts": 27,
+    "status": {
+      "code_and_config": 13,
+      "code_proven": 11,
+      "ambiguous": 1,
+      "config_declared": 2
+    },
+    "claim_kind": {
+      "existence": 1,
+      "connection": 6,
+      "relation": 8,
+      "applied_function": 8,
+      "value": 4
+    },
+    "qualified": 24,
+    "qualified_kinds": {
+      "existence": 1,
+      "connection": 6,
+      "relation": 8,
+      "applied_function": 5,
+      "value": 4
+    },
+    "without_proof": 3
+  },
+  "native_deltas": [],
+  "phases": {
+    "ir-before-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 0,
+      "annotation_reason_counts": {},
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    },
+    "ir-after-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 0,
+      "annotation_reason_counts": {},
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    },
+    "diagram-ir-before-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 0,
+      "annotation_reason_counts": {},
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    },
+    "diagram-ir-after-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 0,
+      "annotation_reason_counts": {},
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    }
+  },
+  "html": {
+    "html_bytes": 63225,
+    "gzip_bytes": 10103,
+    "serialized_element_count": 490,
+    "inline_detail_cards": 30,
+    "deferred_template_expanded_element_count": 0,
+    "deferred_template_expanded_detail_cards": 0,
+    "packed_payloads": [],
+    "inline_chips": {},
+    "packed_chips": {},
+    "all_chips": {},
+    "banner_scalar_markers": 1,
+    "receipt_node_counts": {
+      "stats_hidden_size": 1
+    },
+    "unknown_groups": 0,
+    "rendered_unique_unknown_paths": 0,
+    "missing_unknown_paths": [],
+    "unexpected_unknown_paths": [],
+    "four_styles_present_and_distinct": true,
+    "styles": {
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;",
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;"
+    },
+    "findings": [],
+    "accounting_limit": "HTMLParser serialized elements and template multiplicity; no JS execution, DOM measurement, browser visibility or click proof."
+  },
+  "html_reference26": {
+    "html_bytes": 63184,
+    "gzip_bytes": 10078,
+    "serialized_element_count": 490,
+    "inline_detail_cards": 30,
+    "deferred_template_expanded_element_count": 0,
+    "deferred_template_expanded_detail_cards": 0,
+    "packed_payloads": [],
+    "inline_chips": {},
+    "packed_chips": {},
+    "all_chips": {},
+    "banner_scalar_markers": 0,
+    "receipt_node_counts": {},
+    "unknown_groups": 0,
+    "rendered_unique_unknown_paths": 0,
+    "missing_unknown_paths": [],
+    "unexpected_unknown_paths": [],
+    "four_styles_present_and_distinct": true,
+    "styles": {
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;",
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;"
+    },
+    "findings": [],
+    "accounting_limit": "HTMLParser serialized elements and template multiplicity; no JS execution, DOM measurement, browser visibility or click proof."
+  },
+  "live_capture_census": {
+    "drawn_fact_keys": [
+      "decoder.attention.bias",
+      "decoder.attention.cached",
+      "decoder.attention.head_geometry",
+      "decoder.attention.mask",
+      "decoder.attention.mask_schedule",
+      "decoder.attention.mechanism",
+      "decoder.attention.mixer_schedule",
+      "decoder.attention.output_projection",
+      "decoder.attention.position_schedule",
+      "decoder.attention.projection_mode",
+      "decoder.attention.qk_norm",
+      "decoder.attention.qk_norm_schedule",
+      "decoder.attention.rope_initialization",
+      "decoder.attention.rope_theta",
+      "decoder.attention.scores_scale",
+      "decoder.ffn.activation",
+      "decoder.ffn.ffn_schedule",
+      "decoder.ffn.gated",
+      "decoder.ffn.intermediate_size",
+      "decoder.ffn.projection_mode",
+      "decoder.layer.norm_kind",
+      "decoder.layer.norm_placement",
+      "decoder.layer.parallel_norm_count",
+      "decoder.layer.residual_topology",
+      "model.final_norm_kind",
+      "model.hidden_size",
+      "model.tie_word_embeddings"
+    ],
+    "findings": [],
+    "not_drawn": [],
+    "pending_design": [],
+    "qualified_complete_pending_fact_keys": [],
+    "rendered_unknown_values": [],
+    "shared_chip_aliases": [],
+    "unknown_reason_counts": {
+      "investigation_missing": 1,
+      "mechanism_unresolved": 0,
+      "structure_unaccounted": 0
+    },
+    "unrendered_unknown_values": [],
+    "unresolved_ir_envelopes": []
+  },
+  "live_capture_event_counts": {
+    "chip_events_by_kind": {
+      "class_default": 0,
+      "pending_design": 0,
+      "symbolic": 0,
+      "unresolved": 0
+    },
+    "render_events": 5,
+    "scope": "Actual in-process events; not browser visibility or CSS proof.",
+    "unknown_value_events": 0
+  },
+  "reference26_schema_counts": {
+    "schema_unknown_count": 0,
+    "architectural_unknown_envelope_count": 0,
+    "serialized_annotation_count": 0
+  },
+  "raw_before_after_render_equal": {
+    "ir-": true,
+    "diagram-ir-": true
+  }
+}

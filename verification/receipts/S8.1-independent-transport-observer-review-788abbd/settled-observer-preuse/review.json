@@ -1,0 +1,16 @@
+{
+  "decision": "ACCEPT_SETTLED_OBSERVER_PREUSE_AND_BOUNDED_UNSETTLED_FUNCTIONAL_RESULT",
+  "reviewer": "independent_review",
+  "pins": {
+    "unfold-s81-browser-functional-settled.py": "99aa7bfba6501a0d5dc7fd763683083f5098fdbaf969b51dbbebcea39a778d00",
+    "unfold-s81-compare-browser-routes.py": "9e522eee30431c1ec2fcc98401ab18cda135b3ea582b8c83153a096fcab6839e",
+    "unfold-s81-browser-functional-comparison.json": "b4547e65c5d770329e4b6ee0e2b64ea01dba31e25e163609262402042ecc5dca"
+  },
+  "actual_receipts": {
+    "/private/tmp/unfold-s81-browser-functional-before/receipt.json": "471210c2f52a8e876ba94b584fa4e21fa7f5d7eac9ffa73c1300db9a90024dbd",
+    "/private/tmp/unfold-s81-browser-functional-after/receipt.json": "1c6cfd81b8b2ba210fd84f3150b34d8a7f2344264c27f664a9ec8c50e1bb4146"
+  },
+  "actual16_routes_and_visible_cards_exact": true,
+  "actual16_unsettled_screenshots_differ": true,
+  "scope": "Finite animations awaited with5s timeout and2frames, no CSS mutation. No settled run by reviewer; pixel equality remains pending. Comparator status intentionally excludes screenshot equality and says so."
+}

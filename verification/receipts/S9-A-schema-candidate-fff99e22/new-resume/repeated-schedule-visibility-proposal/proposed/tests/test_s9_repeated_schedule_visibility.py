@@ -1,0 +1,133 @@
+"""Existing schedule cards expose actual defaults without authoring placement."""
+from copy import deepcopy
+from dataclasses import replace
+import json
+from pathlib import Path
+
+import pytest
+
+from model_unfolder import config_to_ir
+from model_unfolder.diagram import Diagram
+from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.claim_evidence import validate_fact_claim
+from model_unfolder.presentation import chips_from_block
+from model_unfolder.renderers.html.render_context import RenderContext, activate_render_context
+
+CASES = (("bloom", "position_schedule", "attn", (), "n_layer", 70),
+         ("musicgen-small", "cross_attention_schedule", "cross_attn", ("decoder",), "num_hidden_layers", 24))
+
+
+def _prepare(case, defaulted):
+    slug, key, card, path, count_key, count = case
+    cfg = json.loads((Path(__file__).parent / "sable_test_corpus" / (slug + ".json")).read_text())["config"]
+    child = cfg
+    for part in path:
+        child = child[part]
+    if defaulted:
+        assert child.pop(count_key) == count
+    context = ParseContext.build(cfg)
+    return cfg, context
+
+
+def _render(ir):
+    diagram = Diagram(ir)
+    context = RenderContext(fact_rows=dict(diagram.to_ir()["extras"]["fact_provenance"]))
+    with activate_render_context(context):
+        page = diagram.to_html(standalone=True)
+    return page, context
+
+
+def _target_chips(block, key):
+    return [chip for chip in chips_from_block(block)
+            if any(ref.to_dict()["fact_key"] == key for ref in chip.references)]
+
+
+@pytest.mark.parametrize("case", CASES, ids=["alibi", "additive_cross"])
+@pytest.mark.parametrize("defaulted", [False, True])
+def test_repeated_schedule_citation_is_consistent_and_default_is_really_emitted(case, defaulted, monkeypatch):
+    cfg, context = _prepare(case, defaulted)
+    ir = config_to_ir(cfg, parse_context=context)
+    key = "decoder.attention." + case[1]
+    fact = context.facts.typed[key]
+    assert len(ir.layers) > 0 and len(fact.value) == len(ir.layers)
+    if not defaulted:
+        assert len(ir.layers) == case[5]
+    assert fact.status == ("class_default" if defaulted else "code_and_config")
+    validate_fact_claim(fact, fact.claim_evidence)
+    blocks = [block for layer in ir.layers for block in layer.blocks if block.get("id") == case[2]]
+    assert len(blocks) == len(ir.layers)
+    for block in blocks:
+        assert block["kind"] == "attention" and block["view"] == "attention"
+        assert block["source_fact_keys"].count(key) == 1
+        assert "source_instance_path" not in block
+        chips = _target_chips(block, key)
+        assert len(chips) == int(defaulted)
+        if defaulted:
+            assert chips[0].chip_kind == "class_default"
+            assert chips[0].references[0].to_dict() == ir.extras["fact_provenance"][key]["presentation_reference"]
+    page, rendered = _render(ir)
+    emitted = [event for event in rendered.chip_events
+               if any(ref.to_dict()["fact_key"] == key for ref in event.chip.references)]
+    assert bool(emitted) == defaulted
+    if defaulted:
+        assert 'data-chip-kind="class_default"' in page
+        assert all(event.node_id == case[2] and event.chip.chip_kind == "class_default" for event in emitted)
+
+    # Remove only this display citation and its typed chip from a detached IR.
+    # Existing graph nodes/facts/receipts must be identical: chips do not emit
+    # a new RenderEvent or confer occurrence placement.
+    bare = deepcopy(ir)
+    for layer in bare.layers:
+        for block in layer.blocks:
+            if block.get("id") != case[2]:
+                continue
+            remaining = [chip.to_dict() for chip in chips_from_block(block)
+                         if not any(ref.to_dict()["fact_key"] == key for ref in chip.references)]
+            block["source_fact_keys"] = [k for k in block.get("source_fact_keys", ()) if k != key]
+            if remaining:
+                block["presentation_chips"] = remaining
+            else:
+                for field in ("presentation_chips", "presentation_path", "presentation_aliases"):
+                    block.pop(field, None)
+    _bare_page, bare_rendered = _render(bare)
+    semantic_events = lambda c: [(e.view, e.block_path, e.drawn_ops, e.node_ids, e.facts_projected,
+                                  tuple((r.fact_id, r.surface, r.structural_target, r.node_ids, r.projection_kind)
+                                        for r in e.receipts)) for e in c.events]
+    assert semantic_events(rendered) == semantic_events(bare_rendered)
+
+    from test_support.s9_fixtures.s7_reconciliation import _inventory, _product_index
+    from model_unfolder.evidence.reconciliation import projection_claims_from_product
+    arguments = dict(index=_product_index(), inventory=_inventory(), static_claims=(),
+                     facts=context.facts.typed_records(), render_events=())
+    assert projection_claims_from_product(ir=ir, **arguments) == projection_claims_from_product(ir=bare, **arguments)
+    assert all(claim.axis.kind not in {"rendered", "grouped"}
+               for claim in projection_claims_from_product(ir=ir, **arguments))
+
+    if defaulted:
+        from model_unfolder.renderers.html import cards
+        from model_unfolder.evidence.presentation_census import presentation_census
+        with monkeypatch.context() as patch:
+            patch.setattr(cards, "presentation_chip_html", lambda chip: "")
+            omitted_page, omitted = _render(ir)
+        assert 'data-chip-kind="class_default"' not in omitted_page
+        assert not any(any(ref.to_dict()["fact_key"] == key for ref in event.chip.references)
+                       for event in omitted.chip_events)
+        assert presentation_census(ir, omitted, context.facts.typed_records())["findings"]
+
+
+@pytest.mark.parametrize("case", CASES, ids=["alibi", "additive_cross"])
+def test_unqualified_schedule_cannot_gain_a_card_citation_or_default_chip(case, monkeypatch):
+    cfg, context = _prepare(case, False)
+    key = "decoder.attention." + case[1]
+    original = context.facts.record_typed
+    def without_proof(fact):
+        if fact.ledger_key() == key:
+            fact = replace(fact, claim_evidence=None, claim_document_token="")
+        return original(fact)
+    monkeypatch.setattr(context.facts, "record_typed", without_proof)
+    ir = config_to_ir(cfg, parse_context=context)
+    assert len(ir.layers) == case[5]
+    assert context.facts.typed[key].claim_evidence is None
+    blocks = [block for layer in ir.layers for block in layer.blocks if block.get("id") == case[2]]
+    assert len(blocks) == len(ir.layers)
+    assert all(key not in block.get("source_fact_keys", ()) and not _target_chips(block, key) for block in blocks)

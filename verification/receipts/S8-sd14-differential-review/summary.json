@@ -1,0 +1,51 @@
+{
+  "actual_cards": {
+    "legacy": 104,
+    "ordinary": 10631
+  },
+  "all_raw_rows_preserved": true,
+  "artifact_pins": {
+    "phase-pin.json": "78484600ce0adf0627b8e9b8e854708411e7cfd420f19169d856e2aedd6fb544",
+    "scripts/report_s8_demonstration.py": "c9c57c33fdf7515fad52faf481c2fa53dbe388f0c4ef7d414c7c5e099977f07d",
+    "sd-v1-4/differential-report.json": "d370f2247c3412496c6abf822cdb72e339f187224193a9374f6bd54134a67d68",
+    "sd-v1-4/html.diff": "9808ee45afee429240608957a1fda28246651600250a25b879f19bebcb5368b5",
+    "sd-v1-4/legacy/facts.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "sd-v1-4/legacy/ir.json": "82d1bf8c15bfc14d7477f8a05402788ff7f00ff8a7bdcb99767769d8274ae178",
+    "sd-v1-4/legacy/observation.json": "c4a86fe8c719f192bfebba2d2c5a259578c0061e5cfb226086704cea77594d35",
+    "sd-v1-4/legacy/page.html": "be967b80b81aa8541d69dee70ac8b01d89d2293e6b5dc7288359ffbf7ac5b18d",
+    "sd-v1-4/legacy/qualified-facts.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "sd-v1-4/legacy/result.json": "e604d5d80e7ba5d42212b2279863c0dc7d0e26428e5b81d4b8df37f11884f221",
+    "sd-v1-4/ordinary/facts.json": "552bd48ff5847db2e601a2a5b3aca83cc8e02d400499ed78f0a1aedf9b61ad86",
+    "sd-v1-4/ordinary/ir.json": "2eb261804a766914295a12acc6ec5a9e2edf65382379f1ce1018cd355f53421f",
+    "sd-v1-4/ordinary/observation.json": "41633ec87af3312719654662ee93c43dd433cf47aa0b0501d81a4813e8772a50",
+    "sd-v1-4/ordinary/page.html": "3860d1bb550a295e69ea5cd252ea3e9743a5cf58c02c4022faeaf21b7e17800c",
+    "sd-v1-4/ordinary/qualified-facts.json": "e7b663ee9c1334a7932fa82291ab494997d0a562c53754451f7ff83d479efb6c",
+    "sd-v1-4/ordinary/result.json": "a1b93b232bdf739bd9d8f23238d63921715b7ee152e70503766116418ae3a6ec"
+  },
+  "canonical_quantity_chips_checked": 706,
+  "checkpoint": "c38b008af8153302d85bbaf2a8e3593841d87e1a",
+  "constructed_modules": 709,
+  "groups": {
+    "audit": 452,
+    "legacy_geometry": 28,
+    "limited_metadata": 2,
+    "proofs": 12,
+    "render": 1242,
+    "shapes": 1,
+    "source_address": 1
+  },
+  "raw_delta_count": 1738,
+  "report_counts": {
+    "blocking_finding": 514,
+    "named_reproof_candidate": 1224
+  },
+  "shape_total": 859520964,
+  "status": "review_findings_remain; no blanket re-proof acceptance",
+  "svg_added": 4139,
+  "svg_counts": {
+    "legacy": 54,
+    "ordinary": 4147
+  },
+  "svg_removed": 46,
+  "unchanged_svg_multiplicity": 8
+}

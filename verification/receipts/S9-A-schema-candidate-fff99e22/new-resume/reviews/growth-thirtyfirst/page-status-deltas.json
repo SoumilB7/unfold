@@ -1,0 +1,42 @@
+[
+  {
+    "path": "z-docs/12-design/S9-schema/current-thirtieth.html",
+    "before_sha256": "a7c450cc710b164b104b323f0057245f74e5129e75cb88e02cac91235722cd5b",
+    "after_sha256": "35e13542ba76e6d52a920f16334fceaf1e779510a7e254bda9ddd689abdf935e",
+    "only_change": {
+      "before": "The full test gate and current matrix are still running or pending.",
+      "after": "The frozen30 full test gate finished with 5,481 passed, 5 failed, 14 skipped and 2 expected failures: three source/test gaps and two held artifact checks. The current matrix remains pending."
+    },
+    "actual_snapshot": "30"
+  },
+  {
+    "path": "z-docs/12-design/S9-transformer/index.html",
+    "before_sha256": "9cc1ef1ad4cb5ead41d805dd223f9a630f72c10781af6e492e2cdf688ae341e1",
+    "after_sha256": "0182ff38dbe285f53d156882843aef9d6474b89eab35f57c686faef6907d418e",
+    "only_change": {
+      "before": "Full gate, matrix review, output approval and browser verdict remain outstanding.",
+      "after": "The frozen30 full gate finished with 5,481 passed and 5 failed (three source/test gaps, two held artifact checks), plus 14 skipped and 2 expected failures. Matrix review, output approval and browser verdict remain outstanding."
+    },
+    "actual_snapshot": "30"
+  },
+  {
+    "path": "z-docs/12-design/S9-diffusion/index.html",
+    "before_sha256": "0960c186103c2e29cbd21018dc2b7901211baf6f1a6d158cc3fde44f21a9a674",
+    "after_sha256": "aa2b5aacf59100355be86d57308c15428c3d43d1b5ff92c3fb25bd79d0d42b2e",
+    "only_change": {
+      "before": "Full gate, matrix review, output approval and browser verdict remain outstanding.",
+      "after": "The frozen30 full gate finished with 5,481 passed and 5 failed (three source/test gaps, two held artifact checks), plus 14 skipped and 2 expected failures. Matrix review, output approval and browser verdict remain outstanding."
+    },
+    "actual_snapshot": "30"
+  },
+  {
+    "path": "z-docs/12-design/S9-unet/index.html",
+    "before_sha256": "41948e7e1bb75d5c705d8d832074cff22ab93da09a63ceba22ef57e7817f2f9f",
+    "after_sha256": "2a09d7b43c77fc490c24d5e51da46552bf27cb557ba94701c3771fed1a831aa2",
+    "only_change": {
+      "before": "Full gate, matrix review, output approval and browser verdict remain outstanding.",
+      "after": "The frozen30 full gate finished with 5,481 passed and 5 failed (three source/test gaps, two held artifact checks), plus 14 skipped and 2 expected failures. Matrix review, output approval and browser verdict remain outstanding."
+    },
+    "actual_snapshot": "30"
+  }
+]

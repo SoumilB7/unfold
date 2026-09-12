@@ -1,0 +1,16 @@
+{
+  "reviewer": "root",
+  "decision": "ACCEPT exact staged example bytes",
+  "changed_html": [
+    "deepseek-v3.html",
+    "granite-3-0-8b-instruct.html",
+    "hunyuanvideo.html",
+    "llama-7b.html",
+    "musicgen-small.html",
+    "stable-diffusion-xl-base-1-0.html"
+  ],
+  "manifest_changes": "Only six actual HTML row sha256 values; complete other metadata and retained hero object exact",
+  "controls": "Exact two unchanged HTML files and all remaining example files, including hero PNG, unchanged",
+  "candidate_hashes_match_approved_scope": true,
+  "new_model_or_rasterizer_execution": false
+}

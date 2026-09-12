@@ -1,0 +1,95 @@
+{
+  "verdict": "PASS_BOUNDED_SAVED_DATA_AUDIT",
+  "reviewer": "placement_executor",
+  "source_manifest_sha256": "e4636c47c40267792d6ab489818bcd1c02deeb7c52ffe8cc44f2e8d60e6b9d43",
+  "audit_manifest_sha256": "afa6a35fd75fe4bdb1a9962eebc22fa937630fca5214cd419dbb962082abbf83",
+  "audit_script_sha256": "7ce530dd4110e9a3234a4ac631ae94ec693075ce73cf3a1003b9c586557e4fdd",
+  "all_model_results_inspected": 39,
+  "captured_files_rehashed_after_audit": 546,
+  "counts": {
+    "native_delta_keys": 0,
+    "unknown_scalar_addresses": 26222,
+    "unknown_envelopes": 8473,
+    "metadata_findings": 0,
+    "html_bytes": 9510603,
+    "element_count": 34191,
+    "missing_rendered_paths": 0,
+    "unexpected_rendered_paths": 0,
+    "class3_records": 0,
+    "capture_census_findings": 0
+  },
+  "native_facts": {
+    "total": 665,
+    "qualified": 520,
+    "without_proof": 145,
+    "statuses": {
+      "code_proven": 267,
+      "code_and_config": 257,
+      "ambiguous": 89,
+      "config_declared": 47,
+      "class_default": 5
+    },
+    "qualified_kinds": {
+      "connection": 166,
+      "value": 109,
+      "existence": 18,
+      "relation": 134,
+      "applied_function": 93
+    },
+    "raw_native_field_deltas_vs26": 0
+  },
+  "unknown_coverage": {
+    "annotations_each_of_four_snapshots": 34695,
+    "scalar": 26222,
+    "envelope": 8473,
+    "all_reason_class": "investigation_missing",
+    "class3": 0,
+    "missing_or_invalid_metadata": 0,
+    "missing_or_unexpected_rendered_unknown_paths": 0,
+    "additional_finite_addresses_vs26_original_scanner": 11893,
+    "excluded_diagnostic_unknown_strings": 2
+  },
+  "chips": {
+    "html_emissions": {
+      "class_default": 1
+    },
+    "four_css_rules_present_and_distinct_models": 39,
+    "actual_pending_design_rows": 0,
+    "scope": "Styles and saved markup only; absent chip kinds are not claimed as browser exercises."
+  },
+  "html": {
+    "total_uncompressed_bytes": 9510603,
+    "total_gzip_bytes": 880324,
+    "serialized_elements": 34191,
+    "inline_detail_cards": 2159,
+    "deferred_template_expanded_elements": 192621,
+    "deferred_template_expanded_cards": 11717,
+    "sdxl_bytes": 4458597,
+    "sdxl_deferred_cards": 11717
+  },
+  "scalar_banner": {
+    "markers": 38,
+    "native_fact_backed": 24,
+    "marker_only_without_native_fact": 14,
+    "values_match_actual_diagram_ir": 38,
+    "occurrence_placement_verification": "PENDING actual30 matrix join; HTML markers and drawn-fact keys cannot prove module placement."
+  },
+  "render_mutations": {
+    "models": [
+      "flux-2-dev",
+      "hunyuanvideo",
+      "lumina-image-2-0",
+      "stable-diffusion-3-5-large"
+    ],
+    "cause": "Existing renderer materializes VAE mid-block children. Same exact insertions as26, retained as explicit legacy renderer authorship debt, never fact proof.",
+    "identical_to26": true
+  },
+  "limitations": [
+    "No project/model/test/browser imports or execution by reviewer; only saved JSON/HTML and standard-library code.",
+    "Native proof summaries are not reconstructed live proof authority; root capture reports original in-process proof validation.",
+    "No architecture completeness or support of missing mechanisms inferred from zero census findings.",
+    "No output blessing or owner acceptance. Raw deltas and source references remain unchanged.",
+    "Static node/card counts are serialized/template counts, not browser DOM/load/click measurements.",
+    "Four legacy VAE renderer insertions and fourteen factless diffusion scalar cells are explicitly reported; they are not new qualified facts."
+  ]
+}

@@ -1,0 +1,2658 @@
+[
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      5
+    ],
+    "before": "root:feed_forward_proj",
+    "after": "root:encoder_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      6
+    ],
+    "before": "root:final_logit_softcapping",
+    "after": "root:feed_forward_proj"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      7
+    ],
+    "before": "root:hidden_size_per_layer_input",
+    "after": "root:final_logit_softcapping"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      8
+    ],
+    "before": "root:is_gated_act",
+    "after": "root:hidden_size_per_layer_input"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      9
+    ],
+    "before": "root:layer_norm_eps",
+    "after": "root:is_gated_act"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      10
+    ],
+    "before": "root:layer_norm_epsilon",
+    "after": "root:layer_norm_eps"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      11
+    ],
+    "before": "root:logits_scaling",
+    "after": "root:layer_norm_epsilon"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      12
+    ],
+    "before": "root:max_window_layers",
+    "after": "root:logits_scaling"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      13
+    ],
+    "before": "root:mlp_bias",
+    "after": "root:max_window_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      14
+    ],
+    "before": "root:moe_intermediate_size",
+    "after": "root:mlp_bias"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      15
+    ],
+    "before": "root:norm_type",
+    "after": "root:moe_intermediate_size"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      16
+    ],
+    "before": "root:num_experts",
+    "after": "root:n_blocks"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      17
+    ],
+    "before": "root:num_experts_per_tok",
+    "after": "root:n_layer"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      18
+    ],
+    "before": "root:num_hidden_layers",
+    "after": "root:n_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      19
+    ],
+    "before": "root:num_mtp_layers",
+    "after": "root:norm_type"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      20
+    ],
+    "before": "root:num_nextn_predict_layers",
+    "after": "root:num_blocks"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      21
+    ],
+    "before": "root:num_shared_experts",
+    "after": "root:num_experts"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      22
+    ],
+    "before": "root:query_pre_attn_scalar",
+    "after": "root:num_experts_per_tok"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      23
+    ],
+    "before": "root:rms_norm_eps",
+    "after": "root:num_hidden_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      24
+    ],
+    "before": "root:sliding_window",
+    "after": "root:num_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      25
+    ],
+    "before": "root:sliding_window_pattern",
+    "after": "root:num_mtp_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      26
+    ],
+    "before": "root:swiglu_limit",
+    "after": "root:num_nextn_predict_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      27
+    ],
+    "before": "root:use_bidirectional_attention",
+    "after": "root:num_shared_experts"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      28
+    ],
+    "before": "root:use_sliding_window",
+    "after": "root:query_pre_attn_scalar"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      29
+    ],
+    "before": "root:vocab_size_per_layer_input",
+    "after": "root:rms_norm_eps"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      30
+    ],
+    "added": "root:sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      31
+    ],
+    "added": "root:sliding_window_pattern"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      32
+    ],
+    "added": "root:swiglu_limit"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      33
+    ],
+    "added": "root:use_bidirectional_attention"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      34
+    ],
+    "added": "root:use_sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      35
+    ],
+    "added": "root:vocab_size_per_layer_input"
+  },
+  {
+    "path": [
+      "layers",
+      0,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      0,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      0,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      0,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      0,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      1,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      1,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      1,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      1,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      1,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      2,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      2,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      2,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      2,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      2,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      3,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      3,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      3,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      3,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      3,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      4,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      4,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      4,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      4,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      4,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      5,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      5,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      5,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      5,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      5,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      6,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      6,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      6,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      6,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      6,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      7,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      7,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      7,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      7,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      7,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      8,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      8,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      8,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      8,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      8,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      9,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      9,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      9,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      9,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      9,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      10,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      10,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      10,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      10,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      10,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      11,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      11,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      11,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      11,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      11,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      12,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      12,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      12,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      12,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      12,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      13,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      13,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      13,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      13,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      13,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      14,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      14,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      14,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      14,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      14,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      15,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      15,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      15,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      15,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      15,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      16,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      16,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      16,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      16,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      16,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      17,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      17,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      17,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      17,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      17,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      18,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      18,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      18,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      18,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      18,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      19,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      19,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      19,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      19,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      19,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      20,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      20,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      20,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      20,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      20,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      21,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      21,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      21,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      21,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      21,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      22,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      22,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      22,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      22,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      22,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      23,
+      "blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "added": []
+  },
+  {
+    "path": [
+      "layers",
+      23,
+      "blocks",
+      1,
+      "presentation_chips"
+    ],
+    "added": [
+      {
+        "chip_kind": "class_default",
+        "decision_ref": null,
+        "owner": "decoder.attention",
+        "parameters": [],
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "relation",
+              "document_fingerprints": [
+                "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93"
+              ],
+              "evidence_refs": [
+                "projection:decoder.attention.cross_attention_schedule:41e56a340c03b3ae",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+                "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+                "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+              ],
+              "fact_id": "decoder.attention.cross_attention_schedule",
+              "fact_status": "",
+              "index_fingerprints": [
+                "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "decoder.attention.cross_attention_schedule",
+            "owner": "decoder.attention",
+            "status": "class_default",
+            "value_status_hash": "41e56a340c03b3ae"
+          }
+        ],
+        "text": "cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+        "unknown_reason": null
+      }
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      23,
+      "blocks",
+      1,
+      "presentation_path"
+    ],
+    "added": [
+      "layers",
+      23,
+      "blocks",
+      1
+    ]
+  },
+  {
+    "path": [
+      "layers",
+      23,
+      "blocks",
+      1,
+      "source_fact_keys"
+    ],
+    "added": [
+      "decoder.attention.cross_attention_schedule"
+    ]
+  }
+]

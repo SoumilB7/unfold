@@ -1,0 +1,43 @@
+{
+  "actual_portable_seal": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+  "baseline_output": {
+    "ir_after_sha256": "48be00b1abb7ed2448eaa249a3b10989e5e63018b771bec91a26879d9da2f908",
+    "ir_before_sha256": "48be00b1abb7ed2448eaa249a3b10989e5e63018b771bec91a26879d9da2f908",
+    "page_bytes": 45568,
+    "page_sha256": "cd96d064501f9f9bab3c677e29f2b9023228411a540ec2ce751563d64a03008a",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+  "seconds": 0.25988883299942245,
+  "slug": "nemotron-h-8b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "a5e239cda340148ff672342c8d63707d1b73eaca93998a08932b7220f2ec9f44",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_nemotron_h.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "175d16afd709d52e02f75d90e4c39eb69cd26ffdcbef99445cd05b134b584a1a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_nemotron_h.py"
+    }
+  ],
+  "source_node_count": 3,
+  "status": "REPRODUCED"
+}

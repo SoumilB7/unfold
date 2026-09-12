@@ -1,0 +1,11 @@
+{
+  "all_other_matrix_fields_exact": true,
+  "decision": "ACCEPT",
+  "matrix_sha256": "4b5696bcef94f08da5c95fce8b8d0f0091b50eb285e219a8673c89d72b36accd",
+  "new_model_run_claimed": false,
+  "payloads_byte_exact": 117,
+  "prior_failed_gate_unchanged": true,
+  "scope": "Exactly19approvedcorpusmetadatahashes in matrix.sources",
+  "sources_equal_unchanged_generator": true,
+  "targets_byte_exact": true
+}

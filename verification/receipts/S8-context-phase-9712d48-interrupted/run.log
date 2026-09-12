@@ -1,0 +1,42 @@
+{"case": "sdxl-ordinary", "checks": {"validate_click_coupling": [], "validate_no_dotted_arrows": [], "validate_no_dotted_boundaries": [], "validate_unique_ref_ids": [], "validate_block_tree": []}, "actual_html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047", "render_events_identical": true, "before_event_count": 2535, "after_event_count": 2535}
+{"case": "sdxl-sparse", "checks": {"validate_click_coupling": [], "validate_no_dotted_arrows": [], "validate_no_dotted_boundaries": [], "validate_unique_ref_ids": [], "validate_block_tree": []}, "actual_html_sha256": "8eee98a90eba288c18a0ff745bda6f88ee5d6a35b381b4b0d98c128977d10d58", "render_events_identical": true, "before_event_count": 2535, "after_event_count": 2535}
+{"case": "sdxl-misleading", "checks": {"validate_click_coupling": [], "validate_no_dotted_arrows": [], "validate_no_dotted_boundaries": [], "validate_unique_ref_ids": [], "validate_block_tree": []}, "actual_html_sha256": "c323a34cceecbbd051540d809305a6f6be340fbd20594e5ea4091b65390d2728", "render_events_identical": true, "before_event_count": 2535, "after_event_count": 2535}
+{"case": "sdxl-rewrite", "checks": {"validate_click_coupling": [], "validate_no_dotted_arrows": [], "validate_no_dotted_boundaries": [], "validate_unique_ref_ids": [], "validate_block_tree": []}, "actual_html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047", "render_events_identical": true, "before_event_count": 2535, "after_event_count": 2535}
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-context-phase-9712d48/verify.py", line 52, in <module>
+    events=(json.dumps(canonical(d.render_events()),sort_keys=True,separators=(',',':'))+'\n').encode();old_events=gzip.decompress((Path('/private/tmp/unfold-s8-solid-f7baef5')/case/'after/render-events.json.gz').read_bytes());(out/'render-events.json.gz').write_bytes(gzip.compress(events,mtime=0));(out/'page.html').write_text(page);(out/'ir.json').write_text(json.dumps(ir.to_dict(),indent=2,sort_keys=True)+'\n');capture['ir']=d.to_ir();(out/'render-input.json').write_text(json.dumps(capture,indent=2,sort_keys=True)+'\n');assert before==manifest();assert pins=={n:sha(src/n) for n in pins};assert events==old_events;result={'case':case,'checks':checks,'added_context_reference_parent_ids':added,'canonical_facts_unchanged':True,'projection_only_reference_children_added':True,'captured_complete_ir_only_reference_children_added':True,'all_actual_svgs_byte_identical':True,'actual_html_only_one_context_card_added_at_depth9':bool(added),'added_actual_card_count':int(bool(added)),'production_commit':'9712d48','source_case':str(src),'actual_html_sha256':sha(out/'page.html'),'prior_html_sha256':sha(priorpage),'render_events_identical':events==old_events,'before_event_count':len(json.loads(old_events)),'after_event_count':len(json.loads(events)),'source_before':before,'source_after':manifest(),'saved_input_pins':pins,'blessed':False};(out/'result.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print(json.dumps({k:result[k] for k in ('case','checks','actual_html_sha256','render_events_identical','before_event_count','after_event_count')}),flush=True)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-context-phase-9712d48/verify.py", line 26, in canonical
+    if isinstance(v,(tuple,list)):return [canonical(x) for x in v]
+                                          ^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-context-phase-9712d48/verify.py", line 24, in canonical
+    if dataclasses.is_dataclass(v):return canonical(dataclasses.asdict(v))
+                                                    ^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py", line 1329, in asdict
+    return _asdict_inner(obj, dict_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py", line 1339, in _asdict_inner
+    f.name: _asdict_inner(getattr(obj, f.name), dict)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py", line 1386, in _asdict_inner
+    return copy.deepcopy(obj)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 253, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 252, in <genexpr>
+    args = (deepcopy(arg, memo) for arg in args)
+            ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/copy.py", line 127, in deepcopy
+    d = id(x)
+        ^^^^^
+KeyboardInterrupt

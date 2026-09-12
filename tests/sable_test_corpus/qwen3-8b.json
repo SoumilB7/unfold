@@ -1,0 +1,218 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_name_or_path": "Qwen/Qwen3-8B",
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "attention_bias": false,
+    "attention_dropout": 0.0,
+    "bos_token_id": 151643,
+    "chunk_size_feed_forward": 0,
+    "dtype": "bfloat16",
+    "eos_token_id": 151645,
+    "head_dim": 128,
+    "hidden_act": "silu",
+    "hidden_size": 4096,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "initializer_range": 0.02,
+    "intermediate_size": 12288,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "layer_types": [
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+    ],
+    "max_position_embeddings": 40960,
+    "max_window_layers": 36,
+    "model_type": "qwen3",
+    "num_attention_heads": 32,
+    "num_hidden_layers": 36,
+    "num_key_value_heads": 8,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "pad_token_id": null,
+    "problem_type": null,
+    "return_dict": true,
+    "rms_norm_eps": 1e-06,
+    "rope_parameters": {
+      "rope_theta": 1000000,
+      "rope_type": "default"
+    },
+    "sliding_window": null,
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "use_cache": true,
+    "use_sliding_window": false,
+    "vocab_size": 151936
+  },
+  "hash_signature": [
+    "069fdfe1cc0759670a1717944c1c8071",
+    "12b1bdce7140cb545f7989138979cbfe",
+    "3a3861a0086a7437aa44262b09b3eb19",
+    "c8e5aa1a15542c375c24f3617591d104"
+  ],
+  "model": "Qwen3-8B",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+    "her_eyes_review_sha256": "d2c6af3d870360ec7f83dca2447e6ec9c3e69ad21fadac6b5dc35b0034672df6",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "Qwen3-8B",
+    "pixel_review_sha256": "5fbe128e732ea7b76a488d98e4c81503ef4c3dba5e06087f60744ddab58a0342",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "d28c4523a1f01189e4bf7d22c0e13406631f7a93d309d146ea1ec7ef92508bfc",
+    "retained_visual_suggestions": [],
+    "reviewed_at": "2026-09-08T08:28:19.520361+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "069fdfe1cc0759670a1717944c1c8071",
+        "label": "architecture"
+      },
+      {
+        "hash": "c8e5aa1a15542c375c24f3617591d104",
+        "label": "architecture"
+      },
+      {
+        "hash": "3a3861a0086a7437aa44262b09b3eb19",
+        "label": "attn"
+      },
+      {
+        "hash": "12b1bdce7140cb545f7989138979cbfe",
+        "label": "ffn"
+      }
+    ]
+  },
+  "source": "local",
+  "superseded_hash_signature": [
+    "069fdfe1cc0759670a1717944c1c8071",
+    "12b1bdce7140cb545f7989138979cbfe",
+    "b4bd3816cdf9f112b262e9982bb785b0",
+    "c8e5aa1a15542c375c24f3617591d104"
+  ],
+  "view_signature": [
+    {
+      "hash": "069fdfe1cc0759670a1717944c1c8071",
+      "label": "architecture"
+    },
+    {
+      "hash": "c8e5aa1a15542c375c24f3617591d104",
+      "label": "architecture"
+    },
+    {
+      "hash": "3a3861a0086a7437aa44262b09b3eb19",
+      "label": "attn"
+    },
+    {
+      "hash": "12b1bdce7140cb545f7989138979cbfe",
+      "label": "ffn"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/qwen3-8b",
+    "manifest": true,
+    "png_count": 4
+  }
+}

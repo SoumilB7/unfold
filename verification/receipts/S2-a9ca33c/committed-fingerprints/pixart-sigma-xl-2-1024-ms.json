@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "9f807927da97c0dbfdfabd77e472b8ad33d56c014ba384850723b45079515d09",
+  "config": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.4039075840264559,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.0055494997650385,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.304175834171474,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.59765625,
+    4.03125,
+    4.2138671875
+  ],
+  "mode": "fingerprint",
+  "name": "pixart-sigma-xl-2-1024-ms",
+  "parse_seconds": 3.147448791656643,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "a9ca33cf2a3f3d4f514cd2edabed8ee082b4bb76",
+  "surface_hashes": {
+    "expanded": "375798fdb51a5c224ba3c4d2dcf6d22e94566965f10ff332aa4b5ba4f6daf4fd",
+    "html_meta": "d0533903c95b36df1c3ef9f3b6d878510f4295918d73a902f8174db69f72c5e2",
+    "ir": "f8a32662ef4d0ea05c199b3acd537ab0cf7b7804e7a424efe3ac73b036558699",
+    "ledgers": "d0fd598f0adef6db9ac52c34a431b14dfc64561041a56d50a6777d3912c37dcf",
+    "params": "40f7fb3d00c60a4a6e993ffb1a1666b845b5b4ce96419fe26ba02fa5067a3232"
+  }
+}

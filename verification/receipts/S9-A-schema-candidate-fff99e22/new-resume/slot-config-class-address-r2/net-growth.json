@@ -1,0 +1,37 @@
+{
+  "scope": "Net held r2 against original reviewed pre-change source; manifest.growth is cumulative edit volume, not this net source delta.",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/document.py",
+      "added": 74,
+      "deleted": 2
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "added": 40,
+      "deleted": 16
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "added": 4,
+      "deleted": 1
+    },
+    {
+      "path": "physics/result_cache.py",
+      "added": 28,
+      "deleted": 7
+    },
+    {
+      "path": "tests/test_s9_slot_config_class_address.py",
+      "added": 195,
+      "deleted": 0
+    },
+    {
+      "path": "tests/test_config_access.py",
+      "added": 5,
+      "deleted": 4
+    }
+  ],
+  "net_added": 346,
+  "net_deleted": 30
+}

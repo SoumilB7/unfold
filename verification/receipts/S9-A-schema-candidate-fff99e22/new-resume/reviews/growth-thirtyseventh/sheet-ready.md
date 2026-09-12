@@ -1,0 +1,5 @@
+Frozen37 versus separately held S10-1: **production +8,371/−676; tests +6,603/−1,781; fixture support +2,086/−0; scripts +1/−0; total +17,061/−2,457**. It adds no test or product module. Cumulative S9-A remains nine product modules added, zero deleted. Exact increment versus36: {"production": {"added": 9, "deleted": 0}, "tests": {"added": 0, "deleted": 0}}.
+
+The same48 retained readers in40 modules declare52 finite claim triples. Structural debt101→101 and three identified compatibility paths remain. Fixture relocation81 definitions/1,703 lines retains its separate accounting; no authority removal credited. The CSS-only increment adds no bridge or semantic authority. Bloom checkpoint70→genuine default2 is expected sparse structure change; MusicGen24→default24 is the structure-preserving counterpart.
+
+S10 remains separate: its latency receipt-map pointer correction changes no measured sample, median, host data or budget. No remeasurement is claimed. Current37 root runtime, matrix, preservation, browser and output acceptance remain separate obligations.

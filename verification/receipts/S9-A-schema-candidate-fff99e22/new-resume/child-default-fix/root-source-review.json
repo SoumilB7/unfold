@@ -1,0 +1,16 @@
+{
+  "manifest_sha256": "02907c59e173bbde353f1b0cefa0bd2f3c6a1c974d407d4855c79f2327926e7f",
+  "verdict": "bounded source accepted, runtime required",
+  "checks": [
+    "Exact selected constructed child, annotated config class and class literal; checkpoint/default operand uses full child path.",
+    "Outer already-built constructor binding graph retained and checked for selected object/path mutation and escape; no new evaluator.",
+    "Root scalar default cannot supply child operand; explicit/null/conflicting checkpoint aliases block default.",
+    "Parser operand acquisition uses same prepared-document resolver as positive proof; failed preparation defaults cannot bypass it."
+  ],
+  "required_runtime": [
+    "synthetic child controls including parent mutations and aliases",
+    "actual Qwen2-Audio sparse text regression",
+    "unknown wrapper bias absent/explicit regression",
+    "root default controls and source fingerprint equality"
+  ]
+}

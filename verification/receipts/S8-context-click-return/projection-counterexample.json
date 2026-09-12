@@ -1,0 +1,112 @@
+{
+  "sd14-ordinary": {
+    "context_cards": [
+      {
+        "description": "Required root input transported by the proven source route to the selected context argument.",
+        "facts": [
+          "Connection proven; cross-attention query role remains under investigation"
+        ],
+        "id": "unet_context_0",
+        "kind": "source",
+        "label": "External context input",
+        "role": "context_input",
+        "source_fact_keys": [
+          "root.denoiser.context_connections"
+        ],
+        "title": "Root input: encoder_hidden_states"
+      }
+    ],
+    "context_view_count": 15,
+    "first_context_view": {
+      "children": [
+        {
+          "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2__to_q",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_q"
+        },
+        {
+          "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2__to_k",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_k"
+        },
+        {
+          "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2__to_v",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_v"
+        },
+        {
+          "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2__to_out",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.0.attentions.0.transformer_blocks.0.attn2.to_out"
+        }
+      ],
+      "detail": {
+        "source": "unet_context_0",
+        "source_label": "External context input",
+        "target_formal": "encoder_hidden_states"
+      },
+      "id": "instance_down_blocks__0__attentions__0__transformer_blocks__0__attn2",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.context_connections"
+      ]
+    },
+    "input_sha256": "2eb261804a766914295a12acc6ec5a9e2edf65382379f1ce1018cd355f53421f"
+  },
+  "sdxl-ordinary": {
+    "context_cards": [
+      {
+        "description": "Required root input transported by the proven source route to the selected context argument.",
+        "facts": [
+          "Connection proven; cross-attention query role remains under investigation"
+        ],
+        "id": "unet_context_0",
+        "kind": "source",
+        "label": "External context input",
+        "role": "context_input",
+        "source_fact_keys": [
+          "root.denoiser.context_connections"
+        ],
+        "title": "Root input: encoder_hidden_states"
+      }
+    ],
+    "context_view_count": 60,
+    "first_context_view": {
+      "children": [
+        {
+          "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__to_q",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_q"
+        },
+        {
+          "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__to_k",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_k"
+        },
+        {
+          "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__to_v",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_v"
+        },
+        {
+          "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__to_out",
+          "role": "constructed",
+          "source_instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_out"
+        }
+      ],
+      "detail": {
+        "source": "unet_context_0",
+        "source_label": "External context input",
+        "target_formal": "encoder_hidden_states"
+      },
+      "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.context_connections"
+      ]
+    },
+    "input_sha256": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81"
+  }
+}

@@ -1,0 +1,3 @@
+# Remaining14 unseen coverage applicability preparation
+
+Exact unchanged input bytes and complete historical716 coverage rows are retained here. Declared architecture/model strings are input lookup addresses, not source/mechanism authority. The actual Sable row producer and coverage serializer are byte-identical, as are parser dispatch and UNet projector. Current applicability of the seven changed production files remains for independent review. SD14 is deliberately excluded and queued for actual current Sable because new primitive events apply. No generated rows, fresh14 execution or current44 check is claimed by this preparation. The baseline is the measured716 campaign artifact, which was committed later; the original716 source commit predates that data update.

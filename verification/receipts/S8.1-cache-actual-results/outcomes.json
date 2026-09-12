@@ -1,0 +1,656 @@
+{
+  "not_claimed": "No new run, reconstructed historical cause, completed latency campaign, or budget acceptance.",
+  "results": [
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "inventory",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "inventory",
+          "reason": "capture_dependencies_ineligible_or_changed",
+          "status": "miss"
+        }
+      ],
+      "actual_dependency_disposition": {
+        "complete": true,
+        "eligible": false,
+        "unsupported": [
+          "external_directory_read:/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/tmppymgiop0",
+          "external_read:/dev/null",
+          "external_read:/private/tmp/unfold-s81-static-candidate-788abbd/__editable__.model_unfolder-0.3.0.finder.__path_hook__",
+          "external_read:/proc/self/maps",
+          "external_read:/usr/share/zoneinfo/UTC",
+          "external_read:/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/tmppymgiop0/__pycache__/_remote_module_non_scriptable.cpython-312.pyc",
+          "external_read:/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/tmppymgiop0/_remote_module_non_scriptable.py",
+          "nonprotocol_write:/dev/null",
+          "nonprotocol_write:/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/f5oja_8d",
+          "nonprotocol_write:/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/tmppymgiop0/_remote_module_non_scriptable.py",
+          "uncaptured_child_execution:subprocess.Popen",
+          "unresolved_file_descriptor_input",
+          "unresolved_import_origin:_cython_3_1_0",
+          "unresolved_import_origin:_cython_3_1_4",
+          "unresolved_import_origin:_cython_3_1_5",
+          "unresolved_import_origin:_cython_3_1_6",
+          "unresolved_import_origin:_cython_3_2_2",
+          "unresolved_import_origin:cython_runtime",
+          "unresolved_import_origin:pyexpat.errors",
+          "unresolved_import_origin:pyexpat.model",
+          "unresolved_import_origin:six.moves",
+          "unresolved_import_origin:torch._C._aoti",
+          "unresolved_import_origin:torch._C._cpu",
+          "unresolved_import_origin:torch._C._dynamo",
+          "unresolved_import_origin:torch._C._dynamo.autograd_compiler",
+          "unresolved_import_origin:torch._C._dynamo.eval_frame",
+          "unresolved_import_origin:torch._C._dynamo.guards",
+          "unresolved_import_origin:torch._C._dynamo.utils",
+          "unresolved_import_origin:torch._C._export",
+          "unresolved_import_origin:torch._C._export.pt2_archive_constants",
+          "unresolved_import_origin:torch._C._fft",
+          "unresolved_import_origin:torch._C._functionalization",
+          "unresolved_import_origin:torch._C._functorch",
+          "unresolved_import_origin:torch._C._instruction_counter",
+          "unresolved_import_origin:torch._C._jit",
+          "unresolved_import_origin:torch._C._jit_tree_views",
+          "unresolved_import_origin:torch._C._lazy",
+          "unresolved_import_origin:torch._C._lazy_ts_backend",
+          "unresolved_import_origin:torch._C._linalg",
+          "unresolved_import_origin:torch._C._monitor",
+          "unresolved_import_origin:torch._C._nativert",
+          "unresolved_import_origin:torch._C._nested",
+          "unresolved_import_origin:torch._C._nn",
+          "unresolved_import_origin:torch._C._onnx",
+          "unresolved_import_origin:torch._C._profiler",
+          "unresolved_import_origin:torch._C._return_types",
+          "unresolved_import_origin:torch._C._sparse",
+          "unresolved_import_origin:torch._C._special",
+          "unresolved_import_origin:torch._C._te",
+          "unresolved_import_origin:torch._C._verbose",
+          "unresolved_import_origin:torch._C.cpp",
+          "unresolved_import_origin:torch._C.cpp.nn",
+          "unresolved_import_origin:torch._VF",
+          "unresolved_import_origin:torch.backends",
+          "unresolved_import_origin:torch.backends.cudnn",
+          "unresolved_import_origin:torch.backends.miopen",
+          "unresolved_import_origin:torch.backends.mkldnn",
+          "unresolved_import_origin:torch.backends.opt_einsum",
+          "unresolved_import_origin:torch.backends.quantized",
+          "unresolved_import_origin:torch.classes",
+          "unresolved_import_origin:torch.ops",
+          "unresolved_import_origin:transformers.image_processing_utils_fast",
+          "unresolved_import_origin:transformers.models.aria.image_processing_aria_fast",
+          "unresolved_import_origin:transformers.models.aria.image_processing_pil_aria_fast",
+          "unresolved_import_origin:transformers.models.auto.image_processing_auto_fast",
+          "unresolved_import_origin:transformers.models.beit.image_processing_beit_fast",
+          "unresolved_import_origin:transformers.models.beit.image_processing_pil_beit_fast",
+          "unresolved_import_origin:transformers.models.bit.image_processing_bit_fast",
+          "unresolved_import_origin:transformers.models.bit.image_processing_pil_bit_fast",
+          "unresolved_import_origin:transformers.models.blip.image_processing_blip_fast",
+          "unresolved_import_origin:transformers.models.blip.image_processing_pil_blip_fast",
+          "unresolved_import_origin:transformers.models.bridgetower.image_processing_bridgetower_fast",
+          "unresolved_import_origin:transformers.models.bridgetower.image_processing_pil_bridgetower_fast",
+          "unresolved_import_origin:transformers.models.chameleon.image_processing_chameleon_fast",
+          "unresolved_import_origin:transformers.models.chameleon.image_processing_pil_chameleon_fast",
+          "unresolved_import_origin:transformers.models.chinese_clip.image_processing_chinese_clip_fast",
+          "unresolved_import_origin:transformers.models.chinese_clip.image_processing_pil_chinese_clip_fast",
+          "unresolved_import_origin:transformers.models.chmv2.image_processing_chmv2_fast",
+          "unresolved_import_origin:transformers.models.clip.image_processing_clip_fast",
+          "unresolved_import_origin:transformers.models.clip.image_processing_pil_clip_fast",
+          "unresolved_import_origin:transformers.models.cohere2_vision.image_processing_cohere2_vision_fast",
+          "unresolved_import_origin:transformers.models.conditional_detr.image_processing_conditional_detr_fast",
+          "unresolved_import_origin:transformers.models.conditional_detr.image_processing_pil_conditional_detr_fast",
+          "unresolved_import_origin:transformers.models.convnext.image_processing_convnext_fast",
+          "unresolved_import_origin:transformers.models.convnext.image_processing_pil_convnext_fast",
+          "unresolved_import_origin:transformers.models.deepseek_ocr2.image_processing_deepseek_ocr2_fast",
+          "unresolved_import_origin:transformers.models.deepseek_ocr2.image_processing_pil_deepseek_ocr2_fast",
+          "unresolved_import_origin:transformers.models.deepseek_vl.image_processing_deepseek_vl_fast",
+          "unresolved_import_origin:transformers.models.deepseek_vl.image_processing_pil_deepseek_vl_fast",
+          "unresolved_import_origin:transformers.models.deepseek_vl_hybrid.image_processing_deepseek_vl_hybrid_fast",
+          "unresolved_import_origin:transformers.models.deepseek_vl_hybrid.image_processing_pil_deepseek_vl_hybrid_fast",
+          "unresolved_import_origin:transformers.models.deformable_detr.image_processing_deformable_detr_fast",
+          "unresolved_import_origin:transformers.models.deformable_detr.image_processing_pil_deformable_detr_fast",
+          "unresolved_import_origin:transformers.models.deit.image_processing_deit_fast",
+          "unresolved_import_origin:transformers.models.deit.image_processing_pil_deit_fast",
+          "unresolved_import_origin:transformers.models.depth_pro.image_processing_depth_pro_fast",
+          "unresolved_import_origin:transformers.models.detr.image_processing_detr_fast",
+          "unresolved_import_origin:transformers.models.detr.image_processing_pil_detr_fast",
+          "unresolved_import_origin:transformers.models.dinov3_vit.image_processing_dinov3_vit_fast",
+          "unresolved_import_origin:transformers.models.donut.image_processing_donut_fast",
+          "unresolved_import_origin:transformers.models.donut.image_processing_pil_donut_fast",
+          "unresolved_import_origin:transformers.models.dpt.image_processing_dpt_fast",
+          "unresolved_import_origin:transformers.models.dpt.image_processing_pil_dpt_fast",
+          "unresolved_import_origin:transformers.models.efficientloftr.image_processing_efficientloftr_fast",
+          "unresolved_import_origin:transformers.models.efficientloftr.image_processing_pil_efficientloftr_fast",
+          "unresolved_import_origin:transformers.models.efficientnet.image_processing_efficientnet_fast",
+          "unresolved_import_origin:transformers.models.efficientnet.image_processing_pil_efficientnet_fast",
+          "unresolved_import_origin:transformers.models.emu3.image_processing_emu3_fast",
+          "unresolved_import_origin:transformers.models.eomt.image_processing_eomt_fast",
+          "unresolved_import_origin:transformers.models.eomt.image_processing_pil_eomt_fast",
+          "unresolved_import_origin:transformers.models.ernie4_5_vl_moe.image_processing_ernie4_5_vl_moe_fast",
+          "unresolved_import_origin:transformers.models.ernie4_5_vl_moe.image_processing_pil_ernie4_5_vl_moe_fast",
+          "unresolved_import_origin:transformers.models.flava.image_processing_flava_fast",
+          "unresolved_import_origin:transformers.models.flava.image_processing_pil_flava_fast",
+          "unresolved_import_origin:transformers.models.fuyu.image_processing_fuyu_fast",
+          "unresolved_import_origin:transformers.models.fuyu.image_processing_pil_fuyu_fast",
+          "unresolved_import_origin:transformers.models.gemma3.image_processing_gemma3_fast",
+          "unresolved_import_origin:transformers.models.gemma3.image_processing_pil_gemma3_fast",
+          "unresolved_import_origin:transformers.models.gemma4.image_processing_gemma4_fast",
+          "unresolved_import_origin:transformers.models.gemma4.image_processing_pil_gemma4_fast",
+          "unresolved_import_origin:transformers.models.gemma4_unified.image_processing_gemma4_unified_fast",
+          "unresolved_import_origin:transformers.models.glm46v.image_processing_glm46v_fast",
+          "unresolved_import_origin:transformers.models.glm46v.image_processing_pil_glm46v_fast",
+          "unresolved_import_origin:transformers.models.glm4v.image_processing_glm4v_fast",
+          "unresolved_import_origin:transformers.models.glm4v.image_processing_pil_glm4v_fast",
+          "unresolved_import_origin:transformers.models.glm_image.image_processing_glm_image_fast",
+          "unresolved_import_origin:transformers.models.glm_image.image_processing_pil_glm_image_fast",
+          "unresolved_import_origin:transformers.models.glmga.image_processing_glmga_fast",
+          "unresolved_import_origin:transformers.models.glmga.image_processing_pil_glmga_fast",
+          "unresolved_import_origin:transformers.models.glpn.image_processing_glpn_fast",
+          "unresolved_import_origin:transformers.models.glpn.image_processing_pil_glpn_fast",
+          "unresolved_import_origin:transformers.models.got_ocr2.image_processing_got_ocr2_fast",
+          "unresolved_import_origin:transformers.models.got_ocr2.image_processing_pil_got_ocr2_fast",
+          "unresolved_import_origin:transformers.models.grounding_dino.image_processing_grounding_dino_fast",
+          "unresolved_import_origin:transformers.models.grounding_dino.image_processing_pil_grounding_dino_fast",
+          "unresolved_import_origin:transformers.models.idefics.image_processing_idefics_fast",
+          "unresolved_import_origin:transformers.models.idefics.image_processing_pil_idefics_fast",
+          "unresolved_import_origin:transformers.models.idefics2.image_processing_idefics2_fast",
+          "unresolved_import_origin:transformers.models.idefics2.image_processing_pil_idefics2_fast",
+          "unresolved_import_origin:transformers.models.idefics3.image_processing_idefics3_fast",
+          "unresolved_import_origin:transformers.models.idefics3.image_processing_pil_idefics3_fast",
+          "unresolved_import_origin:transformers.models.imagegpt.image_processing_imagegpt_fast",
+          "unresolved_import_origin:transformers.models.imagegpt.image_processing_pil_imagegpt_fast",
+          "unresolved_import_origin:transformers.models.janus.image_processing_janus_fast",
+          "unresolved_import_origin:transformers.models.janus.image_processing_pil_janus_fast",
+          "unresolved_import_origin:transformers.models.kosmos2_5.image_processing_kosmos2_5_fast",
+          "unresolved_import_origin:transformers.models.kosmos2_5.image_processing_pil_kosmos2_5_fast",
+          "unresolved_import_origin:transformers.models.layoutlmv2.image_processing_layoutlmv2_fast",
+          "unresolved_import_origin:transformers.models.layoutlmv2.image_processing_pil_layoutlmv2_fast",
+          "unresolved_import_origin:transformers.models.layoutlmv3.image_processing_layoutlmv3_fast",
+          "unresolved_import_origin:transformers.models.layoutlmv3.image_processing_pil_layoutlmv3_fast",
+          "unresolved_import_origin:transformers.models.levit.image_processing_levit_fast",
+          "unresolved_import_origin:transformers.models.levit.image_processing_pil_levit_fast",
+          "unresolved_import_origin:transformers.models.lfm2_vl.image_processing_lfm2_vl_fast",
+          "unresolved_import_origin:transformers.models.lightglue.image_processing_lightglue_fast",
+          "unresolved_import_origin:transformers.models.lightglue.image_processing_pil_lightglue_fast",
+          "unresolved_import_origin:transformers.models.llama4.image_processing_llama4_fast",
+          "unresolved_import_origin:transformers.models.llava.image_processing_llava_fast",
+          "unresolved_import_origin:transformers.models.llava.image_processing_pil_llava_fast",
+          "unresolved_import_origin:transformers.models.llava_next.image_processing_llava_next_fast",
+          "unresolved_import_origin:transformers.models.llava_next.image_processing_pil_llava_next_fast",
+          "unresolved_import_origin:transformers.models.llava_onevision.image_processing_llava_onevision_fast",
+          "unresolved_import_origin:transformers.models.llava_onevision.image_processing_pil_llava_onevision_fast",
+          "unresolved_import_origin:transformers.models.mask2former.image_processing_mask2former_fast",
+          "unresolved_import_origin:transformers.models.mask2former.image_processing_pil_mask2former_fast",
+          "unresolved_import_origin:transformers.models.maskformer.image_processing_maskformer_fast",
+          "unresolved_import_origin:transformers.models.maskformer.image_processing_pil_maskformer_fast",
+          "unresolved_import_origin:transformers.models.minicpmv4_6.image_processing_minicpmv4_6_fast",
+          "unresolved_import_origin:transformers.models.minicpmv4_6.image_processing_pil_minicpmv4_6_fast",
+          "unresolved_import_origin:transformers.models.minimax_m3_vl.image_processing_minimax_m3_vl_fast",
+          "unresolved_import_origin:transformers.models.mllama.image_processing_mllama_fast",
+          "unresolved_import_origin:transformers.models.mllama.image_processing_pil_mllama_fast",
+          "unresolved_import_origin:transformers.models.mobilenet_v1.image_processing_mobilenet_v1_fast",
+          "unresolved_import_origin:transformers.models.mobilenet_v1.image_processing_pil_mobilenet_v1_fast",
+          "unresolved_import_origin:transformers.models.mobilenet_v2.image_processing_mobilenet_v2_fast",
+          "unresolved_import_origin:transformers.models.mobilenet_v2.image_processing_pil_mobilenet_v2_fast",
+          "unresolved_import_origin:transformers.models.mobilevit.image_processing_mobilevit_fast",
+          "unresolved_import_origin:transformers.models.mobilevit.image_processing_pil_mobilevit_fast",
+          "unresolved_import_origin:transformers.models.nougat.image_processing_nougat_fast",
+          "unresolved_import_origin:transformers.models.nougat.image_processing_pil_nougat_fast",
+          "unresolved_import_origin:transformers.models.oneformer.image_processing_oneformer_fast",
+          "unresolved_import_origin:transformers.models.oneformer.image_processing_pil_oneformer_fast",
+          "unresolved_import_origin:transformers.models.ovis2.image_processing_ovis2_fast",
+          "unresolved_import_origin:transformers.models.ovis2.image_processing_pil_ovis2_fast",
+          "unresolved_import_origin:transformers.models.owlv2.image_processing_owlv2_fast",
+          "unresolved_import_origin:transformers.models.owlv2.image_processing_pil_owlv2_fast",
+          "unresolved_import_origin:transformers.models.owlvit.image_processing_owlvit_fast",
+          "unresolved_import_origin:transformers.models.owlvit.image_processing_pil_owlvit_fast",
+          "unresolved_import_origin:transformers.models.paddleocr_vl.image_processing_paddleocr_vl_fast",
+          "unresolved_import_origin:transformers.models.paddleocr_vl.image_processing_pil_paddleocr_vl_fast",
+          "unresolved_import_origin:transformers.models.perceiver.image_processing_perceiver_fast",
+          "unresolved_import_origin:transformers.models.perceiver.image_processing_pil_perceiver_fast",
+          "unresolved_import_origin:transformers.models.perception_lm.image_processing_perception_lm_fast",
+          "unresolved_import_origin:transformers.models.phi4_multimodal.image_processing_phi4_multimodal_fast",
+          "unresolved_import_origin:transformers.models.pi0.image_processing_pi0_fast",
+          "unresolved_import_origin:transformers.models.pix2struct.image_processing_pil_pix2struct_fast",
+          "unresolved_import_origin:transformers.models.pix2struct.image_processing_pix2struct_fast",
+          "unresolved_import_origin:transformers.models.pixtral.image_processing_pil_pixtral_fast",
+          "unresolved_import_origin:transformers.models.pixtral.image_processing_pixtral_fast",
+          "unresolved_import_origin:transformers.models.poolformer.image_processing_pil_poolformer_fast",
+          "unresolved_import_origin:transformers.models.poolformer.image_processing_poolformer_fast",
+          "unresolved_import_origin:transformers.models.pp_chart2table.image_processing_pil_pp_chart2table_fast",
+          "unresolved_import_origin:transformers.models.pp_chart2table.image_processing_pp_chart2table_fast",
+          "unresolved_import_origin:transformers.models.pp_doclayout_v2.image_processing_pp_doclayout_v2_fast",
+          "unresolved_import_origin:transformers.models.pp_doclayout_v3.image_processing_pp_doclayout_v3_fast",
+          "unresolved_import_origin:transformers.models.pp_formulanet.image_processing_pp_formulanet_fast",
+          "unresolved_import_origin:transformers.models.pp_lcnet.image_processing_pp_lcnet_fast",
+          "unresolved_import_origin:transformers.models.pp_ocrv5_server_det.image_processing_pp_ocrv5_server_det_fast",
+          "unresolved_import_origin:transformers.models.pp_ocrv5_server_rec.image_processing_pp_ocrv5_server_rec_fast",
+          "unresolved_import_origin:transformers.models.pp_ocrv6_small_rec.image_processing_pp_ocrv6_small_rec_fast",
+          "unresolved_import_origin:transformers.models.prompt_depth_anything.image_processing_pil_prompt_depth_anything_fast",
+          "unresolved_import_origin:transformers.models.prompt_depth_anything.image_processing_prompt_depth_anything_fast",
+          "unresolved_import_origin:transformers.models.pvt.image_processing_pil_pvt_fast",
+          "unresolved_import_origin:transformers.models.pvt.image_processing_pvt_fast",
+          "unresolved_import_origin:transformers.models.qwen2_vl.image_processing_pil_qwen2_vl_fast",
+          "unresolved_import_origin:transformers.models.qwen2_vl.image_processing_qwen2_vl_fast",
+          "unresolved_import_origin:transformers.models.rf_detr.image_processing_rf_detr_fast",
+          "unresolved_import_origin:transformers.models.rt_detr.image_processing_pil_rt_detr_fast",
+          "unresolved_import_origin:transformers.models.rt_detr.image_processing_rt_detr_fast",
+          "unresolved_import_origin:transformers.models.sam.image_processing_pil_sam_fast",
+          "unresolved_import_origin:transformers.models.sam.image_processing_sam_fast",
+          "unresolved_import_origin:transformers.models.sam2.image_processing_sam2_fast",
+          "unresolved_import_origin:transformers.models.sam3.image_processing_sam3_fast",
+          "unresolved_import_origin:transformers.models.sapiens2.image_processing_sapiens2_fast",
+          "unresolved_import_origin:transformers.models.segformer.image_processing_pil_segformer_fast",
+          "unresolved_import_origin:transformers.models.segformer.image_processing_segformer_fast",
+          "unresolved_import_origin:transformers.models.seggpt.image_processing_pil_seggpt_fast",
+          "unresolved_import_origin:transformers.models.seggpt.image_processing_seggpt_fast",
+          "unresolved_import_origin:transformers.models.siglip.image_processing_pil_siglip_fast",
+          "unresolved_import_origin:transformers.models.siglip.image_processing_siglip_fast",
+          "unresolved_import_origin:transformers.models.siglip2.image_processing_pil_siglip2_fast",
+          "unresolved_import_origin:transformers.models.siglip2.image_processing_siglip2_fast",
+          "unresolved_import_origin:transformers.models.slanext.image_processing_slanext_fast",
+          "unresolved_import_origin:transformers.models.smolvlm.image_processing_pil_smolvlm_fast",
+          "unresolved_import_origin:transformers.models.smolvlm.image_processing_smolvlm_fast",
+          "unresolved_import_origin:transformers.models.superglue.image_processing_pil_superglue_fast",
+          "unresolved_import_origin:transformers.models.superglue.image_processing_superglue_fast",
+          "unresolved_import_origin:transformers.models.superpoint.image_processing_pil_superpoint_fast",
+          "unresolved_import_origin:transformers.models.superpoint.image_processing_superpoint_fast",
+          "unresolved_import_origin:transformers.models.swin2sr.image_processing_pil_swin2sr_fast",
+          "unresolved_import_origin:transformers.models.swin2sr.image_processing_swin2sr_fast",
+          "unresolved_import_origin:transformers.models.textnet.image_processing_pil_textnet_fast",
+          "unresolved_import_origin:transformers.models.textnet.image_processing_textnet_fast",
+          "unresolved_import_origin:transformers.models.timm_wrapper.image_processing_timm_wrapper_fast",
+          "unresolved_import_origin:transformers.models.tvp.image_processing_pil_tvp_fast",
+          "unresolved_import_origin:transformers.models.tvp.image_processing_tvp_fast",
+          "unresolved_import_origin:transformers.models.uvdoc.image_processing_uvdoc_fast",
+          "unresolved_import_origin:transformers.models.video_llama_3.image_processing_pil_video_llama_3_fast",
+          "unresolved_import_origin:transformers.models.video_llama_3.image_processing_video_llama_3_fast",
+          "unresolved_import_origin:transformers.models.video_llava.image_processing_video_llava_fast",
+          "unresolved_import_origin:transformers.models.videomae.image_processing_pil_videomae_fast",
+          "unresolved_import_origin:transformers.models.videomae.image_processing_videomae_fast",
+          "unresolved_import_origin:transformers.models.vilt.image_processing_pil_vilt_fast",
+          "unresolved_import_origin:transformers.models.vilt.image_processing_vilt_fast",
+          "unresolved_import_origin:transformers.models.vit.image_processing_pil_vit_fast",
+          "unresolved_import_origin:transformers.models.vit.image_processing_vit_fast",
+          "unresolved_import_origin:transformers.models.vitmatte.image_processing_pil_vitmatte_fast",
+          "unresolved_import_origin:transformers.models.vitmatte.image_processing_vitmatte_fast",
+          "unresolved_import_origin:transformers.models.vitpose.image_processing_pil_vitpose_fast",
+          "unresolved_import_origin:transformers.models.vitpose.image_processing_vitpose_fast",
+          "unresolved_import_origin:transformers.models.vivit.image_processing_vivit_fast",
+          "unresolved_import_origin:transformers.models.yolos.image_processing_pil_yolos_fast",
+          "unresolved_import_origin:transformers.models.yolos.image_processing_yolos_fast",
+          "unresolved_import_origin:transformers.models.zoedepth.image_processing_pil_zoedepth_fast",
+          "unresolved_import_origin:transformers.models.zoedepth.image_processing_zoedepth_fast",
+          "unresolved_import_origin:transformers.tokenization_utils",
+          "unresolved_import_origin:transformers.tokenization_utils_fast",
+          "unresolved_import_origin:typing.io",
+          "unresolved_import_origin:typing.re",
+          "unresolved_import_origin:xml.parsers.expat.errors",
+          "unresolved_import_origin:xml.parsers.expat.model",
+          "unsupported_import_loader:_collections_abc",
+          "unsupported_import_loader:_frozen_importlib",
+          "unsupported_import_loader:_frozen_importlib_external",
+          "unsupported_import_loader:_sitebuiltins",
+          "unsupported_import_loader:abc",
+          "unsupported_import_loader:codecs",
+          "unsupported_import_loader:genericpath",
+          "unsupported_import_loader:importlib._bootstrap",
+          "unsupported_import_loader:importlib._bootstrap_external",
+          "unsupported_import_loader:importlib.machinery",
+          "unsupported_import_loader:importlib.util",
+          "unsupported_import_loader:io",
+          "unsupported_import_loader:ntpath",
+          "unsupported_import_loader:os",
+          "unsupported_import_loader:os.path",
+          "unsupported_import_loader:posixpath",
+          "unsupported_import_loader:runpy",
+          "unsupported_import_loader:scipy.optimize._highspy._core.cb",
+          "unsupported_import_loader:scipy.optimize._highspy._core.simplex_constants",
+          "unsupported_import_loader:site",
+          "unsupported_import_loader:stat",
+          "unsupported_import_loader:torch._C._autograd",
+          "unsupported_import_loader:torch._C._distributed_autograd",
+          "unsupported_import_loader:torch._C._distributed_c10d",
+          "unsupported_import_loader:torch._C._distributed_rpc",
+          "unsupported_import_loader:zipimport"
+        ]
+      },
+      "actual_result": "cache-cold-v1/result.json",
+      "diagnostic_record_type": "list",
+      "name": "cache-cold-v1",
+      "observed_result_fields": {
+        "error": null,
+        "external_pins_equal": true,
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": true,
+        "limits": "One eligibility diagnostic; cache sidecar copy and source/observer work disclosed. This is not a cold/warm latency median. A hit retains original historical worker evidence.",
+        "sidecar_copy_errors": [],
+        "source_pins_equal": true,
+        "status": "ok"
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "inventory",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "inventory",
+          "reason": "fresh_supervised_execution",
+          "status": "worker"
+        },
+        {
+          "kind": "inventory",
+          "reason": "capture_dependencies_ineligible_or_changed",
+          "status": "miss"
+        }
+      ],
+      "actual_dependency_disposition": {
+        "complete": true,
+        "eligible": false,
+        "unsupported": [
+          "uncaptured_child_execution:subprocess.Popen",
+          "unresolved_file_descriptor_input",
+          "unresolved_import_origin:_cython_3_1_0",
+          "unresolved_import_origin:_cython_3_1_4",
+          "unresolved_import_origin:_cython_3_1_5",
+          "unresolved_import_origin:_cython_3_1_6",
+          "unresolved_import_origin:_cython_3_2_2",
+          "unresolved_import_origin:cython_runtime",
+          "unresolved_import_origin:typing.io",
+          "unresolved_import_origin:typing.re"
+        ]
+      },
+      "actual_result": "cache-cold-v2/result.json",
+      "diagnostic_record_type": "list",
+      "name": "cache-cold-v2",
+      "observed_result_fields": {
+        "error": null,
+        "external_pins_equal": true,
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": true,
+        "limits": "One eligibility diagnostic; cache sidecar copy and source/observer work disclosed. This is not a cold/warm latency median. A hit retains original historical worker evidence.",
+        "sidecar_copy_errors": [],
+        "source_pins_equal": true,
+        "status": "ok"
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "inventory",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "inventory",
+          "reason": "fresh_supervised_execution",
+          "status": "worker"
+        },
+        {
+          "entry_sha256": "89a14db7eea96c4e11a36d303b5c12f9de06c9a5e4c61df6fbb5b10a0d11c64b",
+          "kind": "inventory",
+          "reason": "successful_historical_capture",
+          "request_key": "9b17d8ed6e3e479b62446787615b77c628eb1c5b5ccfafba0dfe362e94a8cbc1",
+          "status": "stored"
+        }
+      ],
+      "actual_dependency_disposition": {
+        "complete": true,
+        "eligible": true,
+        "unsupported": []
+      },
+      "actual_result": "cache-cold-v3/result.json",
+      "diagnostic_record_type": "list",
+      "name": "cache-cold-v3",
+      "observed_result_fields": {
+        "error": null,
+        "external_pins_equal": true,
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": true,
+        "limits": "One eligibility diagnostic; cache sidecar copy and source/observer work disclosed. This is not a cold/warm latency median. A hit retains original historical worker evidence.",
+        "sidecar_copy_errors": [],
+        "source_pins_equal": true,
+        "status": "ok"
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "entry_sha256": "89a14db7eea96c4e11a36d303b5c12f9de06c9a5e4c61df6fbb5b10a0d11c64b",
+          "kind": "inventory",
+          "reason": "exact_historical_capture",
+          "request_key": "9b17d8ed6e3e479b62446787615b77c628eb1c5b5ccfafba0dfe362e94a8cbc1",
+          "status": "hit"
+        }
+      ],
+      "actual_result": "cache-warm-v3/result.json",
+      "diagnostic_record_type": "list",
+      "name": "cache-warm-v3",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_tool_pins_equal": true,
+        "inventory_structurally_equal": true,
+        "limits": "One eligibility diagnostic; cache sidecar copy and source/observer work disclosed. This is not a cold/warm latency median. A hit retains original historical worker evidence.",
+        "sidecar_copy_errors": [],
+        "source_pins_equal": true,
+        "status": "ok"
+      }
+    },
+    {
+      "actual_result": "cache-unit-v2/result.json",
+      "name": "cache-unit-v2",
+      "observed_result_fields": {
+        "exit_code": 1
+      }
+    },
+    {
+      "actual_result": "cache-unit-v3/result.json",
+      "name": "cache-unit-v3",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "cache-unit-v4/result.json",
+      "name": "cache-unit-v4",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "cache-unit-v5/result.json",
+      "name": "cache-unit-v5",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "import-probe-v1/result.json",
+      "name": "import-probe-v1",
+      "observed_result_fields": {
+        "error": "TypeError('Object of type getset_descriptor is not JSON serializable')",
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "No model construction; original standard native loader called once and restored. Module-name-set observations are creation windows, not an arbitrary interpreter purity proof. Source inspection only; no cache entry publication.",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "import-probe-v2/result.json",
+      "name": "import-probe-v2",
+      "observed_result_fields": {
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "No model construction; original standard native loader called once and restored. Module-name-set observations are creation windows, not an arbitrary interpreter purity proof. Source inspection only; no cache entry publication.",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "observation",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "observation",
+          "reason": "fresh_supervised_execution",
+          "status": "worker"
+        },
+        {
+          "entry_sha256": "cdfeeccaafb324505969a6d87c7a5073ada1a0459c26e882dc314f7e522b97cc",
+          "kind": "observation",
+          "reason": "successful_historical_capture",
+          "request_key": "d0f0d23a9f7a2c201603e0f67c51f5d3cdd9a7ca421aacb9a2f88298ebc5473d",
+          "status": "stored"
+        }
+      ],
+      "actual_dependency_disposition": {
+        "complete": true,
+        "eligible": true,
+        "unsupported": []
+      },
+      "actual_result": "observation-cold-v4/result.json",
+      "diagnostic_record_type": "list",
+      "name": "observation-cold-v4",
+      "observed_result_fields": {
+        "copy_errors": [],
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "Actual positive meta recipe only; historical cache reuse is not new live execution or mechanism/negative proof. No old pilot result substituted; these are not latency medians.",
+        "mode": "cold",
+        "source_pins_equal": true,
+        "status": "ok",
+        "warm_cache_pins_equal": null
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "entry_sha256": "cdfeeccaafb324505969a6d87c7a5073ada1a0459c26e882dc314f7e522b97cc",
+          "kind": "observation",
+          "reason": "exact_historical_capture",
+          "request_key": "d0f0d23a9f7a2c201603e0f67c51f5d3cdd9a7ca421aacb9a2f88298ebc5473d",
+          "status": "hit"
+        }
+      ],
+      "actual_result": "observation-warm-v4/result.json",
+      "diagnostic_record_type": "list",
+      "name": "observation-warm-v4",
+      "observed_result_fields": {
+        "copy_errors": [],
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "Actual positive meta recipe only; historical cache reuse is not new live execution or mechanism/negative proof. No old pilot result substituted; these are not latency medians.",
+        "mode": "warm",
+        "source_pins_equal": true,
+        "status": "ok",
+        "warm_cache_pins_equal": true
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "inventory",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "inventory",
+          "reason": "fresh_supervised_execution",
+          "status": "worker"
+        },
+        {
+          "entry_sha256": "0add29b3692b2f305829132a986557a6eeacde8f270079b3634dc3238da0e56e",
+          "kind": "inventory",
+          "reason": "successful_historical_capture",
+          "request_key": "26edb27411dc371c8240476324c67119833d65324ed45d220120b10d219dbe39",
+          "status": "stored"
+        }
+      ],
+      "actual_result": "public-hit-v3/result.json",
+      "diagnostic_record_type": "list",
+      "name": "public-hit-v3",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": "AssertionError()",
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public historical-cache-hit diagnosis with nested coarse timing/counters; not a three-run median. Nested costs are not additive. Optional new environment identity population is real worker execution outside the measured warm interval and recorded separately. No HTML render.",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_cache_outcomes": [],
+      "actual_result": "public-hit-v4/result.json",
+      "diagnostic_record_type": "list",
+      "name": "public-hit-v4",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": "AssertionError('diagnostic preparation identity must already be populated')",
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public historical-cache-hit diagnosis with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker permitted; actual public lazy-import identity was populated by the separately retained prior diagnostic. No HTML render.",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_cache_outcomes": [],
+      "actual_result": "public-hit-v5/result.json",
+      "diagnostic_record_type": "list",
+      "name": "public-hit-v5",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": "AssertionError('actual public identity not populated; fresh worker forbidden in this hit diagnostic')",
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public historical-cache-hit diagnosis with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker permitted; actual public lazy-import identity was populated by the separately retained prior diagnostic. No HTML render.",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_cache_outcomes": [
+        {
+          "kind": "inventory",
+          "reason": "entry_unavailable_or_invalid",
+          "status": "miss"
+        },
+        {
+          "kind": "inventory",
+          "reason": "fresh_supervised_execution",
+          "status": "worker"
+        }
+      ],
+      "actual_result": "public-cold-v5/result.json",
+      "diagnostic_record_type": "list",
+      "name": "public-cold-v5",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": "AssertionError()",
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "reader-unit-v1/result.json",
+      "name": "reader-unit-v1",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    }
+  ],
+  "scope": "Literal fields from each actual released result; independent attempts remain separate."
+}

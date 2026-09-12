@@ -1,0 +1,60 @@
+{
+  "files": {
+    "model_unfolder/evidence/claim_evidence.py": {
+      "bytes": 19036,
+      "new_sha256": "aa47c42df0bf15ef794719f89abff199a5d78cf5413dc78ec6219231f5f2a969",
+      "old_sha256": "ed4bc4ce0c70adc5b0bb63d8777d31763fb70aceba417d896e1747f1316e9cfe"
+    },
+    "model_unfolder/evidence/instance_population_claim.py": {
+      "bytes": 5736,
+      "new_sha256": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7",
+      "old_sha256": "23d3fa2ad281172119d9221624fb509e5fb699414ff5932716c0254f780e8cd4"
+    },
+    "model_unfolder/evidence/program_index.py": {
+      "bytes": 151603,
+      "new_sha256": "3b3bdda9cc95f84a78324de723c421e2ed3f735ca037dd4fe564ffac74293da5",
+      "old_sha256": "65770b7b8b202c195d699ce8efca36ed1a2f80e8bcd7cfcd9eff1d89fdb0c7a0"
+    },
+    "model_unfolder/evidence/unet_cell_connections.py": {
+      "bytes": 19046,
+      "new_sha256": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074",
+      "old_sha256": "26ba4d7c79a25bdac37f24413423ab1f66d5f2505571307ccbce4e870ca17f72"
+    },
+    "model_unfolder/evidence/unet_claims.py": {
+      "bytes": 30397,
+      "new_sha256": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169",
+      "old_sha256": "70afe7bb3b77f33581dd508dc6a32b85fb36f9e9b42e1adeee155c00124c6395"
+    },
+    "model_unfolder/evidence/unet_primary_ports.py": {
+      "bytes": 11036,
+      "new_sha256": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc",
+      "old_sha256": "b5d5c5ca183173290f807b09d70403b2f801fe457caff969f3055e8e5af59d54"
+    },
+    "tests/test_portable_claim_summary.py": {
+      "bytes": 8759,
+      "new_sha256": "654cf999d9530c40a04a1c79cb9f6a20528af4954a106eea53d3e162346e4c79",
+      "old_sha256": null
+    },
+    "tests/test_s7_reconciliation.py": {
+      "bytes": 56792,
+      "new_sha256": "4b237e4979d658d0c6d8e06757330cc1622e96006337ac260d6b423ee8a091b8",
+      "old_sha256": "c9fa6e8f845bc1bd4ce7bd773a230c22674b4f30a44ddfff31cfa7a26059b9e3"
+    }
+  },
+  "focused_command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_portable_claim_summary.py",
+    "tests/test_s7_reconciliation.py",
+    "tests/test_s8_runtime_source.py",
+    "tests/test_s7_artifacts.py::test_persisted_source_index_seal_is_path_independent_but_evidence_sensitive",
+    "tests/test_s8_try_observation.py::test_source_cache_and_fingerprints_include_exact_handler_target_bytes"
+  ],
+  "original_checkout": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg",
+  "scope": "Only persisted ClaimProofSummary index_fingerprints plus derived frozen-index memo and controls. Local raw fingerprint/membership/validation unchanged. No S7 artifacts or normalizer changes.",
+  "source_diff_sha256": "39fd39892b5b8473cc71995e2d29a652d7c8b3c2139c60ef7a60ceb5a52009c8",
+  "status": "SOURCE_READY_TESTS_UNRUN",
+  "unchanged_original_portable_computation_AST": true
+}

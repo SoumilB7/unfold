@@ -1,0 +1,7151 @@
+{
+  "failure": null,
+  "observation": {
+    "functional_ops": [
+      {
+        "callable": "add",
+        "index": 0,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 1,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 2,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 3,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 4,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 5,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 6,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 7,
+        "op": "add"
+      },
+      {
+        "callable": "add_",
+        "index": 8,
+        "op": "add"
+      },
+      {
+        "callable": "add_",
+        "index": 9,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 10,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 11,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 12,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 13,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 14,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 15,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 16,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 17,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 18,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 19,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 20,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 21,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 22,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 23,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 24,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 25,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 26,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 27,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 28,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 29,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 30,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 31,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 32,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 33,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 34,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 35,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 36,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 37,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 38,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 39,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 40,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 41,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 42,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 43,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 44,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 45,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 46,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 47,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 48,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 49,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 50,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 51,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 52,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 53,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 54,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 55,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 56,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 57,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 58,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 59,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 60,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 61,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 62,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 63,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 64,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 65,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 66,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 67,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 68,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 69,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 70,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 71,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 72,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 73,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 74,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 75,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 76,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 77,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 78,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 79,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 80,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 81,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 82,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 83,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 84,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 85,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 86,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 87,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 88,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 89,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 90,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 91,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 92,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 93,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 94,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 95,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 96,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 97,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 98,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 99,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 100,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 101,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 102,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 103,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 104,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 105,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 106,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 107,
+        "op": "mul"
+      },
+      {
+        "callable": "add_",
+        "index": 108,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 109,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 110,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 111,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 112,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 113,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 114,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 115,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 116,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 117,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 118,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 119,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 120,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 121,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 122,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 123,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 124,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 125,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 126,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 127,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 128,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 129,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 130,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 131,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 132,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 133,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 134,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 135,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 136,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 137,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 138,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 139,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 140,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 141,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 142,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 143,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 144,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 145,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 146,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 147,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 148,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 149,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 150,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 151,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 152,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 153,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 154,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 155,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 156,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 157,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 158,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 159,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 160,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 161,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 162,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 163,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 164,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 165,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 166,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 167,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 168,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 169,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 170,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 171,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 172,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 173,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 174,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 175,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 176,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 177,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 178,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 179,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 180,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 181,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 182,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 183,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 184,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 185,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 186,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 187,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 188,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 189,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 190,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 191,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 192,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 193,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 194,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 195,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 196,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 197,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 198,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 199,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 200,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 201,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 202,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 203,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 204,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 205,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 206,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 207,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 208,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 209,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 210,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 211,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 212,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 213,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 214,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 215,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 216,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 217,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 218,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 219,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 220,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 221,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 222,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 223,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 224,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 225,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 226,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 227,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 228,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 229,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 230,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 231,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 232,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 233,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 234,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 235,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 236,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 237,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 238,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 239,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 240,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 241,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 242,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 243,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 244,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 245,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 246,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 247,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 248,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 249,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 250,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 251,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 252,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 253,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 254,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 255,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 256,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 257,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 258,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 259,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 260,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 261,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 262,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 263,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 264,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 265,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 266,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 267,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 268,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 269,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 270,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 271,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 272,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 273,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 274,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 275,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 276,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 277,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 278,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 279,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 280,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 281,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 282,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 283,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 284,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 285,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 286,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 287,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 288,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 289,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 290,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 291,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 292,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 293,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 294,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 295,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 296,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 297,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 298,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 299,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 300,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 301,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 302,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 303,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 304,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 305,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 306,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 307,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 308,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 309,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 310,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 311,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 312,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 313,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 314,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 315,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 316,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 317,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 318,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 319,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 320,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 321,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 322,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 323,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 324,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 325,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 326,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 327,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 328,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 329,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 330,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 331,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 332,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 333,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 334,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "add",
+        "index": 335,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 336,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 337,
+        "op": "gelu"
+      },
+      {
+        "callable": "add",
+        "index": 338,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 339,
+        "op": "layer_norm"
+      }
+    ],
+    "lazy_observed": [],
+    "module_calls": [
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenForConditionalGeneration"
+        },
+        "index": 0,
+        "path": ""
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5EncoderModel"
+        },
+        "index": 1,
+        "path": "text_encoder"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Stack"
+        },
+        "index": 2,
+        "path": "text_encoder.encoder"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 3,
+        "path": "text_encoder.encoder.embed_tokens"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 4,
+        "path": "text_encoder.encoder.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 5,
+        "path": "text_encoder.encoder.block.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 6,
+        "path": "text_encoder.encoder.block.0.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 7,
+        "path": "text_encoder.encoder.block.0.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 8,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 9,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 10,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 11,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 12,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention.relative_attention_bias"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 13,
+        "path": "text_encoder.encoder.block.0.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 14,
+        "path": "text_encoder.encoder.block.0.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 15,
+        "path": "text_encoder.encoder.block.0.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 16,
+        "path": "text_encoder.encoder.block.0.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 17,
+        "path": "text_encoder.encoder.block.0.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 18,
+        "path": "text_encoder.encoder.block.0.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 19,
+        "path": "text_encoder.encoder.block.0.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 20,
+        "path": "text_encoder.encoder.block.0.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 21,
+        "path": "text_encoder.encoder.block.0.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 22,
+        "path": "text_encoder.encoder.block.0.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 23,
+        "path": "text_encoder.encoder.block.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 24,
+        "path": "text_encoder.encoder.block.1.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 25,
+        "path": "text_encoder.encoder.block.1.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 26,
+        "path": "text_encoder.encoder.block.1.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 27,
+        "path": "text_encoder.encoder.block.1.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 28,
+        "path": "text_encoder.encoder.block.1.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 29,
+        "path": "text_encoder.encoder.block.1.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 30,
+        "path": "text_encoder.encoder.block.1.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 31,
+        "path": "text_encoder.encoder.block.1.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 32,
+        "path": "text_encoder.encoder.block.1.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 33,
+        "path": "text_encoder.encoder.block.1.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 34,
+        "path": "text_encoder.encoder.block.1.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 35,
+        "path": "text_encoder.encoder.block.1.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 36,
+        "path": "text_encoder.encoder.block.1.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 37,
+        "path": "text_encoder.encoder.block.1.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 38,
+        "path": "text_encoder.encoder.block.1.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 39,
+        "path": "text_encoder.encoder.block.1.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 40,
+        "path": "text_encoder.encoder.block.2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 41,
+        "path": "text_encoder.encoder.block.2.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 42,
+        "path": "text_encoder.encoder.block.2.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 43,
+        "path": "text_encoder.encoder.block.2.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 44,
+        "path": "text_encoder.encoder.block.2.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 45,
+        "path": "text_encoder.encoder.block.2.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 46,
+        "path": "text_encoder.encoder.block.2.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 47,
+        "path": "text_encoder.encoder.block.2.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 48,
+        "path": "text_encoder.encoder.block.2.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 49,
+        "path": "text_encoder.encoder.block.2.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 50,
+        "path": "text_encoder.encoder.block.2.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 51,
+        "path": "text_encoder.encoder.block.2.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 52,
+        "path": "text_encoder.encoder.block.2.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 53,
+        "path": "text_encoder.encoder.block.2.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 54,
+        "path": "text_encoder.encoder.block.2.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 55,
+        "path": "text_encoder.encoder.block.2.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 56,
+        "path": "text_encoder.encoder.block.2.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 57,
+        "path": "text_encoder.encoder.block.3"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 58,
+        "path": "text_encoder.encoder.block.3.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 59,
+        "path": "text_encoder.encoder.block.3.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 60,
+        "path": "text_encoder.encoder.block.3.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 61,
+        "path": "text_encoder.encoder.block.3.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 62,
+        "path": "text_encoder.encoder.block.3.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 63,
+        "path": "text_encoder.encoder.block.3.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 64,
+        "path": "text_encoder.encoder.block.3.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 65,
+        "path": "text_encoder.encoder.block.3.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 66,
+        "path": "text_encoder.encoder.block.3.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 67,
+        "path": "text_encoder.encoder.block.3.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 68,
+        "path": "text_encoder.encoder.block.3.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 69,
+        "path": "text_encoder.encoder.block.3.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 70,
+        "path": "text_encoder.encoder.block.3.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 71,
+        "path": "text_encoder.encoder.block.3.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 72,
+        "path": "text_encoder.encoder.block.3.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 73,
+        "path": "text_encoder.encoder.block.3.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 74,
+        "path": "text_encoder.encoder.block.4"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 75,
+        "path": "text_encoder.encoder.block.4.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 76,
+        "path": "text_encoder.encoder.block.4.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 77,
+        "path": "text_encoder.encoder.block.4.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 78,
+        "path": "text_encoder.encoder.block.4.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 79,
+        "path": "text_encoder.encoder.block.4.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 80,
+        "path": "text_encoder.encoder.block.4.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 81,
+        "path": "text_encoder.encoder.block.4.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 82,
+        "path": "text_encoder.encoder.block.4.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 83,
+        "path": "text_encoder.encoder.block.4.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 84,
+        "path": "text_encoder.encoder.block.4.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 85,
+        "path": "text_encoder.encoder.block.4.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 86,
+        "path": "text_encoder.encoder.block.4.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 87,
+        "path": "text_encoder.encoder.block.4.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 88,
+        "path": "text_encoder.encoder.block.4.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 89,
+        "path": "text_encoder.encoder.block.4.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 90,
+        "path": "text_encoder.encoder.block.4.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 91,
+        "path": "text_encoder.encoder.block.5"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 92,
+        "path": "text_encoder.encoder.block.5.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 93,
+        "path": "text_encoder.encoder.block.5.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 94,
+        "path": "text_encoder.encoder.block.5.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 95,
+        "path": "text_encoder.encoder.block.5.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 96,
+        "path": "text_encoder.encoder.block.5.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 97,
+        "path": "text_encoder.encoder.block.5.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 98,
+        "path": "text_encoder.encoder.block.5.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 99,
+        "path": "text_encoder.encoder.block.5.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 100,
+        "path": "text_encoder.encoder.block.5.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 101,
+        "path": "text_encoder.encoder.block.5.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 102,
+        "path": "text_encoder.encoder.block.5.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 103,
+        "path": "text_encoder.encoder.block.5.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 104,
+        "path": "text_encoder.encoder.block.5.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 105,
+        "path": "text_encoder.encoder.block.5.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 106,
+        "path": "text_encoder.encoder.block.5.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 107,
+        "path": "text_encoder.encoder.block.5.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 108,
+        "path": "text_encoder.encoder.block.6"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 109,
+        "path": "text_encoder.encoder.block.6.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 110,
+        "path": "text_encoder.encoder.block.6.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 111,
+        "path": "text_encoder.encoder.block.6.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 112,
+        "path": "text_encoder.encoder.block.6.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 113,
+        "path": "text_encoder.encoder.block.6.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 114,
+        "path": "text_encoder.encoder.block.6.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 115,
+        "path": "text_encoder.encoder.block.6.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 116,
+        "path": "text_encoder.encoder.block.6.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 117,
+        "path": "text_encoder.encoder.block.6.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 118,
+        "path": "text_encoder.encoder.block.6.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 119,
+        "path": "text_encoder.encoder.block.6.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 120,
+        "path": "text_encoder.encoder.block.6.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 121,
+        "path": "text_encoder.encoder.block.6.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 122,
+        "path": "text_encoder.encoder.block.6.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 123,
+        "path": "text_encoder.encoder.block.6.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 124,
+        "path": "text_encoder.encoder.block.6.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 125,
+        "path": "text_encoder.encoder.block.7"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 126,
+        "path": "text_encoder.encoder.block.7.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 127,
+        "path": "text_encoder.encoder.block.7.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 128,
+        "path": "text_encoder.encoder.block.7.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 129,
+        "path": "text_encoder.encoder.block.7.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 130,
+        "path": "text_encoder.encoder.block.7.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 131,
+        "path": "text_encoder.encoder.block.7.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 132,
+        "path": "text_encoder.encoder.block.7.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 133,
+        "path": "text_encoder.encoder.block.7.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 134,
+        "path": "text_encoder.encoder.block.7.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 135,
+        "path": "text_encoder.encoder.block.7.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 136,
+        "path": "text_encoder.encoder.block.7.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 137,
+        "path": "text_encoder.encoder.block.7.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 138,
+        "path": "text_encoder.encoder.block.7.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 139,
+        "path": "text_encoder.encoder.block.7.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 140,
+        "path": "text_encoder.encoder.block.7.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 141,
+        "path": "text_encoder.encoder.block.7.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 142,
+        "path": "text_encoder.encoder.block.8"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 143,
+        "path": "text_encoder.encoder.block.8.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 144,
+        "path": "text_encoder.encoder.block.8.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 145,
+        "path": "text_encoder.encoder.block.8.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 146,
+        "path": "text_encoder.encoder.block.8.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 147,
+        "path": "text_encoder.encoder.block.8.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 148,
+        "path": "text_encoder.encoder.block.8.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 149,
+        "path": "text_encoder.encoder.block.8.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 150,
+        "path": "text_encoder.encoder.block.8.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 151,
+        "path": "text_encoder.encoder.block.8.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 152,
+        "path": "text_encoder.encoder.block.8.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 153,
+        "path": "text_encoder.encoder.block.8.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 154,
+        "path": "text_encoder.encoder.block.8.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 155,
+        "path": "text_encoder.encoder.block.8.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 156,
+        "path": "text_encoder.encoder.block.8.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 157,
+        "path": "text_encoder.encoder.block.8.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 158,
+        "path": "text_encoder.encoder.block.8.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 159,
+        "path": "text_encoder.encoder.block.9"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 160,
+        "path": "text_encoder.encoder.block.9.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 161,
+        "path": "text_encoder.encoder.block.9.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 162,
+        "path": "text_encoder.encoder.block.9.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 163,
+        "path": "text_encoder.encoder.block.9.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 164,
+        "path": "text_encoder.encoder.block.9.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 165,
+        "path": "text_encoder.encoder.block.9.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 166,
+        "path": "text_encoder.encoder.block.9.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 167,
+        "path": "text_encoder.encoder.block.9.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 168,
+        "path": "text_encoder.encoder.block.9.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 169,
+        "path": "text_encoder.encoder.block.9.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 170,
+        "path": "text_encoder.encoder.block.9.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 171,
+        "path": "text_encoder.encoder.block.9.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 172,
+        "path": "text_encoder.encoder.block.9.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 173,
+        "path": "text_encoder.encoder.block.9.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 174,
+        "path": "text_encoder.encoder.block.9.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 175,
+        "path": "text_encoder.encoder.block.9.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 176,
+        "path": "text_encoder.encoder.block.10"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 177,
+        "path": "text_encoder.encoder.block.10.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 178,
+        "path": "text_encoder.encoder.block.10.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 179,
+        "path": "text_encoder.encoder.block.10.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 180,
+        "path": "text_encoder.encoder.block.10.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 181,
+        "path": "text_encoder.encoder.block.10.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 182,
+        "path": "text_encoder.encoder.block.10.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 183,
+        "path": "text_encoder.encoder.block.10.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 184,
+        "path": "text_encoder.encoder.block.10.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 185,
+        "path": "text_encoder.encoder.block.10.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 186,
+        "path": "text_encoder.encoder.block.10.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 187,
+        "path": "text_encoder.encoder.block.10.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 188,
+        "path": "text_encoder.encoder.block.10.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 189,
+        "path": "text_encoder.encoder.block.10.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 190,
+        "path": "text_encoder.encoder.block.10.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 191,
+        "path": "text_encoder.encoder.block.10.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 192,
+        "path": "text_encoder.encoder.block.10.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Block"
+        },
+        "index": 193,
+        "path": "text_encoder.encoder.block.11"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerSelfAttention"
+        },
+        "index": 194,
+        "path": "text_encoder.encoder.block.11.layer.0"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 195,
+        "path": "text_encoder.encoder.block.11.layer.0.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5Attention"
+        },
+        "index": 196,
+        "path": "text_encoder.encoder.block.11.layer.0.SelfAttention"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 197,
+        "path": "text_encoder.encoder.block.11.layer.0.SelfAttention.q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 198,
+        "path": "text_encoder.encoder.block.11.layer.0.SelfAttention.k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 199,
+        "path": "text_encoder.encoder.block.11.layer.0.SelfAttention.v"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 200,
+        "path": "text_encoder.encoder.block.11.layer.0.SelfAttention.o"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 201,
+        "path": "text_encoder.encoder.block.11.layer.0.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerFF"
+        },
+        "index": 202,
+        "path": "text_encoder.encoder.block.11.layer.1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 203,
+        "path": "text_encoder.encoder.block.11.layer.1.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5DenseActDense"
+        },
+        "index": 204,
+        "path": "text_encoder.encoder.block.11.layer.1.DenseReluDense"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 205,
+        "path": "text_encoder.encoder.block.11.layer.1.DenseReluDense.wi"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "ReLU"
+        },
+        "index": 206,
+        "path": "text_encoder.encoder.block.11.layer.1.DenseReluDense.act"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 207,
+        "path": "text_encoder.encoder.block.11.layer.1.DenseReluDense.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 208,
+        "path": "text_encoder.encoder.block.11.layer.1.DenseReluDense.wo"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 209,
+        "path": "text_encoder.encoder.block.11.layer.1.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.t5.modeling_t5",
+          "qualname": "T5LayerNorm"
+        },
+        "index": 210,
+        "path": "text_encoder.encoder.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 211,
+        "path": "text_encoder.encoder.dropout"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 212,
+        "path": "enc_to_dec_proj"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenForCausalLM"
+        },
+        "index": 213,
+        "path": "decoder"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenModel"
+        },
+        "index": 214,
+        "path": "decoder.model"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoder"
+        },
+        "index": 215,
+        "path": "decoder.model.decoder"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 216,
+        "path": "decoder.model.decoder.embed_tokens.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 217,
+        "path": "decoder.model.decoder.embed_tokens.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 218,
+        "path": "decoder.model.decoder.embed_tokens.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.sparse",
+          "qualname": "Embedding"
+        },
+        "index": 219,
+        "path": "decoder.model.decoder.embed_tokens.3"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenSinusoidalPositionalEmbedding"
+        },
+        "index": 220,
+        "path": "decoder.model.decoder.embed_positions"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 221,
+        "path": "decoder.model.decoder.layers.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 222,
+        "path": "decoder.model.decoder.layers.0.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 223,
+        "path": "decoder.model.decoder.layers.0.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 224,
+        "path": "decoder.model.decoder.layers.0.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 225,
+        "path": "decoder.model.decoder.layers.0.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 226,
+        "path": "decoder.model.decoder.layers.0.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 227,
+        "path": "decoder.model.decoder.layers.0.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 228,
+        "path": "decoder.model.decoder.layers.0.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 229,
+        "path": "decoder.model.decoder.layers.0.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 230,
+        "path": "decoder.model.decoder.layers.0.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 231,
+        "path": "decoder.model.decoder.layers.0.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 232,
+        "path": "decoder.model.decoder.layers.0.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 233,
+        "path": "decoder.model.decoder.layers.0.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 234,
+        "path": "decoder.model.decoder.layers.0.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 235,
+        "path": "decoder.model.decoder.layers.0.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 236,
+        "path": "decoder.model.decoder.layers.0.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 237,
+        "path": "decoder.model.decoder.layers.0.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 238,
+        "path": "decoder.model.decoder.layers.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 239,
+        "path": "decoder.model.decoder.layers.1.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 240,
+        "path": "decoder.model.decoder.layers.1.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 241,
+        "path": "decoder.model.decoder.layers.1.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 242,
+        "path": "decoder.model.decoder.layers.1.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 243,
+        "path": "decoder.model.decoder.layers.1.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 244,
+        "path": "decoder.model.decoder.layers.1.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 245,
+        "path": "decoder.model.decoder.layers.1.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 246,
+        "path": "decoder.model.decoder.layers.1.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 247,
+        "path": "decoder.model.decoder.layers.1.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 248,
+        "path": "decoder.model.decoder.layers.1.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 249,
+        "path": "decoder.model.decoder.layers.1.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 250,
+        "path": "decoder.model.decoder.layers.1.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 251,
+        "path": "decoder.model.decoder.layers.1.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 252,
+        "path": "decoder.model.decoder.layers.1.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 253,
+        "path": "decoder.model.decoder.layers.1.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 254,
+        "path": "decoder.model.decoder.layers.1.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 255,
+        "path": "decoder.model.decoder.layers.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 256,
+        "path": "decoder.model.decoder.layers.2.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 257,
+        "path": "decoder.model.decoder.layers.2.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 258,
+        "path": "decoder.model.decoder.layers.2.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 259,
+        "path": "decoder.model.decoder.layers.2.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 260,
+        "path": "decoder.model.decoder.layers.2.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 261,
+        "path": "decoder.model.decoder.layers.2.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 262,
+        "path": "decoder.model.decoder.layers.2.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 263,
+        "path": "decoder.model.decoder.layers.2.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 264,
+        "path": "decoder.model.decoder.layers.2.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 265,
+        "path": "decoder.model.decoder.layers.2.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 266,
+        "path": "decoder.model.decoder.layers.2.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 267,
+        "path": "decoder.model.decoder.layers.2.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 268,
+        "path": "decoder.model.decoder.layers.2.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 269,
+        "path": "decoder.model.decoder.layers.2.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 270,
+        "path": "decoder.model.decoder.layers.2.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 271,
+        "path": "decoder.model.decoder.layers.2.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 272,
+        "path": "decoder.model.decoder.layers.3"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 273,
+        "path": "decoder.model.decoder.layers.3.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 274,
+        "path": "decoder.model.decoder.layers.3.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 275,
+        "path": "decoder.model.decoder.layers.3.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 276,
+        "path": "decoder.model.decoder.layers.3.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 277,
+        "path": "decoder.model.decoder.layers.3.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 278,
+        "path": "decoder.model.decoder.layers.3.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 279,
+        "path": "decoder.model.decoder.layers.3.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 280,
+        "path": "decoder.model.decoder.layers.3.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 281,
+        "path": "decoder.model.decoder.layers.3.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 282,
+        "path": "decoder.model.decoder.layers.3.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 283,
+        "path": "decoder.model.decoder.layers.3.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 284,
+        "path": "decoder.model.decoder.layers.3.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 285,
+        "path": "decoder.model.decoder.layers.3.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 286,
+        "path": "decoder.model.decoder.layers.3.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 287,
+        "path": "decoder.model.decoder.layers.3.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 288,
+        "path": "decoder.model.decoder.layers.3.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 289,
+        "path": "decoder.model.decoder.layers.4"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 290,
+        "path": "decoder.model.decoder.layers.4.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 291,
+        "path": "decoder.model.decoder.layers.4.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 292,
+        "path": "decoder.model.decoder.layers.4.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 293,
+        "path": "decoder.model.decoder.layers.4.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 294,
+        "path": "decoder.model.decoder.layers.4.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 295,
+        "path": "decoder.model.decoder.layers.4.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 296,
+        "path": "decoder.model.decoder.layers.4.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 297,
+        "path": "decoder.model.decoder.layers.4.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 298,
+        "path": "decoder.model.decoder.layers.4.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 299,
+        "path": "decoder.model.decoder.layers.4.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 300,
+        "path": "decoder.model.decoder.layers.4.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 301,
+        "path": "decoder.model.decoder.layers.4.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 302,
+        "path": "decoder.model.decoder.layers.4.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 303,
+        "path": "decoder.model.decoder.layers.4.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 304,
+        "path": "decoder.model.decoder.layers.4.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 305,
+        "path": "decoder.model.decoder.layers.4.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 306,
+        "path": "decoder.model.decoder.layers.5"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 307,
+        "path": "decoder.model.decoder.layers.5.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 308,
+        "path": "decoder.model.decoder.layers.5.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 309,
+        "path": "decoder.model.decoder.layers.5.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 310,
+        "path": "decoder.model.decoder.layers.5.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 311,
+        "path": "decoder.model.decoder.layers.5.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 312,
+        "path": "decoder.model.decoder.layers.5.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 313,
+        "path": "decoder.model.decoder.layers.5.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 314,
+        "path": "decoder.model.decoder.layers.5.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 315,
+        "path": "decoder.model.decoder.layers.5.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 316,
+        "path": "decoder.model.decoder.layers.5.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 317,
+        "path": "decoder.model.decoder.layers.5.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 318,
+        "path": "decoder.model.decoder.layers.5.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 319,
+        "path": "decoder.model.decoder.layers.5.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 320,
+        "path": "decoder.model.decoder.layers.5.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 321,
+        "path": "decoder.model.decoder.layers.5.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 322,
+        "path": "decoder.model.decoder.layers.5.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 323,
+        "path": "decoder.model.decoder.layers.6"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 324,
+        "path": "decoder.model.decoder.layers.6.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 325,
+        "path": "decoder.model.decoder.layers.6.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 326,
+        "path": "decoder.model.decoder.layers.6.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 327,
+        "path": "decoder.model.decoder.layers.6.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 328,
+        "path": "decoder.model.decoder.layers.6.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 329,
+        "path": "decoder.model.decoder.layers.6.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 330,
+        "path": "decoder.model.decoder.layers.6.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 331,
+        "path": "decoder.model.decoder.layers.6.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 332,
+        "path": "decoder.model.decoder.layers.6.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 333,
+        "path": "decoder.model.decoder.layers.6.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 334,
+        "path": "decoder.model.decoder.layers.6.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 335,
+        "path": "decoder.model.decoder.layers.6.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 336,
+        "path": "decoder.model.decoder.layers.6.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 337,
+        "path": "decoder.model.decoder.layers.6.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 338,
+        "path": "decoder.model.decoder.layers.6.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 339,
+        "path": "decoder.model.decoder.layers.6.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 340,
+        "path": "decoder.model.decoder.layers.7"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 341,
+        "path": "decoder.model.decoder.layers.7.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 342,
+        "path": "decoder.model.decoder.layers.7.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 343,
+        "path": "decoder.model.decoder.layers.7.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 344,
+        "path": "decoder.model.decoder.layers.7.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 345,
+        "path": "decoder.model.decoder.layers.7.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 346,
+        "path": "decoder.model.decoder.layers.7.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 347,
+        "path": "decoder.model.decoder.layers.7.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 348,
+        "path": "decoder.model.decoder.layers.7.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 349,
+        "path": "decoder.model.decoder.layers.7.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 350,
+        "path": "decoder.model.decoder.layers.7.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 351,
+        "path": "decoder.model.decoder.layers.7.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 352,
+        "path": "decoder.model.decoder.layers.7.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 353,
+        "path": "decoder.model.decoder.layers.7.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 354,
+        "path": "decoder.model.decoder.layers.7.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 355,
+        "path": "decoder.model.decoder.layers.7.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 356,
+        "path": "decoder.model.decoder.layers.7.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 357,
+        "path": "decoder.model.decoder.layers.8"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 358,
+        "path": "decoder.model.decoder.layers.8.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 359,
+        "path": "decoder.model.decoder.layers.8.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 360,
+        "path": "decoder.model.decoder.layers.8.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 361,
+        "path": "decoder.model.decoder.layers.8.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 362,
+        "path": "decoder.model.decoder.layers.8.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 363,
+        "path": "decoder.model.decoder.layers.8.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 364,
+        "path": "decoder.model.decoder.layers.8.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 365,
+        "path": "decoder.model.decoder.layers.8.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 366,
+        "path": "decoder.model.decoder.layers.8.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 367,
+        "path": "decoder.model.decoder.layers.8.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 368,
+        "path": "decoder.model.decoder.layers.8.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 369,
+        "path": "decoder.model.decoder.layers.8.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 370,
+        "path": "decoder.model.decoder.layers.8.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 371,
+        "path": "decoder.model.decoder.layers.8.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 372,
+        "path": "decoder.model.decoder.layers.8.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 373,
+        "path": "decoder.model.decoder.layers.8.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 374,
+        "path": "decoder.model.decoder.layers.9"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 375,
+        "path": "decoder.model.decoder.layers.9.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 376,
+        "path": "decoder.model.decoder.layers.9.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 377,
+        "path": "decoder.model.decoder.layers.9.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 378,
+        "path": "decoder.model.decoder.layers.9.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 379,
+        "path": "decoder.model.decoder.layers.9.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 380,
+        "path": "decoder.model.decoder.layers.9.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 381,
+        "path": "decoder.model.decoder.layers.9.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 382,
+        "path": "decoder.model.decoder.layers.9.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 383,
+        "path": "decoder.model.decoder.layers.9.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 384,
+        "path": "decoder.model.decoder.layers.9.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 385,
+        "path": "decoder.model.decoder.layers.9.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 386,
+        "path": "decoder.model.decoder.layers.9.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 387,
+        "path": "decoder.model.decoder.layers.9.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 388,
+        "path": "decoder.model.decoder.layers.9.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 389,
+        "path": "decoder.model.decoder.layers.9.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 390,
+        "path": "decoder.model.decoder.layers.9.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 391,
+        "path": "decoder.model.decoder.layers.10"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 392,
+        "path": "decoder.model.decoder.layers.10.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 393,
+        "path": "decoder.model.decoder.layers.10.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 394,
+        "path": "decoder.model.decoder.layers.10.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 395,
+        "path": "decoder.model.decoder.layers.10.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 396,
+        "path": "decoder.model.decoder.layers.10.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 397,
+        "path": "decoder.model.decoder.layers.10.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 398,
+        "path": "decoder.model.decoder.layers.10.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 399,
+        "path": "decoder.model.decoder.layers.10.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 400,
+        "path": "decoder.model.decoder.layers.10.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 401,
+        "path": "decoder.model.decoder.layers.10.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 402,
+        "path": "decoder.model.decoder.layers.10.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 403,
+        "path": "decoder.model.decoder.layers.10.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 404,
+        "path": "decoder.model.decoder.layers.10.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 405,
+        "path": "decoder.model.decoder.layers.10.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 406,
+        "path": "decoder.model.decoder.layers.10.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 407,
+        "path": "decoder.model.decoder.layers.10.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 408,
+        "path": "decoder.model.decoder.layers.11"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 409,
+        "path": "decoder.model.decoder.layers.11.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 410,
+        "path": "decoder.model.decoder.layers.11.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 411,
+        "path": "decoder.model.decoder.layers.11.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 412,
+        "path": "decoder.model.decoder.layers.11.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 413,
+        "path": "decoder.model.decoder.layers.11.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 414,
+        "path": "decoder.model.decoder.layers.11.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 415,
+        "path": "decoder.model.decoder.layers.11.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 416,
+        "path": "decoder.model.decoder.layers.11.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 417,
+        "path": "decoder.model.decoder.layers.11.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 418,
+        "path": "decoder.model.decoder.layers.11.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 419,
+        "path": "decoder.model.decoder.layers.11.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 420,
+        "path": "decoder.model.decoder.layers.11.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 421,
+        "path": "decoder.model.decoder.layers.11.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 422,
+        "path": "decoder.model.decoder.layers.11.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 423,
+        "path": "decoder.model.decoder.layers.11.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 424,
+        "path": "decoder.model.decoder.layers.11.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 425,
+        "path": "decoder.model.decoder.layers.12"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 426,
+        "path": "decoder.model.decoder.layers.12.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 427,
+        "path": "decoder.model.decoder.layers.12.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 428,
+        "path": "decoder.model.decoder.layers.12.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 429,
+        "path": "decoder.model.decoder.layers.12.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 430,
+        "path": "decoder.model.decoder.layers.12.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 431,
+        "path": "decoder.model.decoder.layers.12.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 432,
+        "path": "decoder.model.decoder.layers.12.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 433,
+        "path": "decoder.model.decoder.layers.12.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 434,
+        "path": "decoder.model.decoder.layers.12.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 435,
+        "path": "decoder.model.decoder.layers.12.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 436,
+        "path": "decoder.model.decoder.layers.12.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 437,
+        "path": "decoder.model.decoder.layers.12.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 438,
+        "path": "decoder.model.decoder.layers.12.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 439,
+        "path": "decoder.model.decoder.layers.12.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 440,
+        "path": "decoder.model.decoder.layers.12.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 441,
+        "path": "decoder.model.decoder.layers.12.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 442,
+        "path": "decoder.model.decoder.layers.13"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 443,
+        "path": "decoder.model.decoder.layers.13.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 444,
+        "path": "decoder.model.decoder.layers.13.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 445,
+        "path": "decoder.model.decoder.layers.13.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 446,
+        "path": "decoder.model.decoder.layers.13.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 447,
+        "path": "decoder.model.decoder.layers.13.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 448,
+        "path": "decoder.model.decoder.layers.13.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 449,
+        "path": "decoder.model.decoder.layers.13.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 450,
+        "path": "decoder.model.decoder.layers.13.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 451,
+        "path": "decoder.model.decoder.layers.13.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 452,
+        "path": "decoder.model.decoder.layers.13.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 453,
+        "path": "decoder.model.decoder.layers.13.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 454,
+        "path": "decoder.model.decoder.layers.13.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 455,
+        "path": "decoder.model.decoder.layers.13.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 456,
+        "path": "decoder.model.decoder.layers.13.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 457,
+        "path": "decoder.model.decoder.layers.13.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 458,
+        "path": "decoder.model.decoder.layers.13.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 459,
+        "path": "decoder.model.decoder.layers.14"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 460,
+        "path": "decoder.model.decoder.layers.14.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 461,
+        "path": "decoder.model.decoder.layers.14.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 462,
+        "path": "decoder.model.decoder.layers.14.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 463,
+        "path": "decoder.model.decoder.layers.14.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 464,
+        "path": "decoder.model.decoder.layers.14.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 465,
+        "path": "decoder.model.decoder.layers.14.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 466,
+        "path": "decoder.model.decoder.layers.14.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 467,
+        "path": "decoder.model.decoder.layers.14.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 468,
+        "path": "decoder.model.decoder.layers.14.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 469,
+        "path": "decoder.model.decoder.layers.14.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 470,
+        "path": "decoder.model.decoder.layers.14.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 471,
+        "path": "decoder.model.decoder.layers.14.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 472,
+        "path": "decoder.model.decoder.layers.14.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 473,
+        "path": "decoder.model.decoder.layers.14.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 474,
+        "path": "decoder.model.decoder.layers.14.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 475,
+        "path": "decoder.model.decoder.layers.14.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 476,
+        "path": "decoder.model.decoder.layers.15"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 477,
+        "path": "decoder.model.decoder.layers.15.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 478,
+        "path": "decoder.model.decoder.layers.15.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 479,
+        "path": "decoder.model.decoder.layers.15.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 480,
+        "path": "decoder.model.decoder.layers.15.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 481,
+        "path": "decoder.model.decoder.layers.15.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 482,
+        "path": "decoder.model.decoder.layers.15.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 483,
+        "path": "decoder.model.decoder.layers.15.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 484,
+        "path": "decoder.model.decoder.layers.15.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 485,
+        "path": "decoder.model.decoder.layers.15.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 486,
+        "path": "decoder.model.decoder.layers.15.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 487,
+        "path": "decoder.model.decoder.layers.15.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 488,
+        "path": "decoder.model.decoder.layers.15.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 489,
+        "path": "decoder.model.decoder.layers.15.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 490,
+        "path": "decoder.model.decoder.layers.15.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 491,
+        "path": "decoder.model.decoder.layers.15.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 492,
+        "path": "decoder.model.decoder.layers.15.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 493,
+        "path": "decoder.model.decoder.layers.16"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 494,
+        "path": "decoder.model.decoder.layers.16.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 495,
+        "path": "decoder.model.decoder.layers.16.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 496,
+        "path": "decoder.model.decoder.layers.16.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 497,
+        "path": "decoder.model.decoder.layers.16.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 498,
+        "path": "decoder.model.decoder.layers.16.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 499,
+        "path": "decoder.model.decoder.layers.16.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 500,
+        "path": "decoder.model.decoder.layers.16.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 501,
+        "path": "decoder.model.decoder.layers.16.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 502,
+        "path": "decoder.model.decoder.layers.16.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 503,
+        "path": "decoder.model.decoder.layers.16.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 504,
+        "path": "decoder.model.decoder.layers.16.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 505,
+        "path": "decoder.model.decoder.layers.16.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 506,
+        "path": "decoder.model.decoder.layers.16.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 507,
+        "path": "decoder.model.decoder.layers.16.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 508,
+        "path": "decoder.model.decoder.layers.16.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 509,
+        "path": "decoder.model.decoder.layers.16.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 510,
+        "path": "decoder.model.decoder.layers.17"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 511,
+        "path": "decoder.model.decoder.layers.17.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 512,
+        "path": "decoder.model.decoder.layers.17.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 513,
+        "path": "decoder.model.decoder.layers.17.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 514,
+        "path": "decoder.model.decoder.layers.17.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 515,
+        "path": "decoder.model.decoder.layers.17.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 516,
+        "path": "decoder.model.decoder.layers.17.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 517,
+        "path": "decoder.model.decoder.layers.17.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 518,
+        "path": "decoder.model.decoder.layers.17.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 519,
+        "path": "decoder.model.decoder.layers.17.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 520,
+        "path": "decoder.model.decoder.layers.17.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 521,
+        "path": "decoder.model.decoder.layers.17.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 522,
+        "path": "decoder.model.decoder.layers.17.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 523,
+        "path": "decoder.model.decoder.layers.17.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 524,
+        "path": "decoder.model.decoder.layers.17.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 525,
+        "path": "decoder.model.decoder.layers.17.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 526,
+        "path": "decoder.model.decoder.layers.17.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 527,
+        "path": "decoder.model.decoder.layers.18"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 528,
+        "path": "decoder.model.decoder.layers.18.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 529,
+        "path": "decoder.model.decoder.layers.18.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 530,
+        "path": "decoder.model.decoder.layers.18.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 531,
+        "path": "decoder.model.decoder.layers.18.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 532,
+        "path": "decoder.model.decoder.layers.18.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 533,
+        "path": "decoder.model.decoder.layers.18.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 534,
+        "path": "decoder.model.decoder.layers.18.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 535,
+        "path": "decoder.model.decoder.layers.18.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 536,
+        "path": "decoder.model.decoder.layers.18.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 537,
+        "path": "decoder.model.decoder.layers.18.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 538,
+        "path": "decoder.model.decoder.layers.18.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 539,
+        "path": "decoder.model.decoder.layers.18.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 540,
+        "path": "decoder.model.decoder.layers.18.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 541,
+        "path": "decoder.model.decoder.layers.18.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 542,
+        "path": "decoder.model.decoder.layers.18.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 543,
+        "path": "decoder.model.decoder.layers.18.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 544,
+        "path": "decoder.model.decoder.layers.19"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 545,
+        "path": "decoder.model.decoder.layers.19.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 546,
+        "path": "decoder.model.decoder.layers.19.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 547,
+        "path": "decoder.model.decoder.layers.19.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 548,
+        "path": "decoder.model.decoder.layers.19.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 549,
+        "path": "decoder.model.decoder.layers.19.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 550,
+        "path": "decoder.model.decoder.layers.19.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 551,
+        "path": "decoder.model.decoder.layers.19.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 552,
+        "path": "decoder.model.decoder.layers.19.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 553,
+        "path": "decoder.model.decoder.layers.19.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 554,
+        "path": "decoder.model.decoder.layers.19.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 555,
+        "path": "decoder.model.decoder.layers.19.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 556,
+        "path": "decoder.model.decoder.layers.19.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 557,
+        "path": "decoder.model.decoder.layers.19.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 558,
+        "path": "decoder.model.decoder.layers.19.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 559,
+        "path": "decoder.model.decoder.layers.19.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 560,
+        "path": "decoder.model.decoder.layers.19.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 561,
+        "path": "decoder.model.decoder.layers.20"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 562,
+        "path": "decoder.model.decoder.layers.20.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 563,
+        "path": "decoder.model.decoder.layers.20.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 564,
+        "path": "decoder.model.decoder.layers.20.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 565,
+        "path": "decoder.model.decoder.layers.20.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 566,
+        "path": "decoder.model.decoder.layers.20.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 567,
+        "path": "decoder.model.decoder.layers.20.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 568,
+        "path": "decoder.model.decoder.layers.20.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 569,
+        "path": "decoder.model.decoder.layers.20.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 570,
+        "path": "decoder.model.decoder.layers.20.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 571,
+        "path": "decoder.model.decoder.layers.20.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 572,
+        "path": "decoder.model.decoder.layers.20.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 573,
+        "path": "decoder.model.decoder.layers.20.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 574,
+        "path": "decoder.model.decoder.layers.20.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 575,
+        "path": "decoder.model.decoder.layers.20.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 576,
+        "path": "decoder.model.decoder.layers.20.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 577,
+        "path": "decoder.model.decoder.layers.20.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 578,
+        "path": "decoder.model.decoder.layers.21"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 579,
+        "path": "decoder.model.decoder.layers.21.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 580,
+        "path": "decoder.model.decoder.layers.21.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 581,
+        "path": "decoder.model.decoder.layers.21.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 582,
+        "path": "decoder.model.decoder.layers.21.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 583,
+        "path": "decoder.model.decoder.layers.21.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 584,
+        "path": "decoder.model.decoder.layers.21.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 585,
+        "path": "decoder.model.decoder.layers.21.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 586,
+        "path": "decoder.model.decoder.layers.21.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 587,
+        "path": "decoder.model.decoder.layers.21.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 588,
+        "path": "decoder.model.decoder.layers.21.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 589,
+        "path": "decoder.model.decoder.layers.21.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 590,
+        "path": "decoder.model.decoder.layers.21.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 591,
+        "path": "decoder.model.decoder.layers.21.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 592,
+        "path": "decoder.model.decoder.layers.21.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 593,
+        "path": "decoder.model.decoder.layers.21.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 594,
+        "path": "decoder.model.decoder.layers.21.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 595,
+        "path": "decoder.model.decoder.layers.22"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 596,
+        "path": "decoder.model.decoder.layers.22.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 597,
+        "path": "decoder.model.decoder.layers.22.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 598,
+        "path": "decoder.model.decoder.layers.22.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 599,
+        "path": "decoder.model.decoder.layers.22.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 600,
+        "path": "decoder.model.decoder.layers.22.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 601,
+        "path": "decoder.model.decoder.layers.22.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 602,
+        "path": "decoder.model.decoder.layers.22.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 603,
+        "path": "decoder.model.decoder.layers.22.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 604,
+        "path": "decoder.model.decoder.layers.22.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 605,
+        "path": "decoder.model.decoder.layers.22.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 606,
+        "path": "decoder.model.decoder.layers.22.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 607,
+        "path": "decoder.model.decoder.layers.22.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 608,
+        "path": "decoder.model.decoder.layers.22.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 609,
+        "path": "decoder.model.decoder.layers.22.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 610,
+        "path": "decoder.model.decoder.layers.22.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 611,
+        "path": "decoder.model.decoder.layers.22.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenDecoderLayer"
+        },
+        "index": 612,
+        "path": "decoder.model.decoder.layers.23"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 613,
+        "path": "decoder.model.decoder.layers.23.self_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 614,
+        "path": "decoder.model.decoder.layers.23.self_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 615,
+        "path": "decoder.model.decoder.layers.23.self_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 616,
+        "path": "decoder.model.decoder.layers.23.self_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 617,
+        "path": "decoder.model.decoder.layers.23.self_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 618,
+        "path": "decoder.model.decoder.layers.23.self_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 619,
+        "path": "decoder.model.decoder.layers.23.encoder_attn_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenAttention"
+        },
+        "index": 620,
+        "path": "decoder.model.decoder.layers.23.encoder_attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 621,
+        "path": "decoder.model.decoder.layers.23.encoder_attn.q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 622,
+        "path": "decoder.model.decoder.layers.23.encoder_attn.k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 623,
+        "path": "decoder.model.decoder.layers.23.encoder_attn.v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 624,
+        "path": "decoder.model.decoder.layers.23.encoder_attn.out_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 625,
+        "path": "decoder.model.decoder.layers.23.final_layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 626,
+        "path": "decoder.model.decoder.layers.23.fc1"
+      },
+      {
+        "class_ref": {
+          "module": "transformers.activations",
+          "qualname": "GELUActivation"
+        },
+        "index": 627,
+        "path": "decoder.model.decoder.layers.23.activation_fn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 628,
+        "path": "decoder.model.decoder.layers.23.fc2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 629,
+        "path": "decoder.model.decoder.layer_norm"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 630,
+        "path": "decoder.lm_heads.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 631,
+        "path": "decoder.lm_heads.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 632,
+        "path": "decoder.lm_heads.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 633,
+        "path": "decoder.lm_heads.3"
+      }
+    ],
+    "outcome": "observed",
+    "provenance": {
+      "build_flags": {},
+      "config_sha256": "5b7c26fd433caf5d0caf10f77179f69fdc7d3ec147f916c66e0001bbffc0d507",
+      "constructor_used": "transformers.models.musicgen.modeling_musicgen.MusicgenForConditionalGeneration(config)",
+      "environment": {
+        "diffusers_offline": "1",
+        "hash_seed": "0",
+        "hf_hub_offline": "1",
+        "network": "macos-sandbox-exec+python-audit-hook",
+        "platform": "macOS-26.5.1-arm64-arm-64bit",
+        "python": "3.12.10",
+        "transformers_offline": "1"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "requested_factory": "transformers.models.musicgen.modeling_musicgen.MusicgenForConditionalGeneration",
+      "resolved_class": {
+        "module": "transformers.models.musicgen.modeling_musicgen",
+        "qualname": "MusicgenForConditionalGeneration"
+      },
+      "source_files": [
+        {
+          "module": "torch.nn.modules.activation",
+          "path": "activation.py",
+          "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+        },
+        {
+          "module": "torch.nn.modules.container",
+          "path": "container.py",
+          "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+        },
+        {
+          "module": "torch.nn.modules.conv",
+          "path": "conv.py",
+          "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+        },
+        {
+          "module": "torch.nn.modules.dropout",
+          "path": "dropout.py",
+          "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+        },
+        {
+          "module": "torch.nn.modules.linear",
+          "path": "linear.py",
+          "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+        },
+        {
+          "module": "torch.nn.modules.module",
+          "path": "module.py",
+          "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+        },
+        {
+          "module": "torch.nn.modules.normalization",
+          "path": "normalization.py",
+          "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+        },
+        {
+          "module": "torch.nn.modules.rnn",
+          "path": "rnn.py",
+          "sha256": "09c571c33b63a2b1bf6c65c76ebfc039a6a19b22fc317c629d8b5d16abf8473b"
+        },
+        {
+          "module": "torch.nn.modules.sparse",
+          "path": "sparse.py",
+          "sha256": "9efa8d236f5b29c42ffb2ed2822c01d8b255c54bb5853a8f919e70c06d101fab"
+        },
+        {
+          "module": "torch.nn.utils.parametrizations",
+          "path": "parametrizations.py",
+          "sha256": "739597c4d6cd45d36c9b3bbabb7ca8953e1204b770e90ca1821211b8c35edce1"
+        },
+        {
+          "module": "torch.nn.utils.parametrize",
+          "path": "parametrize.py",
+          "sha256": "cf07845070806c4a1edbf88d541ee532f542f679634e818f5d19b9a8a37d15a8"
+        },
+        {
+          "module": "transformers.activations",
+          "path": "activations.py",
+          "sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612"
+        },
+        {
+          "module": "transformers.generation.continuous_batching.continuous_api",
+          "path": "continuous_api.py",
+          "sha256": "a5a003e759d79cf8b9af042d07dd5e8a2a32e45e5b99ea3a9ef711cd29d2a37d"
+        },
+        {
+          "module": "transformers.generation.utils",
+          "path": "utils.py",
+          "sha256": "1eaf0aebe61f9616968f298bc33c78f6bfc83cb43f563db4d7ce572824131c7b"
+        },
+        {
+          "module": "transformers.integrations.peft",
+          "path": "peft.py",
+          "sha256": "70773ebaf2ec9a9a61bd37aebd7acc812bc459b5a9d936f149d72e305da38fc8"
+        },
+        {
+          "module": "transformers.modeling_layers",
+          "path": "modeling_layers.py",
+          "sha256": "f56c853f48f1d9a86026aa0f88ed1c33e629483e4a84b933cd4dddbcb00e1500"
+        },
+        {
+          "module": "transformers.modeling_utils",
+          "path": "modeling_utils.py",
+          "sha256": "98a17fb9c5a04127f770da4d686932a5c5321cfb25833c057df8ab9f9577ce43"
+        },
+        {
+          "module": "transformers.models.encodec.modeling_encodec",
+          "path": "modeling_encodec.py",
+          "sha256": "68a6e3eeff06078ccebcbfd8b8afd4e537550bbead898dc5872414154fdf9298"
+        },
+        {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "path": "modeling_musicgen.py",
+          "sha256": "d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c"
+        },
+        {
+          "module": "transformers.models.t5.modeling_t5",
+          "path": "modeling_t5.py",
+          "sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1"
+        },
+        {
+          "module": "transformers.utils.hub",
+          "path": "hub.py",
+          "sha256": "757c6172bdf0f056eb53e32add7842b4fe57d2b1fd68a492cb3cc0b60fffac4c"
+        }
+      ]
+    },
+    "recipe": {
+      "cache_state": "disabled",
+      "conditioning_present": true,
+      "dtype": "float32",
+      "encoder_decoder_mode": "encoder-decoder",
+      "flags": {},
+      "input_modality": "text+audio",
+      "library_versions": {
+        "torch": "2.9.1",
+        "transformers": "5.12.1"
+      },
+      "literal_arguments": {
+        "use_cache": false
+      },
+      "recipe_id": "text-audio-eval-no-cache",
+      "target_path": "",
+      "tensor_arguments": [
+        {
+          "device": "meta",
+          "dtype": "long",
+          "fill": "zeros",
+          "name": "input_ids",
+          "shape": [
+            1,
+            4
+          ],
+          "values": null
+        },
+        {
+          "device": "meta",
+          "dtype": "long",
+          "fill": "zeros",
+          "name": "decoder_input_ids",
+          "shape": [
+            4,
+            4
+          ],
+          "values": null
+        }
+      ],
+      "train_eval": "eval"
+    },
+    "schema_version": 1
+  },
+  "provenance": {
+    "build_flags": {},
+    "config_sha256": "5b7c26fd433caf5d0caf10f77179f69fdc7d3ec147f916c66e0001bbffc0d507",
+    "constructor_used": "transformers.models.musicgen.modeling_musicgen.MusicgenForConditionalGeneration(config)",
+    "environment": {
+      "diffusers_offline": "1",
+      "hash_seed": "0",
+      "hf_hub_offline": "1",
+      "network": "macos-sandbox-exec+python-audit-hook",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "python": "3.12.10",
+      "transformers_offline": "1"
+    },
+    "packages": [
+      {
+        "package": "python",
+        "version": "3.12.10"
+      },
+      {
+        "package": "torch",
+        "version": "2.9.1"
+      },
+      {
+        "package": "transformers",
+        "version": "5.12.1"
+      }
+    ],
+    "requested_factory": "transformers.models.musicgen.modeling_musicgen.MusicgenForConditionalGeneration",
+    "resolved_class": {
+      "module": "transformers.models.musicgen.modeling_musicgen",
+      "qualname": "MusicgenForConditionalGeneration"
+    },
+    "source_files": [
+      {
+        "module": "torch.nn.modules.activation",
+        "path": "activation.py",
+        "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+      },
+      {
+        "module": "torch.nn.modules.container",
+        "path": "container.py",
+        "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+      },
+      {
+        "module": "torch.nn.modules.conv",
+        "path": "conv.py",
+        "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+      },
+      {
+        "module": "torch.nn.modules.dropout",
+        "path": "dropout.py",
+        "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+      },
+      {
+        "module": "torch.nn.modules.linear",
+        "path": "linear.py",
+        "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+      },
+      {
+        "module": "torch.nn.modules.module",
+        "path": "module.py",
+        "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+      },
+      {
+        "module": "torch.nn.modules.normalization",
+        "path": "normalization.py",
+        "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+      },
+      {
+        "module": "torch.nn.modules.rnn",
+        "path": "rnn.py",
+        "sha256": "09c571c33b63a2b1bf6c65c76ebfc039a6a19b22fc317c629d8b5d16abf8473b"
+      },
+      {
+        "module": "torch.nn.modules.sparse",
+        "path": "sparse.py",
+        "sha256": "9efa8d236f5b29c42ffb2ed2822c01d8b255c54bb5853a8f919e70c06d101fab"
+      },
+      {
+        "module": "torch.nn.utils.parametrizations",
+        "path": "parametrizations.py",
+        "sha256": "739597c4d6cd45d36c9b3bbabb7ca8953e1204b770e90ca1821211b8c35edce1"
+      },
+      {
+        "module": "torch.nn.utils.parametrize",
+        "path": "parametrize.py",
+        "sha256": "cf07845070806c4a1edbf88d541ee532f542f679634e818f5d19b9a8a37d15a8"
+      },
+      {
+        "module": "transformers.activations",
+        "path": "activations.py",
+        "sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612"
+      },
+      {
+        "module": "transformers.generation.continuous_batching.continuous_api",
+        "path": "continuous_api.py",
+        "sha256": "a5a003e759d79cf8b9af042d07dd5e8a2a32e45e5b99ea3a9ef711cd29d2a37d"
+      },
+      {
+        "module": "transformers.generation.utils",
+        "path": "utils.py",
+        "sha256": "1eaf0aebe61f9616968f298bc33c78f6bfc83cb43f563db4d7ce572824131c7b"
+      },
+      {
+        "module": "transformers.integrations.peft",
+        "path": "peft.py",
+        "sha256": "70773ebaf2ec9a9a61bd37aebd7acc812bc459b5a9d936f149d72e305da38fc8"
+      },
+      {
+        "module": "transformers.modeling_layers",
+        "path": "modeling_layers.py",
+        "sha256": "f56c853f48f1d9a86026aa0f88ed1c33e629483e4a84b933cd4dddbcb00e1500"
+      },
+      {
+        "module": "transformers.modeling_utils",
+        "path": "modeling_utils.py",
+        "sha256": "98a17fb9c5a04127f770da4d686932a5c5321cfb25833c057df8ab9f9577ce43"
+      },
+      {
+        "module": "transformers.models.encodec.modeling_encodec",
+        "path": "modeling_encodec.py",
+        "sha256": "68a6e3eeff06078ccebcbfd8b8afd4e537550bbead898dc5872414154fdf9298"
+      },
+      {
+        "module": "transformers.models.musicgen.modeling_musicgen",
+        "path": "modeling_musicgen.py",
+        "sha256": "d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c"
+      },
+      {
+        "module": "transformers.models.t5.modeling_t5",
+        "path": "modeling_t5.py",
+        "sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1"
+      },
+      {
+        "module": "transformers.utils.hub",
+        "path": "hub.py",
+        "sha256": "757c6172bdf0f056eb53e32add7842b4fe57d2b1fd68a492cb3cc0b60fffac4c"
+      }
+    ]
+  },
+  "recipe": {
+    "cache_state": "disabled",
+    "conditioning_present": true,
+    "dtype": "float32",
+    "encoder_decoder_mode": "encoder-decoder",
+    "flags": {},
+    "input_modality": "text+audio",
+    "library_versions": {
+      "torch": "2.9.1",
+      "transformers": "5.12.1"
+    },
+    "literal_arguments": {
+      "use_cache": false
+    },
+    "recipe_id": "text-audio-eval-no-cache",
+    "target_path": "",
+    "tensor_arguments": [
+      {
+        "device": "meta",
+        "dtype": "long",
+        "fill": "zeros",
+        "name": "input_ids",
+        "shape": [
+          1,
+          4
+        ],
+        "values": null
+      },
+      {
+        "device": "meta",
+        "dtype": "long",
+        "fill": "zeros",
+        "name": "decoder_input_ids",
+        "shape": [
+          4,
+          4
+        ],
+        "values": null
+      }
+    ],
+    "train_eval": "eval"
+  },
+  "status": "ok",
+  "stderr": "[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.\n[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.\n",
+  "stdout": ""
+}

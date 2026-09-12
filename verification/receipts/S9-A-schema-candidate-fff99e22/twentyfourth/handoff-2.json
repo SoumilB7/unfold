@@ -1,0 +1,10 @@
+{
+  "files": [
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "sha256": "7f70f5fe4b4638b0888a75140332aca9221a05eaccab590e4b742539f3e27f31"
+    }
+  ],
+  "scope": "Keep config-VALUE versus RELATION poison on attention projection_mode; diffusion_bookend_geometry is now correctly VALUE, separate bookend_operations owns CONNECTION. Assertion unchanged.",
+  "runtime": "not run"
+}

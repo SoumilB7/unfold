@@ -1,0 +1,16 @@
+{
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "base_manifest_sha256": "127b5cb63c0b94ed44eb6c66512c7e1f76c260c3f48f33cb97177754fe101d67",
+  "files": {
+    "capture_contract.py": "95c05eec69df6e717980582ab770116a34416c1c22c21848c6f2f96d6c108fe6",
+    "capture_preservation.py": "dd1fdb8c339679fc76b4985eb0ccb5975cbc5ea1029a63d0c8b359ed77d63e68",
+    "compare-recovered.py": "18a302330714bdedb35435273b44dcce9a33ab14323cc989ea4ab68a4e5ed5f3",
+    "composition-audit.json": "d0f11e0d814d0d2d39d961f9f31047fe2b30c95452e5bbb0dc368c6ab240dce4",
+    "contract.json": "a537c7d7fb0d873d55ab691a0f66b61f7172d804f20a27194f33955450243626",
+    "harness.diff": "a4898a1e06af3360e563a2ff5e3c44c1a7ca02b7a3a56cf09564876cd4587d56",
+    "plan.json": "2880ac24c28b47cca9bb4719c127a8cf0dd72bc2b7111644230ab3ee6abe96b4",
+    "run-capture.py": "4b00e6d0612c8d75a05a3004b0249c8554d7ca5239a809ee1658d62e4e3271b8",
+    "run-tests.py": "de188089101c92c15a8812900645ce8b33099ea1af3311bc92b97de4b69ef207",
+    "saved-baseline-inventory.json": "63394b2d904c3fed1aa13ca78bf8e50fabf17c6561d1311bc1aac5937ff385ee"
+  }
+}

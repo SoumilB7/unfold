@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "58e0de111a5aab80a7d901d3746b743198bb0f4d89322712fdbeb65d7560d62f",
+  "config": "tests/sable_test_corpus/llama-7b.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.5405198750086129,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.1541419578716159,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.8171562501229346,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.81201171875,
+    4.03173828125,
+    4.22119140625
+  ],
+  "mode": "fingerprint",
+  "name": "llama-7b",
+  "parse_seconds": 3.081736874766648,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "a9ca33cf2a3f3d4f514cd2edabed8ee082b4bb76",
+  "surface_hashes": {
+    "expanded": "e19177c22ec44c9bd8b0992805492a867e9bfec158859d6c3cab34a483a9b62a",
+    "html_meta": "16eef44743af649b786dddc1268dc73cdf6741dad80f07f97136035920d91d09",
+    "ir": "cc26f6e3a594b94973fd3f3a2851c165a8521b216633f0534ca1a24b88816a11",
+    "ledgers": "16ed376a59ffe591e77a0f9ec2cda7408b174e9e94c9d85fa252159538b61c0e",
+    "params": "a6c7d2a183b37fb14ec513fd275f550f2d10c9afe2270e34cdac54117fbc2fb9"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "decision": "RETURN_INVERSE_SCRIPT_GAP",
+  "pins": {
+    "model_unfolder/renderers/html/card_payload.py": "55ad633bc48f5e041653a7756e96a35fd8b674357344038159cd9013b80355e1",
+    "model_unfolder/renderers/html/interactions.py": "3c908f474c11e7bfd9a3c64b0cf9d34ed0fff3c6214142d1a2b705f5c508b521",
+    "model_unfolder/renderers/html/document.py": "9ea97941d1559be4771439bd792b193c95e37a1860b1309f1f3de3b326303562",
+    "model_unfolder/preview.py": "0a7fbc4f610b03576549cf52e548662c0116ee1b180ad3d3193b8819603a297e",
+    "model_unfolder/block_schema.py": "6b363c0f3ddb092775082f654b40d394bd14b6cb56daffd28f46308554144d57",
+    "tests/test_card_payload.py": "08dc1beda6a49674a3f49e4a05daa7303fe16cab1c9a5a3a34ddeda0c22af44a"
+  },
+  "concrete_counterexample": "Remove or replace region after payload script and before packed-end. expand_card_payloads does not inspect it, restoring old canonical JS and passing old validators.",
+  "secondary_runtime_placement": "One parent marker inserts all cards before first card position; intervening non-card siblings require supported-contiguity guard or exact per-card placement.",
+  "limits": "Read-only source inspection; no Python codec, browser or tests executed."
+}

@@ -1,0 +1,10 @@
+WARNING: The directory '/Users/soumil/Library/Caches/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing ./source
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: model-unfolder
+  Building wheel for model-unfolder (pyproject.toml): started
+  Building wheel for model-unfolder (pyproject.toml): finished with status 'done'
+  Created wheel for model-unfolder: filename=model_unfolder-0.3.0-py3-none-any.whl size=1734598 sha256=0cf87509fa1952bd42073c83aadebae41d8d2a80fb90f2edea858aa2a9ef2adc
+  Stored in directory: /private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pip-ephem-wheel-cache-iwg4n95e/wheels/90/47/51/d93b757b24084eb30bb1c3606a78e8b8feda584bc217a85914
+Successfully built model-unfolder

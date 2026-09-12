@@ -1,0 +1,156 @@
+{
+  "checkpoint": "d3a4d61732233a14ee67917f48fe5ec11d41f10e",
+  "results": {
+    "R1_alias_attribute_write": {
+      "source": "class Cell:\n def forward(self, value, replacement):\n  alias = self\n  alias.second = replacement\n  value = self.first(value)\n  return self.second(value)\n",
+      "value": {
+        "member_stays_bound": true
+      }
+    },
+    "R1_container_escape": {
+      "source": "class Cell:\n def forward(self, value):\n  holder = [self]\n  helper(holder)\n  value = self.first(value)\n  return self.second(value)\n",
+      "value": {
+        "member_stays_bound": false
+      }
+    },
+    "R1_direct_alias": {
+      "direct_edge_found": true,
+      "member_stays_bound": false,
+      "source": "class Arbitrary:\n    def forward(self, value):\n        alias = self\n        helper(alias)\n        value = self.first(value)\n        return self.second(value)\n"
+    },
+    "R1_known_holder_attribute": {
+      "source": "class Cell:\n def forward(self, value):\n  holder = Namespace()\n  holder.parent = self\n  helper(holder.parent)\n  value = self.first(value)\n  return self.second(value)\n",
+      "value": {
+        "member_stays_bound": true
+      }
+    },
+    "R2_spoofed_name": {
+      "actual_at_zero": 10.0,
+      "claimed_meaning": null,
+      "framework_SiLU_at_zero": 0.0,
+      "is_framework_SiLU": false,
+      "serialized_ref": "ResolvedClass(module='torch.nn.modules.activation', qualname='SiLU')"
+    },
+    "R2_worker_membership": {
+      "canonical_key": "silu",
+      "spoof_rejected": true
+    },
+    "R3_wrong_concat": {
+      "reason": "join result does not reach the cited child input",
+      "rejected": true
+    },
+    "R4_opaque_helper": {
+      "source": "def ignore(argument):\n return 7\nclass Cell:\n def forward(self, side):\n  result = ignore(side)\n  consume(result)\n",
+      "value": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "formal": "side",
+              "kind": "formal"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "result_slot": []
+      }
+    },
+    "R7_R8_original_controls": {
+      "carried_local": {
+        "source": "class Cell:\n def forward(self, seed, items):\n  state = seed\n  for item in items:\n   consume(state)\n   state = update(item)\n",
+        "value": {
+          "formal": "state",
+          "initial_route": {
+            "formal": "seed",
+            "kind": "formal"
+          },
+          "kind": "loop_carried",
+          "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+        }
+      },
+      "guarded_assignment_control": {
+        "source": "class Cell:\n def forward(self, seed, flag):\n  state = seed\n  if flag:\n   state = replace(seed)\n   return consume(state)\n  return state\n",
+        "value": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "seed",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "result_slot": []
+        }
+      },
+      "loop_target_overwrites_formal": {
+        "source": "class Cell:\n def forward(self, state, items):\n  for state in items:\n   consume(state)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "loop target supplies this local; formal identity does not survive binding"
+        }
+      },
+      "opaque_call_control": {
+        "source": "class Cell:\n def forward(self, seed):\n  result = helper(seed)\n  consume(result)\n",
+        "value": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "seed",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "result_slot": []
+        }
+      },
+      "ordinary_alias_control": {
+        "source": "class Cell:\n def forward(self, seed):\n  state = seed\n  consume(state)\n",
+        "value": {
+          "formal": "seed",
+          "kind": "formal"
+        }
+      },
+      "starred_unpack": {
+        "source": "class Cell:\n def forward(self, seed):\n  first, *middle, last = helper(seed)\n  consume(last)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "starred unpack has no proven fixed result slot"
+        }
+      },
+      "with_target_overwrites_formal": {
+        "source": "class Cell:\n def forward(self, seed):\n  with manager() as seed:\n   consume(seed)\n",
+        "value": {
+          "kind": "unresolved",
+          "reason": "input occurs inside unsupported execution syntax"
+        }
+      }
+    },
+    "R7_after_loop": {
+      "source": "class Cell:\n def forward(self, state, items):\n  for state in items:\n   pass\n  consume(state)\n",
+      "value": {
+        "kind": "unresolved",
+        "reason": "completed loop may have rebound this local; original formal identity is not established"
+      }
+    },
+    "R7_after_with": {
+      "source": "class Cell:\n def forward(self, seed):\n  with manager() as seed:\n   pass\n  consume(seed)\n",
+      "value": {
+        "kind": "unresolved",
+        "reason": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it"
+      }
+    }
+  },
+  "tracked_fingerprint_after": "2f06be744a94dfaccfd0dfef7edec10db2a772607833ea0f1ab146626ea0fd0c",
+  "tracked_fingerprint_before": "2f06be744a94dfaccfd0dfef7edec10db2a772607833ea0f1ab146626ea0fd0c",
+  "verdict": "RETURN: R1 retains known alias/holder attribute defects; R7 reviewed controls corrected; R5 separate replay"
+}

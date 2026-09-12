@@ -1,0 +1,18 @@
+{
+  "decision": "ACCEPT exact test-fixture correction; runtime pending",
+  "manifest_sha256": "5ced1f24751b9ebf37181a08f89ed63c7f53499032bf439c5b89e402309e9903",
+  "source_pins": [
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "sha256": "cac0f49723d26483a888cb4cc7efe264f6a7c799a327e469be51c147c0e77029",
+      "previous_sha256": "49c5d6c4578e867bd0c1edde459ecfeb65e77b92347e984102142fde38827b77"
+    }
+  ],
+  "findings": [
+    "Fixture now supplies the actual retained reader result value; the prior shared _native_fact default incorrectly supplied rmsnorm for LayerNorm.",
+    "External control explicitly asserts layernorm and retains empty-target/no-fallback assertions. No production or proof guard changed."
+  ],
+  "limitations": [
+    "Source-only review. Prior 25 failure remains historical evidence; root must rerun."
+  ]
+}

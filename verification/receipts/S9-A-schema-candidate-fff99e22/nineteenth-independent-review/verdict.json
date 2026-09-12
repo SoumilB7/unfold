@@ -1,0 +1,60 @@
+{
+  "decision": "ACCEPT",
+  "scope": "Source-only bounded first-direct-base own annotation and final declaration/operand/test-lifecycle supplements in frozen nineteenth. No runtime or output approval.",
+  "nineteenth_manifest_sha256": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338",
+  "handoff_manifest_sha256": {
+    "mro": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089",
+    "supplement": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905",
+    "lifecycle": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+  },
+  "verified_files": [
+    {
+      "scope": "mro",
+      "path": "model_unfolder/evidence/framework_config.py",
+      "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014",
+      "bytes": 62121,
+      "eighteenth_sha256": "ef26900089e7d9be110a5c1b16eb331178f1e28475e5e6a46cdcd29ce1575061"
+    },
+    {
+      "scope": "mro",
+      "path": "tests/test_s9_config_annotation_mro.py",
+      "sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06",
+      "bytes": 5335,
+      "eighteenth_sha256": null
+    },
+    {
+      "scope": "supplement",
+      "path": "model_unfolder/evidence/registry.py",
+      "sha256": "9b946e37e2c2f2a4d302bffeec9a0766dd3cdd292d1fa4457ee76f0a8caf445e"
+    },
+    {
+      "scope": "supplement",
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d"
+    },
+    {
+      "scope": "lifecycle",
+      "path": "tests/test_s9_operand_channels.py",
+      "sha256": "dddfee14299b1d35a1e2d9534807fca6834854d8ff8a793b8babd1194f812bbf"
+    },
+    {
+      "scope": "lifecycle",
+      "path": "tests/test_s9_reader_declarations.py",
+      "sha256": "c43ab4296d78fd253e446cc3cfb0df0509c9c0c0e03a559359006b40e64791d4"
+    }
+  ],
+  "findings": [],
+  "accepted_boundaries": [
+    "The new multi-base branch uses the first direct local class only, with unique exact same-source module class binding and matching class span; refuses owner/first explicit class keywords, unknown/rebound/imported first base, missing own annotation, guarded/non-own statement. It returns the own annotation immediately and never traverses that base ancestry through the fork. Existing parameter/root-own and single-base precedence remain unchanged.",
+    "Ordinary C3 first-direct-base ordering justifies this limited lookup; this is not a general MRO interpreter or new theorem about arbitrary class decorators/metaclass side effects. Existing framework config alias/import/class and D1 default-value scope checks remain in force.",
+    "Read generic order, root precedence, imported/unknown/missing/ancestor/conditional/metaclass/rebinding controls and actual installed Llama scalar proof control. Tests were not run by reviewer.",
+    "Registry adds only the pre-existing oracle_missing status to bias, scores_scale and projection_mode. No new positive status, kind or proof route.",
+    "Score refresh only attempts replacement of absent nonambiguous resolutions. A None bound result preserves that unresolved resolution; subsequent exact supplying-channel validation still refuses None and cannot qualify a default through the fallback.",
+    "Lifecycle edits capture the actual context config-access ledger and root owner around direct adapter.parse controls. Assertions on missing-source None values, oracle_missing status, intended kinds and absence of proof/token remain."
+  ],
+  "limits": [
+    "The intermediate supplement test hash f4258a82 was already superseded when read. It is not independently certified here; final c43ab429 test bytes are pinned by the lifecycle handoff and frozen nineteenth and were reviewed as the combined delta from accepted e6.",
+    "Existing e6 declaration verdict remains separate and unchanged. No full S9-A, sparse-Llama, census or output acceptance follows from this source review.",
+    "No production changes, model execution, tests or archive restoration performed by reviewer."
+  ]
+}

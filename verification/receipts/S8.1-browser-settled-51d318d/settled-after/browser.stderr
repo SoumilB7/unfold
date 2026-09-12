@@ -1,0 +1,6 @@
+
+DevTools listening on ws://127.0.0.1:62784/devtools/browser/09ed8c12-d947-49d6-bbdd-eea8a93bd874
+[0908/220644.011556:ERROR:content/browser/gpu/gpu_process_host.cc:1035] GPU process exited unexpectedly: exit_code=15
+[0908/220644.011803:WARNING:content/browser/gpu/gpu_process_host.cc:1479] The GPU process has crashed 1 time(s)
+[0908/220644.040688:ERROR:base/apple/mach_port_rendezvous_mac.cc:256] bootstrap_look_up org.chromium.Chromium.MachPortRendezvousServer.1: Permission denied (1100)
+[0908/220644.040865:ERROR:base/memory/shared_memory_switch.cc:261] No rendezvous client, terminating process (parent died?)

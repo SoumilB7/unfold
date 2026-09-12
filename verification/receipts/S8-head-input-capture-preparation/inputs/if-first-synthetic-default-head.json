@@ -1,0 +1,32 @@
+{
+  "_class_name": "UNet2DConditionModel",
+  "in_channels": 3,
+  "out_channels": 6,
+  "block_out_channels": [
+    320,
+    640,
+    1280,
+    1280
+  ],
+  "layers_per_block": 3,
+  "cross_attention_dim": 4096,
+  "encoder_hid_dim": 4096,
+  "encoder_hid_dim_type": "text_proj",
+  "down_block_types": [
+    "ResnetDownsampleBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D"
+  ],
+  "up_block_types": [
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "ResnetUpsampleBlock2D"
+  ],
+  "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+  "scheduler": [
+    "diffusers",
+    "DDPMScheduler"
+  ]
+}

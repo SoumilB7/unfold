@@ -1,0 +1,24 @@
+{
+  "added_primitive_events": 1293,
+  "blessed": false,
+  "case": "sdxl-missing",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 3.694,
+  "exact_ir_warning_parameter_input": true,
+  "html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+  "no_model_or_pytest": true,
+  "old_event_sequence_unchanged": true,
+  "prior_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+  "production_commit": "736fdab",
+  "raw_html_equal": true,
+  "source_case": "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-missing",
+  "status": "PASS"
+}

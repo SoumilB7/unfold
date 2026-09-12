@@ -1,0 +1,563 @@
+{
+  "graph": {
+    "aside": {
+      "footer": [
+        "KV cache 2x smaller",
+        "than full MHA"
+      ],
+      "rows": [
+        [
+          "Q0-Q1",
+          "use KV0"
+        ],
+        [
+          "Q2-Q3",
+          "use KV1"
+        ],
+        "...",
+        [
+          "Q6-Q7",
+          "use KV3"
+        ]
+      ],
+      "title": "KV sharing pattern"
+    },
+    "edges": [],
+    "flow": [
+      "encoder_0_g1_attn_hidden",
+      "encoder_0_g1_attn_kv_cache",
+      "encoder_0_g1_attn_scaled_scores",
+      "encoder_0_g1_attn_attn_softcap",
+      "encoder_0_g1_attn_attn_softmax",
+      "encoder_0_g1_attn_attn_apply_v",
+      "encoder_0_g1_attn_concat_heads",
+      "encoder_0_g1_attn_o_proj",
+      "region_out"
+    ],
+    "groups": [],
+    "nodes": [
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_hidden",
+        "kind": "port",
+        "label": "in (2,304)",
+        "meta": {
+          "canonical_id": "hidden"
+        },
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_q_proj",
+        "kind": "linear",
+        "label": "Linear (Q)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": true,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_k_proj",
+        "kind": "linear",
+        "label": "Linear (K)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": true,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_v_proj",
+        "kind": "linear",
+        "label": "Linear (V)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_scaled_scores",
+        "kind": "formula",
+        "label": null,
+        "meta": {
+          "canonical_id": "scaled_scores",
+          "denominator": "sqrt(dim)",
+          "formula": "QK^T/sqrt(dim)",
+          "numerator": "Q K^T"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_attn_softcap",
+        "kind": "activation",
+        "label": "tanh softcap \u00b150",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_attn_softmax",
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_attn_apply_v",
+        "kind": "dot_product",
+        "label": null,
+        "meta": {
+          "canonical_id": "attn_apply_v"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_concat_heads",
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {
+          "canonical_id": "concat_heads"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_o_proj",
+        "kind": "linear",
+        "label": "Linear (out)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_q_rope",
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "Q",
+          "\u03b8 10000"
+        ],
+        "meta": {
+          "canonical_id": "q_rope"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_k_rope",
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "K",
+          "\u03b8 10000"
+        ],
+        "meta": {
+          "canonical_id": "k_rope"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "encoder_0_g1_attn_kv_cache",
+        "kind": "cache",
+        "label": [
+          "K/V cache",
+          "update + read"
+        ],
+        "meta": {
+          "canonical_id": "kv_cache",
+          "stores": [
+            "key",
+            "value"
+          ]
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "region_out",
+        "kind": "port",
+        "label": null,
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      }
+    ],
+    "note": null,
+    "parallels": [
+      {
+        "dst": "encoder_0_g1_attn_kv_cache",
+        "lanes": [
+          {
+            "dst": [
+              "encoder_0_g1_attn_scaled_scores"
+            ],
+            "ids": [
+              "encoder_0_g1_attn_q_proj",
+              "encoder_0_g1_attn_q_rope"
+            ],
+            "out_label": null,
+            "src": null
+          },
+          {
+            "dst": null,
+            "ids": [
+              "encoder_0_g1_attn_k_proj",
+              "encoder_0_g1_attn_k_rope"
+            ],
+            "out_label": null,
+            "src": null
+          },
+          {
+            "dst": null,
+            "ids": [
+              "encoder_0_g1_attn_v_proj"
+            ],
+            "out_label": null,
+            "src": null
+          }
+        ],
+        "src": "encoder_0_g1_attn_hidden"
+      },
+      {
+        "dst": "encoder_0_g1_attn_scaled_scores",
+        "lanes": [
+          {
+            "dst": null,
+            "ids": [],
+            "out_label": null,
+            "src": "encoder_0_g1_attn_kv_cache"
+          },
+          {
+            "dst": [
+              "encoder_0_g1_attn_attn_apply_v"
+            ],
+            "ids": [],
+            "out_label": null,
+            "src": "encoder_0_g1_attn_kv_cache"
+          }
+        ],
+        "src": "encoder_0_g1_attn_kv_cache"
+      }
+    ],
+    "side_inputs": []
+  },
+  "region": {
+    "edges": [
+      {
+        "dst": "encoder_0_g1_attn_q_proj",
+        "src": "encoder_0_g1_attn_hidden"
+      },
+      {
+        "dst": "encoder_0_g1_attn_k_proj",
+        "src": "encoder_0_g1_attn_hidden"
+      },
+      {
+        "dst": "encoder_0_g1_attn_v_proj",
+        "src": "encoder_0_g1_attn_hidden"
+      },
+      {
+        "dst": "encoder_0_g1_attn_attn_softcap",
+        "src": "encoder_0_g1_attn_scaled_scores"
+      },
+      {
+        "dst": "encoder_0_g1_attn_attn_softmax",
+        "src": "encoder_0_g1_attn_attn_softcap"
+      },
+      {
+        "dst": "encoder_0_g1_attn_attn_apply_v",
+        "src": "encoder_0_g1_attn_attn_softmax"
+      },
+      {
+        "dst": "encoder_0_g1_attn_concat_heads",
+        "src": "encoder_0_g1_attn_attn_apply_v"
+      },
+      {
+        "dst": "encoder_0_g1_attn_o_proj",
+        "src": "encoder_0_g1_attn_concat_heads"
+      },
+      {
+        "dst": "encoder_0_g1_attn_q_rope",
+        "src": "encoder_0_g1_attn_q_proj"
+      },
+      {
+        "dst": "encoder_0_g1_attn_scaled_scores",
+        "src": "encoder_0_g1_attn_q_rope"
+      },
+      {
+        "dst": "encoder_0_g1_attn_k_rope",
+        "src": "encoder_0_g1_attn_k_proj"
+      },
+      {
+        "dst": "encoder_0_g1_attn_kv_cache",
+        "src": "encoder_0_g1_attn_k_rope"
+      },
+      {
+        "dst": "encoder_0_g1_attn_kv_cache",
+        "src": "encoder_0_g1_attn_v_proj"
+      },
+      {
+        "dst": "encoder_0_g1_attn_scaled_scores",
+        "src": "encoder_0_g1_attn_kv_cache"
+      },
+      {
+        "dst": "encoder_0_g1_attn_attn_apply_v",
+        "src": "encoder_0_g1_attn_kv_cache"
+      }
+    ],
+    "id": "attention",
+    "label": "gqa",
+    "ops": [
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_hidden",
+        "in_features": null,
+        "kind": "input",
+        "label": null,
+        "meta": {
+          "canonical_id": "hidden"
+        },
+        "out_features": 2304
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_q_proj",
+        "in_features": 2304,
+        "kind": "linear",
+        "label": "Linear (Q)",
+        "meta": {
+          "canonical_id": "q_proj"
+        },
+        "out_features": 2048
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_k_proj",
+        "in_features": 2304,
+        "kind": "linear",
+        "label": "Linear (K)",
+        "meta": {
+          "cached": true,
+          "canonical_id": "k_proj"
+        },
+        "out_features": 1024
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_v_proj",
+        "in_features": 2304,
+        "kind": "linear",
+        "label": "Linear (V)",
+        "meta": {
+          "cached": true,
+          "canonical_id": "v_proj"
+        },
+        "out_features": 1024
+      },
+      {
+        "fn": "scaled_dot_product",
+        "id": "encoder_0_g1_attn_scaled_scores",
+        "in_features": null,
+        "kind": "attention_core",
+        "label": null,
+        "meta": {
+          "canonical_id": "scaled_scores",
+          "denominator": "sqrt(dim)",
+          "formula": "QK^T/sqrt(dim)",
+          "numerator": "Q K^T"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "tanh",
+        "id": "encoder_0_g1_attn_attn_softcap",
+        "in_features": null,
+        "kind": "activation",
+        "label": "tanh softcap \u00b150",
+        "meta": {
+          "canonical_id": "attn_softcap",
+          "desc": "Soft caps the attention logits: scores/50 \u2192 tanh \u2192 \u00d750, bounding them to \u00b150 without hard clipping."
+        },
+        "out_features": null
+      },
+      {
+        "fn": "softmax",
+        "id": "encoder_0_g1_attn_attn_softmax",
+        "in_features": null,
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {
+          "canonical_id": "attn_softmax"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "matmul",
+        "id": "encoder_0_g1_attn_attn_apply_v",
+        "in_features": null,
+        "kind": "elementwise",
+        "label": null,
+        "meta": {
+          "canonical_id": "attn_apply_v"
+        },
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_concat_heads",
+        "in_features": null,
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {
+          "canonical_id": "concat_heads"
+        },
+        "out_features": 2048
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_o_proj",
+        "in_features": 2048,
+        "kind": "linear",
+        "label": "Linear (out)",
+        "meta": {
+          "canonical_id": "o_proj"
+        },
+        "out_features": 2304
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_q_rope",
+        "in_features": null,
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "Q",
+          "\u03b8 10000"
+        ],
+        "meta": {
+          "canonical_id": "q_rope"
+        },
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_k_rope",
+        "in_features": null,
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "K",
+          "\u03b8 10000"
+        ],
+        "meta": {
+          "canonical_id": "k_rope"
+        },
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "encoder_0_g1_attn_kv_cache",
+        "in_features": null,
+        "kind": "cache",
+        "label": [
+          "K/V cache",
+          "update + read"
+        ],
+        "meta": {
+          "canonical_id": "kv_cache",
+          "stores": [
+            "key",
+            "value"
+          ]
+        },
+        "out_features": null
+      }
+    ],
+    "resolved": true,
+    "role": "attention",
+    "source": "config",
+    "template": "gqa"
+  }
+}

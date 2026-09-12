@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_every_live_terminal_consumer_group_has_one_exact_debt_row ________
+
+    def test_every_live_terminal_consumer_group_has_one_exact_debt_row():
+        live = {group.key for group in group_consumer_accesses()}
+        rows = {row.writer_key for row in STRUCTURAL_DEBT
+                if row.sink_kind == "consumer_read"}
+>       assert live == rows
+E       AssertionError: assert {('model_unfo...49a154'), ...} == {('model_unfo...49a154'), ...}
+E
+E         Extra items in the left set:
+E         ('model_unfolder/renderers/html/metadata_modalities.py', '_audio_norm_card', 'consumer_read', 'renderer.semantic_default.695252f664b93b23')
+E         Use -v to get more diff
+
+tests/test_consumer_firewall.py:26: AssertionError
+_____ test_consumer_quarantine_is_non_vacuous_and_spans_all_four_surfaces ______
+
+    def test_consumer_quarantine_is_non_vacuous_and_spans_all_four_surfaces():
+        accesses = scan_consumer_accesses()
+        assert accesses
+        assert {item.consumer for item in accesses} == {
+            "renderer", "json", "params", "conformance",
+        }
+        assert {item.kind for item in accesses} >= {
+            "backward_import", "raw_extras", "raw_config", "source_reopen",
+            "spec_default",
+        }
+        assert not any(item.kind == "semantic_bucket" for item in accesses)
+>       assert not any(item.kind == "semantic_default" for item in accesses)
+E       assert not True
+E        +  where True = any(<generator object test_consumer_quarantine_is_non_vacuous_and_spans_all_four_surfaces.<locals>.<genexpr> at 0x105715ff0>)
+
+tests/test_consumer_firewall.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_consumer_firewall.py::test_every_live_terminal_consumer_group_has_one_exact_debt_row
+FAILED tests/test_consumer_firewall.py::test_consumer_quarantine_is_non_vacuous_and_spans_all_four_surfaces
+2 failed in 1.06s

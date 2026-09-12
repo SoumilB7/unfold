@@ -1,0 +1,34 @@
+{
+  "status": "PREPARED ONLY; exact34 matrix completion and equal brackets required. Prior32/33 audit files untouched.",
+  "script_sha256": "ae4c134aaa7bfd2af16e8b6346d86c7771517e697f15fd217844e06b15805913",
+  "reused32_script_sha256": "2df86b20d28e3f65b251360ebe85f24cb24b7a80e7911f326fb8b0aae50ab33e",
+  "candidate_root": "/private/tmp/unfold-s9a-thirtyfourth/matrix",
+  "comparison_roots": [
+    "verification/s7",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysecond/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysixth/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/thirtysecond/matrix"
+  ],
+  "checks": [
+    "Require completed successful root matrix lane with exact32 source and protected-artifact equal brackets.",
+    "Exact39 membership/order/denominator; every model, observation and relation artifact byte hash verified before and after.",
+    "Active/archived22/archived26 versus32 comparison, including all occurrence membership/order/runtime/static identity, construction and execution values, schedules and relation identities/order.",
+    "Exact leaves for every changed row including full provenance and projection, with absent/list order distinguished; full payload/table metadata and companion deltas enumerated.",
+    "Every union citation removed/gained/retained; original16324 findings classified retained-qualified, retained-unqualified or removed. Citation removal never counts as qualification.",
+    "Original274 interim placement outcomes retained using22; every new32 projection-kind delta shown against both active and26.",
+    "All remaining candidate fact findings enumerated by exact key; report real values rather than assert86/142/481 unchanged.",
+    "Independent relation-plan receipt hashes and source-index consistency.",
+    "Raw summary deltas retained; no normalization, source re-stamp, example or approved rows written.",
+    "Every exact34 delta versus actual32 is included, with source seals/proof/citation metadata and same membership/order/axes checks.",
+    "Count actual original16324 survival and142 qualification; do not infer any source-prepared claim closed. Preserve481 newer formula debt separately."
+  ],
+  "limits": [
+    "No model imports/runtime/proofobject validation/output blessing by this stdlib harness.",
+    "Requires completed exact34 matrix lane and complete byte-verified active/22/26/32 model/observation/relation artifacts.",
+    "Old32 narrative owner-held label is corrected here: implementation preparation is authorized; output re-bless approval remains."
+  ],
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/matrix-thirtyfourth/audit.py --candidate /private/tmp/unfold-s9a-thirtyfourth/matrix --completion-result <root completed34 matrix result.json> --output /private/tmp/unfold-s9a-thirtyfourth/independent-matrix-audit.json.gz",
+  "reused33_script_sha256": "2e6ac927ded005beea62c9f7ba1e30f2f1d553283467157b802f7a3599dea58d",
+  "expected_source34": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "source34_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1"
+}

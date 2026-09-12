@@ -1,0 +1,123 @@
+{
+  "actual_portable_seal": "589c6cdeeb1fbb151d288e15b10a583e0d6847de4e2e45d9ebf99f48eed0ccfe",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "589c6cdeeb1fbb151d288e15b10a583e0d6847de4e2e45d9ebf99f48eed0ccfe",
+  "reference26_seal": "589c6cdeeb1fbb151d288e15b10a583e0d6847de4e2e45d9ebf99f48eed0ccfe",
+  "scope": "Actual37 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "223cac7b8dbf156b65d71294e3686987fa0d0cf09f5611b24d1cb7d49ac56adc",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_flux2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "acfa0f2340c18dabcc4e4b99c9262c8df1a015a2639cf1b7127079c9ee8763dd",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_mistral3.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "1b52e1754883263378c2bd5fdb4bcd1020e6a743717086c145179755fa0f8ee9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_mistral3.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "858a4817a47fc90074c5667e83674cc9bf2d3282c8d207f065df028ebbfbf9bf",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_mistral.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "94035ed16e1f206905625840ffdad9b7b094f043b90a4160c3c2d0b0cc33f55b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_mistral.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "37c08f9decb1689f353e3bdcd3df49b6ef7b41f02c7b78f225a9919364caf602",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_pixtral.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "e713605fcc0623cb49b2c25b96ae7d7d385fb6e4e2553e54871e3b5a32f9a699",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_pixtral.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 16
+}

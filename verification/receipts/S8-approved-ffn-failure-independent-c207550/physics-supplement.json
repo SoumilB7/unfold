@@ -1,0 +1,29 @@
+{
+  "status": "ACTUAL_MONITOR_CONTROLS_FAILED_CAUSE_UNMEASURED",
+  "reviewer_ran_models_or_tests": false,
+  "summary": {
+    "passed": 162,
+    "failed": 2,
+    "seconds": 786.99
+  },
+  "source_sha256": {
+    "physics/instance_inventory.py": "8cabfff97d57d573dbb2c1fe6ec9205b064d37b780ff082f227599b530679e82",
+    "test_support/s6_models.py": "b218ffc2b4b61824a7ab07c750d296f095a2a78a8bd9b08c8672d86dd84ff3be",
+    "tests/test_s6_physics.py": "6bc82e803b918cdd771e5f397be9370ca23d6da8c684fbf593e3a5dbd8a78e53"
+  },
+  "findings": [
+    {
+      "test": "test_constructor_output_is_drained_without_deadlock_and_capture_is_bounded",
+      "actual": "TimeoutExpired after10s",
+      "source": "NoisyModel prints1MiB once; timer includes imports, construction and inventory; two threads drain output continuously",
+      "limit": "No retained progress or drain trace; timeout does not establish pipe deadlock"
+    },
+    {
+      "test": "test_constructor_memory_cap_is_typed",
+      "actual": "ok for page-touched3GiB payload and1GiB cap",
+      "source": "Payload remains referenced by model through inventory; parent samples process-tree RSS with20ms sleeps until process exits. No kernel address-space limit is installed",
+      "limit": "No sample/peak timeline was retained; missed sampling, scheduling or resident-memory effects remain hypotheses"
+    }
+  ],
+  "no_cross_attribution": "Neither monitor test establishes the historical missing UNet facts/card cause."
+}

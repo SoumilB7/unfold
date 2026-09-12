@@ -1,0 +1,19 @@
+{
+  "after_bytes": 58561,
+  "after_sha256": "05d4a492968ebed2ca44cfde70b849b110d92d75bb26db7126f090ff88e5f103",
+  "before_bytes": 58561,
+  "before_sha256": "10237592d424cf578361ab20f011d22d719f6891e9ca4fd4467626ac4dd40943",
+  "exact_new_mount_occurrences": 181,
+  "exact_old_mount_occurrences": 181,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-f8d3f7f5c0",
+  "mount_identity_before": "uf-19d0cc39fb",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "stablelm-2-1-6b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

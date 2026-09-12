@@ -1,0 +1,567 @@
+[
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_attention_score_scaling_for_path",
+    "line": 1008,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "scores_scale",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_attention_logit_softcap_for_path",
+    "line": 1082,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "logit_softcap",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_attention_qkv_clip_for_path",
+    "line": 1140,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "qkv_clip",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_attention_cache_for_path",
+    "line": 1193,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "cached",
+        "connection"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_attention_mechanism_for_path",
+    "line": 2019,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "mechanism",
+        "connection"
+      ],
+      [
+        "decoder.attention",
+        "head_geometry",
+        "relation"
+      ],
+      [
+        "decoder.attention",
+        "output_gate",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention.py",
+    "symbol": "decoder_gated_delta_geometry_for_path",
+    "line": 2143,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "gated_delta_geometry",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_geometry.py",
+    "symbol": "decoder_attention_geometry_schedule_for_path",
+    "line": 288,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "head_geometry_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_geometry.py",
+    "symbol": "decoder_attention_head_geometry_for_path",
+    "line": 787,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "head_geometry",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_mask.py",
+    "symbol": "decoder_attention_mask_execution_for_path",
+    "line": 1378,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "mask",
+        "applied_function"
+      ],
+      [
+        "decoder.attention",
+        "mask_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_output.py",
+    "symbol": "decoder_attention_output_projection_for_path",
+    "line": 147,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "output_projection",
+        "connection"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_sinks.py",
+    "symbol": "decoder_attention_sinks_for_path",
+    "line": 136,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "sinks",
+        "connection"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/attention_storage.py",
+    "symbol": "decoder_attention_projection_storage_for_path",
+    "line": 242,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "projection_mode",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/cell_topology.py",
+    "symbol": "decoder_cell_topology_for_path",
+    "line": 729,
+    "fixed_intended_claims": [
+      [
+        "decoder.layer",
+        "norm_placement",
+        "connection"
+      ],
+      [
+        "decoder.layer",
+        "residual_topology",
+        "connection"
+      ],
+      [
+        "decoder.layer",
+        "parallel_norm_count",
+        "applied_function"
+      ],
+      [
+        "decoder.layer",
+        "residual_scale",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/class_default_value.py",
+    "symbol": "model_hidden_size_class_default",
+    "line": 266,
+    "fixed_intended_claims": [
+      [
+        "model",
+        "hidden_size",
+        "value"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/codebook_streams.py",
+    "symbol": "decoder_codebook_streams_for_path",
+    "line": 215,
+    "fixed_intended_claims": [
+      [
+        "decoder",
+        "codebook_streams",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/cross_attention_replacement.py",
+    "symbol": "decoder_replacement_cross_attention_schedule_for_path",
+    "line": 168,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "cross_attention_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/decoder_norm.py",
+    "symbol": "decoder_norm_kind_for_path",
+    "line": 189,
+    "fixed_intended_claims": [
+      [
+        "decoder.layer",
+        "norm_kind",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_block.py",
+    "symbol": "read_diffusion_block_facts",
+    "line": 591,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_bookends.py",
+    "symbol": "read_diffusion_bookends",
+    "line": 532,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_conditioning.py",
+    "symbol": "read_diffusion_conditioning_graph",
+    "line": 567,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_root.py",
+    "symbol": "read_diffusion_root_topology",
+    "line": 445,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_stack.py",
+    "symbol": "read_diffusion_stack_inventory",
+    "line": 814,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/diffusion_stream.py",
+    "symbol": "read_diffusion_stream_graph",
+    "line": 1440,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/embedding_bookend.py",
+    "symbol": "embedding_stage_norm_evidence",
+    "line": 54,
+    "fixed_intended_claims": [
+      [
+        "model",
+        "embedding_norm_kind",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/expert_storage.py",
+    "symbol": "decoder_routed_expert_storage_for_path",
+    "line": 367,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn.expert",
+        "expert_projection_mode",
+        "relation"
+      ],
+      [
+        "decoder.ffn.expert",
+        "expert_activation_formula",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/expert_width.py",
+    "symbol": "decoder_expert_intermediate_width_for_path",
+    "line": 164,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn.expert",
+        "expert_intermediate_size",
+        "value"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/expert_width.py",
+    "symbol": "decoder_shared_expert_count_for_path",
+    "line": 281,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn.expert",
+        "shared_expert_count",
+        "value"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/ffn_mechanism.py",
+    "symbol": "decoder_ffn_mechanism_for_path",
+    "line": 839,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn",
+        "gated",
+        "connection"
+      ],
+      [
+        "decoder.ffn",
+        "activation",
+        "applied_function"
+      ],
+      [
+        "decoder.ffn",
+        "projection_mode",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/ffn_schedule.py",
+    "symbol": "decoder_ffn_schedule_for_path",
+    "line": 322,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn",
+        "ffn_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/ffn_width.py",
+    "symbol": "decoder_ffn_intermediate_width_for_path",
+    "line": 114,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn",
+        "intermediate_size",
+        "value"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/final_bookend.py",
+    "symbol": "final_stage_norm_evidence",
+    "line": 43,
+    "fixed_intended_claims": [
+      [
+        "model",
+        "final_norm_kind",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/kv_sharing_schedule.py",
+    "symbol": "decoder_kv_sharing_schedule_for_path",
+    "line": 153,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "kv_sharing_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/mixer_schedule.py",
+    "symbol": "decoder_mixer_schedule_for_path",
+    "line": 304,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "mixer_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/mtp.py",
+    "symbol": "decoder_mtp_construction_for_path",
+    "line": 134,
+    "fixed_intended_claims": [
+      [
+        "decoder",
+        "mtp_modules",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/per_layer_side_input.py",
+    "symbol": "decoder_per_layer_side_input_for_path",
+    "line": 104,
+    "fixed_intended_claims": [
+      [
+        "decoder",
+        "per_layer_embedding_pathway",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/position_absolute.py",
+    "symbol": "decoder_learned_absolute_position_for_path",
+    "line": 132,
+    "fixed_intended_claims": [
+      [
+        "decoder.input",
+        "position_addition",
+        "connection"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/position_fixed.py",
+    "symbol": "decoder_fixed_absolute_position_for_path",
+    "line": 183,
+    "fixed_intended_claims": [
+      [
+        "decoder.input",
+        "position_addition",
+        "connection"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/position_initialization.py",
+    "symbol": "position_frequency_initialization",
+    "line": 270,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "rope_theta",
+        "value"
+      ],
+      [
+        "decoder.attention",
+        "rope_initialization",
+        "applied_function"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/position_relative_bias.py",
+    "symbol": "decoder_relative_position_bias_for_path",
+    "line": 242,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "position_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/position_schedule.py",
+    "symbol": "decoder_position_application_schedule_for_path",
+    "line": 242,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "position_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/projection_bias.py",
+    "symbol": "decoder_attention_bias_for_path",
+    "line": 252,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "bias",
+        "existence"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/projection_bias.py",
+    "symbol": "decoder_ffn_bias_for_path",
+    "line": 337,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn",
+        "bias",
+        "existence"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/projector.py",
+    "symbol": "projector_result",
+    "line": 135,
+    "fixed_intended_claims": []
+  },
+  {
+    "path": "model_unfolder/evidence/qk_norm_schedule.py",
+    "symbol": "decoder_qk_norm_schedule_for_path",
+    "line": 135,
+    "fixed_intended_claims": [
+      [
+        "decoder.attention",
+        "qk_norm",
+        "applied_function"
+      ],
+      [
+        "decoder.attention",
+        "qk_norm_schedule",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/router.py",
+    "symbol": "decoder_router_selection_for_path",
+    "line": 463,
+    "fixed_intended_claims": [
+      [
+        "decoder.ffn",
+        "routing_policy",
+        "relation"
+      ]
+    ]
+  },
+  {
+    "path": "model_unfolder/evidence/weight_tying.py",
+    "symbol": "manual_weight_tying_for_path",
+    "line": 172,
+    "fixed_intended_claims": [
+      [
+        "model",
+        "tie_word_embeddings",
+        "value"
+      ]
+    ]
+  }
+]

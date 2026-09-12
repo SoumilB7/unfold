@@ -1,0 +1,29 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+........................................................................ [ 85%]
+..............................................F                          [100%]
+=================================== FAILURES ===================================
+______ test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow _______
+
+    def test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow():
+        live = {}
+        for path in _PKG.rglob("*.py"):
+            rel = str(path.relative_to(_PKG))
+            if rel == "evidence/config_access.py":
+                continue
+            n = _raw_consume_sites(path)
+            if n:
+                live[rel] = n
+        grown = {f: (live[f], _RAW_CONSUME_DEBT.get(f, 0))
+                 for f in live if live[f] > _RAW_CONSUME_DEBT.get(f, 0)}
+>       assert not grown, (
+            f"a NEW raw .consume() appeared at a structural reader — use "
+            f"consume_decision (value and origin bound): {grown}")
+E       AssertionError: a NEW raw .consume() appeared at a structural reader — use consume_decision (value and origin bound): {'adapters/transformer/parser.py': (4, 2)}
+E       assert not {'adapters/transformer/parser.py': (4, 2)}
+
+tests/test_u2_r2_raw_consume_debt.py:54: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_u2_r2_raw_consume_debt.py::test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow
+1 failed, 334 passed in 6.38s

@@ -1,0 +1,29 @@
+{
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+  "ir_sha256": "fef5533d3643e453d4f59643f80746970aed1f740cac5a404aa876bca9f2d9f9",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.3307427079416811,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.007267541717738,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.3607451659627259,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    5.296875,
+    4.9375,
+    4.1220703125
+  ],
+  "mode": "cold-unfold",
+  "name": "pixart-sigma-xl-2-1024-ms",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 3.12494874978438
+}

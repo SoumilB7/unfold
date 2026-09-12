@@ -1,0 +1,1178 @@
+{
+  "directories": [
+    {
+      "archived": "fifth/qualification",
+      "original": "/private/tmp/unfold-s9a-fifth/qualification"
+    },
+    {
+      "archived": "sixth/census",
+      "original": "/private/tmp/unfold-s9a-sixth/census"
+    },
+    {
+      "archived": "sixth/census/auraflow-v0-3",
+      "original": "/private/tmp/unfold-s9a-sixth/census/auraflow-v0-3"
+    },
+    {
+      "archived": "sixth/census/bloom",
+      "original": "/private/tmp/unfold-s9a-sixth/census/bloom"
+    },
+    {
+      "archived": "sixth/census/cogvideox-5b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/cogvideox-5b"
+    },
+    {
+      "archived": "sixth/census/command-a-03-2025",
+      "original": "/private/tmp/unfold-s9a-sixth/census/command-a-03-2025"
+    },
+    {
+      "archived": "sixth/census/dbrx-base",
+      "original": "/private/tmp/unfold-s9a-sixth/census/dbrx-base"
+    },
+    {
+      "archived": "sixth/census/deepseek-coder-v2-lite",
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-coder-v2-lite"
+    },
+    {
+      "archived": "sixth/census/deepseek-v3",
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v3"
+    },
+    {
+      "archived": "sixth/census/deepseek-v4-flash",
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v4-flash"
+    },
+    {
+      "archived": "sixth/census/flux-2-dev",
+      "original": "/private/tmp/unfold-s9a-sixth/census/flux-2-dev"
+    },
+    {
+      "archived": "sixth/census/fluxtransformer2dmodel",
+      "original": "/private/tmp/unfold-s9a-sixth/census/fluxtransformer2dmodel"
+    },
+    {
+      "archived": "sixth/census/gemma-2-2b-it",
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-2-2b-it"
+    },
+    {
+      "archived": "sixth/census/gemma-3n-e2b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-3n-e2b"
+    },
+    {
+      "archived": "sixth/census/glm-4-5",
+      "original": "/private/tmp/unfold-s9a-sixth/census/glm-4-5"
+    },
+    {
+      "archived": "sixth/census/gpt-oss-20b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/gpt-oss-20b"
+    },
+    {
+      "archived": "sixth/census/granite-3-0-8b-instruct",
+      "original": "/private/tmp/unfold-s9a-sixth/census/granite-3-0-8b-instruct"
+    },
+    {
+      "archived": "sixth/census/hunyuanvideo",
+      "original": "/private/tmp/unfold-s9a-sixth/census/hunyuanvideo"
+    },
+    {
+      "archived": "sixth/census/jamba-v0-1",
+      "original": "/private/tmp/unfold-s9a-sixth/census/jamba-v0-1"
+    },
+    {
+      "archived": "sixth/census/lfm2-1-2b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/lfm2-1-2b"
+    },
+    {
+      "archived": "sixth/census/llama-7b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/llama-7b"
+    },
+    {
+      "archived": "sixth/census/ltx-video",
+      "original": "/private/tmp/unfold-s9a-sixth/census/ltx-video"
+    },
+    {
+      "archived": "sixth/census/lumina-image-2-0",
+      "original": "/private/tmp/unfold-s9a-sixth/census/lumina-image-2-0"
+    },
+    {
+      "archived": "sixth/census/mochi-1-preview",
+      "original": "/private/tmp/unfold-s9a-sixth/census/mochi-1-preview"
+    },
+    {
+      "archived": "sixth/census/musicgen-small",
+      "original": "/private/tmp/unfold-s9a-sixth/census/musicgen-small"
+    },
+    {
+      "archived": "sixth/census/nemotron-h-8b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/nemotron-h-8b"
+    },
+    {
+      "archived": "sixth/census/olmo-2-1124-7b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/olmo-2-1124-7b"
+    },
+    {
+      "archived": "sixth/census/pixart-sigma-xl-2-1024-ms",
+      "original": "/private/tmp/unfold-s9a-sixth/census/pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "archived": "sixth/census/prxpixel-t2i",
+      "original": "/private/tmp/unfold-s9a-sixth/census/prxpixel-t2i"
+    },
+    {
+      "archived": "sixth/census/qwen-image",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen-image"
+    },
+    {
+      "archived": "sixth/census/qwen2-vl-7b-instruct",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen2-vl-7b-instruct"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b-text",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b-text"
+    },
+    {
+      "archived": "sixth/census/qwen3-8b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-8b"
+    },
+    {
+      "archived": "sixth/census/qwen3-omni-30b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-omni-30b"
+    },
+    {
+      "archived": "sixth/census/qwen3-vl-235b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-vl-235b"
+    },
+    {
+      "archived": "sixth/census/sana-1600m-1024px-diffusers",
+      "original": "/private/tmp/unfold-s9a-sixth/census/sana-1600m-1024px-diffusers"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-3-5-large",
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-3-5-large"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-xl-base-1-0",
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-xl-base-1-0"
+    },
+    {
+      "archived": "sixth/census/stablelm-2-1-6b",
+      "original": "/private/tmp/unfold-s9a-sixth/census/stablelm-2-1-6b"
+    },
+    {
+      "archived": "sixth/census/wan2-2-t2v-a14b-diffusers",
+      "original": "/private/tmp/unfold-s9a-sixth/census/wan2-2-t2v-a14b-diffusers"
+    },
+    {
+      "archived": "sixth/census-lane",
+      "original": "/private/tmp/unfold-s9a-sixth/census-lane"
+    },
+    {
+      "archived": "sixth/qualification",
+      "original": "/private/tmp/unfold-s9a-sixth/qualification"
+    },
+    {
+      "archived": "seventh/qualification",
+      "original": "/private/tmp/unfold-s9a-seventh/qualification"
+    },
+    {
+      "archived": "sixth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/adapters",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/adapters"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/adapters/diffusor",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/adapters/diffusor"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "sixth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "fifth/qualification/result.json",
+      "bytes": 534,
+      "original": "/private/tmp/unfold-s9a-fifth/qualification/result.json",
+      "sha256": "812798ebb704558365e7f667e2c5bd96d3321e28e1bb219ac1bcd78bdac21f3d"
+    },
+    {
+      "archived": "fifth/qualification/schema-proof-metadata.log",
+      "bytes": 28351,
+      "original": "/private/tmp/unfold-s9a-fifth/qualification/schema-proof-metadata.log",
+      "sha256": "302739982262101add5810b51cf06b431a12ce1520ba4b003562b03f2ccdeb3a"
+    },
+    {
+      "archived": "fifth/run.py",
+      "bytes": 1682,
+      "original": "/private/tmp/unfold-s9a-fifth/run.py",
+      "sha256": "65ee63c9558878cc042dd9dd33627311ed4f362c2c669ec1306cd042d47fecad"
+    },
+    {
+      "archived": "fifth/source-manifest.json",
+      "bytes": 14688,
+      "original": "/private/tmp/unfold-s9a-fifth/source-manifest.json",
+      "sha256": "2e7e0b66ffb457183be60eb2d5d01760cf228841825c6023fbcf766b73c8162e"
+    },
+    {
+      "archived": "sixth/census/auraflow-v0-3/facts.json",
+      "bytes": 21353,
+      "original": "/private/tmp/unfold-s9a-sixth/census/auraflow-v0-3/facts.json",
+      "sha256": "4f7d23f0583d6930a499fb7b20e13413621f938a48cd0cb5ef1ece174d82e1d3"
+    },
+    {
+      "archived": "sixth/census/auraflow-v0-3/ir.json.gz",
+      "bytes": 14647,
+      "original": "/private/tmp/unfold-s9a-sixth/census/auraflow-v0-3/ir.json.gz",
+      "sha256": "b38555f1fabfcf03448b10f772afb06e9b91aa8247540a478ae909ca8a717a7c"
+    },
+    {
+      "archived": "sixth/census/auraflow-v0-3/page.html.gz",
+      "bytes": 17103,
+      "original": "/private/tmp/unfold-s9a-sixth/census/auraflow-v0-3/page.html.gz",
+      "sha256": "71546f51b9a4b7a6380db1a26e3e795ace6d0fa74d85d5ace45cf69982d80594"
+    },
+    {
+      "archived": "sixth/census/bloom/facts.json",
+      "bytes": 50684,
+      "original": "/private/tmp/unfold-s9a-sixth/census/bloom/facts.json",
+      "sha256": "83fdf8ea9b680aea90c42d0259e2115fdf590abae88a6d8d55fc28cce8e505a0"
+    },
+    {
+      "archived": "sixth/census/bloom/ir.json.gz",
+      "bytes": 10791,
+      "original": "/private/tmp/unfold-s9a-sixth/census/bloom/ir.json.gz",
+      "sha256": "e77c5db810502770b0e51ba32a2425422855b08016c45ef4851ee6c2a78b230b"
+    },
+    {
+      "archived": "sixth/census/bloom/page.html.gz",
+      "bytes": 10075,
+      "original": "/private/tmp/unfold-s9a-sixth/census/bloom/page.html.gz",
+      "sha256": "9031be01489fbc64097e052f1a8f42805aa22a9dc069a057fb782a459ff1bfa3"
+    },
+    {
+      "archived": "sixth/census/cogvideox-5b/facts.json",
+      "bytes": 12699,
+      "original": "/private/tmp/unfold-s9a-sixth/census/cogvideox-5b/facts.json",
+      "sha256": "c452983985637f7ed581006942ff9ef18feed558f4373dc5a6225cc75b326291"
+    },
+    {
+      "archived": "sixth/census/cogvideox-5b/ir.json.gz",
+      "bytes": 15528,
+      "original": "/private/tmp/unfold-s9a-sixth/census/cogvideox-5b/ir.json.gz",
+      "sha256": "b9169fc3615af689587b00c643fe78f22fd2bd2e99758299b58f22eafdcb756a"
+    },
+    {
+      "archived": "sixth/census/cogvideox-5b/page.html.gz",
+      "bytes": 18783,
+      "original": "/private/tmp/unfold-s9a-sixth/census/cogvideox-5b/page.html.gz",
+      "sha256": "ec3bec00bd446d4b4bfc451c76c15bd24053620dd8cd23019064105ed45eb7ba"
+    },
+    {
+      "archived": "sixth/census/command-a-03-2025/facts.json",
+      "bytes": 42762,
+      "original": "/private/tmp/unfold-s9a-sixth/census/command-a-03-2025/facts.json",
+      "sha256": "61e6ce8fbcd7ae1daff5e99d102b19b62fdef05b1e6df8b1117054618d39bdb3"
+    },
+    {
+      "archived": "sixth/census/command-a-03-2025/ir.json.gz",
+      "bytes": 11902,
+      "original": "/private/tmp/unfold-s9a-sixth/census/command-a-03-2025/ir.json.gz",
+      "sha256": "fd293fc3ed056d39e4617b0b3ecc2080a1027b3039ae2d28374ff88f4532d668"
+    },
+    {
+      "archived": "sixth/census/command-a-03-2025/page.html.gz",
+      "bytes": 11715,
+      "original": "/private/tmp/unfold-s9a-sixth/census/command-a-03-2025/page.html.gz",
+      "sha256": "434d47b4cfa9ee5e10a1f90953c9eeb86ef627dec61c55478096e06366f3388f"
+    },
+    {
+      "archived": "sixth/census/dbrx-base/facts.json",
+      "bytes": 64055,
+      "original": "/private/tmp/unfold-s9a-sixth/census/dbrx-base/facts.json",
+      "sha256": "1b64bcc285c03d28504a786336a2220554076b5fefe7a46e8b187688f6854179"
+    },
+    {
+      "archived": "sixth/census/dbrx-base/ir.json.gz",
+      "bytes": 13765,
+      "original": "/private/tmp/unfold-s9a-sixth/census/dbrx-base/ir.json.gz",
+      "sha256": "5094e197d0140f8e82cfbe5a00aad5126e04cd2bd3ec821884ccfadefc71f78c"
+    },
+    {
+      "archived": "sixth/census/dbrx-base/page.html.gz",
+      "bytes": 12187,
+      "original": "/private/tmp/unfold-s9a-sixth/census/dbrx-base/page.html.gz",
+      "sha256": "2deb319bf5d0cc5007a24d246c3043bc50d7194ded9cdb19ac7d066ac1066432"
+    },
+    {
+      "archived": "sixth/census/deepseek-coder-v2-lite/facts.json",
+      "bytes": 33559,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-coder-v2-lite/facts.json",
+      "sha256": "0029d43b6ea92279432aaba52beeaa75ca4cef2fc9cfadea357ea5622978c4f6"
+    },
+    {
+      "archived": "sixth/census/deepseek-coder-v2-lite/ir.json.gz",
+      "bytes": 10673,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-coder-v2-lite/ir.json.gz",
+      "sha256": "43e3a79b9b4bc114eba6c8768b7ccc08af9cc3db0de74eb689d4401dce1089d2"
+    },
+    {
+      "archived": "sixth/census/deepseek-coder-v2-lite/page.html.gz",
+      "bytes": 12037,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-coder-v2-lite/page.html.gz",
+      "sha256": "13220aae8434580f67a53f439a7df6cd959331d55f0231161a125a3fdae36d62"
+    },
+    {
+      "archived": "sixth/census/deepseek-v3/facts.json",
+      "bytes": 73289,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v3/facts.json",
+      "sha256": "c86194ad7ed63bbe37da286604a509a341f5e4f3d7fa29f7a98efd629769663a"
+    },
+    {
+      "archived": "sixth/census/deepseek-v3/ir.json.gz",
+      "bytes": 20320,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v3/ir.json.gz",
+      "sha256": "c4b250c759a83b3c7237a091b68c6a1532ab5fa6dd30d695efec6c70c43b406e"
+    },
+    {
+      "archived": "sixth/census/deepseek-v3/page.html.gz",
+      "bytes": 15537,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v3/page.html.gz",
+      "sha256": "0feedd502bcf432f9b4c23972b6669311b6540f3db836bf770d0fc7069d5bf95"
+    },
+    {
+      "archived": "sixth/census/deepseek-v4-flash/facts.json",
+      "bytes": 11560,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v4-flash/facts.json",
+      "sha256": "76a25d6d2f596553152148973dbd77eecf3a12ded76c326862d767be6fd86e20"
+    },
+    {
+      "archived": "sixth/census/deepseek-v4-flash/ir.json.gz",
+      "bytes": 10663,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v4-flash/ir.json.gz",
+      "sha256": "e896803344a8bb535709bc5cc5795a4c3b984dc08aef6c14e1d2593d03e818de"
+    },
+    {
+      "archived": "sixth/census/deepseek-v4-flash/page.html.gz",
+      "bytes": 11529,
+      "original": "/private/tmp/unfold-s9a-sixth/census/deepseek-v4-flash/page.html.gz",
+      "sha256": "6f0ac597f36933e783a02e45b8a3c8511b7514f992ebe582fe7d744064df6416"
+    },
+    {
+      "archived": "sixth/census/flux-2-dev/facts.json",
+      "bytes": 26919,
+      "original": "/private/tmp/unfold-s9a-sixth/census/flux-2-dev/facts.json",
+      "sha256": "79f7da794b3319426081e136dcd511798d841f83b6fc84c4e2d0bffb3ec86a41"
+    },
+    {
+      "archived": "sixth/census/flux-2-dev/ir.json.gz",
+      "bytes": 18150,
+      "original": "/private/tmp/unfold-s9a-sixth/census/flux-2-dev/ir.json.gz",
+      "sha256": "5f143d64e6e0b55ce22f2cdb92c02f2f187019a9a4b45d95b6214ce319afece9"
+    },
+    {
+      "archived": "sixth/census/flux-2-dev/page.html.gz",
+      "bytes": 20940,
+      "original": "/private/tmp/unfold-s9a-sixth/census/flux-2-dev/page.html.gz",
+      "sha256": "41416d99a31acb29b8c6503708fe51a5b57cf6ec35e71d2bc6af53e69864b94f"
+    },
+    {
+      "archived": "sixth/census/fluxtransformer2dmodel/facts.json",
+      "bytes": 20842,
+      "original": "/private/tmp/unfold-s9a-sixth/census/fluxtransformer2dmodel/facts.json",
+      "sha256": "d430f90a1dbfb0592f938cd8a69edacde4ff2d0dc9c5d46b2e1b65a32308cf5f"
+    },
+    {
+      "archived": "sixth/census/fluxtransformer2dmodel/ir.json.gz",
+      "bytes": 18437,
+      "original": "/private/tmp/unfold-s9a-sixth/census/fluxtransformer2dmodel/ir.json.gz",
+      "sha256": "be01cd7cdba6e0a7b027a3063407070d57f5dcb04294e1665e307b0fed1bfc92"
+    },
+    {
+      "archived": "sixth/census/fluxtransformer2dmodel/page.html.gz",
+      "bytes": 21950,
+      "original": "/private/tmp/unfold-s9a-sixth/census/fluxtransformer2dmodel/page.html.gz",
+      "sha256": "ad95fd3e0c9a6fbc587efa9e127f6d1ab3fa38c48ac125e5627d8c6839699972"
+    },
+    {
+      "archived": "sixth/census/gemma-2-2b-it/facts.json",
+      "bytes": 60667,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-2-2b-it/facts.json",
+      "sha256": "66d07ca3adb366fb216da68e7a78912b3da2b09772773e19195d80dad1024913"
+    },
+    {
+      "archived": "sixth/census/gemma-2-2b-it/ir.json.gz",
+      "bytes": 10508,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-2-2b-it/ir.json.gz",
+      "sha256": "d11be8cbe584eb3a58ab2e2a39222cc7838b1754f6eb030fbe0f7f9cf1290b73"
+    },
+    {
+      "archived": "sixth/census/gemma-2-2b-it/page.html.gz",
+      "bytes": 11737,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-2-2b-it/page.html.gz",
+      "sha256": "a77445211d15fd57d423dd7a61153c37ae30df7d3987f0c1a0bb425ab2c056c0"
+    },
+    {
+      "archived": "sixth/census/gemma-3n-e2b/facts.json",
+      "bytes": 31474,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-3n-e2b/facts.json",
+      "sha256": "b3294263dcd6ef29e6fe0e076d5fd759f9d080ec634b23c5d95fbe855af2958e"
+    },
+    {
+      "archived": "sixth/census/gemma-3n-e2b/ir.json.gz",
+      "bytes": 14712,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-3n-e2b/ir.json.gz",
+      "sha256": "ab44809448124303bc12d6b01bd00a9517e446279a0f7381de17a07d9f1d1b9e"
+    },
+    {
+      "archived": "sixth/census/gemma-3n-e2b/page.html.gz",
+      "bytes": 16606,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gemma-3n-e2b/page.html.gz",
+      "sha256": "5eb511b9d5686f21a4e1c7ef452e502ea1db845408e8485bdacf0a91b44e0f7a"
+    },
+    {
+      "archived": "sixth/census/glm-4-5/facts.json",
+      "bytes": 86272,
+      "original": "/private/tmp/unfold-s9a-sixth/census/glm-4-5/facts.json",
+      "sha256": "234087bbeb42807877f15987ef11f6c48cc506f53ca1040b486f034fdb51be38"
+    },
+    {
+      "archived": "sixth/census/glm-4-5/ir.json.gz",
+      "bytes": 20213,
+      "original": "/private/tmp/unfold-s9a-sixth/census/glm-4-5/ir.json.gz",
+      "sha256": "4bceb3931e626094bb018abbd38aad6aed3d3eeb4732cce4eb664ee0e307d3ef"
+    },
+    {
+      "archived": "sixth/census/glm-4-5/page.html.gz",
+      "bytes": 14259,
+      "original": "/private/tmp/unfold-s9a-sixth/census/glm-4-5/page.html.gz",
+      "sha256": "61cbd30631b72566dcfd7ed5f39dbb322ece4fcadecfcf7d07307b09b979380f"
+    },
+    {
+      "archived": "sixth/census/gpt-oss-20b/facts.json",
+      "bytes": 61026,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gpt-oss-20b/facts.json",
+      "sha256": "cec9fea07fa0ad9cadee1222f0c39379fe97cd52616c27d277d78f99c34788e1"
+    },
+    {
+      "archived": "sixth/census/gpt-oss-20b/ir.json.gz",
+      "bytes": 12368,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gpt-oss-20b/ir.json.gz",
+      "sha256": "9afc55f5449520dd0c839c5852e855166609dfc46a8f6936d10a63988d3d1fc0"
+    },
+    {
+      "archived": "sixth/census/gpt-oss-20b/page.html.gz",
+      "bytes": 13354,
+      "original": "/private/tmp/unfold-s9a-sixth/census/gpt-oss-20b/page.html.gz",
+      "sha256": "19f4641993bd2be706bda77141d67dc4bd9c0b07c36d37781ee4f4e529b382da"
+    },
+    {
+      "archived": "sixth/census/granite-3-0-8b-instruct/facts.json",
+      "bytes": 64813,
+      "original": "/private/tmp/unfold-s9a-sixth/census/granite-3-0-8b-instruct/facts.json",
+      "sha256": "3be01dad5302cfa4bf7f5c689e47706f91dcf36a5c3b8a0384e10125ec938885"
+    },
+    {
+      "archived": "sixth/census/granite-3-0-8b-instruct/ir.json.gz",
+      "bytes": 11457,
+      "original": "/private/tmp/unfold-s9a-sixth/census/granite-3-0-8b-instruct/ir.json.gz",
+      "sha256": "3a6a7613471fa7d090255bafa31f4a9784d0107f3b0b4fc51bc7236826ed8d4b"
+    },
+    {
+      "archived": "sixth/census/granite-3-0-8b-instruct/page.html.gz",
+      "bytes": 10719,
+      "original": "/private/tmp/unfold-s9a-sixth/census/granite-3-0-8b-instruct/page.html.gz",
+      "sha256": "c4e84ae011e7a160fc52381738233277b2ba1fb0cf650a481870540371db080c"
+    },
+    {
+      "archived": "sixth/census/hunyuanvideo/facts.json",
+      "bytes": 42672,
+      "original": "/private/tmp/unfold-s9a-sixth/census/hunyuanvideo/facts.json",
+      "sha256": "d34ee3dfbfae0ad12ba9f719a23c463932fb6368d2f6a69f6ccd660d4127b23f"
+    },
+    {
+      "archived": "sixth/census/hunyuanvideo/ir.json.gz",
+      "bytes": 20705,
+      "original": "/private/tmp/unfold-s9a-sixth/census/hunyuanvideo/ir.json.gz",
+      "sha256": "5bf79977210eb83f4a498c141f2adf6ac29aad7732190d0487f8eda86b172d13"
+    },
+    {
+      "archived": "sixth/census/hunyuanvideo/page.html.gz",
+      "bytes": 22642,
+      "original": "/private/tmp/unfold-s9a-sixth/census/hunyuanvideo/page.html.gz",
+      "sha256": "7996aa4c8b0c13a077f1b1d598e928cb3a545a73bd2401970bd1b42aaf686fef"
+    },
+    {
+      "archived": "sixth/census/jamba-v0-1/facts.json",
+      "bytes": 6077,
+      "original": "/private/tmp/unfold-s9a-sixth/census/jamba-v0-1/facts.json",
+      "sha256": "2797ab06b2bd7662ebfbc940cb3e42de115e025e5273b08c6f60ba601ad097f5"
+    },
+    {
+      "archived": "sixth/census/jamba-v0-1/ir.json.gz",
+      "bytes": 8029,
+      "original": "/private/tmp/unfold-s9a-sixth/census/jamba-v0-1/ir.json.gz",
+      "sha256": "3f6a1b64e9691de0184eb11ba410bfde364543912e41ed8136accf54f757ae8d"
+    },
+    {
+      "archived": "sixth/census/jamba-v0-1/page.html.gz",
+      "bytes": 10322,
+      "original": "/private/tmp/unfold-s9a-sixth/census/jamba-v0-1/page.html.gz",
+      "sha256": "b99cf383869270dbb9be908ddb7a67d020ef3227a4e3275af1e8c69a212d6a18"
+    },
+    {
+      "archived": "sixth/census/lfm2-1-2b/facts.json",
+      "bytes": 50475,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lfm2-1-2b/facts.json",
+      "sha256": "4295b2fc7201cd6c3502750e6a1831d19a1f0d1fdac78b3bb3a8b45b5484a523"
+    },
+    {
+      "archived": "sixth/census/lfm2-1-2b/ir.json.gz",
+      "bytes": 9875,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lfm2-1-2b/ir.json.gz",
+      "sha256": "a4c6a88d43f06278aa68f6c63b4f688674ba0e09bdb50ff20cb34d81670e705b"
+    },
+    {
+      "archived": "sixth/census/lfm2-1-2b/page.html.gz",
+      "bytes": 10928,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lfm2-1-2b/page.html.gz",
+      "sha256": "643ea281dfe072c5be0fe8accb19607e385d3f92ec08b563de49e6fbf50146f1"
+    },
+    {
+      "archived": "sixth/census/llama-7b/facts.json",
+      "bytes": 58243,
+      "original": "/private/tmp/unfold-s9a-sixth/census/llama-7b/facts.json",
+      "sha256": "37bea041e4c6776cfe66eadb323035cc77b6c2cb3d906aca43cdce5f6c7b76f4"
+    },
+    {
+      "archived": "sixth/census/llama-7b/ir.json.gz",
+      "bytes": 9682,
+      "original": "/private/tmp/unfold-s9a-sixth/census/llama-7b/ir.json.gz",
+      "sha256": "3e7cad851ae87b4c13e01a518405f96813c53672ffc2dc2fa01206d462baf413"
+    },
+    {
+      "archived": "sixth/census/llama-7b/page.html.gz",
+      "bytes": 9885,
+      "original": "/private/tmp/unfold-s9a-sixth/census/llama-7b/page.html.gz",
+      "sha256": "ef9b479ab6c6576325dfb4b8d875b99275e7c004bd8f957a342c78da5fede654"
+    },
+    {
+      "archived": "sixth/census/ltx-video/facts.json",
+      "bytes": 24799,
+      "original": "/private/tmp/unfold-s9a-sixth/census/ltx-video/facts.json",
+      "sha256": "a0e908b1b7bcdead60597be5c487aab6a31843f562669248324f433ee07c6fe5"
+    },
+    {
+      "archived": "sixth/census/ltx-video/ir.json.gz",
+      "bytes": 15696,
+      "original": "/private/tmp/unfold-s9a-sixth/census/ltx-video/ir.json.gz",
+      "sha256": "ee090d433454487c949253953681c0410a0885e59d8f1a46f52b62a9d1e5e7c8"
+    },
+    {
+      "archived": "sixth/census/ltx-video/page.html.gz",
+      "bytes": 17582,
+      "original": "/private/tmp/unfold-s9a-sixth/census/ltx-video/page.html.gz",
+      "sha256": "e972ebdac5c4aa37df87004e6a98f7e3ba438297b46cf856edd0efae46943776"
+    },
+    {
+      "archived": "sixth/census/lumina-image-2-0/facts.json",
+      "bytes": 17477,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lumina-image-2-0/facts.json",
+      "sha256": "7559901a34fd890dce47bc0a60d15863bcd9997986d5e18c491a9dea782b69d4"
+    },
+    {
+      "archived": "sixth/census/lumina-image-2-0/ir.json.gz",
+      "bytes": 15452,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lumina-image-2-0/ir.json.gz",
+      "sha256": "bf6e3f302d648bda852e1aeed3e7ae579e2f9bc7a0615a3151168d63dee093a9"
+    },
+    {
+      "archived": "sixth/census/lumina-image-2-0/page.html.gz",
+      "bytes": 19789,
+      "original": "/private/tmp/unfold-s9a-sixth/census/lumina-image-2-0/page.html.gz",
+      "sha256": "2e43a4870d727abacf3bf85847980a6582f5d1e4bd10cb67bddf3b8f38799e2c"
+    },
+    {
+      "archived": "sixth/census/mochi-1-preview/facts.json",
+      "bytes": 4480,
+      "original": "/private/tmp/unfold-s9a-sixth/census/mochi-1-preview/facts.json",
+      "sha256": "5e32cbb252c92e81c0de4f4b1c4db8b742a65ccfc090d6fc8d286d9fb276c716"
+    },
+    {
+      "archived": "sixth/census/mochi-1-preview/ir.json.gz",
+      "bytes": 13118,
+      "original": "/private/tmp/unfold-s9a-sixth/census/mochi-1-preview/ir.json.gz",
+      "sha256": "41d80a78354c8ad3d05b1e757e2ab66022feff0af61fc5f6e41869297b119710"
+    },
+    {
+      "archived": "sixth/census/mochi-1-preview/page.html.gz",
+      "bytes": 16273,
+      "original": "/private/tmp/unfold-s9a-sixth/census/mochi-1-preview/page.html.gz",
+      "sha256": "de71cd5c3a864ec4d8440c8030821acfb866079918bb69582de94166015dbf4a"
+    },
+    {
+      "archived": "sixth/census/musicgen-small/facts.json",
+      "bytes": 26598,
+      "original": "/private/tmp/unfold-s9a-sixth/census/musicgen-small/facts.json",
+      "sha256": "d6ed1df6c7e94a43ba4fad5f55e22750af0e33bae7874dc1561a2b44ab0e6b39"
+    },
+    {
+      "archived": "sixth/census/musicgen-small/ir.json.gz",
+      "bytes": 12648,
+      "original": "/private/tmp/unfold-s9a-sixth/census/musicgen-small/ir.json.gz",
+      "sha256": "d845666452fd5252d6b5a3cb13102039b3d53d0ab20a2ddec517420cc597abb8"
+    },
+    {
+      "archived": "sixth/census/musicgen-small/page.html.gz",
+      "bytes": 13201,
+      "original": "/private/tmp/unfold-s9a-sixth/census/musicgen-small/page.html.gz",
+      "sha256": "edd9832db359ff6ddbff4cf818f3bdf3c114a173bfc068c1ae0ae2681e72a5f0"
+    },
+    {
+      "archived": "sixth/census/nemotron-h-8b/facts.json",
+      "bytes": 7072,
+      "original": "/private/tmp/unfold-s9a-sixth/census/nemotron-h-8b/facts.json",
+      "sha256": "856199f7d33c84916030f21dcea0228edcd99602cdc951d690cad5365cb921f0"
+    },
+    {
+      "archived": "sixth/census/nemotron-h-8b/ir.json.gz",
+      "bytes": 10950,
+      "original": "/private/tmp/unfold-s9a-sixth/census/nemotron-h-8b/ir.json.gz",
+      "sha256": "f81d64dbc96ce84a46758ed8857e342c5ee92da63c0ac8c472fb3336ebdf5c65"
+    },
+    {
+      "archived": "sixth/census/nemotron-h-8b/page.html.gz",
+      "bytes": 11999,
+      "original": "/private/tmp/unfold-s9a-sixth/census/nemotron-h-8b/page.html.gz",
+      "sha256": "4ccf0d8dfa364f8b61190c612adc88d10e1248a829fe2c872b25e54e41d82b9c"
+    },
+    {
+      "archived": "sixth/census/olmo-2-1124-7b/facts.json",
+      "bytes": 65151,
+      "original": "/private/tmp/unfold-s9a-sixth/census/olmo-2-1124-7b/facts.json",
+      "sha256": "8fbc204c902c0fba62a68b0519abd0f037181e0b9b291969a840b795b0f3c71e"
+    },
+    {
+      "archived": "sixth/census/olmo-2-1124-7b/ir.json.gz",
+      "bytes": 9912,
+      "original": "/private/tmp/unfold-s9a-sixth/census/olmo-2-1124-7b/ir.json.gz",
+      "sha256": "24e7cf774ee28cf199156b09a37ffca1327a001f19c1374a326fb1c4794672b1"
+    },
+    {
+      "archived": "sixth/census/olmo-2-1124-7b/page.html.gz",
+      "bytes": 9739,
+      "original": "/private/tmp/unfold-s9a-sixth/census/olmo-2-1124-7b/page.html.gz",
+      "sha256": "1925ce9e3de770b93c3a8f6583fca4b9a323f067e3cd14e726671649c8a099c2"
+    },
+    {
+      "archived": "sixth/census/pixart-sigma-xl-2-1024-ms/facts.json",
+      "bytes": 3,
+      "original": "/private/tmp/unfold-s9a-sixth/census/pixart-sigma-xl-2-1024-ms/facts.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "archived": "sixth/census/pixart-sigma-xl-2-1024-ms/ir.json.gz",
+      "bytes": 8165,
+      "original": "/private/tmp/unfold-s9a-sixth/census/pixart-sigma-xl-2-1024-ms/ir.json.gz",
+      "sha256": "874549f44ae184c1d189630f31fdd5b2cc2123e62139aece11d2a714b02f71fe"
+    },
+    {
+      "archived": "sixth/census/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "bytes": 14420,
+      "original": "/private/tmp/unfold-s9a-sixth/census/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "sha256": "2e5e9094271763146eed1e10c467a0ec72168b062b957ceec27963931650d8b4"
+    },
+    {
+      "archived": "sixth/census/prxpixel-t2i/facts.json",
+      "bytes": 15401,
+      "original": "/private/tmp/unfold-s9a-sixth/census/prxpixel-t2i/facts.json",
+      "sha256": "6dbfd84623427eb1e0ce1b2b9315a92e43d011154a7c37d5e759f0291d337d03"
+    },
+    {
+      "archived": "sixth/census/prxpixel-t2i/ir.json.gz",
+      "bytes": 12331,
+      "original": "/private/tmp/unfold-s9a-sixth/census/prxpixel-t2i/ir.json.gz",
+      "sha256": "09a0cf85581482e13535c7872d7c4d0f909eddc64fa07da7bda4f82ddd623864"
+    },
+    {
+      "archived": "sixth/census/prxpixel-t2i/page.html.gz",
+      "bytes": 15400,
+      "original": "/private/tmp/unfold-s9a-sixth/census/prxpixel-t2i/page.html.gz",
+      "sha256": "6458a9ff0f02d1f3e8c62071adfa7a27bd86970cd3ed0fbc523484d872035698"
+    },
+    {
+      "archived": "sixth/census/qwen-image/facts.json",
+      "bytes": 13718,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen-image/facts.json",
+      "sha256": "d5fa029f547757507d4f856c6b884f53afef70aacc643d3b075e3c9c08c27140"
+    },
+    {
+      "archived": "sixth/census/qwen-image/ir.json.gz",
+      "bytes": 17077,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen-image/ir.json.gz",
+      "sha256": "25008f1f34af402b6435b3b8d20b94378b5680949000a74429b908ff80c6d972"
+    },
+    {
+      "archived": "sixth/census/qwen-image/page.html.gz",
+      "bytes": 18722,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen-image/page.html.gz",
+      "sha256": "aab26116f27040670bfb826dc3f6205929ad39491cde4c4eac15f05725c80395"
+    },
+    {
+      "archived": "sixth/census/qwen2-vl-7b-instruct/facts.json",
+      "bytes": 37549,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen2-vl-7b-instruct/facts.json",
+      "sha256": "1c9c3183306935ef758e3c0d578b23db62090742a7358605984c5541be020d74"
+    },
+    {
+      "archived": "sixth/census/qwen2-vl-7b-instruct/ir.json.gz",
+      "bytes": 10337,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen2-vl-7b-instruct/ir.json.gz",
+      "sha256": "c4ad6d45adf5d6fe6ddd583f8372d61875bb4ffccf9b783b023daab82cbd266e"
+    },
+    {
+      "archived": "sixth/census/qwen2-vl-7b-instruct/page.html.gz",
+      "bytes": 13881,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen2-vl-7b-instruct/page.html.gz",
+      "sha256": "4bd03edb8576bd07697653030798b0b03a8568904f1203473a526f17c746ca29"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b/facts.json",
+      "bytes": 69196,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b/facts.json",
+      "sha256": "f1731491def42f27c3228d79afb4c98bb4b4eb5d0005c2f176e7b849afa16245"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b/ir.json.gz",
+      "bytes": 16151,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b/ir.json.gz",
+      "sha256": "8c8d6afd1958675180390143c9b53357c6ec701bee2b669ab92f398f63fad0c9"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b/page.html.gz",
+      "bytes": 19891,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b/page.html.gz",
+      "sha256": "2a6b3ffa726f8eede2485d6cdc0d7fd2a23638bc15fd69707d0fbcdeabdd6c6e"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b-text/facts.json",
+      "bytes": 55229,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b-text/facts.json",
+      "sha256": "742e28ac5637b69a9accc80a5ddd5f72f5fe296f8ff00ba2e7874fd9eddacfe5"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b-text/ir.json.gz",
+      "bytes": 13434,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b-text/ir.json.gz",
+      "sha256": "4cbc2ae869b72d634ecccbefbfb586407e6c7efa682e78ce466ff54fdf03c08d"
+    },
+    {
+      "archived": "sixth/census/qwen3-5-27b-text/page.html.gz",
+      "bytes": 13327,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-5-27b-text/page.html.gz",
+      "sha256": "5d865e736efa67051020abb9e22c8eb87580d34848ec65163a5a3b17db72b378"
+    },
+    {
+      "archived": "sixth/census/qwen3-8b/facts.json",
+      "bytes": 66016,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-8b/facts.json",
+      "sha256": "7720031b2f5a797f851f08f1f7394a8670e263e0b6c3cb3780f5bb0fe214a14a"
+    },
+    {
+      "archived": "sixth/census/qwen3-8b/ir.json.gz",
+      "bytes": 10271,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-8b/ir.json.gz",
+      "sha256": "c0a1586e26642199b30b1d0692d1504466561266b35f750c2d16faaa1d7aebe4"
+    },
+    {
+      "archived": "sixth/census/qwen3-8b/page.html.gz",
+      "bytes": 10094,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-8b/page.html.gz",
+      "sha256": "02fd5bf785940b3d8202e47dc4e2bf61b66738abf57d77ac7c1be74b348c8cf4"
+    },
+    {
+      "archived": "sixth/census/qwen3-omni-30b/facts.json",
+      "bytes": 6077,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-omni-30b/facts.json",
+      "sha256": "2797ab06b2bd7662ebfbc940cb3e42de115e025e5273b08c6f60ba601ad097f5"
+    },
+    {
+      "archived": "sixth/census/qwen3-omni-30b/ir.json.gz",
+      "bytes": 12421,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-omni-30b/ir.json.gz",
+      "sha256": "fc6ca56981e2b795a7031737c66b8de9d322cb96a4ea00aaf5e2a7cc43818def"
+    },
+    {
+      "archived": "sixth/census/qwen3-omni-30b/page.html.gz",
+      "bytes": 14714,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-omni-30b/page.html.gz",
+      "sha256": "63ae8450906ee63407684ed81f112fb455df73d0214ccd78934743b5cfc5f362"
+    },
+    {
+      "archived": "sixth/census/qwen3-vl-235b/facts.json",
+      "bytes": 55977,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-vl-235b/facts.json",
+      "sha256": "69f2eed3605c983cfa7380bb3a25d8974f7566e77c54c83e36e5626aef5b6200"
+    },
+    {
+      "archived": "sixth/census/qwen3-vl-235b/ir.json.gz",
+      "bytes": 19858,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-vl-235b/ir.json.gz",
+      "sha256": "aa67a534e724ea3cc05ec66399a167a6ba36802b96c52be88fdbf56f30762424"
+    },
+    {
+      "archived": "sixth/census/qwen3-vl-235b/page.html.gz",
+      "bytes": 17961,
+      "original": "/private/tmp/unfold-s9a-sixth/census/qwen3-vl-235b/page.html.gz",
+      "sha256": "d9d31fb44d7ca8865f43ff0b95a277161ea30b4821ed82e183d3c39a04deb46e"
+    },
+    {
+      "archived": "sixth/census/result.json",
+      "bytes": 43160,
+      "original": "/private/tmp/unfold-s9a-sixth/census/result.json",
+      "sha256": "adec6ae905020d0aeb1ee319d412b582a208e9445b13f92adf0c9495756db0ae"
+    },
+    {
+      "archived": "sixth/census/sana-1600m-1024px-diffusers/facts.json",
+      "bytes": 23392,
+      "original": "/private/tmp/unfold-s9a-sixth/census/sana-1600m-1024px-diffusers/facts.json",
+      "sha256": "12daa17943e2c322bac10dcd90a4e889812e77467feeeb97300159649e41d7c0"
+    },
+    {
+      "archived": "sixth/census/sana-1600m-1024px-diffusers/ir.json.gz",
+      "bytes": 15177,
+      "original": "/private/tmp/unfold-s9a-sixth/census/sana-1600m-1024px-diffusers/ir.json.gz",
+      "sha256": "85e6bfc9215b61306c66fe66f839f39c7751477acb76ee19f327d0fa3f3fa8f9"
+    },
+    {
+      "archived": "sixth/census/sana-1600m-1024px-diffusers/page.html.gz",
+      "bytes": 18388,
+      "original": "/private/tmp/unfold-s9a-sixth/census/sana-1600m-1024px-diffusers/page.html.gz",
+      "sha256": "15e8122621eb21d2f86dc25d1cbec97559decb41b379c6056828e42f467f833a"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-3-5-large/facts.json",
+      "bytes": 1218,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-3-5-large/facts.json",
+      "sha256": "58398b757e001d49f89e9c6710adcbaa36e01c98895823eafdde70aadd961ebe"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-3-5-large/ir.json.gz",
+      "bytes": 10533,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-3-5-large/ir.json.gz",
+      "sha256": "85d48d0e7d53313ca2ed86f121c6dd414111088edc9d772158034394ad6c1a4d"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-3-5-large/page.html.gz",
+      "bytes": 16677,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-3-5-large/page.html.gz",
+      "sha256": "ee25b152856c96714ce9c2e01a39587aa7bb8fbd9e975bacb39489635334af01"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-xl-base-1-0/facts.json",
+      "bytes": 9924563,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-xl-base-1-0/facts.json",
+      "sha256": "fd42e3b2503889cb46f79a4fe1c07eb3cdcee855b2837ba1177ad16927d490c6"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-xl-base-1-0/ir.json.gz",
+      "bytes": 394345,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-xl-base-1-0/ir.json.gz",
+      "sha256": "f8e513ca8d0de9a781d36c39b24536e2d748ccf6157ea16a97963ab3fb10006e"
+    },
+    {
+      "archived": "sixth/census/stable-diffusion-xl-base-1-0/page.html.gz",
+      "bytes": 274281,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stable-diffusion-xl-base-1-0/page.html.gz",
+      "sha256": "36decaf42d6ad446c47421e6c153b15bd349d15388651c1572cadde9a369f8c2"
+    },
+    {
+      "archived": "sixth/census/stablelm-2-1-6b/facts.json",
+      "bytes": 64893,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stablelm-2-1-6b/facts.json",
+      "sha256": "2b4a663bde07c98b2fc83e5433e871acda2e21c97daa4edddd2f6a0eaa7371ea"
+    },
+    {
+      "archived": "sixth/census/stablelm-2-1-6b/ir.json.gz",
+      "bytes": 9678,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stablelm-2-1-6b/ir.json.gz",
+      "sha256": "011f1c7706cdbd6e3e5f80e2bf1e0f36f95c5555783b4bd058a5b1262b6dfc2d"
+    },
+    {
+      "archived": "sixth/census/stablelm-2-1-6b/page.html.gz",
+      "bytes": 9719,
+      "original": "/private/tmp/unfold-s9a-sixth/census/stablelm-2-1-6b/page.html.gz",
+      "sha256": "f33782a5a6f0469f5b3ee7dc7bdb1e522ef8b7d0479188606be648d6e9a5af75"
+    },
+    {
+      "archived": "sixth/census/wan2-2-t2v-a14b-diffusers/facts.json",
+      "bytes": 6139,
+      "original": "/private/tmp/unfold-s9a-sixth/census/wan2-2-t2v-a14b-diffusers/facts.json",
+      "sha256": "baf48b931328453bb5d7b9245827bdcb1e3e84c32535623b07f6b50ebdd4d5cc"
+    },
+    {
+      "archived": "sixth/census/wan2-2-t2v-a14b-diffusers/ir.json.gz",
+      "bytes": 12437,
+      "original": "/private/tmp/unfold-s9a-sixth/census/wan2-2-t2v-a14b-diffusers/ir.json.gz",
+      "sha256": "f3abe6478ac9396b495ab90d0a3e0a7ee810399fb8b60a8c5a1048014734a537"
+    },
+    {
+      "archived": "sixth/census/wan2-2-t2v-a14b-diffusers/page.html.gz",
+      "bytes": 15302,
+      "original": "/private/tmp/unfold-s9a-sixth/census/wan2-2-t2v-a14b-diffusers/page.html.gz",
+      "sha256": "f1a2b297550ae366712313442b583c249caf78f06380b3d2b240a5779210d4d0"
+    },
+    {
+      "archived": "sixth/census-lane/fact-census.log",
+      "bytes": 13597,
+      "original": "/private/tmp/unfold-s9a-sixth/census-lane/fact-census.log",
+      "sha256": "e73ef1932f19765cdc6f523c1d80c3afab20528f4dcb718d345bd844a35d5a2b"
+    },
+    {
+      "archived": "sixth/census-lane/result.json",
+      "bytes": 511,
+      "original": "/private/tmp/unfold-s9a-sixth/census-lane/result.json",
+      "sha256": "ddae402bd5ff11a78045194b0e662d7344d7968fff13a012c90f844a10bc8688"
+    },
+    {
+      "archived": "sixth/census.py",
+      "bytes": 4873,
+      "original": "/private/tmp/unfold-s9a-sixth/census.py",
+      "sha256": "90d4eb2d9e9b8b0f7dba29dbd9c30a1bfb1913a7ca07fc5ce8a5c884fe1c41f1"
+    },
+    {
+      "archived": "sixth/positive-unqualified-facts.json",
+      "bytes": 27937,
+      "original": "/private/tmp/unfold-s9a-sixth/positive-unqualified-facts.json",
+      "sha256": "bba21705387622c82807cc08b30e359a5968fcb4aeff27565a7462e8de6a995b"
+    },
+    {
+      "archived": "sixth/qualification/result.json",
+      "bytes": 533,
+      "original": "/private/tmp/unfold-s9a-sixth/qualification/result.json",
+      "sha256": "9db2641382311e1d7f64d6be19cf2e2f4bd8de4762de6222c2d4e6f8ec749804"
+    },
+    {
+      "archived": "sixth/qualification/schema-proof-metadata.log",
+      "bytes": 1071,
+      "original": "/private/tmp/unfold-s9a-sixth/qualification/schema-proof-metadata.log",
+      "sha256": "7ebec22eec8f2535c221cdaaab5dee9e9dc6ac03ae9021674aa28a5fa252cad4"
+    },
+    {
+      "archived": "sixth/run-census.py",
+      "bytes": 976,
+      "original": "/private/tmp/unfold-s9a-sixth/run-census.py",
+      "sha256": "18d791ffc4773354e6b6f04763f9fdccc95ddcb3039951a55e4819d29f6be602"
+    },
+    {
+      "archived": "sixth/run.py",
+      "bytes": 1682,
+      "original": "/private/tmp/unfold-s9a-sixth/run.py",
+      "sha256": "d1514421a9f3e1d5656418d8c1cda5426c147ea9e886d14e4422acbe27fa81b7"
+    },
+    {
+      "archived": "sixth/source-manifest.json",
+      "bytes": 14680,
+      "original": "/private/tmp/unfold-s9a-sixth/source-manifest.json",
+      "sha256": "f95cf23659187c6744aaeb5defe4a6bb97d8b479dd63836aacab2ece61ba397b"
+    },
+    {
+      "archived": "seventh/qualification/result.json",
+      "bytes": 537,
+      "original": "/private/tmp/unfold-s9a-seventh/qualification/result.json",
+      "sha256": "8195f144bb9309872728317467a94ae2eedfc723421db8458204398122c797d4"
+    },
+    {
+      "archived": "seventh/qualification/schema-proof-metadata.log",
+      "bytes": 28425,
+      "original": "/private/tmp/unfold-s9a-seventh/qualification/schema-proof-metadata.log",
+      "sha256": "6f27e71ae5c2fb6e542b02da28670ce916d2510f2157b3c207c2e6f668a99f19"
+    },
+    {
+      "archived": "seventh/run.py",
+      "bytes": 1925,
+      "original": "/private/tmp/unfold-s9a-seventh/run.py",
+      "sha256": "0367453cccc690bfa217eaaa309044bb8f9e8fb1d4b324c8a725b5edf17a4009"
+    },
+    {
+      "archived": "seventh/source-manifest.json",
+      "bytes": 13700,
+      "original": "/private/tmp/unfold-s9a-seventh/source-manifest.json",
+      "sha256": "924afaed8d0146a8414eea37b593c71c583a9258eaadabd6d5e4b701e61cb064"
+    },
+    {
+      "archived": "sixth-independent-review/review.md",
+      "bytes": 3612,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/review.md",
+      "sha256": "e79af4914536d9059491d7301a0d52c30157cf03eff6933729ef61a6853aa59e"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 36007,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "sha256": "3dfc93e5f318b4fd1d41268fe4855e5a6e538071208eb6a067e12b06d042db0b"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 69133,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "sha256": "678c5a23c67202e0b82b6b13d3895785fced37baf35bb5014e3723e4ee52cdcf"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/adapters/diffusor/schema.py",
+      "bytes": 20983,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/adapters/diffusor/schema.py",
+      "sha256": "2e7ebfc4171edd8d57c7ace38b92fc4dbae2f6d2cf7c22f29426606f055d9580"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/claim_evidence.py",
+      "bytes": 19641,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/claim_evidence.py",
+      "sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34062,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_block.py",
+      "sha256": "2689d984754b4d90ea20d6eb9927ed15c7e9a078b0af2719f0527e5e733a40d0"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 30976,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "sha256": "4f185debe1cf7c270654acfec82677da2d492d0e49073d2d4e79d02823d49dc6"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_conditioning.py",
+      "bytes": 28740,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_conditioning.py",
+      "sha256": "3674a4048a7d3ce45b0d4ed49a5a04595234c1d78982288b3652cbca50b4b707"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_root.py",
+      "bytes": 23638,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_root.py",
+      "sha256": "cf1d123b041c187e2f140327f01e29f4cdf98b6cb9294c5b950e79a2c6b481cd"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 43961,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "sha256": "882809f049fd43e444e3587bdbb0d6fd0091c886c4ac3e937a49e31356ff5fc5"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 72819,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "sha256": "ca67df0a69284f4b614994653d922b961c1486c2e2ad6e94dc482a9cfb26ed16"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/ffn_mechanism.py",
+      "bytes": 71275,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/ffn_mechanism.py",
+      "sha256": "2685856d2941673799991e7b50ac3805731b2fd8b70d78f35a4868283be31b67"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 26874,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/reader_claims.py",
+      "sha256": "57cb8d5f408b950ea71ef72813f43edcce18343bb4e77ee5c5ef386fa3a61d2f"
+    },
+    {
+      "archived": "sixth-independent-review/source/model_unfolder/evidence/reader_result.py",
+      "bytes": 12211,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/model_unfolder/evidence/reader_result.py",
+      "sha256": "18413ab772617e0e9d5fc60880d6bbc5aec51501f2473eac75b6bb002d0de30e"
+    },
+    {
+      "archived": "sixth-independent-review/source/tests/test_diffusion_reader_claims.py",
+      "bytes": 4766,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source/tests/test_diffusion_reader_claims.py",
+      "sha256": "327d1eff5e0e147870a721c379919cbc9b6930549a42953280c9cc60c3ab4d93"
+    },
+    {
+      "archived": "sixth-independent-review/source-pins.json",
+      "bytes": 4173,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/source-pins.json",
+      "sha256": "ae0391eefa329afca789f38826820ec2bc1fe781c8f57660a497f46ddc676c5a"
+    },
+    {
+      "archived": "sixth-independent-review/verdict.json",
+      "bytes": 632,
+      "original": "/private/tmp/unfold-s9a-independent-sixth-review/verdict.json",
+      "sha256": "3eb28e2750f0b2ea40c7e0498a6bc8777b853ba08c7435e56bcd0ed3c397c868"
+    }
+  ],
+  "scope": "Released fifth/sixth/seventh candidates and sixth independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "fifth/changed-sources.tar.gz",
+      "archive_sha256": "892111a13f48dc0617925d48f8479cd3c69c13414d2a83f8f9e65e7280daff7d",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 82,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-fifth",
+      "manifest_sha256": "2e7e0b66ffb457183be60eb2d5d01760cf228841825c6023fbcf766b73c8162e",
+      "phase": "fifth",
+      "uncompressed_bytes": 2901797
+    },
+    {
+      "archive": "sixth/changed-sources.tar.gz",
+      "archive_sha256": "fe727ab06368af7904f5816b6a72052bfe78d36064ed703dfea084b3d8d12a30",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 82,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-sixth",
+      "manifest_sha256": "f95cf23659187c6744aaeb5defe4a6bb97d8b479dd63836aacab2ece61ba397b",
+      "phase": "sixth",
+      "uncompressed_bytes": 2908969
+    },
+    {
+      "archive": "seventh/changed-sources.tar.gz",
+      "archive_sha256": "5a61982b1b12256eb5c390876d0f511eb88dab5acd95bdf8e709f72ded769478",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 93,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-seventh",
+      "manifest_sha256": "924afaed8d0146a8414eea37b593c71c583a9258eaadabd6d5e4b701e61cb064",
+      "phase": "seventh",
+      "uncompressed_bytes": 3304453
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 13742838,
+    "copied_files": 152,
+    "source_files": 257
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

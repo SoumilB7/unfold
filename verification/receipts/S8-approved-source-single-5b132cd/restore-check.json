@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "streams": 9,
+  "restored_destination": "/private/tmp/unfold-s8-source-single-archive-check-5b132cd",
+  "every_restored_size_and_sha256_matches": true,
+  "artifact_map_sha256": "b701ca2570007e8fa246739d22b25d74bb3c2e46f7da9be48d3fe31da2a81d13"
+}

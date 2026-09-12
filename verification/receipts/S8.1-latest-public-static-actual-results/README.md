@@ -1,0 +1,9 @@
+# Completed public and static diagnostics
+
+Artifact-only archive of the 63 explicitly released S8.1 namespaces listed in released-scope.json. This packet retains actual public cold/warm v7–v11 runs and cache entries, warm profiles v1/v2, capture phases v1–v3, and the related source preparations, focused controls, manifest replays, and completed owner/independent reviews. The original conformance/cell fixture failures and other RED diagnostics remain intact. The digest-primitive trial is a negative/marginal experiment; its inclusion does not claim a production change or accepted speedup.
+
+No models, tests, renderers, or profiles are executed by this archiver. Profiles and pickles are opaque archival bytes. Source paths named inside manifests remain pins; they are not recursively imported as new archive streams. Candidate/checkouts and unrelated directories are excluded.
+
+Every original complete relative filename receives an appended `.gzip` suffix. `artifact-map.json` records original and stored hashes/sizes, exact original paths, and all directories, including empty ones. `archive.py` uses serial gzip level 3, restores every stream, explicitly recreates the mapped directories, checks exact restored membership and hashes/sizes, and rechecks all original membership and bytes after packaging. `result.json` reports archive integrity only. `outcomes.json` copies literal fields from retained actual result JSON and does not reinterpret run outcomes or establish latency budgets.
+
+To restore, create every directory in the map's `directories` list and gzip-decode each `entries[logical].stored` into that logical path. Verify each decoded stream against its `raw` SHA-256 and byte count. Git does not retain physical empty directories, so the map is authoritative for their restoration.

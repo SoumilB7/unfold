@@ -1,0 +1,23 @@
+{
+  "scope": "Current34 source/focused chronology only; exact prior docs retained; no output blessing",
+  "before": [
+    {
+      "path": "S9-A-before.md",
+      "sha256": "18fd229618b2977e75f776a9489f7ffcf54aeafa5835640fc4593ec4db0c1ffb"
+    },
+    {
+      "path": "receipt-README-before.md",
+      "sha256": "cce4c84bcbb999ede4c363ab16d2f235740ef9e39fb8d3fcedd196c03f136150"
+    }
+  ],
+  "after": [
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S9-A.md",
+      "sha256": "4e098b75bb0ab96ea55f75480787df1e3b0b34893e9bce227db8dff5f8690d69"
+    },
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "0d799a5cd267e30e4a4723cc8b6b15b3d79da91c2a3c0080e20a37ab2c8dcf9a"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Third connection trace uses actual conditioning call ports
+
+The spatial stride/shape trace remains a truthful supplemental shape artifact, but its containment drill had no connection arrows. The third C8 example now follows the already independently reviewed source call: get_time_embed result enters argument0 of conditionally selected time_embedding; timestep_cond enters argument1. The actual source-port SVG has two incoming arrows and one result arrow. Its target links the canonical time_embedding card with2,050,560 shape-backed parameters. All seven recorded conditions remain explicit; opaque computation and argument-to-result dependence are not asserted.
+
+This is witness-report selection only, not a production model hook or new mechanism. Actual c38 ordinary replay has zero linkage gaps in all three traces. Removing the visible time_embedding overview card fails; dropping one boundary condition fails. Original f664 independent spatial result is preserved. Final campaign model outputs are not rerun for this report-only change; use a separately pinned reporting pass.

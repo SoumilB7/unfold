@@ -1,0 +1,5 @@
+{
+  "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+  "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+  "file": "unet/diffusion_pytorch_model.safetensors"
+}

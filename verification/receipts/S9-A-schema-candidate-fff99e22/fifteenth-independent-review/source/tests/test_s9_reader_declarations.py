@@ -1,0 +1,107 @@
+"""Actual reader kind declarations carry no fabricated claim proof."""
+from dataclasses import replace
+
+import pytest
+
+from model_unfolder.evidence.config_access import bound_document
+from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
+from model_unfolder.evidence.facts import EvidenceFact
+from model_unfolder.evidence.reader_claims import qualify_reader_fact
+from test_ffn_schedule import _config
+
+
+@pytest.mark.parametrize("kind", ["router", "shared_count"])
+def test_exact_reader_declares_its_pending_projection_without_proving_legacy_value(kind):
+    from model_unfolder.evidence.router import decoder_router_selection_for_path
+    from model_unfolder.evidence.expert_width import decoder_shared_expert_count_for_path
+    config = _config("dbrx-base" if kind == "router" else "deepseek-v3")
+    context = ParseContext.build(config)
+    index = context.program_index()
+    document = PreparedDocument(dict(config), dict(config))
+    with bound_document(DocumentBinding("root", (), document)):
+        if kind == "router":
+            result = decoder_router_selection_for_path(index, context.source_bundle, (), allow_root_stage=True)
+            fact = EvidenceFact(owner="decoder.ffn", key="routing_policy", value={"selection_kind": "topk"},
+                                status="code_and_config", completeness="complete")
+            intended = "relation"
+        else:
+            result = decoder_shared_expert_count_for_path(index, context.source_bundle, (), config,
+                                                         allow_root_stage=True)
+            fact = EvidenceFact(owner="decoder.ffn.expert", key="shared_expert_count", value=1,
+                                status="code_and_config", completeness="complete")
+            intended = "value"
+        assert result.status == "resolved", result.failures
+        declared = qualify_reader_fact(fact, result, index, document)
+        assert declared.claim_kind == intended
+        assert declared.claim_readers == (result.claim_witness.reader_symbol,)
+        assert declared.claim_evidence is None and declared.claim_document_token == ""
+        assert declared.value == fact.value and declared.status == fact.status
+        with pytest.raises(ValueError, match="actual result"):
+            qualify_reader_fact(fact, replace(result), index, document)
+        with pytest.raises(ValueError, match="intended projection"):
+            qualify_reader_fact(replace(fact, key="unrelated"), result, index, document)
+        with pytest.raises(ValueError, match="another.*document"):
+            qualify_reader_fact(fact, result, index, PreparedDocument(dict(config), dict(config)))
+
+
+def test_projector_declaration_keeps_original_result_through_actual_width_writer(tmp_path):
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.context import capture_facts
+    from model_unfolder.evidence.projector import projector_result_for_context
+    from model_unfolder.adapters.transformer.special_parts.modalities.vision import apply_projector_evidence
+    source = tmp_path / "modeling_projector.py"
+    source.write_text('''from torch.nn import Linear
+class Root:
+    def __init__(self): self.bridge = Linear(4, 6)
+    def forward(self, inputs_embeds, image_features, mask):
+        image_features = self.bridge(image_features)
+        return inputs_embeds.masked_scatter(mask, image_features)
+''')
+    bundle = SourceBundle(source="test", files=(str(source),), architecture="Root",
+                          component_files={"root": (str(source),)},
+                          component_architectures={"root": "Root"})
+    context = ParseContext(bundle)
+    unbound = projector_result_for_context(context)
+    assert unbound.status == "resolved", unbound.failures
+    document = PreparedDocument({}, {})
+    with bound_document(DocumentBinding("root", (), document)), capture_facts(context.facts):
+        result = projector_result_for_context(context)
+        assert result is not unbound  # Original producer reruns under the document.
+        assert projector_result_for_context(context) is result
+        payload = {"modalities": {"inputs": {"vision": {"projector": {}, "pipeline": []}}}}
+        apply_projector_evidence(payload, result, {})
+        for key, value in (("projector_in_features", 4), ("projector_out_features", 6)):
+            fact = context.facts.typed["root.vision." + key]
+            assert fact.value == value and fact.status == "code_proven"
+            assert fact.claim_kind == "value"
+            assert fact.claim_evidence is None and fact.claim_document_token == ""
+            assert fact.claim_readers == (result.claim_witness.reader_symbol,)
+        fact = context.facts.typed["root.vision.projector_out_features"]
+        with pytest.raises(ValueError, match="actual result"):
+            qualify_reader_fact(fact, replace(result), context.program_index(), document)
+        with pytest.raises(ValueError, match="destination-qualified"):
+            qualify_reader_fact(replace(fact, owner="root.video"), result,
+                                context.program_index(), document)
+
+
+def test_gated_delta_presence_does_not_stamp_unfinished_live_geometry_relation(tmp_path):
+    from test_attention_mechanism import _pipeline, _gated_delta_mixer
+    from model_unfolder.evidence.attention import decoder_gated_delta_geometry_for_path
+    index, bundle, _root, _block = _pipeline(tmp_path, _gated_delta_mixer())
+    document = PreparedDocument({}, {})
+    with bound_document(DocumentBinding("root", (), document)):
+        result = decoder_gated_delta_geometry_for_path(index, bundle, (), allow_root_stage=True)
+        assert result.status == "resolved", result.failures
+        assert result.value.key_heads_path == ("kh",)
+        # This older positive has repeats after the terminal. Its sites stay
+        # useful, but the stronger live role relation is intentionally unproved.
+        fact = EvidenceFact(owner="decoder.attention", key="gated_delta_geometry",
+                            value=(16, 48, 128, 128, 4), status="code_and_config",
+                            completeness="presence_only")
+        declared = qualify_reader_fact(fact, result, index, document)
+        assert declared.value == fact.value and declared.status == fact.status
+        assert declared.claim_kind == "relation"
+        assert declared.claim_evidence is None and declared.claim_document_token == ""
+        with pytest.raises(ValueError, match="actual result"):
+            qualify_reader_fact(fact, replace(result), index, document)

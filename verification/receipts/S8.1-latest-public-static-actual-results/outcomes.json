@@ -1,0 +1,267 @@
+{
+  "not_claimed": "No new run, unpickling, causal reconstruction, latency median, or budget acceptance.",
+  "results": [
+    {
+      "actual_result": "attention-interface-controls-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "bytecode-unit-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "cache-traversal-controls-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "cache-traversal-replay-v1/result.json",
+      "observed_result_fields": {
+        "pins_unchanged": true,
+        "status": "PASS"
+      }
+    },
+    {
+      "actual_result": "capture-phase-v1/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "limits": "Diagnostic coarse phase observers change no original audit-handler call or caller frame. Actual inventory/request remain unchanged; observed worker command differs and cache outcome is diagnostic-only. Eight in-memory aggregate timing/count rows, no per-call filesystem writes. Nested totals overlap; clock begins after observer/physics imports. Original sidecar and DTO retained before telemetry assertions. No latency acceptance.",
+        "status": "ok"
+      }
+    },
+    {
+      "actual_result": "capture-phase-v2/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "limits": "Diagnostic coarse phase observers change no original audit-handler call or caller frame. Actual inventory/request remain unchanged; observed worker command differs and cache outcome is diagnostic-only. Ten in-memory aggregate timing/count rows plus bounded event-name-only counts/overflow, no per-call filesystem writes. Nested totals overlap; clock begins after observer/physics imports. Original sidecar and DTO retained before telemetry assertions. No latency acceptance.",
+        "status": "ok"
+      }
+    },
+    {
+      "actual_result": "capture-phase-v3/result.json",
+      "observed_result_fields": {
+        "error": null,
+        "limits": "Diagnostic coarse phase observers change no original audit-handler call or caller frame. Actual inventory/request remain unchanged; observed worker command differs and cache outcome is diagnostic-only. Fifteen in-memory aggregate timing/count rows plus bounded event-name-only counts/overflow, no per-call filesystem writes. Nested totals overlap; clock begins after observer/physics imports. Original sidecar and DTO retained before telemetry assertions. No latency acceptance.",
+        "status": "ok"
+      }
+    },
+    {
+      "actual_result": "cell-lineage-controls-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 1,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "cell-lineage-controls-v2/result.json",
+      "observed_result_fields": {
+        "exit_code": 0,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "conformance-controls-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 1,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "conformance-controls-v2/result.json",
+      "observed_result_fields": {
+        "exit_code": 0,
+        "pins_unchanged": true
+      }
+    },
+    {
+      "actual_result": "digest-primitive-v1/result.json",
+      "observed_result_fields": {
+        "limits": "Retained required-content replay, with original/candidate/original order.\n\nNo model imports, subprocess probes, cache acceptance, or latency budget claims.\nRepeated ordered reads warm the filesystem; intervals are primitive diagnostics.\n",
+        "status": "PASS"
+      }
+    },
+    {
+      "actual_result": "expression-unit-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "guard-import-unit-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "public-cold-v10/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-cold-v11/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-cold-v7/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-cold-v8/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-cold-v9/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": false,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "cold",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-profile-v1/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public warm historical-cache-hit cProfile diagnosis; fresh inventory construction is prohibited on cache miss. cProfile and coarse-observer overhead are included; not an unprofiled latency result or three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-profile-v2/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public warm historical-cache-hit cProfile diagnosis; fresh inventory construction is prohibited on cache miss. cProfile and coarse-observer overhead are included; not an unprofiled latency result or three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-v10/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-v11/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-v7/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-v8/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "public-warm-v9/result.json",
+      "observed_result_fields": {
+        "cache_pins_equal": true,
+        "error": null,
+        "external_pins_equal": true,
+        "input_pins_equal": true,
+        "limits": "One actual public cold capture or fresh-process warm historical-cache-hit diagnosis, selected by mode, with nested coarse timing/counters; not a three-run median. Nested costs are not additive. No preparation worker or HTML render. Diagnostic dependency sidecar byte-read overhead is included; archival writes occur after the public timer.",
+        "mode": "warm",
+        "source_pins_equal": true
+      }
+    },
+    {
+      "actual_result": "root-classification-unit-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    },
+    {
+      "actual_result": "scandir-replay-v1/result.json",
+      "observed_result_fields": {
+        "pins_unchanged": true,
+        "status": "PASS"
+      }
+    },
+    {
+      "actual_result": "scandir-unit-v1/result.json",
+      "observed_result_fields": {
+        "exit_code": 0
+      }
+    }
+  ],
+  "scope": "Literal fields from actual result JSON; all versions and failed attempts retained."
+}

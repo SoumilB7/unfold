@@ -6,16 +6,16 @@
 # Keep values in flow style ([a, b, c]) so the lightweight built-in loader works
 # even without PyYAML installed.
 
-num_hidden_layers: [num_hidden_layers, n_layers, num_layers, n_layer, num_blocks, n_blocks]
-num_attention_heads: [num_attention_heads, n_heads, num_heads, n_head, num_q_heads]
+num_hidden_layers: [num_hidden_layers, n_layers, num_layers, n_layer, num_blocks, n_blocks, encoder_layers]  # encoder_layers: flat seq2seq (speecht5) — the drawn encoder half
+num_attention_heads: [num_attention_heads, n_heads, num_heads, n_head, num_q_heads, encoder_attention_heads]
 num_key_value_heads: [num_key_value_heads, n_kv_heads, num_kv_heads, num_key_heads, kv_n_heads, multi_query_group_num]
-hidden_size: [hidden_size, d_model, n_embd, model_dim, embed_dim, dim]
-intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim, ffn_hidden_size, feed_forward_proj_dim, n_inner, d_ff]
+hidden_size: [hidden_size, d_model, n_embd, model_dim]   # REC-3 §9.4: embed_dim/dim REMOVED — rival-in-scope spellings (qwen2-vl vision: embed_dim=internal width BESIDE hidden_size=output width), priority/context reads, never universal synonyms
+intermediate_size: [intermediate_size, ffn_dim, mlp_dim, ffn_hidden_size, feed_forward_proj_dim, n_inner, d_ff, encoder_ffn_dim]   # REC-3 §9.4: inner_dim REMOVED — in the diffusers vocabulary it is an ATTENTION width (rival concept); the diffusion audit is REC-4
 hidden_act: [hidden_act, activation_function, hidden_activation, act_fn, activation, activation_type, dense_act_fn]
 vocab_size: [vocab_size, n_vocab, padded_vocab_size]
-max_position_embeddings: [max_position_embeddings, max_seq_len, n_positions, context_length, max_seq_length, seq_length, max_sequence_length]
-sliding_window: [sliding_window, attention_window, window_size]
-attention_bias: [attention_bias, add_qkv_bias, use_qkv_bias]                     # add_qkv_bias: chatglm · use_qkv_bias: stablelm
+max_position_embeddings: [max_position_embeddings, max_seq_len, n_positions, context_length, max_seq_length, seq_length, max_sequence_length, max_text_positions]
+sliding_window: [sliding_window, attention_window, window_size, attention_window_size]  # attention_window_size: recurrentgemma GRIFFIN local-attention window
+attention_bias: [attention_bias, add_qkv_bias, use_qkv_bias, use_bias, bias, qkv_bias]     # add_qkv_bias: chatglm · use_qkv_bias: stablelm · bias: internlm · qkv_bias: qwen1
 mlp_bias: [mlp_bias, add_bias_linear]                                            # add_bias_linear: chatglm spelling
 num_experts: [num_local_experts, num_experts, n_routed_experts, n_experts, moe_num_experts]
 num_experts_per_tok: [num_experts_per_tok, top_k_experts, top_k, num_selected_experts, num_experts_per_token, moe_top_k, experts_per_token]
@@ -25,7 +25,19 @@ head_dim: [head_dim, d_head, head_size, kv_channels]
 tie_word_embeddings: [tie_word_embeddings, tie_embeddings, tie_word_embedding_weights]
 norm_type: [norm_type]
 mlp_ratio: [mlp_ratio]
-compress_ratios: [compress_ratios, compress_rates]
+
+# RoPE declaration spellings (U2 P3a): the config-declared position channel
+# consulted ONLY when code evidence is oracle_missing/ambiguous — a declared
+# θ / scaling dict asserts RoPE as config_declared (chip says so), never
+# silently.  rotary_emb_base: internlm/persimmon legacy · rope_parameters:
+# the modern transformers nesting.
+rope_theta: [rope_theta, rotary_emb_base, rope_base]
+partial_rotary_factor: [partial_rotary_factor]
+rope_scaling: [rope_scaling, rope_parameters]
+# Scope-local selector spellings inside the already source-proven
+# ``rope_parameters`` mapping.  This vocabulary must never be passed to the
+# root config resolver: ``type`` is far too broad outside that exact parent.
+rope_parameter_selector: [rope_type, type]
 
 # Granite declared-scale family (constant multipliers; residual one is DRAWN
 # as a × connector, the rest are card facts).
@@ -33,3 +45,31 @@ residual_multiplier: [residual_multiplier]
 embedding_multiplier: [embedding_multiplier]
 attention_multiplier: [attention_multiplier]
 logits_scaling: [logits_scaling, logit_scale]
+
+# Scope-qualified aliases for the structurally recognized ``params.json``
+# dialect whose root carries ``dim`` + ``n_layers``.  These MUST NOT be folded
+# into the global aliases above: ``dim`` is a hidden-size spelling in this exact
+# input format, but it is a rival concept in other containers.  The input-format
+# normalizer reads only this prefix and removes it before the transformer parser
+# receives the canonical config.
+input_format.layered_transformer_params.required: [dim, n_layers, n_heads]
+input_format.layered_transformer_params.text.hidden_size: [dim]
+input_format.layered_transformer_params.text.num_hidden_layers: [n_layers]
+input_format.layered_transformer_params.text.num_attention_heads: [n_heads]
+input_format.layered_transformer_params.text.num_key_value_heads: [n_kv_heads]
+input_format.layered_transformer_params.text.intermediate_size: [hidden_dim]
+input_format.layered_transformer_params.text.rms_norm_eps: [norm_eps]
+input_format.layered_transformer_params.text.head_dim: [head_dim]
+input_format.layered_transformer_params.text.rope_theta: [rope_theta]
+input_format.layered_transformer_params.text.vocab_size: [vocab_size]
+input_format.layered_transformer_params.text.max_position_embeddings: [max_position_embeddings]
+input_format.layered_transformer_params.vision.container: [vision_encoder]
+input_format.layered_transformer_params.vision.num_channels: [num_channels]
+input_format.layered_transformer_params.vision.image_size: [image_size]
+input_format.layered_transformer_params.vision.patch_size: [patch_size]
+input_format.layered_transformer_params.vision.hidden_size: [hidden_size]
+input_format.layered_transformer_params.vision.intermediate_size: [intermediate_size]
+input_format.layered_transformer_params.vision.num_hidden_layers: [num_hidden_layers]
+input_format.layered_transformer_params.vision.num_attention_heads: [num_attention_heads]
+input_format.layered_transformer_params.vision.rope_theta: [rope_theta]
+input_format.layered_transformer_params.vision.image_token_id: [image_token_id]

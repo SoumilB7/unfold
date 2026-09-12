@@ -1,0 +1,17 @@
+{
+  "proposal_manifest": "fccb4d5f4f94843b25c7e731a2b3587c40f9e2b681d52d40adccce12a94b183f",
+  "independent_verdict": "7443ee8c2c66ce666f0daabcaec183347bc4b33cd25b3bda1bf17c5a98ccf91e",
+  "status": "exact reviewedsource applied; runtimepending; no outputbless",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890",
+      "proposed_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0"
+    },
+    {
+      "path": "tests/test_s9_layer_count_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "7526277f9910abfc101d8e8d30400884b8df3475abe25e0b608a0fbe4ddf8ced"
+    }
+  ]
+}

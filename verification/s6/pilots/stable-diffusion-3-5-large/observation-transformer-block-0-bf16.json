@@ -1,0 +1,891 @@
+{
+  "failure": null,
+  "observation": {
+    "functional_ops": [
+      {
+        "callable": "torch.nn.functional.silu",
+        "index": 0,
+        "op": "silu"
+      },
+      {
+        "callable": "chunk",
+        "index": 1,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 2,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 3,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 4,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 5,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.silu",
+        "index": 6,
+        "op": "silu"
+      },
+      {
+        "callable": "chunk",
+        "index": 7,
+        "op": "chunk"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 8,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 9,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 10,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 11,
+        "op": "add"
+      },
+      {
+        "callable": "add",
+        "index": 12,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 13,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 14,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 15,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 16,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 17,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 18,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 19,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 20,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 21,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 22,
+        "op": "mul"
+      },
+      {
+        "callable": "mul",
+        "index": 23,
+        "op": "mul"
+      },
+      {
+        "callable": "torch.cat",
+        "index": 24,
+        "op": "cat"
+      },
+      {
+        "callable": "torch.cat",
+        "index": 25,
+        "op": "cat"
+      },
+      {
+        "callable": "torch.cat",
+        "index": 26,
+        "op": "cat"
+      },
+      {
+        "callable": "torch._C._nn.scaled_dot_product_attention",
+        "index": 27,
+        "op": "scaled_dot_product_attention"
+      },
+      {
+        "callable": "mul",
+        "index": 28,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 29,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 30,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 31,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 32,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 33,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 34,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 35,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 36,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 37,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 38,
+        "op": "add"
+      },
+      {
+        "callable": "torch.nn.functional.layer_norm",
+        "index": 39,
+        "op": "layer_norm"
+      },
+      {
+        "callable": "add",
+        "index": 40,
+        "op": "add"
+      },
+      {
+        "callable": "mul",
+        "index": 41,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 42,
+        "op": "add"
+      },
+      {
+        "callable": "torch._C._nn.gelu",
+        "index": 43,
+        "op": "gelu"
+      },
+      {
+        "callable": "mul",
+        "index": 44,
+        "op": "mul"
+      },
+      {
+        "callable": "add",
+        "index": 45,
+        "op": "add"
+      }
+    ],
+    "lazy_observed": [],
+    "module_calls": [
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "JointTransformerBlock"
+        },
+        "index": 0,
+        "path": "transformer_blocks.0"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "AdaLayerNormZero"
+        },
+        "index": 1,
+        "path": "transformer_blocks.0.norm1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "SiLU"
+        },
+        "index": 2,
+        "path": "transformer_blocks.0.norm1.silu"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 3,
+        "path": "transformer_blocks.0.norm1.linear"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 4,
+        "path": "transformer_blocks.0.norm1.norm"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "AdaLayerNormZero"
+        },
+        "index": 5,
+        "path": "transformer_blocks.0.norm1_context"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.activation",
+          "qualname": "SiLU"
+        },
+        "index": 6,
+        "path": "transformer_blocks.0.norm1_context.silu"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 7,
+        "path": "transformer_blocks.0.norm1_context.linear"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 8,
+        "path": "transformer_blocks.0.norm1_context.norm"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention_processor",
+          "qualname": "Attention"
+        },
+        "index": 9,
+        "path": "transformer_blocks.0.attn"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 10,
+        "path": "transformer_blocks.0.attn.to_q"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 11,
+        "path": "transformer_blocks.0.attn.to_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 12,
+        "path": "transformer_blocks.0.attn.to_v"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "RMSNorm"
+        },
+        "index": 13,
+        "path": "transformer_blocks.0.attn.norm_q"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "RMSNorm"
+        },
+        "index": 14,
+        "path": "transformer_blocks.0.attn.norm_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 15,
+        "path": "transformer_blocks.0.attn.add_q_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 16,
+        "path": "transformer_blocks.0.attn.add_k_proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 17,
+        "path": "transformer_blocks.0.attn.add_v_proj"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "RMSNorm"
+        },
+        "index": 18,
+        "path": "transformer_blocks.0.attn.norm_added_q"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.normalization",
+          "qualname": "RMSNorm"
+        },
+        "index": 19,
+        "path": "transformer_blocks.0.attn.norm_added_k"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 20,
+        "path": "transformer_blocks.0.attn.to_add_out"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 21,
+        "path": "transformer_blocks.0.attn.to_out.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 22,
+        "path": "transformer_blocks.0.attn.to_out.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 23,
+        "path": "transformer_blocks.0.norm2"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 24,
+        "path": "transformer_blocks.0.ff"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 25,
+        "path": "transformer_blocks.0.ff.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 26,
+        "path": "transformer_blocks.0.ff.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 27,
+        "path": "transformer_blocks.0.ff.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 28,
+        "path": "transformer_blocks.0.ff.net.2"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.normalization",
+          "qualname": "LayerNorm"
+        },
+        "index": 29,
+        "path": "transformer_blocks.0.norm2_context"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.attention",
+          "qualname": "FeedForward"
+        },
+        "index": 30,
+        "path": "transformer_blocks.0.ff_context"
+      },
+      {
+        "class_ref": {
+          "module": "diffusers.models.activations",
+          "qualname": "GELU"
+        },
+        "index": 31,
+        "path": "transformer_blocks.0.ff_context.net.0"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 32,
+        "path": "transformer_blocks.0.ff_context.net.0.proj"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.dropout",
+          "qualname": "Dropout"
+        },
+        "index": 33,
+        "path": "transformer_blocks.0.ff_context.net.1"
+      },
+      {
+        "class_ref": {
+          "module": "torch.nn.modules.linear",
+          "qualname": "Linear"
+        },
+        "index": 34,
+        "path": "transformer_blocks.0.ff_context.net.2"
+      }
+    ],
+    "outcome": "observed",
+    "provenance": {
+      "build_flags": {},
+      "config_sha256": "8e68e28d3540d41d8706cef6541477f7506795a0ddc77502eb592430d07d0102",
+      "constructor_used": "diffusers.SD3Transformer2DModel.from_config(config)",
+      "environment": {
+        "diffusers_offline": "1",
+        "hash_seed": "0",
+        "hf_hub_offline": "1",
+        "network": "macos-sandbox-exec+python-audit-hook",
+        "platform": "macOS-26.5.1-arm64-arm-64bit",
+        "python": "3.12.10",
+        "transformers_offline": "1"
+      },
+      "packages": [
+        {
+          "package": "diffusers",
+          "version": "0.38.0"
+        },
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "requested_factory": "diffusers.SD3Transformer2DModel",
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_sd3",
+        "qualname": "SD3Transformer2DModel"
+      },
+      "source_files": [
+        {
+          "module": "diffusers.configuration_utils",
+          "path": "configuration_utils.py",
+          "sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+        },
+        {
+          "module": "diffusers.loaders.peft",
+          "path": "peft.py",
+          "sha256": "51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3"
+        },
+        {
+          "module": "diffusers.loaders.single_file_model",
+          "path": "single_file_model.py",
+          "sha256": "2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756"
+        },
+        {
+          "module": "diffusers.loaders.transformer_sd3",
+          "path": "transformer_sd3.py",
+          "sha256": "531d9c75852935af947aea32ba54c6eb72768e3ee688c44db25b403fb04552ff"
+        },
+        {
+          "module": "diffusers.models.activations",
+          "path": "activations.py",
+          "sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+        },
+        {
+          "module": "diffusers.models.attention",
+          "path": "attention.py",
+          "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8"
+        },
+        {
+          "module": "diffusers.models.attention_processor",
+          "path": "attention_processor.py",
+          "sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc"
+        },
+        {
+          "module": "diffusers.models.embeddings",
+          "path": "embeddings.py",
+          "sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+        },
+        {
+          "module": "diffusers.models.modeling_utils",
+          "path": "modeling_utils.py",
+          "sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+        },
+        {
+          "module": "diffusers.models.normalization",
+          "path": "normalization.py",
+          "sha256": "e92ebbb130082578f3cff3361891a1adaa32331347e7bb09e4c70b208a0a6059"
+        },
+        {
+          "module": "diffusers.models.transformers.transformer_sd3",
+          "path": "transformer_sd3.py",
+          "sha256": "daf7c20b3a2455c1cfe81728ee05569cdc72a058e75b3c51fd4d85e1c9d100b0"
+        },
+        {
+          "module": "diffusers.utils.hub_utils",
+          "path": "hub_utils.py",
+          "sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd"
+        },
+        {
+          "module": "torch.nn.modules.activation",
+          "path": "activation.py",
+          "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+        },
+        {
+          "module": "torch.nn.modules.container",
+          "path": "container.py",
+          "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+        },
+        {
+          "module": "torch.nn.modules.conv",
+          "path": "conv.py",
+          "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+        },
+        {
+          "module": "torch.nn.modules.dropout",
+          "path": "dropout.py",
+          "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+        },
+        {
+          "module": "torch.nn.modules.linear",
+          "path": "linear.py",
+          "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+        },
+        {
+          "module": "torch.nn.modules.module",
+          "path": "module.py",
+          "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+        },
+        {
+          "module": "torch.nn.modules.normalization",
+          "path": "normalization.py",
+          "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+        }
+      ]
+    },
+    "recipe": {
+      "cache_state": "disabled",
+      "conditioning_present": true,
+      "dtype": "bfloat16",
+      "encoder_decoder_mode": "joint",
+      "flags": {},
+      "input_modality": "latent",
+      "library_versions": {
+        "diffusers": "0.38.0",
+        "torch": "2.9.1"
+      },
+      "literal_arguments": {},
+      "recipe_id": "transformer-block-0-bf16",
+      "target_path": "transformer_blocks.0",
+      "tensor_arguments": [
+        {
+          "device": "meta",
+          "dtype": "bfloat16",
+          "fill": "zeros",
+          "name": "hidden_states",
+          "shape": [
+            1,
+            4,
+            2432
+          ],
+          "values": null
+        },
+        {
+          "device": "meta",
+          "dtype": "bfloat16",
+          "fill": "zeros",
+          "name": "encoder_hidden_states",
+          "shape": [
+            1,
+            4,
+            2432
+          ],
+          "values": null
+        },
+        {
+          "device": "meta",
+          "dtype": "bfloat16",
+          "fill": "zeros",
+          "name": "temb",
+          "shape": [
+            1,
+            2432
+          ],
+          "values": null
+        }
+      ],
+      "train_eval": "eval"
+    },
+    "schema_version": 1
+  },
+  "provenance": {
+    "build_flags": {},
+    "config_sha256": "8e68e28d3540d41d8706cef6541477f7506795a0ddc77502eb592430d07d0102",
+    "constructor_used": "diffusers.SD3Transformer2DModel.from_config(config)",
+    "environment": {
+      "diffusers_offline": "1",
+      "hash_seed": "0",
+      "hf_hub_offline": "1",
+      "network": "macos-sandbox-exec+python-audit-hook",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "python": "3.12.10",
+      "transformers_offline": "1"
+    },
+    "packages": [
+      {
+        "package": "diffusers",
+        "version": "0.38.0"
+      },
+      {
+        "package": "python",
+        "version": "3.12.10"
+      },
+      {
+        "package": "torch",
+        "version": "2.9.1"
+      }
+    ],
+    "requested_factory": "diffusers.SD3Transformer2DModel",
+    "resolved_class": {
+      "module": "diffusers.models.transformers.transformer_sd3",
+      "qualname": "SD3Transformer2DModel"
+    },
+    "source_files": [
+      {
+        "module": "diffusers.configuration_utils",
+        "path": "configuration_utils.py",
+        "sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+      },
+      {
+        "module": "diffusers.loaders.peft",
+        "path": "peft.py",
+        "sha256": "51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3"
+      },
+      {
+        "module": "diffusers.loaders.single_file_model",
+        "path": "single_file_model.py",
+        "sha256": "2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756"
+      },
+      {
+        "module": "diffusers.loaders.transformer_sd3",
+        "path": "transformer_sd3.py",
+        "sha256": "531d9c75852935af947aea32ba54c6eb72768e3ee688c44db25b403fb04552ff"
+      },
+      {
+        "module": "diffusers.models.activations",
+        "path": "activations.py",
+        "sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+      },
+      {
+        "module": "diffusers.models.attention",
+        "path": "attention.py",
+        "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8"
+      },
+      {
+        "module": "diffusers.models.attention_processor",
+        "path": "attention_processor.py",
+        "sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc"
+      },
+      {
+        "module": "diffusers.models.embeddings",
+        "path": "embeddings.py",
+        "sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+      },
+      {
+        "module": "diffusers.models.modeling_utils",
+        "path": "modeling_utils.py",
+        "sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+      },
+      {
+        "module": "diffusers.models.normalization",
+        "path": "normalization.py",
+        "sha256": "e92ebbb130082578f3cff3361891a1adaa32331347e7bb09e4c70b208a0a6059"
+      },
+      {
+        "module": "diffusers.models.transformers.transformer_sd3",
+        "path": "transformer_sd3.py",
+        "sha256": "daf7c20b3a2455c1cfe81728ee05569cdc72a058e75b3c51fd4d85e1c9d100b0"
+      },
+      {
+        "module": "diffusers.utils.hub_utils",
+        "path": "hub_utils.py",
+        "sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd"
+      },
+      {
+        "module": "torch.nn.modules.activation",
+        "path": "activation.py",
+        "sha256": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+      },
+      {
+        "module": "torch.nn.modules.container",
+        "path": "container.py",
+        "sha256": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c"
+      },
+      {
+        "module": "torch.nn.modules.conv",
+        "path": "conv.py",
+        "sha256": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c"
+      },
+      {
+        "module": "torch.nn.modules.dropout",
+        "path": "dropout.py",
+        "sha256": "f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7"
+      },
+      {
+        "module": "torch.nn.modules.linear",
+        "path": "linear.py",
+        "sha256": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247"
+      },
+      {
+        "module": "torch.nn.modules.module",
+        "path": "module.py",
+        "sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+      },
+      {
+        "module": "torch.nn.modules.normalization",
+        "path": "normalization.py",
+        "sha256": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+      }
+    ]
+  },
+  "recipe": {
+    "cache_state": "disabled",
+    "conditioning_present": true,
+    "dtype": "bfloat16",
+    "encoder_decoder_mode": "joint",
+    "flags": {},
+    "input_modality": "latent",
+    "library_versions": {
+      "diffusers": "0.38.0",
+      "torch": "2.9.1"
+    },
+    "literal_arguments": {},
+    "recipe_id": "transformer-block-0-bf16",
+    "target_path": "transformer_blocks.0",
+    "tensor_arguments": [
+      {
+        "device": "meta",
+        "dtype": "bfloat16",
+        "fill": "zeros",
+        "name": "hidden_states",
+        "shape": [
+          1,
+          4,
+          2432
+        ],
+        "values": null
+      },
+      {
+        "device": "meta",
+        "dtype": "bfloat16",
+        "fill": "zeros",
+        "name": "encoder_hidden_states",
+        "shape": [
+          1,
+          4,
+          2432
+        ],
+        "values": null
+      },
+      {
+        "device": "meta",
+        "dtype": "bfloat16",
+        "fill": "zeros",
+        "name": "temb",
+        "shape": [
+          1,
+          2432
+        ],
+        "values": null
+      }
+    ],
+    "train_eval": "eval"
+  },
+  "status": "ok",
+  "stderr": "The config attributes {'scheduler': ['diffusers', 'FlowMatchEulerDiscreteScheduler'], 'text_encoder': ['transformers', 'CLIPTextModelWithProjection'], 'text_encoder_2': ['transformers', 'CLIPTextModelWithProjection'], 'text_encoder_3': ['transformers', 'T5EncoderModel'], 'tokenizer': ['transformers', 'CLIPTokenizer'], 'tokenizer_2': ['transformers', 'CLIPTokenizer'], 'tokenizer_3': ['transformers', 'T5TokenizerFast'], 'transformer': ['diffusers', 'SD3Transformer2DModel'], 'vae': ['diffusers', 'AutoencoderKL']} were passed to SD3Transformer2DModel, but are not expected and will be ignored. Please verify your config.json configuration file.\n",
+  "stdout": ""
+}

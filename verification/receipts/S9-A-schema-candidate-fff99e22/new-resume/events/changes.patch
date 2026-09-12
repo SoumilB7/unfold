@@ -1,0 +1,471 @@
+--- twentyfourth/model_unfolder/adapters/transformer/parser.py
++++ candidate/model_unfolder/adapters/transformer/parser.py
+@@ -905,18 +905,6 @@
+     def _note_bound_attention_fact(
+             bound, reader_result, actual_config_paths, operand_resolutions):
+         """Publish the U6 mechanism with its exact typed evidence channels."""
+-        if _facts is None:
+-            return
+-        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
+-
+-        spans = tuple(dict.fromkeys(
+-            span for provenance in reader_result.provenance
+-            for span in provenance.spans))
+-        fact_spans = tuple(dict.fromkeys(FactSourceSpan(
+-            component=span.source.component_key or "root",
+-            file=span.source.canonical_path,
+-            line=span.line,
+-        ) for span in spans))
+         premise_paths = tuple(path for path, _value in bound.premises)
+         resolutions = tuple(
+             operand_resolutions[path]
+@@ -927,6 +915,24 @@
+                    or item.source_kind == "class_default"
+                    for item in resolutions)
+             else "code_and_config")
++        for resolution in resolutions:
++            resolution.consume_decision(
++                reader="decoder_attention_mechanism_for_path",
++                fact_owner="decoder.attention", fact_key="mechanism",
++                mechanism="attention_mechanism", status=status,
++                expected_value=bound.kind)
++        if _facts is None:
++            return
++        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
++
++        spans = tuple(dict.fromkeys(
++            span for provenance in reader_result.provenance
++            for span in provenance.spans))
++        fact_spans = tuple(dict.fromkeys(FactSourceSpan(
++            component=span.source.component_key or "root",
++            file=span.source.canonical_path,
++            line=span.line,
++        ) for span in spans))
+         config_paths = tuple(
+             ".".join(selected)
+             for path in premise_paths
+@@ -952,10 +958,8 @@
+             fact, reader_result, context.program_index(),
+             current_prepared_document.get()))
+ 
+-    def _note_ffn_mechanism_fact(key, value, status, source):
++    def _ffn_fact_status(value, status):
+         from ...evidence.config_access import current_prepared_document
+-        from ...evidence.reader_claims import ReaderClaimUnavailable
+-
+         from ...evidence.ffn_mechanism import ConfigSelectedFFNMechanism
+         from ...evidence.reader_claims import reader_operand
+         if isinstance(getattr(_ffn_mechanism, "value", None), ConfigSelectedFFNMechanism) \
+@@ -968,6 +972,12 @@
+                 # boolean supplies its choice. Every dependent fact retains
+                 # that weaker tier, even when the chosen branch is literal.
+                 status = "class_default"
++        return status
++
++    def _note_ffn_mechanism_fact(key, value, status, source):
++        from ...evidence.config_access import current_prepared_document
++        from ...evidence.reader_claims import ReaderClaimUnavailable
++        status = _ffn_fact_status(value, status)
+         witness = getattr(_ffn_mechanism, "claim_witness", None)
+         if witness is not None and value is not None:
+             try:
+@@ -1277,8 +1287,8 @@
+             fact_owner="decoder.attention",
+             mechanism="attention_mechanism", status=None,
+             expected_value=_config_access.MISSING,
+-            reader="adapters.transformer.parser.parse"):
+-        """Consume only when U1 selected the exact path proven by source code."""
++            reader="adapters.transformer.parser.parse", defer_consumption=False):
++        """Resolve exact source operands; defer only until their mechanism is bound."""
+         exact = tuple(exact_path)
+         # The source may read an audited input spelling directly (BLOOM's
+         # ``n_head``) while the config class also exposes an equal canonical
+@@ -1331,6 +1341,9 @@
+                 not class_default and selected != exact and not same_property):
+             return None
+         _attention_operand_resolutions[exact] = res
++        if defer_consumption:
++            _attention_actual_config_paths[exact] = None if class_default else selected
++            return res.value
+         decision = res.consume_decision(
+             reader=reader,
+             fact_owner=fact_owner,
+@@ -1666,7 +1679,8 @@
+                 "class_default"
+                 if (_dispatch_res.provenance == "class_default"
+                     or _dispatch_res.source_kind == "class_default")
+-                else "config_declared")
++                else "code_and_config")
++            _activation_event_status = _ffn_fact_status(activation_raw, _activation_status)
+             # Consume only the exact occurrence the source dispatch names.
+             # Equal aliases remain visible inspections, never alternate proof.
+             _dispatch_res.consume_decision(
+@@ -1674,10 +1688,9 @@
+                 fact_owner="decoder.ffn",
+                 fact_key="activation",
+                 reader="adapters.transformer.parser.parse",
+-                status=_activation_status,
++                status=_activation_event_status,
++                expected_value=activation_raw,
+             )
+-            if _activation_status == "config_declared":
+-                _activation_status = "code_and_config"
+             _activation_src = (
+                 "decoder_ffn_mechanism_for_path:"
+                 + ".".join(dispatch_path))
+@@ -2584,13 +2597,13 @@
+             _bound_values[_binding.query_heads_path] = \
+                 _consume_code_bound_path(
+                     "num_attention_heads", _binding.query_heads_path,
+-                    fact_key="num_heads")
++                    fact_key="num_heads", defer_consumption=True)
+             if _binding.protocol == "grouped_kv":
+                 _bound_values[_binding.key_value_heads_path] = \
+                     _consume_code_bound_path(
+                         "num_key_value_heads",
+                         _binding.key_value_heads_path,
+-                        fact_key="num_kv_heads")
++                        fact_key="num_kv_heads", defer_consumption=True)
+             for _path, _expected in _binding.selection_premises:
+                 _resolution = _resolve_exact_config_path(_path)
+                 if _resolution is None or _resolution.value != _expected:
+@@ -2601,12 +2614,7 @@
+                     None if _resolution.source_kind == "class_default"
+                     else tuple(_resolution.selected_path.split("."))
+                     if _resolution.selected_path else None)
+-                _decision = _resolution.consume_decision(
+-                    reader="decoder_attention_mechanism_for_path",
+-                    fact_owner="decoder.attention",
+-                    fact_key="mechanism",
+-                    mechanism="attention_mechanism")
+-                _bound_values[_path] = _decision.value
++                _bound_values[_path] = _resolution.value
+         elif isinstance(_binding, LatentAttentionBinding):
+             _latent_fields = [
+                 ("num_attention_heads", _binding.num_heads_path, "num_heads"),
+@@ -2623,7 +2631,7 @@
+                     "q_lora_rank"))
+             for _field, _path, _fact_key in _latent_fields:
+                 _bound_values[_path] = _consume_code_bound_path(
+-                    _field, _path, fact_key=_fact_key)
++                    _field, _path, fact_key=_fact_key, defer_consumption=True)
+         elif isinstance(
+                 _binding,
+                 (MultiQueryAttentionBinding,
+@@ -2631,17 +2639,17 @@
+             _bound_values[_binding.num_heads_path] = \
+                 _consume_code_bound_path(
+                     "num_attention_heads", _binding.num_heads_path,
+-                    fact_key="num_heads")
++                    fact_key="num_heads", defer_consumption=True)
+             _bound_values[_binding.selector_path] = \
+                 _consume_code_bound_path(
+                     "multi_query", _binding.selector_path,
+-                    fact_key="mechanism")
++                    fact_key="mechanism", defer_consumption=True)
+             if isinstance(_binding, EquivalentDispatchMultiQueryBinding):
+                 _bound_values[_binding.alternate_architecture_path] = \
+                     _consume_code_bound_path(
+                         "new_decoder_architecture",
+                         _binding.alternate_architecture_path,
+-                        fact_key="mechanism")
++                        fact_key="mechanism", defer_consumption=True)
+         _bound_attention = bind_attention_mechanism(
+             _binding, _bound_values)
+     if _bound_attention is not None:
+@@ -2731,27 +2739,29 @@
+                        for item in _head_fact_resolutions)
+                 else "code_and_config"
+                 if _head_fact_resolutions else "code_proven")
++            head_dim = _head_geometry_value.head_dim
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": head_dim,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _head_fact_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_head_geometry_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_head_geometry_status)
+-            head_dim = _head_geometry_value.head_dim
++                    status=_head_geometry_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": head_dim,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_head_geometry_status,
+                 reader_result=_head_geometry_result,
+                 config_paths=tuple(
+@@ -2783,26 +2793,28 @@
+                     or item.source_kind == "class_default"
+                     for item in _mla_head_resolutions)
+                 else "code_and_config")
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": head_dim,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _mla_head_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_mechanism_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_mla_head_status)
++                    status=_mla_head_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": head_dim,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_mla_head_status,
+                 reader_result=_attention_mechanism_evidence,
+                 config_paths=tuple(
+@@ -2833,26 +2845,28 @@
+                     or item.source_kind == "class_default"
+                     for item in _partial_head_resolutions)
+                 else "code_and_config")
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": None,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _partial_head_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_mechanism_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_partial_head_status)
++                    status=_partial_head_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": None,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_partial_head_status,
+                 reader_result=_attention_mechanism_evidence,
+                 config_paths=tuple(
+--- twentyfourth/tests/test_s9_attention_event_association.py
++++ candidate/tests/test_s9_attention_event_association.py
+@@ -0,0 +1,168 @@
++"""Actual parser decisions retain their final fact value/tier before IR projection."""
++from copy import deepcopy
++from dataclasses import replace
++import json
++from pathlib import Path
++
++import pytest
++
++from model_unfolder.adapters.transformer import parser
++from model_unfolder.evidence import config_access
++from model_unfolder.evidence.claim_evidence import validate_fact_claim
++from model_unfolder.evidence.context import FactLedger, ParseContext, capture_facts
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
++from model_unfolder.evidence.models import SourceBundle
++from model_unfolder.evidence.receipts import value_status_hash
++from test_attention_geometry import _config, _context
++
++
++def _parse(context, checkpoint, defaults):
++    context.class_defaults = dict(defaults)
++    context.class_defaults_by_path = {(): dict(defaults)}
++    prepared = PreparedDocument(deepcopy(checkpoint), deepcopy(checkpoint), class_overlay=dict(defaults))
++    with config_access.bound_document(DocumentBinding('root', (), prepared)), \
++            config_access.capture_events(context.config_access), capture_facts(context.facts):
++        ir = parser.parse(prepared.document, context=context)
++    return ir, context.facts.typed_records(), context.config_access.events
++
++
++def _decisions(events, key):
++    return [event for event in events if event.fact_owner == 'decoder.attention'
++            and event.fact_key == key and event.intent in {'consumed', 'absent_default'}]
++
++
++@pytest.mark.parametrize('omitted', [False, True])
++def test_actual_geometry_and_mechanism_consumptions_bind_complete_fact_value(tmp_path, omitted):
++    context = _context(tmp_path)
++    config = _config()
++    if omitted:
++        del config['num_attention_heads']
++    ir, facts, events = _parse(context, config, {'num_attention_heads': 8})
++    assert (ir.layers[0].attention.kind, ir.layers[0].attention.head_dim) == ('gqa', 8)
++    for key, expected_count in [('mechanism', 2), ('head_geometry', 3)]:
++        fact = facts['decoder.attention.' + key]
++        assert fact.status == ('class_default' if omitted else 'code_and_config')
++        validate_fact_claim(fact, fact.claim_evidence)
++        decisions = _decisions(events, key)
++        assert len(decisions) == expected_count
++        assert len({event.config_path for event in decisions}) == expected_count
++        assert all(event.value_status_hash == value_status_hash(fact.value, fact.status)
++                   for event in decisions)
++        heads = next(event for event in decisions if event.config_path == 'num_attention_heads')
++        assert heads.present is (not omitted) and heads.path_exact
++        assert heads.provenance == ('class_default' if omitted else 'checkpoint_declared')
++    assert not [event for event in events if event.mechanism == 'attention_mechanism'
++                and event.fact_key in {'num_heads', 'num_kv_heads'}]
++
++
++@pytest.mark.parametrize(('field', 'value'), [
++    ('num_attention_heads', None),
++    ('num_attention_heads', 0),
++    ('num_key_value_heads', None),
++    ('num_key_value_heads', 3),
++])
++def test_failed_mechanism_binding_keeps_inspection_without_false_fact_consumption(tmp_path, field, value):
++    context = _context(tmp_path)
++    _ir, facts, events = _parse(context, _config(**{field: value}), {'num_attention_heads': 8})
++    fact = facts['decoder.attention.mechanism']
++    assert fact.value is None
++    assert fact.claim_evidence is None
++    assert not _decisions(events, 'mechanism')
++    assert any(event.config_path == field and event.intent == 'inspected'
++               for event in events)
++
++
++def test_post_decision_fact_poison_cannot_rewrite_reader_authored_geometry_expectations(tmp_path, monkeypatch):
++    context = _context(tmp_path)
++    original = FactLedger.record_typed
++    seen = []
++    def poisoned(ledger, fact):
++        if fact.ledger_key() == 'decoder.attention.head_geometry':
++            seen.append(deepcopy(fact.value))
++            changed = dict(fact.value, head_dim=999)
++            # The existing exact ReaderProjectionClaimProof must reject this.
++            fact = replace(fact, value=changed)
++        return original(ledger, fact)
++    monkeypatch.setattr(FactLedger, 'record_typed', poisoned)
++    with pytest.raises(ValueError):
++        _parse(context, _config(), {})
++    assert len(seen) == 1 and seen[0]['head_dim'] == 8
++    decisions = _decisions(context.config_access.events, 'head_geometry')
++    assert len(decisions) == 3
++    assert all(event.value_status_hash == value_status_hash(seen[0], 'code_and_config')
++               for event in decisions)
++    assert all(event.value_status_hash != value_status_hash(dict(seen[0], head_dim=999), 'code_and_config')
++               for event in decisions)
++
++
++@pytest.mark.parametrize('branch', ['mla', 'partial'])
++def test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary(branch):
++    from model_unfolder.parser import config_to_ir
++    if branch == 'mla':
++        config = json.loads((Path(__file__).parent / 'sable_test_corpus' / 'deepseek-v3.json').read_text())['config']
++    else:
++        # The source still proves equal head counts. Rival width spellings
++        # correctly leave the common head factor unresolved.
++        config = {
++            'model_type': 'gpt2', 'architectures': ['GPT2LMHeadModel'],
++            'hidden_size': 96, 'n_embd': 64, 'n_layer': 2, 'n_head': 4,
++            'n_inner': 256, 'vocab_size': 50257,
++        }
++    context = ParseContext.build(config)
++    ir = config_to_ir(config, parse_context=context)
++    facts = context.facts.typed_records()
++    geometry = facts['decoder.attention.head_geometry']
++    if branch == 'mla':
++        assert ir.layers[0].attention.kind == 'mla'
++        assert geometry.value['head_dim'] == (
++            geometry.value['qk_nope_head_dim'] + geometry.value['qk_rope_head_dim'])
++    else:
++        assert geometry.value['head_dim'] is None
++        assert geometry.status == 'class_default'
++        assert any(event.config_path == 'add_cross_attention'
++                   and event.provenance == 'class_default' and not event.present
++                   for event in _decisions(context.config_access.events, 'head_geometry'))
++    for key in ('mechanism', 'head_geometry'):
++        fact = facts['decoder.attention.' + key]
++        decisions = _decisions(context.config_access.events, key)
++        assert decisions
++        assert all(event.value_status_hash == value_status_hash(fact.value, fact.status)
++                   for event in decisions)
++
++
++@pytest.mark.parametrize('omitted', [False, True])
++def test_actual_activation_dispatch_event_uses_final_existing_tier(tmp_path, omitted):
++    from test_ffn_mechanism import _reader
++    result = _reader(tmp_path, '''
++class FeedForward:
++    def __init__(self, config):
++        self.up = nn.Linear(config.hidden, config.wide)
++        self.down = nn.Linear(config.wide, config.hidden)
++        self.act = ACT2FN[config.hidden_act]
++    def forward(self, x):
++        return self.down(self.act(self.up(x)))
++''')
++    assert result.status == 'resolved'
++    source = str(tmp_path/'model.py')
++    bundle = SourceBundle(source='local', files=(source,), architecture='Wrapper',
++                          component_files={'root': (source,)},
++                          component_architectures={'root': 'Wrapper'})
++    context = ParseContext(bundle)
++    config = _config(hidden=64, wide=128, intermediate_size=128, hidden_act='silu')
++    if omitted:
++        del config['hidden_act']
++    _ir, facts, events = _parse(context, config, {'hidden_act': 'silu'})
++    fact = facts['decoder.ffn.activation']
++    assert fact.value == 'silu'
++    assert fact.status == ('class_default' if omitted else 'code_and_config')
++    assert fact.claim_kind == 'applied_function'
++    if fact.claim_evidence is not None:
++        validate_fact_claim(fact, fact.claim_evidence)
++    else:
++        assert fact.claim_document_token == ''  # Event agreement does not qualify a missing application proof.
++    decisions = [event for event in events if event.fact_owner == 'decoder.ffn'
++                 and event.fact_key == 'activation' and event.mechanism == 'ffn_activation']
++    assert len(decisions) == 1
++    assert decisions[0].value_status_hash == value_status_hash(fact.value, fact.status)
++    assert decisions[0].present is (not omitted)
++    assert decisions[0].provenance == ('class_default' if omitted else 'checkpoint_declared')

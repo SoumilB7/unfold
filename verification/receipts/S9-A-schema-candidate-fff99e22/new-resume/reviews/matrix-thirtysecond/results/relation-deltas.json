@@ -1,0 +1,87 @@
+[
+  {
+    "slug": "bloom",
+    "relation_id": "param_share:94562a568a12658d",
+    "changes": [
+      {
+        "path": [
+          "config_paths",
+          0
+        ],
+        "before_present": false,
+        "after_present": true,
+        "before": null,
+        "after": "tie_word_embeddings"
+      }
+    ],
+    "exact_tying_config_metadata_only": true
+  },
+  {
+    "slug": "gemma-2-2b-it",
+    "relation_id": "param_share:07c00e148d01598d",
+    "changes": [
+      {
+        "path": [
+          "config_paths",
+          0
+        ],
+        "before_present": false,
+        "after_present": true,
+        "before": null,
+        "after": "tie_word_embeddings"
+      }
+    ],
+    "exact_tying_config_metadata_only": true
+  },
+  {
+    "slug": "granite-3-0-8b-instruct",
+    "relation_id": "param_share:07c00e148d01598d",
+    "changes": [
+      {
+        "path": [
+          "config_paths",
+          0
+        ],
+        "before_present": false,
+        "after_present": true,
+        "before": null,
+        "after": "tie_word_embeddings"
+      }
+    ],
+    "exact_tying_config_metadata_only": true
+  },
+  {
+    "slug": "command-a-03-2025",
+    "relation_id": "param_share:07c00e148d01598d",
+    "changes": [
+      {
+        "path": [
+          "config_paths",
+          0
+        ],
+        "before_present": false,
+        "after_present": true,
+        "before": null,
+        "after": "tie_word_embeddings"
+      }
+    ],
+    "exact_tying_config_metadata_only": true
+  },
+  {
+    "slug": "lfm2-1-2b",
+    "relation_id": "param_share:07c00e148d01598d",
+    "changes": [
+      {
+        "path": [
+          "config_paths",
+          0
+        ],
+        "before_present": false,
+        "after_present": true,
+        "before": null,
+        "after": "tie_word_embeddings"
+      }
+    ],
+    "exact_tying_config_metadata_only": true
+  }
+]

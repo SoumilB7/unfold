@@ -1,0 +1,36 @@
+........................................................................ [ 43%]
+....................................F................................... [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+________ test_real_llama_parser_projects_only_the_proved_frequency_base ________
+
+    def test_real_llama_parser_projects_only_the_proved_frequency_base():
+        import json
+        from pathlib import Path
+    
+        config = json.loads(
+            (Path(__file__).parent / "sable_test_corpus" / "llama-7b.json")
+            .read_text())["config"]
+        ir = config_to_ir(config)
+        assert {layer.attention.rope_theta for layer in ir.layers} == {10000.0}
+        fact = ir.extras["fact_provenance"]["decoder.attention.rope_theta"]
+>       assert fact == {
+            "value": 10000.0,
+            "status": "code_and_config",
+            "source": "position_frequency_initialization",
+        }
+E       AssertionError: assert {'presentatio...lue': 10000.0} == {'source': 'p...lue': 10000.0}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'presentation_reference': {'claim_proof': {'claim_kind': 'value',
+E                                                     'document_fingerprints': ['13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef'],
+E                                                     'evidence_refs': ['projection:decoder.attention.rope_theta:6f8aee9beb40ac24',
+E                                                                       'source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:111:15:111:51',...
+E         
+E         ...Full output truncated (44 lines hidden), use '-vv' to show
+
+tests/test_position_initialization.py:469: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_position_initialization.py::test_real_llama_parser_projects_only_the_proved_frequency_base
+1 failed, 165 passed in 52.35s

@@ -1,0 +1,21 @@
+{
+  "decision": "ACCEPT_ARCHIVE_INTEGRITY",
+  "reviewer": "root",
+  "archive": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-latest-public-static-actual-results",
+  "artifact_map": {
+    "sha256": "e5274677c7e7ab6003a6c307df2d97f818efd06d1370cf4265ff7c323fe537cd",
+    "bytes": 169379
+  },
+  "streams": 331,
+  "directories": 136,
+  "raw_bytes": 908689586,
+  "checks": [
+    "Every storage SHA and byte count independently verified",
+    "Every gzip stream decoded and compared byte-for-byte to current original; raw SHA and size verified",
+    "Injective complete-name storage paths and exact stored/source file membership checked",
+    "All explicit source directory membership, including empty directories, checked",
+    "Executed archive source digest matches receipt"
+  ],
+  "limits": "Artifact audit only; opaque profiles/pickles decoded as bytes and never executed. No new model run, performance acceptance, or historical result reclassification.",
+  "audit_seconds": 1.7879786249250174
+}

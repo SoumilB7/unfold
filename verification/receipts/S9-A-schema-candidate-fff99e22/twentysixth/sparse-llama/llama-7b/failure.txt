@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s9a-resume/run_sparse.py", line 568, in main
+    require(all(value is True for key, value in row['comparisons'].items() if key not in {'ir_delta_count', 'unexplained_ir_deltas', 'post_render_delta_count', 'unexplained_post_render_ir_deltas', 'unexplained_fact_deltas'})
+  File "/private/tmp/unfold-s9a-resume/run_sparse.py", line 28, in require
+    raise ExperimentFailure(message)
+ExperimentFailure: sparse experiment has changed semantics, drawings, or unexplained deltas; inspect exact retained records

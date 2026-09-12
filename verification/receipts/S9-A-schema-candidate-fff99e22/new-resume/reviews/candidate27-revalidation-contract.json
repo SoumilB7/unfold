@@ -1,0 +1,44 @@
+{
+  "decision": "ACCEPT source basis for bounded current27 parity revalidation; not permission to relabel26 evidence or accept S9-A",
+  "candidate27_manifest_sha256": "530f3bf47884ed42e8ab424d6c3c7a41f01982e218befd7f3160b347b71e944e",
+  "reviewer": "resume_review",
+  "reviewed_harnesses": {
+    "page-capture/census.py": "6a4d6aa243a0c83a4406e749804c2fe93d0fedeb6013cd5d9295c3d56d40ce2a",
+    "page-capture/run-census.py": "647d3349dd9d41ea3ce22cae7c5ff556c15db016fb3c22a58dc73f602d3b17b3",
+    "closure-capture/capture.py": "9507a96d3bde54015e31310b4a9be9275bd6ef4c73e0007d61f4e54555c7d602",
+    "closure-capture/run-capture.py": "bc61e25fb0f18b0908afb070f639fdcdd28d96a66d7b4691179211fa8a3339e7",
+    "closure-capture/targets.json": "f1ab7e81b21941aff84cc360d0121e2de749fbfd7eedf291365603ef6adab5f7"
+  },
+  "source_reasoning": [
+    "Both new scalar guards preserve the prior call to qualify_config_value_fact for ordinary config_to_ir parses with a prepared document. The returned fact is recorded once as before; direct adapter parses with no document now retain an unqualified VALUE declaration.",
+    "declare_reader_fact only removes rejection of actual/requested None after authenticating retained result, index and exact document identity. Ordinary non-None declarations are unchanged; positive proof, occurrence placement, cache scope and investigated-exhaustion guards are unchanged.",
+    "The census edits change exact registration keys/counts only, not parse/IR/render semantics. HiDream correction changes only a test fixture; no production input in the39 target cohort changes.",
+    "These facts support focused regression plus actual39 parity, but do not prove unexecuted27 results or repair the historical26 raw failures."
+  ],
+  "bounded_actual39_parity_contract": [
+    "Create separately frozen27 scripts/outputs; do not edit archived26 harnesses, outputs or labels. Pin the27 manifest, both harness files, exact39 ordered target plan, input bytes, active address inventory bytes and all26 comparison inputs before/after. Existing wrappers pin child script but should additionally pin launcher and plan.",
+    "Use config_to_ir with the same actual context and exact resolved class address used by26. Retain original typed facts and validate every present claim proof. Assert the root prepared binding exists for each ordinary39 parse rather than assuming the new guards take their old branch.",
+    "Save current27 facts, complete declarations, pre-render and post-render IR and actual standalone HTML. Require exact bytes against26 for canonical JSON and decompressed HTML; enumerate every exception by field and source-level cause. Do not strip hash/tier/provenance/ordering fields to manufacture equality.",
+    "Record every current27 config consumption event and original reader occurrence-citation portable summary; validate live citation against its original fact before serialization. Existing26 page capture lacks these, so new recordings have no26 page counterpart: compare them to actual26 matrix claims where directly comparable, otherwise label as new27 observations rather than parity.",
+    "Capture the final ProgramIndex source multiset, parse failures and portable seal, not only the pre-parse SourceBundle. Recompute the portable hash from the exact multiset and compare each27 seal to26 matrix. Scope read-only local source-address files explicitly as LOCAL_ONLY; never use their paths as portable identity.",
+    "Retain all39 failures in the result, require exact target denominator and no missing artifact, and publish into a new schema-twentyseventh directory. A PASS certifies actual27 product/claim parity only for ordinary39 inputs; independent None and sparse/wrong-input controls remain separate.",
+    "Current27 identity includes evidence/reader_claims.py and census source changes. Package/source stamps and evidence-cache keys therefore change even if external modeling-source seals and outputs match. Never rewrite26 stamps, force an old cache hit, transplant live proof objects between processes, or regenerate baselines as part of this diagnostic."
+  ],
+  "matrix_carry_forward_boundary": [
+    "Keep26 matrix and its independent audit explicitly labelled frozen26. Byte-identical27 IR/HTML/facts is strong causal continuity evidence but not a newly generated27 reconciliation table: matrix also joins live placement citations, static claims, inventory, observations, relations and renderer events.",
+    "Do not rebuild fake InventoryResult objects from reconciliation rows or join an old host inventory with fresh observations. A bounded reconciliation replay could use a complete authenticated retained inventory/observation pair only if actually persisted and valid under the exact provenance contract, plus current27 live facts/render events/static claims; otherwise run the ordinary generator for a final matrix.",
+    "Because142 original findings still require an owner-approved correction, another full matrix now cannot close A. It is reasonable to retain26 as historical evidence and perform27 actual39 parity now, then generate the final matrix on the eventual reviewed source that closes or receives an explicit ruling on142. No current27 matrix acceptance claim in the meantime."
+  ],
+  "additional_A_exit_evidence_gaps_beyond_named_claim_holds": [
+    "The complete required unit gate remains incomplete at27 until the root records targeted failures and required authority/debt/registry gates. Historical passes keep their source labels; a proof of bounded carry-forward cannot be reported as all tests executed on27.",
+    "Whole-product IR census of unresolved values and actual four chip categories remains outstanding in the sheet. Page capture merely serializes unknown_reason when present and does not reject missing reasons, ensure record-bound class3, prove distinct styles or count pending-design chips separately from occurrences. These require explicit census/DOM results, not native-fact proof totals.",
+    "Full per-witness output delta enumeration against the approved baseline, owner approval and independent guarded-writer verdict remain outstanding. The86 placement re-proofs are an explicit exception to stamping-only matrix changes; current pages must establish whether any actual drawing changed beyond the permitted chips.",
+    "The36 external source-seal changes and19 dependent relation-plan renewals need the separate before/after closure replay already prepared. Existing matrix audit proved metadata integrity but cannot establish the exhaustive source cause from saved matrix payloads.",
+    "Value-ladder consistency needs a complete evidence map: actual sparse/default accounting, wrong-value construction_conflict, and all depended-on reader channels. The sparse event audit alone closes association, not the stricter activation proof predicate; preserve rawFAIL and seek a bounded owner ruling if carrying that mechanism toC.",
+    "Final preservation lane and current source-stamp checks must run after any approved writes on the exact reviewed tree. Keep S10-1 source renewal/latency/receipt/commit separate; staging missing S10 receipt files fixes test environment input, not product semantics.",
+    "Update exact27 growth/count accounting and receipt input inventory. The old26 totals are historical after six changed files and an added test module. N1/N2 and unsunset compatibility paths remain named open items; they are not newly invented A blockers.",
+    "Owner browser review with DOM/node/card-to-IR checks and unit acceptance are still required; saved HTML capture or linked decision pages alone are not visual review."
+  ],
+  "scope": "Source and harness inspection only; no model/test runtime and no new production modification by reviewer.",
+  "root_selected_execution": "Root selected the stronger option: required targeted/broader gates, ordinary full27 matrix regeneration, then current27 actual39 pages, all under exact source/artifact brackets. No table transplantation or26 relabelling. The historical-carry option above is an alternative, not the active plan."
+}

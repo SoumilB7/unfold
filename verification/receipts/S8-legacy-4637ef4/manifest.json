@@ -1,0 +1,14 @@
+{
+  "sdxl": {
+    "html_bytes": 277713,
+    "html_sha256": "5171cac858ddf40e9ca55b6520c0819621f958a4ece129fd061c17eb22646c44",
+    "baked_svgs": 50,
+    "cold_seconds": 6.443
+  },
+  "sd-v1-4": {
+    "html_bytes": 281290,
+    "html_sha256": "62bdc1d09b7c2b68e8ed48ab46b1ff97c146e2c70df11e1f66a5c0bc7d87b71b",
+    "baked_svgs": 54,
+    "cold_seconds": 5.321
+  }
+}

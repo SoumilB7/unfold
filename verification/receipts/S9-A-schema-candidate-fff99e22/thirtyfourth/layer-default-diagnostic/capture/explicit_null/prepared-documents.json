@@ -1,0 +1,104 @@
+{
+  "root": {
+    "checkpoint": {
+      "architectures": [
+        "MusicgenForConditionalGeneration"
+      ],
+      "audio_encoder": {
+        "audio_channels": 1,
+        "codebook_dim": 128,
+        "codebook_size": 2048,
+        "hidden_size": 128,
+        "model_type": "encodec",
+        "num_filters": 64,
+        "num_lstm_layers": 2,
+        "num_residual_layers": 1,
+        "sampling_rate": 32000,
+        "upsampling_ratios": [
+          8,
+          5,
+          4,
+          4
+        ]
+      },
+      "decoder": {
+        "activation_function": "gelu",
+        "audio_channels": 1,
+        "ffn_dim": 4096,
+        "hidden_size": 1024,
+        "max_position_embeddings": 2048,
+        "model_type": "musicgen_decoder",
+        "num_attention_heads": 16,
+        "num_codebooks": 4,
+        "num_hidden_layers": null,
+        "scale_embedding": false,
+        "tie_word_embeddings": false,
+        "vocab_size": 2048
+      },
+      "is_encoder_decoder": true,
+      "model_type": "musicgen",
+      "text_encoder": {
+        "d_ff": 3072,
+        "d_kv": 64,
+        "d_model": 768,
+        "dense_act_fn": "relu",
+        "feed_forward_proj": "relu",
+        "is_gated_act": false,
+        "model_type": "t5",
+        "num_heads": 12,
+        "num_layers": 12,
+        "relative_attention_num_buckets": 32,
+        "vocab_size": 32128
+      }
+    },
+    "document_path": [],
+    "failure": {
+      "kind": "class_rejected",
+      "message": "StrictDataclassFieldValidationError: Validation error for field 'num_hidden_layers':\n    TypeError: Field 'num_hidden_layers' expected int, got NoneType (value: None)",
+      "stage": "hydrate"
+    },
+    "overlay": {},
+    "owner": "root",
+    "provenance": {
+      "architectures": "checkpoint_declared",
+      "audio_encoder": "checkpoint_declared",
+      "audio_encoder.audio_channels": "checkpoint_declared",
+      "audio_encoder.codebook_dim": "checkpoint_declared",
+      "audio_encoder.codebook_size": "checkpoint_declared",
+      "audio_encoder.hidden_size": "checkpoint_declared",
+      "audio_encoder.model_type": "checkpoint_declared",
+      "audio_encoder.num_filters": "checkpoint_declared",
+      "audio_encoder.num_lstm_layers": "checkpoint_declared",
+      "audio_encoder.num_residual_layers": "checkpoint_declared",
+      "audio_encoder.sampling_rate": "checkpoint_declared",
+      "audio_encoder.upsampling_ratios": "checkpoint_declared",
+      "decoder": "checkpoint_declared",
+      "decoder.activation_function": "checkpoint_declared",
+      "decoder.audio_channels": "checkpoint_declared",
+      "decoder.ffn_dim": "checkpoint_declared",
+      "decoder.hidden_size": "checkpoint_declared",
+      "decoder.max_position_embeddings": "checkpoint_declared",
+      "decoder.model_type": "checkpoint_declared",
+      "decoder.num_attention_heads": "checkpoint_declared",
+      "decoder.num_codebooks": "checkpoint_declared",
+      "decoder.num_hidden_layers": "checkpoint_declared",
+      "decoder.scale_embedding": "checkpoint_declared",
+      "decoder.tie_word_embeddings": "checkpoint_declared",
+      "decoder.vocab_size": "checkpoint_declared",
+      "is_encoder_decoder": "checkpoint_declared",
+      "model_type": "checkpoint_declared",
+      "text_encoder": "checkpoint_declared",
+      "text_encoder.d_ff": "checkpoint_declared",
+      "text_encoder.d_kv": "checkpoint_declared",
+      "text_encoder.d_model": "checkpoint_declared",
+      "text_encoder.dense_act_fn": "checkpoint_declared",
+      "text_encoder.feed_forward_proj": "checkpoint_declared",
+      "text_encoder.is_gated_act": "checkpoint_declared",
+      "text_encoder.model_type": "checkpoint_declared",
+      "text_encoder.num_heads": "checkpoint_declared",
+      "text_encoder.num_layers": "checkpoint_declared",
+      "text_encoder.relative_attention_num_buckets": "checkpoint_declared",
+      "text_encoder.vocab_size": "checkpoint_declared"
+    }
+  }
+}

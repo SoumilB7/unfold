@@ -1,0 +1,330 @@
+[
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/musicgen/sparse.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/musicgen/sparse.input.json"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/musicgen/ordinary.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/bloom/sparse.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/bloom/sparse.input.json"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "defaults-thirtysixth/bloom/ordinary.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../../11-execution/S9-A.md"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "current-thirtyfourth.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "matrix-twentysixth.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-unet/source-stamp/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/auraflow-v0-3.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/cogvideox-5b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/flux-2-dev.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/fluxtransformer2dmodel.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/hunyuanvideo.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/ltx-video.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/lumina-image-2-0.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/mochi-1-preview.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/pixart-sigma-xl-2-1024-ms.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/prxpixel-t2i.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/qwen-image.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/sana-1600m-1024px-diffusers.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/stable-diffusion-3-5-large.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-diffusion/schema-thirtysixth/wan2-2-t2v-a14b-diffusers.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/bloom.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/command-a-03-2025.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/dbrx-base.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/deepseek-coder-v2-lite.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/deepseek-v3.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/deepseek-v4-flash.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/gemma-2-2b-it.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/gemma-3n-e2b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/glm-4-5.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/gpt-oss-20b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/granite-3-0-8b-instruct.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/jamba-v0-1.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/lfm2-1-2b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/llama-7b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/musicgen-small.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/nemotron-h-8b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/olmo-2-1124-7b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen2-vl-7b-instruct.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen3-5-27b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen3-5-27b-text.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen3-8b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen3-omni-30b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/qwen3-vl-235b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-transformer/schema-thirtysixth/stablelm-2-1-6b.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+    "href": "../S9-unet/schema-thirtysixth/stable-diffusion-xl-base-1-0.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-thirtysixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "../S9-schema/current-thirtysixth.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "../../11-execution/S9-A.md"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-fourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-sixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-tenth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-thirtieth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-thirtyfourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-thirtysecond/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-twentyfirst/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-diffusion/index.html",
+    "href": "schema-twentysixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-thirtysixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "../S9-schema/current-thirtysixth.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "../../11-execution/S9-A.md"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-fourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-sixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-tenth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-thirtieth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-thirtyfourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-thirtysecond/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-twentyfirst/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-transformer/index.html",
+    "href": "schema-twentysixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-thirtysixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "../S9-schema/current-thirtysixth.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "../../11-execution/S9-A.md"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-fourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-sixth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-tenth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-thirtieth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-thirtyfourth/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-thirtysecond/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-twentyfirst/index.html"
+  },
+  {
+    "page": "z-docs/12-design/S9-unet/index.html",
+    "href": "schema-twentysixth/index.html"
+  }
+]

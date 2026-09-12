@@ -1,0 +1,8 @@
+{
+  "logical_path": "test-delta.diff",
+  "sha256": "6360ac2e0272994a90208b91930fdc574f7aae2d1d6571cecde6d9b9876bbfb9",
+  "archive_path": "test-delta.diff.gz",
+  "archive_sha256": "f00fb855a95491992897df655382a11b6d90293a74d833d0ddf8a94b7da24e4c",
+  "lossless": true,
+  "reason": "Preserve exact raw git diff as data without introducing whitespace lint from context-only blank lines"
+}

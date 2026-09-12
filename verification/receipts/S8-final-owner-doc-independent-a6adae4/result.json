@@ -1,0 +1,11 @@
+{
+  "status": "ACCEPT bounded final owner verdict and status-only decision-page delta",
+  "owner_review_sha256": "328c8c5e13ac6368d2dbb1e28dabffa39b7eee7ce605a2b7129b14baa9e1309b",
+  "output_page_sha256": "599405450afd6ebd3edeba6c8cfefd757d0dbde9ed19fc4ab389faf0577933d9",
+  "output_page_only_notice_paragraph_changed": true,
+  "all29table_rows_and44native_images_unchanged": true,
+  "broad_RED_isolatedPASS_distinguished": true,
+  "239_88_unknown_and15_no_navigation_limits_explicit": true,
+  "no_baseline_approval_or_completion_claim": true,
+  "no_model_render_test": true
+}

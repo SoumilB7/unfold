@@ -1,0 +1,89 @@
+diff --git a/model_unfolder/expanded/loop.py b/model_unfolder/expanded/loop.py
+index bf70f3d..0cf2284 100644
+--- a/model_unfolder/expanded/loop.py
++++ b/model_unfolder/expanded/loop.py
+@@ -27,6 +27,8 @@ from .utils import drop_none
+ def build_sampling_loop(extras: dict) -> dict | None:
+     """Return the ``sampling_loop`` JSON object, or ``None`` for non-diffusion."""
+     render = extras.get("render") or {}
++    if render.get("component_scope") in {"denoiser", "partial_pipeline"}:
++        return None
+     blocks = render.get("loop_blocks") or []
+     if not blocks:
+         return None
+diff --git a/model_unfolder/renderers/html/sections.py b/model_unfolder/renderers/html/sections.py
+index 249d810..5fcd782 100644
+--- a/model_unfolder/renderers/html/sections.py
++++ b/model_unfolder/renderers/html/sections.py
+@@ -154,6 +154,16 @@ def _stats_banner(ir: dict) -> str:
+ def _diffusion_stats(ir: dict, extras: dict, param_text: str) -> list[tuple[str, str]]:
+     """Diffusion replaces the (meaningless) Vocab / Context cells with the
+     denoising schedule length and the latent channels it operates on."""
++    unet = extras.get("unet") or {}
++    shapes = unet.get("parameter_shapes")
++    if shapes is not None:
++        relation = unet["stage_relations"]
++        return [
++            ("Stages", str(len(relation["producer_stages"]) + len(relation["consumer_stages"])
++                           + len(relation["intermediate_stages"]))),
++            ("Weighted modules", _fmt_int(shapes["parameterized_modules"])),
++            ("Denoiser params", param_text),
++        ]
+     meta = extras.get("diffusion") or {}
+     timesteps = meta.get("scheduler_train_timesteps")
+     latent = meta.get("in_channels")
+diff --git a/model_unfolder/renderers/html/views_diffusion.py b/model_unfolder/renderers/html/views_diffusion.py
+index 98daa03..07ef506 100644
+--- a/model_unfolder/renderers/html/views_diffusion.py
++++ b/model_unfolder/renderers/html/views_diffusion.py
+@@ -225,6 +225,8 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str, *, denoiser_arch: str
+                 svg = denoiser_arch
+             elif denoiser_view == "unet":
+                 svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
++            elif block.get("view"):
++                svg = block_detail_svg(ir, info, mount_id, block)
+             else:
+                 svg = _build_architecture_view(ir, info, mount_id)
+             cards.append(_rich_card(bid, title, desc, svg, facts) if svg
+@@ -294,6 +296,41 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
+     render = (ir.get("extras") or {}).get("render") or {}
+     blocks = {b["id"]: b for b in (render.get("loop_blocks") or [])}
+     loop_edges = render.get("loop_edges") or []
++    if render.get("component_scope") in {"denoiser", "partial_pipeline"}:
++        # The producer explicitly supplied a component, not a sampling loop.
++        # Reuse independent incoming lanes; there is no synthetic noise,
++        # scheduler recurrence, text encoder, decoder or image boundary.
++        from .graph import Graph, Node, Parallel, Lane
++        from .graph_engine import render_graph
++        inputs = render.get("component_input_ids", ())
++        visible = [blocks[key] for key in (*inputs, "denoiser") if key in blocks]
++
++        def input_lines(label):
++            # Keep the exact declared name, including underscores, while
++            # fitting each line within the existing incoming-lane card.
++            result = []
++            for line in ([label] if isinstance(label, str) else label):
++                while len(line) > 15:
++                    end = line.rfind("_", 0, 15) + 1 or 15
++                    result.append(line[:end])
++                    line = line[end:]
++                result.append(line)
++            return result
++
++        nodes = [Node(row["id"], row["kind"],
++                      input_lines(row["label"]) if row["id"] in inputs else row["label"],
++                      w=164 if row["id"] in inputs else 240,
++                      font=11 if row["id"] in inputs else 12)
++                 for row in visible]
++        graph = Graph(nodes, ["denoiser"], parallels=[
++            Parallel(None, "denoiser", [Lane([key]) for key in inputs])] if inputs else [])
++        result = render_graph(graph, info, mount_id, "denoiser_component",
++                              "Declared denoiser inputs; external components require their own evidence")
++        others = [row for key, row in blocks.items() if key not in {*inputs, "denoiser"}]
++        if others:
++            result += block_detail_svg(ir, info, mount_id, {
++                "id": "supplied_components", "view": "constructed_children", "children": others})
++        return result
+ 
+     def label(bid: str, default: str):
+         lab = (blocks.get(bid) or {}).get("label", default)

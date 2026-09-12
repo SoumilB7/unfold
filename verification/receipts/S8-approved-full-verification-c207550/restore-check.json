@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "streams": 42,
+  "restored_destination": "/private/tmp/unfold-s8-full-red-archive-check-c207550",
+  "every_restored_size_and_sha256_matches": true,
+  "artifact_map_sha256": "7c5a4c9df151d6d67fedfa8ab69c0ceb6283f04b3ca585fa97929186ffc1b7e0"
+}

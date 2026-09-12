@@ -1,0 +1,161 @@
+{
+  "what": "Reconciliation of the executor's corrected cause-audit tool (audit-r3.py) against the owner's independent output-delta enumeration (output_delta_audit.json + the by-name refinement in z-docs/11-execution/S9-A-review.md section 4a).",
+  "date": "2026-09-12",
+  "produced_by": "executor (Claude Fable 5.1), on the owner's instruction closing finding A4",
+  "tool": {
+    "r2_retained": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit.py",
+    "r2_sha256": "7e4c596da18db32dfb482d8cebd76d5ffffd6b9d8098df97f45cc91376bcb939",
+    "r3_path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit-r3.py",
+    "exact_change": "r2 asserted `len(originals) == 1`; r3 accepts the four `is_original_html_surface` renders, asserts their phase order (canonical_surfaces x3 + _view_hashes), asserts they are identical under the tool's existing first-mount law, records them in original-render-audit.json, and uses the first as the page. Nothing else changed.",
+    "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit-r3.py --output /private/tmp/unfold-s9a-thirtyseventh/preservation-cause-audit",
+    "run": "COMPLETED (7.7 s wall). stdout: {\"witnesses\": 29, \"findings\": 17, \"causes\": {\"html_meta\": 29, \"finite_unknown_slots\": 25, \"unknown\": 7920, \"scope\": 1247, \"obligation\": 407, \"references\": 461, \"sable\": 406, \"embedding\": 14, \"schedule_card_reference\": 94, \"schedule_qualification\": 2, \"legacy_unknown\": 25, \"width\": 14, \"chip\": 3}",
+    "inputs": {
+      "baseline_packet": "/private/tmp/unfold-s9a-thirtyfirst/preservation-baseline",
+      "current_packet": "/private/tmp/unfold-s9a-thirtyseventh/preservation-current37",
+      "recovered_baseline_files_rehashed": 20459,
+      "source_manifest37": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99"
+    },
+    "outputs_copied_into_this_receipt": [
+      "cause-audit-r3-summary.json",
+      "cause-audit-r3-original-render-audit.json"
+    ]
+  },
+  "method": "Both enumerations were recomputed on the same delta rows (owner's classify() from output_delta_audit.py and r3's classify() side by side) and cross-tabulated per (surface, owner_class, r3_cause). Totals below are leaf-delta rows summed over the 29 witnesses.",
+  "verdict": "AGREE on every class. Zero disagreements. The r3 tool finds no difference class the owner's enumeration lacks: no fact value change, no fact removal, no structural or drawing change, no expanded / params / gallery / views change. Three r3-only observations are recorded below as refinements; none is a new difference class.",
+  "classes": [
+    {
+      "class": "surfaces changed per witness",
+      "owner": "html_meta 29, ir 29, ledgers 29, sable 29; expanded / params / gallery identical 29/29; views identical 29/29",
+      "r3": "changed_surfaces == [html_meta, ir, ledgers, sable] on all 29 witnesses; view_delta_count == 0 on all 29 and old_view_count == new_view_count on all 29",
+      "agree": true
+    },
+    {
+      "class": "IR presentation + unknown metadata",
+      "owner_count": 7948,
+      "owner_label": "ir:presentation_or_unknown_metadata",
+      "r3_count": 7948,
+      "r3_breakdown": {"unknown": 7920, "finite_unknown_slots": 25, "chip": 3},
+      "agree": true,
+      "note": "r3's poisons unexpected_unknown_reason and unknown_annotation_over_known_value did not fire on any row: every added IR unknown_reason is the typed class-1 record and every finite unknown slot was already unknown in the baseline."
+    },
+    {
+      "class": "IR card citation lists (facts cited by an existing card)",
+      "owner_count": 108,
+      "owner_label": "ir:fact_citation_list 94 + ir:extras_added:render 14",
+      "owner_by_name": "position_schedule x70, cross_attention_schedule x24, hidden_size x14",
+      "r3_count": 108,
+      "r3_breakdown": {"schedule_card_reference": 94, "embedding": 14},
+      "r3_by_name": "decoder.attention.position_schedule x70 (all Bloom), decoder.attention.cross_attention_schedule x24 (all MusicGen), model.hidden_size x14 (one per text witness, block id 'embed')",
+      "agree": true,
+      "note": "r3's poison existing_fact_citation_removed did not fire: every new key list is a superset of the old one. schedule_card_reference_without_supplied_relation_proof did not fire either."
+    },
+    {
+      "class": "ledger config accounting metadata",
+      "owner_count": 1654,
+      "owner_label": "ledgers:config_accounting_metadata",
+      "r3_count": 1654,
+      "r3_breakdown": {"scope (projection_coverage.receipted_scopes)": 1247, "obligation (projection_obligations)": 407},
+      "agree": true
+    },
+    {
+      "class": "ledger presentation + unknown metadata",
+      "owner_count": 486,
+      "owner_label": "ledgers:presentation_or_unknown_metadata",
+      "r3_count": 486,
+      "r3_breakdown": {"references (presentation_reference)": 461, "legacy_unknown (fact unknown_reason)": 25},
+      "agree": true,
+      "note": "r3's poisons presentation_reference_differs_from_actual_fact and unexpected_unknown_fact_reason did not fire: every presentation_reference re-derives its own fact's key, status and value/status hash."
+    },
+    {
+      "class": "ledger fact rows (the only value-or-status-bearing class)",
+      "owner_count": 16,
+      "owner_label": "ledgers:STRUCTURAL_OR_UNCLASSIFIED, refined by name in S9-A-review.md section 4a",
+      "owner_by_name": "14 model.hidden_size facts added (config_declared); 2 statuses code_proven -> code_and_config (Bloom position schedule, MusicGen cross-attention schedule); 0 value changes",
+      "r3_count": 16,
+      "r3_breakdown": {"width (model.hidden_size added)": 14, "schedule_qualification (status strengthened)": 2},
+      "r3_independent_measurement": {
+        "facts_added": 14,
+        "facts_added_all_key": "model.hidden_size",
+        "facts_added_all_status": "config_declared",
+        "facts_added_values": {"bloom": 14336, "dbrx-base": 6144, "deepseek-v3": 7168, "gemma-2-2b-it": 2304, "glm-4-5": 5120, "gpt-oss-20b": 2880, "granite-3-0-8b-instruct": 4096, "llama-7b": 4096, "musicgen-small": 1024, "olmo-2-1124-7b": 4096, "qwen2-vl-7b-instruct": 3584, "qwen3-5-27b-text": 5120, "qwen3-8b": 4096, "stablelm-2-1-6b": 2048},
+        "facts_removed": 0,
+        "pre_existing_fact_leaf_changes": {"presentation_reference": 461, "unknown_reason": 25, "status": 2, "value": 0},
+        "status_changes": [
+          {"witness": "bloom", "fact": "decoder.attention.position_schedule", "before": "code_proven", "after": "code_and_config"},
+          {"witness": "musicgen-small", "fact": "decoder.attention.cross_attention_schedule", "before": "code_proven", "after": "code_and_config"}
+        ]
+      },
+      "agree": true,
+      "note": "The owner's machine class FACT_VALUE_OR_STATUS returned 0 rows because its rule keys on the path prefix '/extras/fact_provenance/', which does not occur on the ledgers surface (paths there are '/fact_provenance/...'); the 16 rows fell into his STRUCTURAL_OR_UNCLASSIFIED bucket and his by-name refinement is what establishes 'no value changes'. r3 asserts the same predicate directly (poisons width_value_changed, ordinary_schedule_value_or_order_changed, ordinary_schedule_unexpected_status and existing_native_fact_removed all silent) and the independent measurement above reproduces the owner's by-name list exactly."
+    },
+    {
+      "class": "Sable",
+      "owner_count": 406,
+      "owner_label": "sable:STRUCTURAL_OR_UNCLASSIFIED",
+      "owner_by_name": "+2 checks per witness (pending_design, presentation_census); no blocking flag or status change on any existing check",
+      "r3_count": 406,
+      "r3_breakdown": {"sable": 406},
+      "agree": true,
+      "note": "r3's poison existing_sable_check_value_or_order_changed did not fire on any witness: with the two new checks removed, the current check list equals the baseline list value-for-value and in order. 406 = 29 x 14 leaf rows of list shift."
+    },
+    {
+      "class": "html_meta",
+      "owner": "surface changed on 29/29; described as the chip CSS block, the collapsed 'Unresolved values' strip and data-* chip attributes, plus SDXL's content-addressed compact transport mount",
+      "r3": "29 html_meta delta rows (one per witness). Raw-page hunk classification over all 29 pages under the first-mount law: css 29, html_unknown (the collapsed <details class=\"uf-unknown-values\"> strip) 25, banner (data-uf-receipt-node=\"stats_hidden_size\") 28, unclassified 4 — the 4 on stable-diffusion-xl-base-1-0 only. Deferred payload: present on both sides, 1 block on both sides, on every witness.",
+      "agree": true
+    },
+    {
+      "class": "totals",
+      "owner_total_leaf_rows": 10618,
+      "r3_total_leaf_rows": 10618,
+      "note": "Sums exclude r3's 29 html_meta surface rows, which the owner counted only as surfaces-changed. Cross-tab of (surface, owner_class) against r3 cause is 1:1 with no row classified into two different families: ir/presentation_or_unknown_metadata->{unknown 7920, finite_unknown_slots 25, chip 3}, ir/fact_citation_list->schedule_card_reference 94, ir/extras_added:render->embedding 14, ledgers/config_accounting_metadata->{scope 1247, obligation 407}, ledgers/presentation_or_unknown_metadata->{references 461, legacy_unknown 25}, ledgers/STRUCTURAL_OR_UNCLASSIFIED->{width 14, schedule_qualification 2}, sable/STRUCTURAL_OR_UNCLASSIFIED->sable 406.",
+      "agree": true
+    }
+  ],
+  "r3_run_findings": {
+    "total": 17,
+    "classes": {
+      "consumption_hash_differs_from_actual_native_fact": 13,
+      "HTML_hunk_requires_evidence_level_review": 4
+    },
+    "unclassified_canonical_delta": 0,
+    "existing_native_fact_removed": 0,
+    "existing_fact_citation_removed": 0,
+    "existing_sable_check_value_or_order_changed": 0,
+    "ordinary_schedule_value_or_order_changed": 0,
+    "deferred_payload_presence_changed": 0,
+    "assessment": [
+      "The 13 consumption-hash rows are NOT a baseline-to-current difference: r3 computes that association on the current packet only. Recomputing the identical check on the baseline packet gives 67 mismatching obligations; current37 gives 13, and the set of (witness, fact_key) pairs in current37 is a strict subset of the baseline's (0 new). S9-A therefore reduces this pre-existing internal inconsistency by 54 rows. Remaining keys: bloom ffn.intermediate_size; dbrx/deepseek-v3/glm-4-5 expert_activation_formula; deepseek-v3 + glm-4-5 shared_expert_count; gemma-2 + granite scores_scale; glm-4-5 + stablelm attention.bias; qwen3-5-27b norm_placement and residual_topology; stablelm residual_topology. Owned as existing obligation-ledger debt, not an S9-A delta.",
+      "The 4 HTML hunks are all on stable-diffusion-xl-base-1-0 and are all the same content-addressed compact-transport digest 6f41f3a215a334c4b5bea62fe2d31f1302926233c8692570c1f62f32d5c25b65 -> b80fd1f1259cdcbced7eec605e1950d81c5cfb87134cbec8ee225d06e17cd464 in its four appearances (uf-packed-start comment, data-uf-card-payload attribute, the querySelector literal, uf-packed-end comment). The payload's own JSON delta is exactly 3 rows: /canonical/0 (the chip CSS block plus the inserted 'Unresolved values - 6888' <details> strip, 1,138,700 chars), /mount_id (mount only), /templates/7/0 (one added class_default chip on the U-Net card). No SVG, geometry, label or number changed."
+    ]
+  },
+  "r3_only_observations_not_in_the_owner_enumeration": [
+    {
+      "id": "R1",
+      "kind": "correction to the owner's A4 wording; not a difference class",
+      "owner_wording": "the packets carry four is_original_html_surface renders per witness, byte-identical in 28 of 29 cases; SDXL's compact transport differs by mount only",
+      "measured": "58/58 (packet, witness) rows — 29 baseline + 29 current37 — carry exactly four original renders in the phase order [canonical_surfaces, canonical_surfaces, canonical_surfaces, _view_hashes]. 58/58 are identical after replacing each render's own first uf-<hex> mount id. 0/58 are byte-identical: in every witness of both packets the four renders differ by mount id (renders 0 and 1 share one id, renders 2 and 3 each carry their own). The mount-only difference is universal, not SDXL-specific.",
+      "consequence": "r3 asserts the first-mount-law identity rather than byte identity; had it asserted byte identity it would have failed on all 29."
+    },
+    {
+      "id": "R2",
+      "kind": "pre-existing internal inconsistency, improved by S9-A; not a delta class",
+      "measured": "projection-obligation expected_value_status_hash vs the recomputed hash of the fact it targets: baseline 67 mismatches, current37 13, 0 new.",
+      "disposition": "recorded here; belongs to the obligation ledger, S9-C/S11 territory"
+    },
+    {
+      "id": "R3",
+      "kind": "refinement of a chip count; still inside the owner's 'chips only' class",
+      "measured": "Across the 29 preservation witness pages, exactly ONE chip node is added: data-chip-kind=\"class_default\" on stable-diffusion-xl-base-1-0, inside its deferred compact payload (the U-Net card's declared_constructor_defaults). Baseline has 0 chip nodes on all 29. The other 28 pages gain only the chip CSS block, the collapsed unresolved-values strip and the hidden_size receipt-node attribute.",
+      "relation_to_owner": "The owner's chip census ('class_default chips appear only on Bloom and MusicGen') was counted on the separate 39-page actual37 ordinary-page capture, a different surface set from the preservation witnesses; the two are not in conflict. Recorded so the SDXL chip is not read as unenumerated."
+    }
+  ],
+  "stop_condition": {
+    "triggered": false,
+    "reason": "No difference class outside the owner's enumeration. Fact value changes 0, fact removals 0, structural/drawing changes 0, expanded/params/gallery/views changes 0."
+  },
+  "limits": [
+    "This reconciles two saved-data enumerations of the same two retained packets. It is not an acceptance, not a bless, and no baseline, example, matrix or gallery was renewed or written.",
+    "Soumil's Q10 (S9-A output delta) and Q11 (S10-1 S7 stamp) lines are still outstanding; nothing here installs the delta."
+  ]
+}

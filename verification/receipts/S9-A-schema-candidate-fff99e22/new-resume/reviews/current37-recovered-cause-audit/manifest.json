@@ -1,0 +1,25 @@
+{
+  "scope": "Prepared recovered31 to exact37 saved-data cause inventory; no runtime",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "a17a0466a25146d735fb9b3dc8815ebda1acec8fb2eb79829a104b8df1e84608"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "504710e92a43e1be08aa1c3f5d6f1d8c851c771dbd250b3cc97b8da4f5243c37"
+    },
+    {
+      "path": "contract.json",
+      "sha256": "8747c5c35ea3d98c487b9750530bad394b81abe69c30526a9613e8930fc373f0"
+    },
+    {
+      "path": "final-consolidation-checklist.md",
+      "sha256": "598c7f6446b35a556b64b97dfc182bfb3235e43212e47714ef0f8bf8c1b93107"
+    },
+    {
+      "path": "source-causes.json",
+      "sha256": "4ab000db5db0a3cf9cbffeed9f3273b1b95187f87a62ab02532b66e895ba10be"
+    }
+  ]
+}

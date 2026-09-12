@@ -1,0 +1,20 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "manifest_sha256": "58eb1690950aa7a904fbe29030359c1a2e1e7529aae527e050fd14d85dd55a0f",
+  "script_sha256": "5d408530b982f8ccb5f7fb56fd2ea2b300bdaf7ce6c166d7cd8d376c71661023",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "source_rows_verified": 199,
+  "generation_source_entries_verified": 394,
+  "generation_map_sha256": "178c1868c215ebcb0704c0ce27e2a92fae3d1c3f5a0bb01620dd813ee8a1435e",
+  "checks": [
+    "Executable exactly equals accepted34 R2 after finite generation coordinates and three identity digest substitutions. All comparison logic unchanged.",
+    "Every source row and explicit deletion checked. All394 source/input hashes and exact generator source-law membership recomputed through stdlib; law snapshot unchanged.",
+    "Exact36 candidate path is coupled to exact36 completed lane, source/protected brackets and pinned generation source map. Old32 output cannot be paired with36 completion.",
+    "Active/22/26/actual32 references retained; exact39 denominator/order and full payload/companion/citation differences retained. Removed citations never count as newly proven;142 closures must be measured."
+  ],
+  "limits": [
+    "No matrix/model/test run performed. Future successful lane and complete matrix remain prerequisites.",
+    "Entry checks verify negative pins/source membership; final audit rehashes positive files. Source-tree immutability and root runtime brackets remain required.",
+    "No architectural mechanism proof upgrade or output approval."
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "commit": "a83d704906850257fadd3904904635d218af7365",
+  "review_mode": "source and saved broad logs only; no pytest, constructor or model execution",
+  "rows": [
+    {
+      "test": "test_sdxl_unet_conditioning_is_honest",
+      "line": 599,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain two actual encoder components and source-proven text_time conditional helper routes. Do not restore conventional text\u2192K/V or universal additive ResNet claims from presence/config."
+    },
+    {
+      "test": "test_image_conditioned_unet_draws_no_text_tower",
+      "line": 640,
+      "classification": "explicit num_attention_heads constructor rejection; old modality label authored by enum mapping",
+      "semantic_obligation": "Retain no-invented-text-tower control. Image modality/projector labels previously came from enum vocabulary, not applied-function evidence."
+    },
+    {
+      "test": "test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence",
+      "line": 713,
+      "classification": "explicit num_attention_heads constructor rejection; old modality label authored by enum mapping",
+      "semantic_obligation": "Retain no-fabricated-Transformer2D/GEGLU controls. Encoded text was inferred from text_proj enum."
+    },
+    {
+      "test": "test_spatio_temporal_unet_draws_temporal_branch",
+      "line": 750,
+      "classification": "constructed path succeeds; old flag absent; actual temporal occurrence/shape preservation must be checked separately",
+      "semantic_obligation": "Prior exact-root reader proves lexical num_frames presence; per-stage reader proves reachable Conv3d/AlphaBlender construction. Fixed sequential temporal computation, alpha formula and runtime 25 frames exceed these proofs. Actual temporal occurrence/shape preservation still needs saved candidate review."
+    },
+    {
+      "test": "test_image_unet_is_not_temporal",
+      "line": 769,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain no temporal operation fabrication. Absent temporal bool does not establish false; compare actual bounded source/occurrences."
+    },
+    {
+      "test": "test_sdxl_still_draws_transformer2d_cell",
+      "line": 780,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Require actual resolved Transformer2D occurrences and backed FFN graph, not old down.attn_kind dictionary."
+    },
+    {
+      "test": "test_text_conditioned_unet_still_says_encoded_text",
+      "line": 813,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old default text modality was inferred from text encoder presence; replace with exact root formal/context route while retaining encoder components."
+    },
+    {
+      "test": "test_unet_stage_part_kinds_resolve_for_all_block_variants",
+      "line": 824,
+      "classification": "construction or reader fallback cause not printed; no valid inference from absent unet key alone; capture exact failure before test migration",
+      "semantic_obligation": "Exact missing-UNet cause not printed. Need saved typed constructor/reader failure before deciding fixture correction versus product defect; no automatic stage placement by list position."
+    },
+    {
+      "test": "test_unet_structure_parsed",
+      "line": 848,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old aggregate down/up geometry dictionaries replaced by actual stage/population/shape facts; layers=0 expectation contradicts requested shape-backed nonzero banner."
+    },
+    {
+      "test": "test_unet_renders_loop_and_ushape",
+      "line": 866,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual down/mid/up and skip proofs; do not restore pipeline recurrence solely from declared component presence."
+    },
+    {
+      "test": "test_unet_custom_stage_is_visible_but_unapproved",
+      "line": 881,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "CustomMagicDown is unsupported constructor factory address; preserve exact typed failure/unknown label, not a fabricated constructed stage."
+    },
+    {
+      "test": "test_unet_view_shows_text_conditioning_rail",
+      "line": 1453,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Replace old unet_text_cond ID with actual root formal/context route, not asserted encoder\u2192K/V semantics."
+    },
+    {
+      "test": "test_encoded_text_box_drills_into_the_concat_view",
+      "line": 1466,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Legacy two-encoder widths and matching sum did not prove torch.cat application; previously reviewed outer-connection removal applies. Preserve each independently proven encoder internal drawing."
+    },
+    {
+      "test": "test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill",
+      "line": 1500,
+      "classification": "valid variant removes text_time; old card ID absent; actual encoder_hid_proj occurrence/shape/helper route requires saved output review",
+      "semantic_obligation": "This fixture removes text_time. Need actual encoder_hid_proj population, weight shape and conditional invoked source binding. Old config-triggered text_proj_op ID alone is not an applied-function proof."
+    },
+    {
+      "test": "test_unet_stage_drills_show_per_stage_dims",
+      "line": 1527,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Use own occurrence parameter shapes, not stage-wide channel substitution or legacy resnet card ID."
+    },
+    {
+      "test": "test_unet_resnet_block_has_no_repeat_pill",
+      "line": 1556,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Preserve actual own ResNet primitive cards/shape and no invented per-cell repeat; ancestor repetition must be occurrence-backed."
+    },
+    {
+      "test": "test_unet_attention_internals_do_not_gain_unproved_u4b_details",
+      "line": 1576,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain unsupported mechanism visibility and no invented QKV/cache/rope/scaling. Check own attention card rather than global old phrase."
+    },
+    {
+      "test": "test_unet_text_conditioning_propagates_through_drill_levels",
+      "line": 1592,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Actual root/context input connections must remain visible through relevant drills; old two-CLIP/KV semantics exceed outer proof."
+    },
+    {
+      "test": "test_unet_cross_attention_drill_shows_text_entering",
+      "line": 1617,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old selfattn/crossattn IDs and K/V designation replaced by exact call-port facts and mechanism unknown; do not claim absence of all actual context wiring."
+    },
+    {
+      "test": "test_unet_hero_denoiser_labeled_unet_not_dit",
+      "line": 1637,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Use actual component-entry/pipeline placement; unconditional SAMPLING LOOP title is no longer required for a component-only result."
+    },
+    {
+      "test": "test_unet_view_stages_clickable_carded_and_clean",
+      "line": 1655,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain exact drawn-node/card coupling for actual stage IDs; raw config provenance strings are not proof obligations."
+    },
+    {
+      "test": "test_unet_hero_loop_has_arrows",
+      "line": 1693,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old loop edges inferred from presence; restoring eight arrows would fabricate unproven outer connections. Validate actual established root/stage ports separately."
+    },
+    {
+      "test": "test_unet_stage_drills_into_resnet_and_transformer_reusing_openers",
+      "line": 1705,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual ResNet/Transformer/FFN occurrence cards and real operations. Shared unscoped old IDs and fully solid skips are not authority."
+    },
+    {
+      "test": "test_unet_mid_block_is_resnet_transformer_resnet_sandwich",
+      "line": 1739,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual distinct pre/post ResNet and attention population and source port order if proved; no paired-repeat invention. New own occurrence IDs required."
+    },
+    {
+      "test": "test_unet_resnet_view_shows_timestep_injection_and_correct_residual",
+      "line": 1763,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Bounded ResNet return/conditioning routes are independently reviewed; preserve proved edges and visible unresolved bridge. Do not replace with old complete bypass template."
+    }
+  ],
+  "source_pins": {
+    "tests/test_diffusion.py": "23409140e9fe55098674abf9d72cf6c19cce3489af35058cc0f293b2d2f06559",
+    "test_support/__init__.py": "ebba5b1e3841505aab082c885a0c63a4aa82654b36b5cc8e607d2b3291d2eae4",
+    "tests/test_code_evidence.py": "7a54b9a0725bc20fe15ef6fb9af1910749240765a5ca8fbe8eab7837accdebfa",
+    "tests/test_s5_release.py": "8a0208bcefa09737b2671c8764413ab99846395a92931e5154eeb6022d09cf91",
+    "scripts/generate_examples.py": "a8a7a86639b75e0c1364cd2f455117d6de66f962fc86d3cd75a3c1f29a9ad47b",
+    "model_unfolder/adapters/diffusor/unet.py": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+    "model_unfolder/adapters/diffusor/parser.py": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+    "model_unfolder/evidence/denoiser.py": "44f1d09c5da9846216a148ae6d7806d0a00f4a825699d3d047421a3c1de52217",
+    "model_unfolder/evidence/patterns.py": "1b8ca4250fe9c00ebe3c8977571785072e36ab05c399d0be584d233a9f4d71ee"
+  },
+  "log_pins": {
+    "batch-002.log": "99dbe3a1322a9687fcbcdaa062b8a04e85cea415329a88352f7707a4b55c96c4",
+    "batch-003.log": "1461f9eed19cba5e5f528b576b1a6d9e694f41c47c4d49c0457e52bb0cf14f91",
+    "batch-004.log": "0ddf3cb9e79a63ca7ebc67285b9374c7b3d0b6b9198cb8808f116831e70bbd73"
+  },
+  "installed_source_pins": {
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_spatio_temporal_condition.py": "57ee579f9fe439f6d918380e59768000ac3e89813119f82005a808cbe663d584",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/embeddings.py": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+  }
+}

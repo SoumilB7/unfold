@@ -1,0 +1,33 @@
+{
+  "bundle": {
+    "architecture": "BloomForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "BloomForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "bloom"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py"
+    ],
+    "import_roots": {},
+    "model_id": "bigscience/bloom",
+    "model_type": "bloom",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/configuration_bloom.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

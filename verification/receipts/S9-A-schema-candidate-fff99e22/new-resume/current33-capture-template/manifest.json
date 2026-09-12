@@ -1,0 +1,15 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN33_PIN",
+  "base": "Independently reviewed and actually executed32 capture; coordinate-only33 successor, no feature changes.",
+  "base_manifest_sha256": "4ef2ede9abbd8333cb598381a389b751baf8af500d84f6da14f431a5b6594dea",
+  "files": {
+    "census.py": "877abb31aea358a98fbbce0938c2165cb765b9d9be22c4a6750da4f38c4beded",
+    "run-census.py": "4844dc5017cd01c7bbbc605a617edcd4a46b21b86878a9c88322d5e9d00ef3da",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "8184e4ede70f010035432e64aa8e0a6e30d2b4d71c16601dee75eb80dfd5c2b8",
+    "plan.json": "b2b23f416ff23e578866c92e865884d1a4bcde5380f9826255be875c7b567cee",
+    "contract.json": "0e78d044c9a45f3381e376b72adca85669eed682b77ff4358635a47c7528b54b"
+  },
+  "feature_changes": 0,
+  "no_execution": "Only stdlib source/AST/hash preparation by placement_executor."
+}

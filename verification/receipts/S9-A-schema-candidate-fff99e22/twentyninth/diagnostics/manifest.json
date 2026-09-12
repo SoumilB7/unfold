@@ -1,0 +1,29 @@
+{
+  "scope": "Read-only tracing of original positive failures; no fix acceptance",
+  "files": [
+    {
+      "path": "child-trace/child-trace.log",
+      "sha256": "995c172bb1c371a9e02e5e4535cd402f0701134b40f16933f5a56d331a66943b"
+    },
+    {
+      "path": "child-trace/result.json",
+      "sha256": "3e71dbb39eb30430d35acb802df3461ca9a67de4f70e6e492c8d2d7dfb6db7f3"
+    },
+    {
+      "path": "child-trace/returns.json",
+      "sha256": "ab779f8d619484aa4030e4d1fee195e06ef49c5be0741c2f1479a40e0afdb1f3"
+    },
+    {
+      "path": "trace_child.py",
+      "sha256": "4da45c631b1d0126efc7f47ab7aa7d66589a1a3d4216b496ab03ffb3a7cb1fca"
+    },
+    {
+      "path": "run-child-trace.py",
+      "sha256": "ad261b65b8d3c61fd9a52d9c37c20cbaf7b01c04a2dfad0ed5e0f55104190edc"
+    },
+    {
+      "path": "changed-source-pyflakes.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

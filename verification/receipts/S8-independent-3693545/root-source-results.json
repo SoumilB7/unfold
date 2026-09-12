@@ -1,0 +1,1472 @@
+{
+  "checkpoint": "36935453403ed792272f90cc84eda37972bb1165",
+  "region_count": 9,
+  "regions": [
+    {
+      "kind": "if",
+      "position": 0,
+      "receives_previous_state": true,
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "kind": "region_input"
+        },
+        "when_true": {
+          "kind": "source_operation",
+          "operands": [
+            {
+              "kind": "source_operation",
+              "operands": [
+                {
+                  "kind": "literal",
+                  "value": 2
+                },
+                {
+                  "kind": "region_input"
+                }
+              ],
+              "operator": "*",
+              "reason": "source operator ports; operand dispatch and result computation unresolved"
+            },
+            {
+              "kind": "literal",
+              "value": 1.0
+            }
+          ],
+          "operator": "-",
+          "reason": "source operator ports; operand dispatch and result computation unresolved"
+        }
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1079:8:1080:37",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1080:12:1080:37"
+      ]
+    },
+    {
+      "kind": "if",
+      "position": 1,
+      "receives_previous_state": true,
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "kind": "region_input"
+        },
+        "when_true": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "items": [
+                  {
+                    "kind": "region_input"
+                  },
+                  {
+                    "kind": "unresolved",
+                    "reason": "unpacked result has no exact call boundary"
+                  }
+                ],
+                "kind": "sequence"
+              }
+            },
+            {
+              "port": "dim",
+              "route": {
+                "kind": "literal",
+                "value": 1
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": {
+            "kind": "lookup_receiver",
+            "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+            "route": {
+              "kind": "unresolved",
+              "reason": "local has no reaching assignment or formal"
+            }
+          },
+          "result_slot": []
+        }
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1096:8:1098:53",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1098:12:1098:53"
+      ]
+    },
+    {
+      "kind": "assignment",
+      "position": 2,
+      "receives_previous_state": true,
+      "route": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "kind": "region_input"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "receiver": {
+          "kind": "lookup_receiver",
+          "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+          "route": {
+            "kind": "unresolved",
+            "reason": "local has no reaching assignment or formal"
+          }
+        },
+        "result_slot": []
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1110:8:1110:37",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1110:8:1110:37"
+      ]
+    },
+    {
+      "kind": "for",
+      "position": 3,
+      "receives_previous_state": true,
+      "route": {
+        "initial_route": {
+          "kind": "region_input"
+        },
+        "iteration_result": {
+          "condition": "source guard unresolved",
+          "kind": "conditional",
+          "when_false": {
+            "condition": "source guard unresolved",
+            "kind": "conditional",
+            "when_false": {
+              "arguments": [
+                {
+                  "port": "hidden_states",
+                  "route": {
+                    "formal": "sample",
+                    "initial_route": {
+                      "kind": "region_input"
+                    },
+                    "kind": "loop_carried",
+                    "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                  }
+                },
+                {
+                  "port": "temb",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "kind": "unresolved",
+                      "reason": "expression requires another mechanism reader"
+                    },
+                    "when_true": {
+                      "arguments": [
+                        {
+                          "port": "0",
+                          "route": {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        }
+                      ],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "local has no reaching assignment or formal"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                }
+              ],
+              "kind": "call_result",
+              "mechanism": "unresolved",
+              "reason": "call argument and result wiring proven; internal computation not established",
+              "receiver": null,
+              "result_slot": [
+                0
+              ]
+            },
+            "when_true": {
+              "kind": "inplace_operation",
+              "operands": [
+                {
+                  "arguments": [
+                    {
+                      "port": "hidden_states",
+                      "route": {
+                        "formal": "sample",
+                        "initial_route": {
+                          "kind": "region_input"
+                        },
+                        "kind": "loop_carried",
+                        "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                      }
+                    },
+                    {
+                      "port": "temb",
+                      "route": {
+                        "condition": "source guard unresolved",
+                        "kind": "conditional",
+                        "when_false": {
+                          "kind": "unresolved",
+                          "reason": "expression requires another mechanism reader"
+                        },
+                        "when_true": {
+                          "arguments": [
+                            {
+                              "port": "0",
+                              "route": {
+                                "kind": "unresolved",
+                                "reason": "expression requires another mechanism reader"
+                              }
+                            }
+                          ],
+                          "kind": "call_result",
+                          "mechanism": "unresolved",
+                          "reason": "call argument and result wiring proven; internal computation not established",
+                          "receiver": {
+                            "kind": "lookup_receiver",
+                            "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                            "route": {
+                              "kind": "unresolved",
+                              "reason": "local has no reaching assignment or formal"
+                            }
+                          },
+                          "result_slot": []
+                        }
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": null,
+                  "result_slot": [
+                    0
+                  ]
+                },
+                {
+                  "arguments": [
+                    {
+                      "port": "0",
+                      "route": {
+                        "kind": "literal",
+                        "value": 0
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": {
+                    "kind": "lookup_receiver",
+                    "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                    "route": {
+                      "condition": "source guard unresolved",
+                      "kind": "conditional",
+                      "when_false": {
+                        "formal": "down_intrablock_additional_residuals",
+                        "kind": "formal"
+                      },
+                      "when_true": {
+                        "formal": "down_block_additional_residuals",
+                        "kind": "formal"
+                      }
+                    }
+                  },
+                  "result_slot": []
+                }
+              ],
+              "operator": "+",
+              "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"
+            }
+          },
+          "when_true": {
+            "arguments": [
+              {
+                "port": "hidden_states",
+                "route": {
+                  "formal": "sample",
+                  "initial_route": {
+                    "kind": "region_input"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              },
+              {
+                "port": "temb",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "kind": "unresolved",
+                    "reason": "expression requires another mechanism reader"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "expression requires another mechanism reader"
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "unresolved",
+                        "reason": "local has no reaching assignment or formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "encoder_hidden_states",
+                "route": {
+                  "arguments": [
+                    {
+                      "port": "encoder_hidden_states",
+                      "route": {
+                        "formal": "encoder_hidden_states",
+                        "kind": "formal"
+                      }
+                    },
+                    {
+                      "port": "added_cond_kwargs",
+                      "route": {
+                        "formal": "added_cond_kwargs",
+                        "kind": "formal"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": {
+                    "kind": "lookup_receiver",
+                    "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                    "route": {
+                      "kind": "unresolved",
+                      "reason": "local has no reaching assignment or formal"
+                    }
+                  },
+                  "result_slot": []
+                }
+              },
+              {
+                "port": "attention_mask",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "attention_mask",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "literal",
+                          "value": 1
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "source_operation",
+                        "operands": [
+                          {
+                            "kind": "source_operation",
+                            "operands": [
+                              {
+                                "kind": "literal",
+                                "value": 1
+                              },
+                              {
+                                "arguments": [
+                                  {
+                                    "port": "0",
+                                    "route": {
+                                      "kind": "unresolved",
+                                      "reason": "expression requires another mechanism reader"
+                                    }
+                                  }
+                                ],
+                                "kind": "call_result",
+                                "mechanism": "unresolved",
+                                "reason": "call argument and result wiring proven; internal computation not established",
+                                "receiver": {
+                                  "kind": "lookup_receiver",
+                                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                  "route": {
+                                    "formal": "attention_mask",
+                                    "kind": "formal"
+                                  }
+                                },
+                                "result_slot": []
+                              }
+                            ],
+                            "operator": "-",
+                            "reason": "source operator ports; operand dispatch and result computation unresolved"
+                          },
+                          {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        ],
+                        "operator": "*",
+                        "reason": "source operator ports; operand dispatch and result computation unresolved"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "cross_attention_kwargs",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "cross_attention_kwargs",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "formal": "cross_attention_kwargs",
+                        "kind": "formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "encoder_attention_mask",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "encoder_attention_mask",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "literal",
+                          "value": 1
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "source_operation",
+                        "operands": [
+                          {
+                            "kind": "source_operation",
+                            "operands": [
+                              {
+                                "kind": "literal",
+                                "value": 1
+                              },
+                              {
+                                "arguments": [
+                                  {
+                                    "port": "0",
+                                    "route": {
+                                      "kind": "unresolved",
+                                      "reason": "expression requires another mechanism reader"
+                                    }
+                                  }
+                                ],
+                                "kind": "call_result",
+                                "mechanism": "unresolved",
+                                "reason": "call argument and result wiring proven; internal computation not established",
+                                "receiver": {
+                                  "kind": "lookup_receiver",
+                                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                  "route": {
+                                    "formal": "encoder_attention_mask",
+                                    "kind": "formal"
+                                  }
+                                },
+                                "result_slot": []
+                              }
+                            ],
+                            "operator": "-",
+                            "reason": "source operator ports; operand dispatch and result computation unresolved"
+                          },
+                          {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        ],
+                        "operator": "*",
+                        "reason": "source operator ports; operand dispatch and result computation unresolved"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "**",
+                "route": {
+                  "kind": "unresolved",
+                  "reason": "expression requires another mechanism reader"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": [
+              0
+            ]
+          }
+        },
+        "kind": "loop_result",
+        "local": "sample",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1138:8:1159:49",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1145:16:1153:17",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1155:16:1155:86",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1157:20:1157:73"
+      ]
+    },
+    {
+      "kind": "if",
+      "position": 4,
+      "receives_previous_state": true,
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "kind": "region_input"
+        },
+        "when_true": {
+          "condition": "source guard unresolved",
+          "kind": "conditional",
+          "when_false": {
+            "condition": "source guard unresolved",
+            "kind": "conditional",
+            "when_false": {
+              "arguments": [
+                {
+                  "port": "0",
+                  "route": {
+                    "kind": "region_input"
+                  }
+                },
+                {
+                  "port": "1",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "kind": "unresolved",
+                      "reason": "expression requires another mechanism reader"
+                    },
+                    "when_true": {
+                      "arguments": [
+                        {
+                          "port": "0",
+                          "route": {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        }
+                      ],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "local has no reaching assignment or formal"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                }
+              ],
+              "kind": "call_result",
+              "mechanism": "unresolved",
+              "reason": "call argument and result wiring proven; internal computation not established",
+              "receiver": {
+                "kind": "lookup_receiver",
+                "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                "route": {
+                  "kind": "unresolved",
+                  "reason": "local has no reaching assignment or formal"
+                }
+              },
+              "result_slot": []
+            },
+            "when_true": {
+              "arguments": [
+                {
+                  "port": "0",
+                  "route": {
+                    "kind": "region_input"
+                  }
+                },
+                {
+                  "port": "1",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "kind": "unresolved",
+                      "reason": "expression requires another mechanism reader"
+                    },
+                    "when_true": {
+                      "arguments": [
+                        {
+                          "port": "0",
+                          "route": {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        }
+                      ],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "local has no reaching assignment or formal"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                },
+                {
+                  "port": "encoder_hidden_states",
+                  "route": {
+                    "arguments": [
+                      {
+                        "port": "encoder_hidden_states",
+                        "route": {
+                          "formal": "encoder_hidden_states",
+                          "kind": "formal"
+                        }
+                      },
+                      {
+                        "port": "added_cond_kwargs",
+                        "route": {
+                          "formal": "added_cond_kwargs",
+                          "kind": "formal"
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "unresolved",
+                        "reason": "local has no reaching assignment or formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                },
+                {
+                  "port": "attention_mask",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "formal": "attention_mask",
+                      "kind": "formal"
+                    },
+                    "when_true": {
+                      "arguments": [
+                        {
+                          "port": "0",
+                          "route": {
+                            "kind": "literal",
+                            "value": 1
+                          }
+                        }
+                      ],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "kind": "source_operation",
+                          "operands": [
+                            {
+                              "kind": "source_operation",
+                              "operands": [
+                                {
+                                  "kind": "literal",
+                                  "value": 1
+                                },
+                                {
+                                  "arguments": [
+                                    {
+                                      "port": "0",
+                                      "route": {
+                                        "kind": "unresolved",
+                                        "reason": "expression requires another mechanism reader"
+                                      }
+                                    }
+                                  ],
+                                  "kind": "call_result",
+                                  "mechanism": "unresolved",
+                                  "reason": "call argument and result wiring proven; internal computation not established",
+                                  "receiver": {
+                                    "kind": "lookup_receiver",
+                                    "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                    "route": {
+                                      "formal": "attention_mask",
+                                      "kind": "formal"
+                                    }
+                                  },
+                                  "result_slot": []
+                                }
+                              ],
+                              "operator": "-",
+                              "reason": "source operator ports; operand dispatch and result computation unresolved"
+                            },
+                            {
+                              "kind": "unresolved",
+                              "reason": "expression requires another mechanism reader"
+                            }
+                          ],
+                          "operator": "*",
+                          "reason": "source operator ports; operand dispatch and result computation unresolved"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                },
+                {
+                  "port": "cross_attention_kwargs",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "formal": "cross_attention_kwargs",
+                      "kind": "formal"
+                    },
+                    "when_true": {
+                      "arguments": [],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "formal": "cross_attention_kwargs",
+                          "kind": "formal"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                },
+                {
+                  "port": "encoder_attention_mask",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "formal": "encoder_attention_mask",
+                      "kind": "formal"
+                    },
+                    "when_true": {
+                      "arguments": [
+                        {
+                          "port": "0",
+                          "route": {
+                            "kind": "literal",
+                            "value": 1
+                          }
+                        }
+                      ],
+                      "kind": "call_result",
+                      "mechanism": "unresolved",
+                      "reason": "call argument and result wiring proven; internal computation not established",
+                      "receiver": {
+                        "kind": "lookup_receiver",
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                        "route": {
+                          "kind": "source_operation",
+                          "operands": [
+                            {
+                              "kind": "source_operation",
+                              "operands": [
+                                {
+                                  "kind": "literal",
+                                  "value": 1
+                                },
+                                {
+                                  "arguments": [
+                                    {
+                                      "port": "0",
+                                      "route": {
+                                        "kind": "unresolved",
+                                        "reason": "expression requires another mechanism reader"
+                                      }
+                                    }
+                                  ],
+                                  "kind": "call_result",
+                                  "mechanism": "unresolved",
+                                  "reason": "call argument and result wiring proven; internal computation not established",
+                                  "receiver": {
+                                    "kind": "lookup_receiver",
+                                    "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                    "route": {
+                                      "formal": "encoder_attention_mask",
+                                      "kind": "formal"
+                                    }
+                                  },
+                                  "result_slot": []
+                                }
+                              ],
+                              "operator": "-",
+                              "reason": "source operator ports; operand dispatch and result computation unresolved"
+                            },
+                            {
+                              "kind": "unresolved",
+                              "reason": "expression requires another mechanism reader"
+                            }
+                          ],
+                          "operator": "*",
+                          "reason": "source operator ports; operand dispatch and result computation unresolved"
+                        }
+                      },
+                      "result_slot": []
+                    }
+                  }
+                }
+              ],
+              "kind": "call_result",
+              "mechanism": "unresolved",
+              "reason": "call argument and result wiring proven; internal computation not established",
+              "receiver": {
+                "kind": "lookup_receiver",
+                "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                "route": {
+                  "kind": "unresolved",
+                  "reason": "local has no reaching assignment or formal"
+                }
+              },
+              "result_slot": []
+            }
+          },
+          "when_true": {
+            "kind": "inplace_operation",
+            "operands": [
+              {
+                "kind": "unresolved",
+                "reason": "optional assignment is not one exact if arm"
+              },
+              {
+                "arguments": [
+                  {
+                    "port": "0",
+                    "route": {
+                      "kind": "literal",
+                      "value": 0
+                    }
+                  }
+                ],
+                "kind": "call_result",
+                "mechanism": "unresolved",
+                "reason": "call argument and result wiring proven; internal computation not established",
+                "receiver": {
+                  "kind": "lookup_receiver",
+                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                  "route": {
+                    "condition": "source guard unresolved",
+                    "kind": "conditional",
+                    "when_false": {
+                      "formal": "down_intrablock_additional_residuals",
+                      "kind": "formal"
+                    },
+                    "when_true": {
+                      "formal": "down_block_additional_residuals",
+                      "kind": "formal"
+                    }
+                  }
+                },
+                "result_slot": []
+              }
+            ],
+            "operator": "+",
+            "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"
+          }
+        }
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1173:8:1192:69",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1175:16:1182:17",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1184:16:1184:52",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1192:16:1192:69"
+      ]
+    },
+    {
+      "kind": "if",
+      "position": 5,
+      "receives_previous_state": true,
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "kind": "region_input"
+        },
+        "when_true": {
+          "kind": "source_operation",
+          "operands": [
+            {
+              "kind": "region_input"
+            },
+            {
+              "formal": "mid_block_additional_residual",
+              "kind": "formal"
+            }
+          ],
+          "operator": "+",
+          "reason": "source operator ports; operand dispatch and result computation unresolved"
+        }
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1194:8:1195:59",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1195:12:1195:59"
+      ]
+    },
+    {
+      "kind": "for",
+      "position": 6,
+      "receives_previous_state": true,
+      "route": {
+        "initial_route": {
+          "kind": "region_input"
+        },
+        "iteration_result": {
+          "condition": "source guard unresolved",
+          "kind": "conditional",
+          "when_false": {
+            "arguments": [
+              {
+                "port": "hidden_states",
+                "route": {
+                  "formal": "sample",
+                  "initial_route": {
+                    "kind": "region_input"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              },
+              {
+                "port": "temb",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "kind": "unresolved",
+                    "reason": "expression requires another mechanism reader"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "expression requires another mechanism reader"
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "unresolved",
+                        "reason": "local has no reaching assignment or formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "res_hidden_states_tuple",
+                "route": {
+                  "kind": "selection",
+                  "selection": {
+                    "detail": "source selection; exact value unresolved",
+                    "kind": "slice"
+                  },
+                  "source": {
+                    "kind": "unresolved",
+                    "reason": "optional assignment is not one exact if arm"
+                  }
+                }
+              },
+              {
+                "port": "upsample_size",
+                "route": {
+                  "kind": "unresolved",
+                  "reason": "optional assignment is not one exact if arm"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "when_true": {
+            "arguments": [
+              {
+                "port": "hidden_states",
+                "route": {
+                  "formal": "sample",
+                  "initial_route": {
+                    "kind": "region_input"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              },
+              {
+                "port": "temb",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "kind": "unresolved",
+                    "reason": "expression requires another mechanism reader"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "unresolved",
+                          "reason": "expression requires another mechanism reader"
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "unresolved",
+                        "reason": "local has no reaching assignment or formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "res_hidden_states_tuple",
+                "route": {
+                  "kind": "selection",
+                  "selection": {
+                    "detail": "source selection; exact value unresolved",
+                    "kind": "slice"
+                  },
+                  "source": {
+                    "kind": "unresolved",
+                    "reason": "optional assignment is not one exact if arm"
+                  }
+                }
+              },
+              {
+                "port": "encoder_hidden_states",
+                "route": {
+                  "arguments": [
+                    {
+                      "port": "encoder_hidden_states",
+                      "route": {
+                        "formal": "encoder_hidden_states",
+                        "kind": "formal"
+                      }
+                    },
+                    {
+                      "port": "added_cond_kwargs",
+                      "route": {
+                        "formal": "added_cond_kwargs",
+                        "kind": "formal"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": {
+                    "kind": "lookup_receiver",
+                    "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                    "route": {
+                      "kind": "unresolved",
+                      "reason": "local has no reaching assignment or formal"
+                    }
+                  },
+                  "result_slot": []
+                }
+              },
+              {
+                "port": "cross_attention_kwargs",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "cross_attention_kwargs",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "formal": "cross_attention_kwargs",
+                        "kind": "formal"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "upsample_size",
+                "route": {
+                  "kind": "unresolved",
+                  "reason": "optional assignment is not one exact if arm"
+                }
+              },
+              {
+                "port": "attention_mask",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "attention_mask",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "literal",
+                          "value": 1
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "source_operation",
+                        "operands": [
+                          {
+                            "kind": "source_operation",
+                            "operands": [
+                              {
+                                "kind": "literal",
+                                "value": 1
+                              },
+                              {
+                                "arguments": [
+                                  {
+                                    "port": "0",
+                                    "route": {
+                                      "kind": "unresolved",
+                                      "reason": "expression requires another mechanism reader"
+                                    }
+                                  }
+                                ],
+                                "kind": "call_result",
+                                "mechanism": "unresolved",
+                                "reason": "call argument and result wiring proven; internal computation not established",
+                                "receiver": {
+                                  "kind": "lookup_receiver",
+                                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                  "route": {
+                                    "formal": "attention_mask",
+                                    "kind": "formal"
+                                  }
+                                },
+                                "result_slot": []
+                              }
+                            ],
+                            "operator": "-",
+                            "reason": "source operator ports; operand dispatch and result computation unresolved"
+                          },
+                          {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        ],
+                        "operator": "*",
+                        "reason": "source operator ports; operand dispatch and result computation unresolved"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              },
+              {
+                "port": "encoder_attention_mask",
+                "route": {
+                  "condition": "source guard unresolved",
+                  "kind": "conditional",
+                  "when_false": {
+                    "formal": "encoder_attention_mask",
+                    "kind": "formal"
+                  },
+                  "when_true": {
+                    "arguments": [
+                      {
+                        "port": "0",
+                        "route": {
+                          "kind": "literal",
+                          "value": 1
+                        }
+                      }
+                    ],
+                    "kind": "call_result",
+                    "mechanism": "unresolved",
+                    "reason": "call argument and result wiring proven; internal computation not established",
+                    "receiver": {
+                      "kind": "lookup_receiver",
+                      "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                      "route": {
+                        "kind": "source_operation",
+                        "operands": [
+                          {
+                            "kind": "source_operation",
+                            "operands": [
+                              {
+                                "kind": "literal",
+                                "value": 1
+                              },
+                              {
+                                "arguments": [
+                                  {
+                                    "port": "0",
+                                    "route": {
+                                      "kind": "unresolved",
+                                      "reason": "expression requires another mechanism reader"
+                                    }
+                                  }
+                                ],
+                                "kind": "call_result",
+                                "mechanism": "unresolved",
+                                "reason": "call argument and result wiring proven; internal computation not established",
+                                "receiver": {
+                                  "kind": "lookup_receiver",
+                                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                                  "route": {
+                                    "formal": "encoder_attention_mask",
+                                    "kind": "formal"
+                                  }
+                                },
+                                "result_slot": []
+                              }
+                            ],
+                            "operator": "-",
+                            "reason": "source operator ports; operand dispatch and result computation unresolved"
+                          },
+                          {
+                            "kind": "unresolved",
+                            "reason": "expression requires another mechanism reader"
+                          }
+                        ],
+                        "operator": "*",
+                        "reason": "source operator ports; operand dispatch and result computation unresolved"
+                      }
+                    },
+                    "result_slot": []
+                  }
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          }
+        },
+        "kind": "loop_result",
+        "local": "sample",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1198:8:1226:17",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1210:16:1219:17",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1221:16:1226:17"
+      ]
+    },
+    {
+      "kind": "if",
+      "position": 7,
+      "receives_previous_state": true,
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "kind": "region_input"
+        },
+        "when_true": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "arguments": [
+                  {
+                    "port": "0",
+                    "route": {
+                      "kind": "region_input"
+                    }
+                  }
+                ],
+                "kind": "call_result",
+                "mechanism": "unresolved",
+                "reason": "call argument and result wiring proven; internal computation not established",
+                "receiver": {
+                  "kind": "lookup_receiver",
+                  "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+                  "route": {
+                    "kind": "unresolved",
+                    "reason": "local has no reaching assignment or formal"
+                  }
+                },
+                "result_slot": []
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": {
+            "kind": "lookup_receiver",
+            "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+            "route": {
+              "kind": "unresolved",
+              "reason": "local has no reaching assignment or formal"
+            }
+          },
+          "result_slot": []
+        }
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1229:8:1231:42",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1230:12:1230:47",
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1231:12:1231:42"
+      ]
+    },
+    {
+      "kind": "assignment",
+      "position": 8,
+      "receives_previous_state": true,
+      "route": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "kind": "region_input"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "receiver": {
+          "kind": "lookup_receiver",
+          "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+          "route": {
+            "kind": "unresolved",
+            "reason": "local has no reaching assignment or formal"
+          }
+        },
+        "result_slot": []
+      },
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1232:8:1232:38",
+      "writes": [
+        "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1232:8:1232:38"
+      ]
+    }
+  ],
+  "scope": "exact root syntactic port routes only; no runtime target binding or execution closure",
+  "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+}

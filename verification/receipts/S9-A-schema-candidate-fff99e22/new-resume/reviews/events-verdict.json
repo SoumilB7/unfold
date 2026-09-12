@@ -1,0 +1,34 @@
+{
+  "decision": "ACCEPT bounded event-association source; runtime pending",
+  "reviewer": "resume_review",
+  "manifest_sha256": "51edd1561b0c825145f741c74276470db98bb083f3d6dcacc17cf76a264d7067",
+  "scope": "Exact parser and new tests in events/manifest.json over immutable twentyfourth; no proof-reader implementation changes.",
+  "source_pins": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "efd17066cf2c941bc1e0e134253b648127f626d29bf8f7fa5a74aea2259bf435",
+      "base_sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d",
+      "bytes": 266009,
+      "base": "twentyfourth"
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "sha256": "62380443450f512f336dd3b024c61a6088118b6a385f3bb22138adaf821e45b3",
+      "base_sha256": null,
+      "bytes": 8377,
+      "base": "new file"
+    }
+  ],
+  "findings": [
+    "Mechanism operands are resolved but not consumed until bind_attention_mechanism succeeds. The successful binder supplies the mechanism value, retained premises and final evidence tier before the canonical fact is written.",
+    "Ordinary, MLA and partial head-geometry decisions hash the exact composite dictionary and tier passed to the existing fact writer; no finished fact, IR or HTML is read back to generate expected values.",
+    "Activation consumption uses the existing final code_and_config/class_default tier and normalized dispatch value. The extracted _ffn_fact_status retains the same selector-default weakening as the existing fact writer. This does not create an applied-function proof.",
+    "Present checkpoint and absent class-default paths continue through original ConfigResolution.consume_decision, including typed default premise validation and exact path semantics. Invalid/null/rival geometry cannot gain a consumption from successful inspection alone.",
+    "Controls exercise actual parser decisions, sparse defaults, failed binding, post-decision fact mutation, and existing MLA/partial geometry branches. They assert exact event hashes against canonical values without weakening original semantic validation."
+  ],
+  "limitations": [
+    "Source-only independent review. No tests, model parses, source-bundle runtime, or actual sparse HTML checks run by reviewer.",
+    "Root must run focused controls and actual sparse Llama in a new frozen candidate; original sparse FAIL remains valid historical evidence.",
+    "This accepts the bounded source correction only, not S9-A completion, any output delta, or any blessing."
+  ]
+}

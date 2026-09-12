@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "9e8f62cbb34bcef863ec6bd71a9849625787a2b9e655ff546fd0d4a9e4e273e1",
+  "input": "tests/sable_test_corpus/hunyuanvideo.json",
+  "input_sha256": "1f8762163235efb735db00344da4910c765d42becb5e404a2c7d2e5c9c84d020",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_hunyuan_video",
+    "qualname": "HunyuanVideoTransformer3DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

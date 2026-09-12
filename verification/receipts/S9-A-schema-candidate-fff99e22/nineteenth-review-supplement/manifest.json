@@ -1,0 +1,592 @@
+{
+  "status": "historical evidence; original FAIL retained; no acceptance/bless",
+  "files": [
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/manifest.json",
+      "bytes": 5555,
+      "sha256": "e6c24664f88a0354449340e490c3d4a3bff3c382fd825f55c9487241e7c98ea2"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/producer-census.json",
+      "bytes": 11137,
+      "sha256": "91e9fb9711a32e11f37809f9b32d9c8073dcff83fcbeeb0a8ff10c655f560a20"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 265173,
+      "sha256": "f246048696a22a00e8ff0716e408a990dde1d8c41216a07473803d2835eda594"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention.py",
+      "bytes": 249522,
+      "sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention_geometry.py",
+      "bytes": 41666,
+      "sha256": "f996c27fdcb0e9f452a976759d0850fff3064cb3b83166959d67eb1188e297db"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention_mask.py",
+      "bytes": 91950,
+      "sha256": "def73d25a995ff9fcfb8e672601c6aa3233471b5cfeca28c04a1b7e9f0c1d632"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention_output.py",
+      "bytes": 24238,
+      "sha256": "91f42a26ecbe4f0099b26f10587ffc80b8ab996cb03af675f035a7e77519539f"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention_sinks.py",
+      "bytes": 17092,
+      "sha256": "fc64515955d954f4c00150b28f11a3d942a3cfd33c4f96ba7bf5312500dc69db"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/attention_storage.py",
+      "bytes": 51950,
+      "sha256": "607d99ae15ce816573a4f6189b626f5543bbfe8a6eb6be36f6ebc60b8515cb09"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/cell_topology.py",
+      "bytes": 91002,
+      "sha256": "564a5047956802f6c2b56b9948885f8bfdd7654540e9fbdd5ed82338d3887b8c"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 13691,
+      "sha256": "9b3311740467832884d440fc217e5b7cf5cded7132d29b8fe46ca35ba2fb95b2"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/codebook_streams.py",
+      "bytes": 18166,
+      "sha256": "f4775bb689b1afda003377cc8413d1d6d61bfbaeac3681802d5de7c44df71649"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/cross_attention_replacement.py",
+      "bytes": 22401,
+      "sha256": "ccf9d6fff9490dfabcd4f5b0ecbf1340af2f40d15b0822432bab387f9516792c"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/decoder_norm.py",
+      "bytes": 28769,
+      "sha256": "051e3e2e6ab899cbcb8ceda5a4ba719bb6cfedc4baf3bb0d18a491ea35be0e28"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/embedding_bookend.py",
+      "bytes": 13883,
+      "sha256": "e0bbef3a6430af8edcce8f34c7beb4f4203520b4f4a155642888a20032a909e8"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/expert_storage.py",
+      "bytes": 68446,
+      "sha256": "a9ae92a6fba6de6ca4176e468f64c121b0837f99f2a56ff5fa40f3b16d14515b"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/expert_width.py",
+      "bytes": 30377,
+      "sha256": "46d58570ff39e2037852bdff719f0c0089e5a80c2389d69a2713dec1a12ab40a"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/ffn_mechanism.py",
+      "bytes": 74713,
+      "sha256": "2834b3059cce9f553283906f227e01b57ee4f64bda49bb0c076a4fbc729be3a9"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/ffn_schedule.py",
+      "bytes": 37442,
+      "sha256": "4924834ba9d80477e71b771f771f34c1aa403783f0dc169bd2d7263d37dcc629"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/ffn_width.py",
+      "bytes": 12653,
+      "sha256": "47500734db30764b14474a87d2a10f37437fa2758b4490d270f1ef324c37e12a"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/final_bookend.py",
+      "bytes": 19812,
+      "sha256": "89aade5f9a43fcbd8a73c2b2885dbd9d6f0afb3f9fbf413deb535eb90f3ee472"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/kv_sharing_schedule.py",
+      "bytes": 20458,
+      "sha256": "62249d52fd400132f8169fee807f8616ba90aa515a272f2d5e8aaad4b83016e8"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/mixer_schedule.py",
+      "bytes": 29955,
+      "sha256": "d32ddf8adff52cab8ddc13e9c1bc83e3d2075d1df9cff118ab6ece229b07971e"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/mtp.py",
+      "bytes": 21450,
+      "sha256": "4ead081f967af7faba946013bda1f73866e36f653774d9437349458110ad9b11"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/per_layer_side_input.py",
+      "bytes": 18464,
+      "sha256": "622a8ceb6d15e9878c7a7a02708f23472bbae16bef4b322d71fc434287c12c76"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/position_absolute.py",
+      "bytes": 15571,
+      "sha256": "d8db545a1729a347e2d6b83909f755fbba488483035b051660212699a4910313"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/position_fixed.py",
+      "bytes": 52221,
+      "sha256": "55fd0f0f489361c4435062a3a9fc378dbbe0fec8cfe724cd4a2ba5ce42bda1d2"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/position_initialization.py",
+      "bytes": 46952,
+      "sha256": "1c0af1fe054b4bc4fb9ce28e632c698c985508cacc3b55ea3135557c387a19b6"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/position_relative_bias.py",
+      "bytes": 35121,
+      "sha256": "a36ed90f9b9f8d5382891fbcd025586ea726e0b91999ac599757f8f497e14e49"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/position_schedule.py",
+      "bytes": 26091,
+      "sha256": "a9d0ef8678231a688d8b0dda04d4c4ef6901898dcb16a9686ec0925e7994c896"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/projection_bias.py",
+      "bytes": 22156,
+      "sha256": "3bd883833c3a7f1b7f514841acf658ca617b42c11308610308d57312e01b1b9d"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/qk_norm_schedule.py",
+      "bytes": 14094,
+      "sha256": "c2e1bae3eb223a8440bc7ae32e4ca065db34ab7b74c5d516c3a9f592c224cd5b"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 35996,
+      "sha256": "caaa2c1d4d9586ef33fb2e2006b5668d775d9d4450e6a424a98e862990a3683a"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/router.py",
+      "bytes": 82166,
+      "sha256": "7e882b29d38fd98ce7c698dbbe4d2984ee9f2719ea2735162a410c83450880ce"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/model_unfolder/evidence/weight_tying.py",
+      "bytes": 17463,
+      "sha256": "89c500d5f993609f8522601b6ddf90dbea8574448ac2f76e298a32830724b879"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 15247,
+      "sha256": "1e828ab52377570350b410077994bf1a39b0be8828c3e179a031390a0e7b6994"
+    },
+    {
+      "path": "unfold-s9a-independent-intended-declarations-review/verdict.json",
+      "bytes": 2454,
+      "sha256": "886932e31a57fe252c1fa51edb9d96f0c546d74754360750cea0a9a907d57d85"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/lifecycle/manifest.json",
+      "bytes": 471,
+      "sha256": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/lifecycle/source/tests/test_s9_operand_channels.py",
+      "bytes": 11467,
+      "sha256": "dddfee14299b1d35a1e2d9534807fca6834854d8ff8a793b8babd1194f812bbf"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/lifecycle/source/tests/test_s9_reader_declarations.py",
+      "bytes": 16426,
+      "sha256": "c43ab4296d78fd253e446cc3cfb0df0509c9c0c0e03a559359006b40e64791d4"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/mro/manifest.json",
+      "bytes": 1055,
+      "sha256": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/mro/source/model_unfolder/evidence/framework_config.py",
+      "bytes": 62121,
+      "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/mro/source/tests/test_s9_config_annotation_mro.py",
+      "bytes": 5335,
+      "sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/nineteenth-source-manifest.json",
+      "bytes": 16749,
+      "sha256": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/supplement/manifest.json",
+      "bytes": 804,
+      "sha256": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 265236,
+      "sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/evidence/registry.py",
+      "bytes": 80188,
+      "sha256": "9b946e37e2c2f2a4d302bffeec9a0766dd3cdd292d1fa4457ee76f0a8caf445e"
+    },
+    {
+      "path": "unfold-s9a-independent-mro-supplement-review/verdict.json",
+      "bytes": 4040,
+      "sha256": "2651266a0c4b9a2b6d7da4bbb8071560c59690ab84bd26c2a9971ef4c87372e1"
+    },
+    {
+      "path": "unfold-s9a-independent-nineteenth-return-review/manifest.json",
+      "bytes": 904,
+      "sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452"
+    },
+    {
+      "path": "unfold-s9a-independent-nineteenth-return-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80756,
+      "sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615"
+    },
+    {
+      "path": "unfold-s9a-independent-nineteenth-return-review/source/tests/test_fact_registry.py",
+      "bytes": 19965,
+      "sha256": "d54118763ab344d5608656f4f6a5afa1ec587899a054acaa5dce3f715f40c255"
+    },
+    {
+      "path": "unfold-s9a-independent-nineteenth-return-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 16510,
+      "sha256": "afd708256e7847c63a8d90d5383cabb90667588721b1eee06b320dfc9b362e5f"
+    },
+    {
+      "path": "unfold-s9a-independent-nineteenth-return-review/verdict.json",
+      "bytes": 1375,
+      "sha256": "e0e3cbef8c1a591708f12200bf261f09f5cec7c5c11b1116c84fd163d19f11b4"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-nineteenth-llama-review/artifact-pins.json",
+      "bytes": 6596,
+      "sha256": "be2aca1a6b5d2bcfb5eb6648cd57f64706f8f867c25136a5919b00c644eb1432"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-nineteenth-llama-review/verdict.json",
+      "bytes": 3935,
+      "sha256": "4c41a4759c85bb0848b3d00dd51d6b832eaefef608df63621c06480e1e4b0d07"
+    },
+    {
+      "path": "unfold-s9a-config-annotation-mro-preparation/framework_config.py.diff",
+      "bytes": 2611,
+      "sha256": "52847ee49da730aa10e885afb749f12d853f844941c948a567a5dd50c7c1a168"
+    },
+    {
+      "path": "unfold-s9a-config-annotation-mro-preparation/manifest.json",
+      "bytes": 1055,
+      "sha256": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089"
+    },
+    {
+      "path": "unfold-s9a-config-annotation-mro-preparation/source/model_unfolder/evidence/framework_config.py",
+      "bytes": 62121,
+      "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014"
+    },
+    {
+      "path": "unfold-s9a-config-annotation-mro-preparation/source/tests/test_s9_config_annotation_mro.py",
+      "bytes": 5335,
+      "sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06"
+    },
+    {
+      "path": "unfold-s9a-config-annotation-mro-preparation/test_s9_config_annotation_mro.py.diff",
+      "bytes": 5578,
+      "sha256": "543860386c7f3db9486f3cf93071353355cab092cfd30408d9ae304066f47559"
+    },
+    {
+      "path": "unfold-s9a-eighteenth-ffn-bias/diagnostic.py",
+      "bytes": 1584,
+      "sha256": "432afbe77fd91c4c41b702765da172f3cf11088bd9f20e4abb620b4ca4e35de0"
+    },
+    {
+      "path": "unfold-s9a-eighteenth-ffn-bias/lane/actual-ffn-bias-consistency.log",
+      "bytes": 4588,
+      "sha256": "fc5e458529fddf4266db09f34c0f7edb189bb98f0f91eb854957e5bcfa5514f1"
+    },
+    {
+      "path": "unfold-s9a-eighteenth-ffn-bias/lane/result.json",
+      "bytes": 551,
+      "sha256": "9879a8d5f11334dca5d0d680d5416d5d71251abfb6ed06b98c83b7ee6060d206"
+    },
+    {
+      "path": "unfold-s9a-eighteenth-ffn-bias/result.json",
+      "bytes": 4588,
+      "sha256": "fc5e458529fddf4266db09f34c0f7edb189bb98f0f91eb854957e5bcfa5514f1"
+    },
+    {
+      "path": "unfold-s9a-eighteenth-ffn-bias/run.py",
+      "bytes": 1314,
+      "sha256": "95d31ef05b0bba505d9efc5da0194e81254511b50268e39b2c41cd87aa1890a5"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/executed-plan.json",
+      "bytes": 822,
+      "sha256": "49838a39e6560b7eba44b2e313e9a3c457f448dace68e6d444b00c08936c5661"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/executed-runner.py",
+      "bytes": 35011,
+      "sha256": "076d0640dc56ed4ec4cea955dc2a1028240101d62137d9a5607379827b40c2b9"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/inputs-after.json",
+      "bytes": 870,
+      "sha256": "155d0a29957c1b14fd8ad198e5338e2ddff7a793b6e97a187411c6348c4e9603"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/inputs-before.json",
+      "bytes": 870,
+      "sha256": "155d0a29957c1b14fd8ad198e5338e2ddff7a793b6e97a187411c6348c4e9603"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/actual-class-defaults.json",
+      "bytes": 139,
+      "sha256": "a7c21e0c1e56f2ce6735f42d2cc9b3e72134fe9426c4d07e0f3754b32cca93fc"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/actual-omitted-default-premises.json",
+      "bytes": 73,
+      "sha256": "a74c1ef7ac3aa65c2caff45ebc3aa43daa0a5b9813497c69fde3a361c61088a2"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/all-fact-deltas.json",
+      "bytes": 19791,
+      "sha256": "1dfdc4306770cd8a1981a25fd7e1dea37d1936633985a4f6c764508603836dd2"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/all-ir-deltas.json",
+      "bytes": 83756,
+      "sha256": "52f79de14ae53646beabb20ad3ddd863fcee24834f4d7b436a7b0c76ed7c9c1e"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/failure.txt",
+      "bytes": 609,
+      "sha256": "059886329cc59dad33e247eebf46ac8af5ee6a9417bb9472a42fc8373275d492"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/omissions.json",
+      "bytes": 502,
+      "sha256": "a7f3b2fd8971f89461f2ce0f3a4bff89a238f59bc9b8a92631183ee4834d6279"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/actual-condition-defaults.json",
+      "bytes": 63,
+      "sha256": "e1b07b5ad9b84f56d2cf8859859fbf952af3219190e8852f6a6626b68516c6de"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/config-access-events.json",
+      "bytes": 48089,
+      "sha256": "1b328b4f4d094f45eaeb6b2fb5e177bd34dfa0122db5085d38609671d1cdae54"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/facts.json",
+      "bytes": 64946,
+      "sha256": "e2124f7c65b9945cefaf879721e0646752888e61ec942290cbef04570007f88e"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/input.json",
+      "bytes": 1087,
+      "sha256": "196fd6ae5c096016b8413b69705434c2cbd31539e7f436585d1e79c6adf85662"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/ir-after-render.json.gz",
+      "bytes": 10158,
+      "sha256": "199e6275bfd089c31c2fef56353aa7cb5b6fd6deb21f3f5813ff9ee6c4445d9f"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/ir-before-render.json.gz",
+      "bytes": 10159,
+      "sha256": "1709d558c280dfe7e94b49cae953d9f2026dcc107f371bf8650e838465059238"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/native-facts.json",
+      "bytes": 130630,
+      "sha256": "346bcf7814bdf1295516311f392fba8b71ff69f80272d72d006eae5cdeac313f"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/original-proof-operands.json",
+      "bytes": 4169,
+      "sha256": "9e3144152a2ffa7fa42aca5f1f6f90e58d0e64db870027cd4c45335b38b5dd90"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/page.html",
+      "bytes": 60169,
+      "sha256": "c2d329e9fff92b5947c86b6bf03fe93d9448684078026723d3de6c39da070721"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/params.json",
+      "bytes": 215,
+      "sha256": "3caf6ed07e21bab46d49a303947a824e99e169f03e5a8c362cf2e163c71b6c3b"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/prepared-documents.json",
+      "bytes": 4746,
+      "sha256": "6874f00453577caf95381a82fb230c53b2d17e872c1a0c3c00c77aa280e3fc3d"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/render-ir-deltas.json",
+      "bytes": 133,
+      "sha256": "3adad2c20188bad018ca030a6833f73cc46d7e4ea230bbb706961383b9eb07b9"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/ordinary/svg-hashes.json",
+      "bytes": 283,
+      "sha256": "f6ce0acd5d629f04682006be985bbff1bc514c47870e82839a131b234f1ffa80"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/post-render-ir-deltas.json",
+      "bytes": 83756,
+      "sha256": "52f79de14ae53646beabb20ad3ddd863fcee24834f4d7b436a7b0c76ed7c9c1e"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/provenance-transition-bindings.json",
+      "bytes": 937,
+      "sha256": "67352cfd44dee53dd7e080519b7759258f4a6eb2877cda1eb29b2420e1b26a6b"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/resolved-config-class.json",
+      "bytes": 482,
+      "sha256": "314afdb20a96fae482ece43282caa08834473fd5d183c2ce5bd0d9b9529c9ef1"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/source-bundles.json",
+      "bytes": 2897,
+      "sha256": "116b9f1af70c6436df6f3f6c12c7c3f5406c521af496dab758a9a5053082abe7"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/actual-condition-defaults.json",
+      "bytes": 139,
+      "sha256": "a7c21e0c1e56f2ce6735f42d2cc9b3e72134fe9426c4d07e0f3754b32cca93fc"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/config-access-events.json",
+      "bytes": 51155,
+      "sha256": "0fa9d490ace845cbdf01b5d77a00fba04dbfa28827cb3eb369e3adfb3b908609"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/facts.json",
+      "bytes": 65905,
+      "sha256": "55600fd9ce93c0112dcac07d1efad8c116a79eb2c344a184e886d83152eb79b3"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/input.json",
+      "bytes": 1011,
+      "sha256": "71950ab553a035aad73ce4aabda65ba80cae9068f7e88cc4176ff196a9178fef"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/ir-after-render.json.gz",
+      "bytes": 10414,
+      "sha256": "9a7024ddddbc0887b898a541967d4e353490c49f5ab62cd39e20cba994518ad8"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/ir-before-render.json.gz",
+      "bytes": 10415,
+      "sha256": "805f50e309ea9e7dc7f7b5ca6751f3474b0a32ad9e73bcece16060a3755bd30f"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/native-facts.json",
+      "bytes": 133325,
+      "sha256": "88d14b20e8dba5edddf52f6ab1b5c949435b74aa6ee0cb06818ee9d75d80b296"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/original-proof-operands.json",
+      "bytes": 3584,
+      "sha256": "a44d09c9b90c83ad3a1298f99b9dcaef779ea9626a3b16c4ca5b2cfc32e6869a"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/page.html",
+      "bytes": 60342,
+      "sha256": "c50d33f6ef71065161af0319b47b9c3c8e46c5ca805aeb21f03e6d1775081da8"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/params.json",
+      "bytes": 215,
+      "sha256": "3caf6ed07e21bab46d49a303947a824e99e169f03e5a8c362cf2e163c71b6c3b"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/prepared-documents.json",
+      "bytes": 4519,
+      "sha256": "8844cf04d54775f947a1c8c1507c709aa96b318b009d5c178dcde28f180ca3d0"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/render-ir-deltas.json",
+      "bytes": 133,
+      "sha256": "3adad2c20188bad018ca030a6833f73cc46d7e4ea230bbb706961383b9eb07b9"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/llama-7b/sparse-valid/svg-hashes.json",
+      "bytes": 283,
+      "sha256": "f6ce0acd5d629f04682006be985bbff1bc514c47870e82839a131b234f1ffa80"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/result.json",
+      "bytes": 70335,
+      "sha256": "6911be7050c5e5c92edb3fb6269e9b366ee0db468c030209e177249dd5d43b8d"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/source-after.json",
+      "bytes": 105345,
+      "sha256": "a971a0efd4c376b1445dcc4908159932448bf46cd59083d26ff47227041132b4"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/source-before.json",
+      "bytes": 105345,
+      "sha256": "a971a0efd4c376b1445dcc4908159932448bf46cd59083d26ff47227041132b4"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/source-dependencies-after.json",
+      "bytes": 1828,
+      "sha256": "83f4e7dc97dc460988b46d3232701206e11c1d4e7837b55ef3988bbcd59d7ebb"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama/source-dependencies.json",
+      "bytes": 1828,
+      "sha256": "83f4e7dc97dc460988b46d3232701206e11c1d4e7837b55ef3988bbcd59d7ebb"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama-lane/actual-sparse-config-html.log",
+      "bytes": 197,
+      "sha256": "5d09618ea892c783424e73230920827ded165518bb43dadb49eba9391262480a"
+    },
+    {
+      "path": "unfold-s9a-sparse-nineteenth-llama-lane/result.json",
+      "bytes": 551,
+      "sha256": "20f07ddf7987cc5bfa7eccf4ded7f17a18e85550718b594765a3379a2add334f"
+    },
+    {
+      "path": "unfold-s9a-nineteenth-return-correction.json",
+      "bytes": 904,
+      "sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452"
+    },
+    {
+      "path": "unfold-s9a-ffn-bias-correction-note.json",
+      "bytes": 856,
+      "sha256": "7a49393a98cb283343dc0b4127acad6afda3160de12d909c9416cd71fed62eb1"
+    },
+    {
+      "path": "unfold-s9a-intended-declarations-handoff.json",
+      "bytes": 5555,
+      "sha256": "e6c24664f88a0354449340e490c3d4a3bff3c382fd825f55c9487241e7c98ea2"
+    },
+    {
+      "path": "unfold-s9a-intended-declarations-supplement.json",
+      "bytes": 804,
+      "sha256": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905"
+    },
+    {
+      "path": "unfold-s9a-declaration-test-lifecycle.json",
+      "bytes": 471,
+      "sha256": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+    }
+  ],
+  "all_restored_members_equal": true,
+  "archive_sha256": "6148ec3301f2cee67fe2a23ae5f9cf73826f9a38ef8e28844101d1fe464820a2"
+}

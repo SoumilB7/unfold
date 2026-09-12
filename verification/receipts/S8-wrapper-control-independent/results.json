@@ -1,0 +1,80 @@
+{
+  "before_refusal": {
+    "exit_code": 1,
+    "output": {
+      "expected_kind": "unresolved",
+      "owner_identifiers": [
+        {
+          "context": "parameter",
+          "line": 6
+        },
+        {
+          "context": "load",
+          "line": 10
+        }
+      ],
+      "reason": "Delegation only on the retained branch; other wrapper effects and try/finally paths remain unresolved",
+      "result_kind": "conditional_wrapper",
+      "source": "class Cell:\n    def forward(owner, value):\n        return owner.child(value)\n\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            unknown()\n        except Exception as owner:\n            return captured(owner, value)\n    return wrapper\n",
+      "unsupported": [
+        {
+          "kind": "try",
+          "line": 7
+        }
+      ]
+    },
+    "source_sha256": "a1f10e0dbc7f4f4b0bf848d54816bd17a15e0b3ad87d0722c768c1f70afcd33f"
+  },
+  "current_refusal": {
+    "exit_code": 0,
+    "output": {
+      "expected_kind": "unresolved",
+      "owner_identifiers": [
+        {
+          "context": "parameter",
+          "line": 6
+        },
+        {
+          "context": "load",
+          "line": 10
+        }
+      ],
+      "reason": "invoked wrapper has unaccounted source control (try); clause boundaries and bound targets require a neutral source observation",
+      "result_kind": "unresolved",
+      "source": "class Cell:\n    def forward(owner, value):\n        return owner.child(value)\n\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            unknown()\n        except Exception as owner:\n            return captured(owner, value)\n    return wrapper\n",
+      "unsupported": [
+        {
+          "kind": "try",
+          "line": 7
+        }
+      ]
+    },
+    "source_sha256": "84644674ace0a0321d984737d7789bcc30aa32a5254cdd8d107004f2dce94cd5"
+  },
+  "installed_wrapper": {
+    "delegation_calls": [
+      {
+        "callee": "forward_fn",
+        "line": 315
+      },
+      {
+        "callee": "unscale_lora_layers",
+        "line": 320
+      }
+    ],
+    "else_count": 0,
+    "finally_count": 1,
+    "handlers": 0,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+    "sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+    "try_lines": [
+      313,
+      320
+    ],
+    "wrapper_lines": [
+      293,
+      320
+    ]
+  },
+  "program_index_sha256": "e2369fb5f5b99f590253bb557b04b96200a4ae8257f7843d625e8eeea6af1f4e"
+}

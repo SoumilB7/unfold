@@ -1,0 +1,19 @@
+[
+  {
+    "path": [
+      "error"
+    ],
+    "before": {
+      "message": "Loaded 'bloom' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+      "type": "ConfigParseError"
+    },
+    "after": null
+  },
+  {
+    "path": [
+      "layers"
+    ],
+    "before": null,
+    "after": 2
+  }
+]

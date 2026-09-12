@@ -1,0 +1,20 @@
+{
+  "after_bytes": 106671,
+  "after_sha256": "be424212c6ae675c444134042eafd402f9392fe1f33c44b7b29968c03b8d5f1d",
+  "before_bytes": 106671,
+  "before_sha256": "b303c2171a08d2fb555fc4dd545ee3aba50ee0aafc2499d5dde1c0d453fe0b6b",
+  "exact_new_mount_occurrences": 239,
+  "exact_old_mount_occurrences": 239,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-f3945e7745",
+  "mount_identity_before": "uf-6e0391e7d1",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 7,
+  "raw_ordered_svg_count_before": 7,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "command-a-03-2025",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

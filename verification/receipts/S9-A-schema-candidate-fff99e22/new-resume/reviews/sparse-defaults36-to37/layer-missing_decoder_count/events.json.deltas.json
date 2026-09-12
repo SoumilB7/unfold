@@ -1,0 +1,42 @@
+[
+  {
+    "path": [
+      0,
+      "document_token"
+    ],
+    "before": "a6d4c0749920eb7682f53931fe6cea8261f9d1c2a2f5fbc664267b24ac8fc901",
+    "after": "f3a31c4b3d4c2a60bbca183f60daa6770f1c4e02c8c61b6403ac6636299daf40"
+  },
+  {
+    "path": [
+      1,
+      "document_token"
+    ],
+    "before": "a6d4c0749920eb7682f53931fe6cea8261f9d1c2a2f5fbc664267b24ac8fc901",
+    "after": "f3a31c4b3d4c2a60bbca183f60daa6770f1c4e02c8c61b6403ac6636299daf40"
+  },
+  {
+    "path": [
+      2,
+      "document_token"
+    ],
+    "before": "a6d4c0749920eb7682f53931fe6cea8261f9d1c2a2f5fbc664267b24ac8fc901",
+    "after": "f3a31c4b3d4c2a60bbca183f60daa6770f1c4e02c8c61b6403ac6636299daf40"
+  },
+  {
+    "path": [
+      3,
+      "document_token"
+    ],
+    "before": "a6d4c0749920eb7682f53931fe6cea8261f9d1c2a2f5fbc664267b24ac8fc901",
+    "after": "f3a31c4b3d4c2a60bbca183f60daa6770f1c4e02c8c61b6403ac6636299daf40"
+  },
+  {
+    "path": [
+      4,
+      "document_token"
+    ],
+    "before": "a6d4c0749920eb7682f53931fe6cea8261f9d1c2a2f5fbc664267b24ac8fc901",
+    "after": "f3a31c4b3d4c2a60bbca183f60daa6770f1c4e02c8c61b6403ac6636299daf40"
+  }
+]

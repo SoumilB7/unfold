@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "frozen28_sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615",
+      "sha256": "ec4dd8dcd9a04bf8e244155f96f90bf79684f17ec82129cf75bf106cffb57e84"
+    },
+    {
+      "path": "model_unfolder/renderers/html/sections.py",
+      "frozen28_sha256": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+      "sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "frozen28_sha256": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+      "sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c"
+    },
+    {
+      "path": "tests/test_projection_obligations.py",
+      "frozen28_sha256": "16a238a278ddb9ff7e91f51d863e9f734b45f833b5bd67d1f0440559973ba495",
+      "sha256": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390"
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "frozen28_sha256": null,
+      "sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61"
+    }
+  ],
+  "artifacts": {
+    "changes.patch": "cbb857a394981d23a163fdfdedd89da81dbde73b4db8c353bba07da84cb6b313",
+    "handoff.json": "9b9be56786f72832bfbfb14b9c4c615015d715d289586695fec1a1bdfed31699",
+    "metadata-delta-proposal.json": "b39c61c1d262817724012758d900460b44726de5b592aaab07e586608dd7a6e9",
+    "source/model_unfolder/evidence/registry.py": "ec4dd8dcd9a04bf8e244155f96f90bf79684f17ec82129cf75bf106cffb57e84",
+    "source/model_unfolder/renderers/html/fact_projection.py": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+    "source/model_unfolder/renderers/html/sections.py": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f",
+    "source/tests/test_projection_obligations.py": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390",
+    "source/tests/test_s9_width_banner_receipts.py": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61"
+  }
+}

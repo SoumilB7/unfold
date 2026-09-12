@@ -1,0 +1,292 @@
+{
+  "old_failed_tests": 25,
+  "mapped_tests": 25,
+  "source_sha256": "27a72e4bec6343e51eae4a47d6ed8cebce28f850a214906655f8ac240c217dc5",
+  "rows": [
+    {
+      "test": "test_sdxl_unet_conditioning_is_honest",
+      "line": 599,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain two actual encoder components and source-proven text_time conditional helper routes. Do not restore conventional text\u2192K/V or universal additive ResNet claims from presence/config.",
+      "new_test": "test_sdxl_retains_both_encoders_and_conditional_added_embedding",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_image_conditioned_unet_draws_no_text_tower",
+      "line": 640,
+      "classification": "explicit num_attention_heads constructor rejection; old modality label authored by enum mapping",
+      "semantic_obligation": "Retain no-invented-text-tower control. Image modality/projector labels previously came from enum vocabulary, not applied-function evidence.",
+      "new_test": "test_published_image_decoder_keeps_own_projection_without_text_tower",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "published Kandinsky plus exact original typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence",
+      "line": 713,
+      "classification": "explicit num_attention_heads constructor rejection; old modality label authored by enum mapping",
+      "semantic_obligation": "Retain no-fabricated-Transformer2D/GEGLU controls. Encoded text was inferred from text_proj enum.",
+      "new_test": "test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "synthetic documented default-head first IF plus exact original typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_spatio_temporal_unet_draws_temporal_branch",
+      "line": 750,
+      "classification": "constructed path succeeds; old flag absent; actual temporal occurrence/shape preservation must be checked separately",
+      "semantic_obligation": "Prior exact-root reader proves lexical num_frames presence; per-stage reader proves reachable Conv3d/AlphaBlender construction. Fixed sequential temporal computation, alpha formula and runtime 25 frames exceed these proofs. Actual temporal occurrence/shape preservation still needs saved candidate review.",
+      "new_test": "test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "exact original valid input",
+      "classification_scope": "historical broad-run triage; current disposition below",
+      "current_disposition": "Actual original-input SVD construction, 158 temporal occurrences and 22 mixer argument routes reviewed in S8-variant-preservation-independent; no alpha formula or runtime frame-count claim."
+    },
+    {
+      "test": "test_image_unet_is_not_temporal",
+      "line": 769,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain no temporal operation fabrication. Absent temporal bool does not establish false; compare actual bounded source/occurrences.",
+      "new_test": "test_image_unet_has_2d_occurrences_without_temporal_fabrication",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_sdxl_still_draws_transformer2d_cell",
+      "line": 780,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Require actual resolved Transformer2D occurrences and backed FFN graph, not old down.attn_kind dictionary.",
+      "new_test": "test_sdxl_draws_constructed_transformer2d_and_qualified_ffn",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_text_conditioned_unet_still_says_encoded_text",
+      "line": 813,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old default text modality was inferred from text encoder presence; replace with exact root formal/context route while retaining encoder components.",
+      "new_test": "test_unet_context_argument_does_not_assert_unproved_kv_role",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_stage_part_kinds_resolve_for_all_block_variants",
+      "line": 824,
+      "classification": "construction or reader fallback cause not printed; no valid inference from absent unet key alone; capture exact failure before test migration",
+      "semantic_obligation": "Exact missing-UNet cause not printed. Need saved typed constructor/reader failure before deciding fixture correction versus product defect; no automatic stage placement by list position.",
+      "new_test": "test_simple_cross_stage_occurrences_are_constructed_and_carded",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "exact original valid input",
+      "classification_scope": "historical broad-run triage; current disposition below",
+      "current_disposition": "Actual original second-IF input succeeds with nine placed stages; S8-variant-preservation-independent/deepfloyd-second. Original broad failure cause remains unrecorded."
+    },
+    {
+      "test": "test_unet_structure_parsed",
+      "line": 848,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old aggregate down/up geometry dictionaries replaced by actual stage/population/shape facts; layers=0 expectation contradicts requested shape-backed nonzero banner.",
+      "new_test": "test_unet_structure_has_constructed_stages_and_nonzero_summary",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_renders_loop_and_ushape",
+      "line": 866,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual down/mid/up and skip proofs; do not restore pipeline recurrence solely from declared component presence.",
+      "new_test": "test_unet_component_entry_and_constructed_stages_couple",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_custom_stage_is_visible_but_unapproved",
+      "line": 881,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "CustomMagicDown is unsupported constructor factory address; preserve exact typed failure/unknown label, not a fabricated constructed stage.",
+      "new_test": "test_unet_unsupported_stage_factory_is_a_visible_typed_failure",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_view_shows_text_conditioning_rail",
+      "line": 1453,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Replace old unet_text_cond ID with actual root formal/context route, not asserted encoder\u2192K/V semantics.",
+      "new_test": "test_unet_overview_draws_the_source_bound_context_route",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_encoded_text_box_drills_into_the_concat_view",
+      "line": 1466,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Legacy two-encoder widths and matching sum did not prove torch.cat application; previously reviewed outer-connection removal applies. Preserve each independently proven encoder internal drawing.",
+      "new_test": "test_dual_encoder_internals_survive_without_an_inferred_concat",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill",
+      "line": 1500,
+      "classification": "valid variant removes text_time; old card ID absent; actual encoder_hid_proj occurrence/shape/helper route requires saved output review",
+      "semantic_obligation": "This fixture removes text_time. Need actual encoder_hid_proj population, weight shape and conditional invoked source binding. Old config-triggered text_proj_op ID alone is not an applied-function proof.",
+      "new_test": "test_encoder_bridge_own_linear_shape_and_conditional_call_ports",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "exact original valid input",
+      "classification_scope": "historical broad-run triage; current disposition below",
+      "current_disposition": "Actual original-input bridge Linear shape and conditional formal-to-helper route reviewed in S8-variant-preservation-independent/encoder-bridge."
+    },
+    {
+      "test": "test_unet_stage_drills_show_per_stage_dims",
+      "line": 1527,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Use own occurrence parameter shapes, not stage-wide channel substitution or legacy resnet card ID.",
+      "new_test": "test_unet_stage_drills_show_each_occurrences_own_weight_shape",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_resnet_block_has_no_repeat_pill",
+      "line": 1556,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Preserve actual own ResNet primitive cards/shape and no invented per-cell repeat; ancestor repetition must be occurrence-backed.",
+      "new_test": "test_unet_resnet_is_one_drawn_occurrence_not_a_repeated_cell",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_attention_internals_do_not_gain_unproved_u4b_details",
+      "line": 1576,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain unsupported mechanism visibility and no invented QKV/cache/rope/scaling. Check own attention card rather than global old phrase.",
+      "new_test": "test_unet_attention_containment_does_not_invent_inner_compute",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_text_conditioning_propagates_through_drill_levels",
+      "line": 1592,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Actual root/context input connections must remain visible through relevant drills; old two-CLIP/KV semantics exceed outer proof.",
+      "new_test": "test_unet_context_reference_couples_at_each_proved_deep_drill",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_cross_attention_drill_shows_text_entering",
+      "line": 1617,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old selfattn/crossattn IDs and K/V designation replaced by exact call-port facts and mechanism unknown; do not claim absence of all actual context wiring.",
+      "new_test": "test_unet_external_context_drill_is_distinct_from_self_attention",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_hero_denoiser_labeled_unet_not_dit",
+      "line": 1637,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Use actual component-entry/pipeline placement; unconditional SAMPLING LOOP title is no longer required for a component-only result.",
+      "new_test": "test_unet_component_entry_uses_its_actual_denoiser_label",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_view_stages_clickable_carded_and_clean",
+      "line": 1655,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain exact drawn-node/card coupling for actual stage IDs; raw config provenance strings are not proof obligations.",
+      "new_test": "test_unet_overview_stage_occurrences_and_skip_routes_are_carded",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_hero_loop_has_arrows",
+      "line": 1693,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Old loop edges inferred from presence; restoring eight arrows would fabricate unproven outer connections. Validate actual established root/stage ports separately.",
+      "new_test": "test_unet_entry_arrows_are_declared_ports_not_a_sampling_claim",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_stage_drills_into_resnet_and_transformer_reusing_openers",
+      "line": 1705,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual ResNet/Transformer/FFN occurrence cards and real operations. Shared unscoped old IDs and fully solid skips are not authority.",
+      "new_test": "test_unet_stage_drills_keep_occurrence_cards_and_qualified_ffn_opener",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    },
+    {
+      "test": "test_unet_mid_block_is_resnet_transformer_resnet_sandwich",
+      "line": 1739,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Retain actual distinct pre/post ResNet and attention population and source port order if proved; no paired-repeat invention. New own occurrence IDs required.",
+      "new_test": "test_unet_mid_occurrences_preserve_shapes_with_stage_order_open",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below",
+      "current_disposition": "Owner accepted retirement of two unconditional template ordering edges pre-ResNet to attention and attention to post-ResNet; distinct occurrences and own shapes preserved, direct stage order explicitly open. This is not connection-preservation PASS."
+    },
+    {
+      "test": "test_unet_resnet_view_shows_timestep_injection_and_correct_residual",
+      "line": 1763,
+      "classification": "shared invalid text_time constructor fixture; later assertions additionally require semantic migration",
+      "semantic_obligation": "Bounded ResNet return/conditioning routes are independently reviewed; preserve proved edges and visible unresolved bridge. Do not replace with old complete bypass template.",
+      "new_test": "test_unet_resnet_draws_proved_fragments_and_conditional_arithmetic",
+      "current_status": "implemented; actual focused execution pending",
+      "original_failure_retained_in": "S8-final-broad-a83d704/file-bracket/batch-002.log (lossless gzip path map S8-archive-whitespace-ca15e58)",
+      "new_input_scope": "shared fixture repaired with three exact public constructor fields; original incomplete fixture retained as typed-negative",
+      "classification_scope": "historical broad-run triage; current disposition below"
+    }
+  ],
+  "additional_negative_tests": [
+    "test_incomplete_text_time_fixture_returns_visible_constructor_failure",
+    "test_original_explicit_head_inputs_keep_their_specific_failure[kandinsky-original-invalid]",
+    "test_original_explicit_head_inputs_keep_their_specific_failure[if-first-original-invalid]"
+  ],
+  "shared_actual_fixture": "sdxl_render: one real API Diagram/IR/HTML, module scope, read-only use; variant inputs constructed independently"
+}

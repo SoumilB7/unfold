@@ -1,0 +1,581 @@
+{
+  "scope": "Exploratory installed-version reconstruction from published denoiser-only config; no checkpoint weights or historical runtime claim.",
+  "commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+  "html_sha256": "f98fe5ee68b11a2ea72b6448356109a6fd985010a648f423d01eeb5fdf8d0a66",
+  "source_page": "/private/tmp/unfold-s8-generalization-293c2d9/ddpm-cifar10/ordinary/page.html",
+  "baked_svgs": 1145,
+  "distinct_views": 94,
+  "views": [
+    {
+      "label": "architecture",
+      "png": "00__architecture.png",
+      "svg": "00__architecture.svg",
+      "visual_hash": "afb3f2630541e788d8825d73fbd139f0"
+    },
+    {
+      "label": "text_encoder",
+      "png": "01__text_encoder.png",
+      "svg": "01__text_encoder.svg",
+      "visual_hash": "19a5df7d6d02784d270c4d5cfe0afd2f"
+    },
+    {
+      "label": "denoiser",
+      "png": "02__denoiser.png",
+      "svg": "02__denoiser.svg",
+      "visual_hash": "6556425aa5af70795003bb1944709257"
+    },
+    {
+      "label": "text_encoder_op_ffn",
+      "png": "03__text_encoder_op_ffn.png",
+      "svg": "03__text_encoder_op_ffn.svg",
+      "visual_hash": "ab2595c521c1dc2c4df2f012d996095f"
+    },
+    {
+      "label": "instance_down_blocks__0",
+      "png": "04__instance_down_blocks__0.png",
+      "svg": "04__instance_down_blocks__0.svg",
+      "visual_hash": "558191ca883de2c27cc0a9e43c91cb02"
+    },
+    {
+      "label": "instance_down_blocks__1",
+      "png": "05__instance_down_blocks__1.png",
+      "svg": "05__instance_down_blocks__1.svg",
+      "visual_hash": "f45e76aae779febe7a23424b925045c1"
+    },
+    {
+      "label": "instance_down_blocks__3",
+      "png": "06__instance_down_blocks__3.png",
+      "svg": "06__instance_down_blocks__3.svg",
+      "visual_hash": "c196c884f2700b71760a6a6c0fac5c92"
+    },
+    {
+      "label": "instance_mid_block",
+      "png": "07__instance_mid_block.png",
+      "svg": "07__instance_mid_block.svg",
+      "visual_hash": "d92d9a299eb123d0513a57f838c8971b"
+    },
+    {
+      "label": "instance_up_blocks__0",
+      "png": "08__instance_up_blocks__0.png",
+      "svg": "08__instance_up_blocks__0.svg",
+      "visual_hash": "37ae94342573452351b37a1c10531ad1"
+    },
+    {
+      "label": "instance_up_blocks__0",
+      "png": "09__instance_up_blocks__0__1.png",
+      "svg": "09__instance_up_blocks__0__1.svg",
+      "visual_hash": "e11ce3eb9e7762deccafcd808a7b37e2"
+    },
+    {
+      "label": "instance_up_blocks__2",
+      "png": "10__instance_up_blocks__2.png",
+      "svg": "10__instance_up_blocks__2.svg",
+      "visual_hash": "ea44bf35928fc9494ab77d2502992e54"
+    },
+    {
+      "label": "instance_up_blocks__2",
+      "png": "11__instance_up_blocks__2__1.png",
+      "svg": "11__instance_up_blocks__2__1.svg",
+      "visual_hash": "bceb4626a6850f7d91ca801d946665b1"
+    },
+    {
+      "label": "instance_time_embedding",
+      "png": "12__instance_time_embedding.png",
+      "svg": "12__instance_time_embedding.svg",
+      "visual_hash": "30cf75e85c450d4efc71f76c6b65edd3"
+    },
+    {
+      "label": "unet_primary_region_0",
+      "png": "13__unet_primary_region_0.png",
+      "svg": "13__unet_primary_region_0.svg",
+      "visual_hash": "c25bf4ab7db410387aaaa0d6f84a410b"
+    },
+    {
+      "label": "unet_primary_region_1",
+      "png": "14__unet_primary_region_1.png",
+      "svg": "14__unet_primary_region_1.svg",
+      "visual_hash": "4aafd9a24b9d6dca7bc0eead44c60dd8"
+    },
+    {
+      "label": "unet_primary_region_2",
+      "png": "15__unet_primary_region_2.png",
+      "svg": "15__unet_primary_region_2.svg",
+      "visual_hash": "0f6f99d667c240b53523317e296e4149"
+    },
+    {
+      "label": "unet_primary_region_3",
+      "png": "16__unet_primary_region_3.png",
+      "svg": "16__unet_primary_region_3.svg",
+      "visual_hash": "45f7ed8060e7444c9e19bf84fab95831"
+    },
+    {
+      "label": "unet_primary_region_8",
+      "png": "17__unet_primary_region_8.png",
+      "svg": "17__unet_primary_region_8.svg",
+      "visual_hash": "0537f921513a0d967cfc7bbfbbbced9d"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets",
+      "png": "18__instance_down_blocks__0__resnets.png",
+      "svg": "18__instance_down_blocks__0__resnets.svg",
+      "visual_hash": "5c5c75a60037245db4612f1107aaed98"
+    },
+    {
+      "label": "instance_down_blocks__0__downsamplers",
+      "png": "19__instance_down_blocks__0__downsamplers.png",
+      "svg": "19__instance_down_blocks__0__downsamplers.svg",
+      "visual_hash": "cb4eb5c105a6b2e643d17fdd5a1fa953"
+    },
+    {
+      "label": "instance_down_blocks__1__downsamplers",
+      "png": "20__instance_down_blocks__1__downsamplers.png",
+      "svg": "20__instance_down_blocks__1__downsamplers.svg",
+      "visual_hash": "19b18416dda394ed9f9a087a3576e208"
+    },
+    {
+      "label": "instance_up_blocks__0__resnets",
+      "png": "21__instance_up_blocks__0__resnets.png",
+      "svg": "21__instance_up_blocks__0__resnets.svg",
+      "visual_hash": "18ca25fbb302aed371fcc3eccdc74a25"
+    },
+    {
+      "label": "instance_up_blocks__0__upsamplers",
+      "png": "22__instance_up_blocks__0__upsamplers.png",
+      "svg": "22__instance_up_blocks__0__upsamplers.svg",
+      "visual_hash": "4d6af807a2f50ba96d7b5aa7463716f2"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_0",
+      "png": "23__instance_up_blocks__0__join_0_operand_0.png",
+      "svg": "23__instance_up_blocks__0__join_0_operand_0.svg",
+      "visual_hash": "7eb4a55bf07d4da5dea38be9bfdd69ff"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_1",
+      "png": "24__instance_up_blocks__0__join_0_operand_1.png",
+      "svg": "24__instance_up_blocks__0__join_0_operand_1.svg",
+      "visual_hash": "01989ccaf21b63e8177a0b4a0c653b42"
+    },
+    {
+      "label": "instance_up_blocks__2__join_0_operand_0",
+      "png": "25__instance_up_blocks__2__join_0_operand_0.png",
+      "svg": "25__instance_up_blocks__2__join_0_operand_0.svg",
+      "visual_hash": "5b6c8509dabc55bb2efda60cd6a3de7b"
+    },
+    {
+      "label": "instance_up_blocks__2__join_0_operand_1",
+      "png": "26__instance_up_blocks__2__join_0_operand_1.png",
+      "svg": "26__instance_up_blocks__2__join_0_operand_1.svg",
+      "visual_hash": "d0aa7a7cf55cf1994e4a06fc45e83979"
+    },
+    {
+      "label": "unet_primary_region_0__when_true",
+      "png": "27__unet_primary_region_0__when_true.png",
+      "svg": "27__unet_primary_region_0__when_true.svg",
+      "visual_hash": "505843adf8a88fcfd556eb2ebce09d8a"
+    },
+    {
+      "label": "unet_primary_region_2__iteration",
+      "png": "28__unet_primary_region_2__iteration.png",
+      "svg": "28__unet_primary_region_2__iteration.svg",
+      "visual_hash": "69c862cf92c82a87f0d8e2405501918f"
+    },
+    {
+      "label": "unet_primary_region_3__when_true",
+      "png": "29__unet_primary_region_3__when_true.png",
+      "svg": "29__unet_primary_region_3__when_true.svg",
+      "visual_hash": "f6a61587c2aab41ef4f6f693eed98bff"
+    },
+    {
+      "label": "unet_primary_region_8__when_true",
+      "png": "30__unet_primary_region_8__when_true.png",
+      "svg": "30__unet_primary_region_8__when_true.svg",
+      "visual_hash": "d68cdde428b857bdac1991a342484f62"
+    },
+    {
+      "label": "unet_primary_region_9__when_true",
+      "png": "31__unet_primary_region_9__when_true.png",
+      "svg": "31__unet_primary_region_9__when_true.svg",
+      "visual_hash": "4725d6f5fdd53336ef4dc002f2ce0d83"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "32__instance_down_blocks__0__resnets__0.png",
+      "svg": "32__instance_down_blocks__0__resnets__0.svg",
+      "visual_hash": "19821f2789608dae0fcfd478cd630fd1"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "33__instance_down_blocks__0__resnets__0__1.png",
+      "svg": "33__instance_down_blocks__0__resnets__0__1.svg",
+      "visual_hash": "6c8b4208e9d1bfa17681e7daa2c1cfa7"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "34__instance_down_blocks__0__resnets__0__2.png",
+      "svg": "34__instance_down_blocks__0__resnets__0__2.svg",
+      "visual_hash": "58964789421698949303939e67370897"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "35__instance_down_blocks__0__resnets__0__3.png",
+      "svg": "35__instance_down_blocks__0__resnets__0__3.svg",
+      "visual_hash": "fa3f7a4dfa86cf725c120bd889223165"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0",
+      "png": "36__instance_down_blocks__0__resnets__0__4.png",
+      "svg": "36__instance_down_blocks__0__resnets__0__4.svg",
+      "visual_hash": "c1474ad01b6f72754b41f23ae8612f11"
+    },
+    {
+      "label": "instance_down_blocks__0__downsamplers__0",
+      "png": "37__instance_down_blocks__0__downsamplers__0.png",
+      "svg": "37__instance_down_blocks__0__downsamplers__0.svg",
+      "visual_hash": "c378b94855347edda38a446522ae1b5e"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0",
+      "png": "38__instance_down_blocks__1__attentions__0.png",
+      "svg": "38__instance_down_blocks__1__attentions__0.svg",
+      "visual_hash": "66886e3fbb851ec1f1d4231aa27fc41a"
+    },
+    {
+      "label": "instance_down_blocks__1__resnets__0",
+      "png": "39__instance_down_blocks__1__resnets__0.png",
+      "svg": "39__instance_down_blocks__1__resnets__0.svg",
+      "visual_hash": "9a609d8b7985db5128e177d79c89cf1a"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "40__instance_mid_block__resnets__0.png",
+      "svg": "40__instance_mid_block__resnets__0.svg",
+      "visual_hash": "700b5464b77fb61adf202cde7c2a36a6"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "41__instance_mid_block__resnets__0__1.png",
+      "svg": "41__instance_mid_block__resnets__0__1.svg",
+      "visual_hash": "b52b07d82d463c01453ff2e336e097fa"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "42__instance_mid_block__resnets__0__2.png",
+      "svg": "42__instance_mid_block__resnets__0__2.svg",
+      "visual_hash": "b47ab0b0e9ee9cae96a1bba79d825775"
+    },
+    {
+      "label": "instance_mid_block__resnets__0",
+      "png": "43__instance_mid_block__resnets__0__3.png",
+      "svg": "43__instance_mid_block__resnets__0__3.svg",
+      "visual_hash": "0aaa62f8093e06e30f5a6b86402a5c95"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_0__when_true",
+      "png": "44__instance_up_blocks__0__join_0_operand_0__when_true.png",
+      "svg": "44__instance_up_blocks__0__join_0_operand_0__when_true.svg",
+      "visual_hash": "2ab9549d861e2489c8ca8c1e83208bab"
+    },
+    {
+      "label": "instance_up_blocks__0__join_0_operand_1__when_true",
+      "png": "45__instance_up_blocks__0__join_0_operand_1__when_true.png",
+      "svg": "45__instance_up_blocks__0__join_0_operand_1__when_true.svg",
+      "visual_hash": "8bdfebd8d116799e4f164128634293be"
+    },
+    {
+      "label": "instance_up_blocks__2__join_0_operand_1__source",
+      "png": "46__instance_up_blocks__2__join_0_operand_1__source.png",
+      "svg": "46__instance_up_blocks__2__join_0_operand_1__source.svg",
+      "visual_hash": "0589da8601f17a7c88f2882342e790e3"
+    },
+    {
+      "label": "unet_primary_region_0__when_true__operand_0",
+      "png": "47__unet_primary_region_0__when_true__operand_0.png",
+      "svg": "47__unet_primary_region_0__when_true__operand_0.svg",
+      "visual_hash": "cb98eec7f12f429670c4a17dc29ddafa"
+    },
+    {
+      "label": "unet_primary_region_2__iteration__when_true",
+      "png": "48__unet_primary_region_2__iteration__when_true.png",
+      "svg": "48__unet_primary_region_2__iteration__when_true.svg",
+      "visual_hash": "ab3df3d2235b265a6a90e5cd4790a339"
+    },
+    {
+      "label": "unet_primary_region_2__iteration__when_false",
+      "png": "49__unet_primary_region_2__iteration__when_false.png",
+      "svg": "49__unet_primary_region_2__iteration__when_false.svg",
+      "visual_hash": "0d4d8e6c57f4ee9fadb96682b8234a90"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1",
+      "png": "50__unet_primary_region_3__when_true__arg_1.png",
+      "svg": "50__unet_primary_region_3__when_true__arg_1.svg",
+      "visual_hash": "0ece32be7380519db56b3c45f28ec133"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true",
+      "png": "51__unet_primary_region_4__iteration__when_true.png",
+      "svg": "51__unet_primary_region_4__iteration__when_true.svg",
+      "visual_hash": "a37befa7377b340afbb9117ab8321668"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_false",
+      "png": "52__unet_primary_region_4__iteration__when_false.png",
+      "svg": "52__unet_primary_region_4__iteration__when_false.svg",
+      "visual_hash": "8f0f7aa4441fe415c9525885738b5898"
+    },
+    {
+      "label": "unet_primary_region_8__when_true__operand_1",
+      "png": "53__unet_primary_region_8__when_true__operand_1.png",
+      "svg": "53__unet_primary_region_8__when_true__operand_1.svg",
+      "visual_hash": "7f898d4827a7e50ab79bd4ad04843dc0"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1",
+      "png": "54__unet_primary_region_9__when_true__operand_1.png",
+      "svg": "54__unet_primary_region_9__when_true__operand_1.svg",
+      "visual_hash": "16a3b659241b8ae02eee569cf74afc83"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_0",
+      "png": "55__instance_down_blocks__0__resnets__0__conditioning_0_operand_0.png",
+      "svg": "55__instance_down_blocks__0__resnets__0__conditioning_0_operand_0.svg",
+      "visual_hash": "3bea91a1cf3f7b086ede3eaaa25b2933"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_1",
+      "png": "56__instance_down_blocks__0__resnets__0__conditioning_0_operand_1.png",
+      "svg": "56__instance_down_blocks__0__resnets__0__conditioning_0_operand_1.svg",
+      "visual_hash": "951748169439d4520be613f69e36a724"
+    },
+    {
+      "label": "instance_down_blocks__1__attentions__0__to_out",
+      "png": "57__instance_down_blocks__1__attentions__0__to_out.png",
+      "svg": "57__instance_down_blocks__1__attentions__0__to_out.svg",
+      "visual_hash": "82e27508ad660e0b94f1c722d8963f20"
+    },
+    {
+      "label": "instance_mid_block__resnets__0__conditioning_1_operand_0",
+      "png": "58__instance_mid_block__resnets__0__conditioning_1_operand_0.png",
+      "svg": "58__instance_mid_block__resnets__0__conditioning_1_operand_0.svg",
+      "visual_hash": "a4254679ca3bb949a5ca5ebf6aa94639"
+    },
+    {
+      "label": "instance_mid_block__resnets__0__conditioning_1_operand_1",
+      "png": "59__instance_mid_block__resnets__0__conditioning_1_operand_1.png",
+      "svg": "59__instance_mid_block__resnets__0__conditioning_1_operand_1.svg",
+      "visual_hash": "9022fded4566a88f820f9fb8713f342b"
+    },
+    {
+      "label": "unet_primary_region_2__iteration__when_true__arg_0",
+      "png": "60__unet_primary_region_2__iteration__when_true__arg_0.png",
+      "svg": "60__unet_primary_region_2__iteration__when_true__arg_0.svg",
+      "visual_hash": "b477137a26b28477f35fd00de7a12348"
+    },
+    {
+      "label": "unet_primary_region_2__iteration__when_true__arg_2",
+      "png": "61__unet_primary_region_2__iteration__when_true__arg_2.png",
+      "svg": "61__unet_primary_region_2__iteration__when_true__arg_2.svg",
+      "visual_hash": "1dcc4bc3e8f01a5b82e8fefb6a4d99ab"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_true",
+      "png": "62__unet_primary_region_3__when_true__arg_1__when_true.png",
+      "svg": "62__unet_primary_region_3__when_true__arg_1__when_true.svg",
+      "visual_hash": "f65fcedbe1d30d44f79be1dbea418020"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_false",
+      "png": "63__unet_primary_region_3__when_true__arg_1__when_false.png",
+      "svg": "63__unet_primary_region_3__when_true__arg_1__when_false.svg",
+      "visual_hash": "2dd44513035ad31eea3f65c75a91bd45"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1",
+      "png": "64__unet_primary_region_4__iteration__when_true__arg_1.png",
+      "svg": "64__unet_primary_region_4__iteration__when_true__arg_1.svg",
+      "visual_hash": "f5181192abaa7208136c70de461b936b"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_3",
+      "png": "65__unet_primary_region_4__iteration__when_true__arg_3.png",
+      "svg": "65__unet_primary_region_4__iteration__when_true__arg_3.svg",
+      "visual_hash": "84cc341b1a6b25e3610f029bf6f73d58"
+    },
+    {
+      "label": "unet_primary_region_8__when_true__operand_1__iteration",
+      "png": "66__unet_primary_region_8__when_true__operand_1__iteration.png",
+      "svg": "66__unet_primary_region_8__when_true__operand_1__iteration.svg",
+      "visual_hash": "dd5de8f9f5375eec349d30f399682d8b"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_0",
+      "png": "67__unet_primary_region_9__when_true__operand_1__arg_0.png",
+      "svg": "67__unet_primary_region_9__when_true__operand_1__arg_0.svg",
+      "visual_hash": "d7adcc8645cc6d03b8b08d3e7a13ffcc"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1",
+      "png": "68__unet_primary_region_9__when_true__operand_1__arg_1.png",
+      "svg": "68__unet_primary_region_9__when_true__operand_1__arg_1.svg",
+      "visual_hash": "83f1f27fb5e4b5e7667392ab907931e5"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0",
+      "png": "69__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0.png",
+      "svg": "69__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0.svg",
+      "visual_hash": "06c934fd64ad6777c92da2abe9aed1c4"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true",
+      "png": "70__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true.png",
+      "svg": "70__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true.svg",
+      "visual_hash": "6fcedb017231a98ff1e12fb70c89503e"
+    },
+    {
+      "label": "instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1",
+      "png": "71__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1.png",
+      "svg": "71__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1.svg",
+      "visual_hash": "cec6e058d7796522483b987f5644cc45"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_true__operand_1",
+      "png": "72__unet_primary_region_3__when_true__arg_1__when_true__operand_1.png",
+      "svg": "72__unet_primary_region_3__when_true__arg_1__when_true__operand_1.svg",
+      "visual_hash": "22b3c92bac1b537f25ddafc979f33094"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1__source",
+      "png": "73__unet_primary_region_4__iteration__when_true__arg_1__source.png",
+      "svg": "73__unet_primary_region_4__iteration__when_true__arg_1__source.svg",
+      "visual_hash": "1b37096f14c772c977d89b422fbba3dd"
+    },
+    {
+      "label": "unet_primary_region_8__when_true__operand_1__iteration__when_true",
+      "png": "74__unet_primary_region_8__when_true__operand_1__iteration__when_true.png",
+      "svg": "74__unet_primary_region_8__when_true__operand_1__iteration__when_true.svg",
+      "visual_hash": "1e2e36834982c1de682113dde4e22ca4"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_0__item_0",
+      "png": "75__unet_primary_region_9__when_true__operand_1__arg_0__item_0.png",
+      "svg": "75__unet_primary_region_9__when_true__operand_1__arg_0__item_0.svg",
+      "visual_hash": "1c3c2f35cf7c498749c978a3b68a23df"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_1",
+      "png": "76__unet_primary_region_9__when_true__operand_1__arg_1__operand_1.png",
+      "svg": "76__unet_primary_region_9__when_true__operand_1__arg_1__operand_1.svg",
+      "visual_hash": "ab9060a7f52063b66652fcdb55f07beb"
+    },
+    {
+      "label": "instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1__operand_1",
+      "png": "77__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1__operand_1.png",
+      "svg": "77__instance_mid_block__resnets__0__conditioning_1_operand_0__operand_1__operand_1.svg",
+      "visual_hash": "b6edd0df54053e9cc1fe3cc612641179"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_false__arg_0__arg_1",
+      "png": "78__unet_primary_region_3__when_true__arg_1__when_false__arg_0__arg_1.png",
+      "svg": "78__unet_primary_region_3__when_true__arg_1__when_false__arg_0__arg_1.svg",
+      "visual_hash": "c05ab679ee7a800ca0a9db8e71b3ad93"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1__source__iteration",
+      "png": "79__unet_primary_region_4__iteration__when_true__arg_1__source__iteration.png",
+      "svg": "79__unet_primary_region_4__iteration__when_true__arg_1__source__iteration.svg",
+      "visual_hash": "45f4aa8923e5944e4b8b2926562a4841"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true",
+      "png": "80__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true.png",
+      "svg": "80__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true.svg",
+      "visual_hash": "5ca50cc8f7468ff9fa7015b7038184c9"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false",
+      "png": "81__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false.png",
+      "svg": "81__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false.svg",
+      "visual_hash": "a0cd1bc91c5c62a79d9c048ecfc45a53"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0",
+      "png": "82__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0.png",
+      "svg": "82__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0.svg",
+      "visual_hash": "1063114fe39525741398750f332e381c"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0",
+      "png": "83__unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0.png",
+      "svg": "83__unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0.svg",
+      "visual_hash": "4513ec79b91a9a4cc7afda29fe1b0dbd"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_0",
+      "png": "84__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_0.png",
+      "svg": "84__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_0.svg",
+      "visual_hash": "e7dd8a4b0fd9802c246c8eef075154a8"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true__arg_0",
+      "png": "85__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true__arg_0.png",
+      "svg": "85__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_true__arg_0.svg",
+      "visual_hash": "47ee3d046dc629e4144929df96b59836"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true",
+      "png": "86__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true.png",
+      "svg": "86__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true.svg",
+      "visual_hash": "53c1b1f50f4e7d929519775535ac2c4d"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_true__arg_0__when_true",
+      "png": "87__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_true__arg_0__when_true.png",
+      "svg": "87__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_true__arg_0__when_true.svg",
+      "visual_hash": "6fb35ba72a405a1d3361e2d5f95c4f4c"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_false__when_false__arg_0",
+      "png": "88__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_false__when_false__arg_0.png",
+      "svg": "88__instance_down_blocks__0__resnets__0__conditioning_0_operand_0__arg_0__when_false__when_false__arg_0.svg",
+      "visual_hash": "67b98a937f8ad48c9a43ebba2b4ea74d"
+    },
+    {
+      "label": "instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0__when_true",
+      "png": "89__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0__when_true.png",
+      "svg": "89__instance_down_blocks__0__resnets__0__conditioning_0_operand_1__when_true__source__arg_0__when_true.svg",
+      "visual_hash": "820b8377c5da49ed610970be0fc16240"
+    },
+    {
+      "label": "unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0__when_true",
+      "png": "90__unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0__when_true.png",
+      "svg": "90__unet_primary_region_3__when_true__arg_1__when_true__operand_1__arg_1__arg_0__when_true.svg",
+      "visual_hash": "7abed07f78b28cdfb84f7669fbc1a85d"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_true",
+      "png": "91__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_true.png",
+      "svg": "91__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_true.svg",
+      "visual_hash": "185ff7a20b1fdd05ce55bc901b8b400a"
+    },
+    {
+      "label": "unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_false",
+      "png": "92__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_false.png",
+      "svg": "92__unet_primary_region_4__iteration__when_true__arg_1__source__iteration__operand_1__when_false.svg",
+      "visual_hash": "4689b3b1c25628e7a4b53eb825627dc2"
+    },
+    {
+      "label": "unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true__arg_1",
+      "png": "93__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true__arg_1.png",
+      "svg": "93__unet_primary_region_9__when_true__operand_1__arg_1__operand_0__when_false__when_true__arg_1.svg",
+      "visual_hash": "43b091226e9c1f5aa15eedba71b1e21c"
+    }
+  ],
+  "pixel_inspection": {
+    "view_files": [
+      "00__architecture.png",
+      "02__denoiser.png"
+    ],
+    "finding": "Denoiser overview retains actual stage variation without observed card crossings. Outer architecture incorrectly supplies text encoder, scheduler and VAE without component evidence. Unconditional denoiser itself has no external-context node. Remaining distinct views not individually inspected."
+  }
+}

@@ -7,12 +7,37 @@
 
 # Exact key names to ignore.
 keys:
+
+# Training-time augmentation / losses and inference-time sampling knobs —
+# never architecture (audio/TTS families).  scale_decoder_outputs belongs to
+# the conditioning encoder's UNUSED decoder half (MusicGen carries a t5 row).
+  - apply_spec_augment
+  - mask_time_prob
+  - mask_time_length
+  - mask_time_min_masks
+  - mask_feature_prob
+  - mask_feature_length
+  - mask_feature_min_masks
+  - use_guided_attention_loss
+  - guided_attention_loss_num_heads
+  - guided_attention_loss_scale
+  - guided_attention_loss_sigma
+  - feat_proj_dropout
+  - positional_dropout
+  - noise_scale
+  - noise_scale_duration
+  - speaking_rate
+  - scale_decoder_outputs
   # --- classification-head label maps + duplicate/derived geometry + numerics ---
   # id2label/label2id: task-head label names, never architecture.
   - id2label
   - label2id
   # qk_head_dim: derived duplicate of qk_nope_head_dim + qk_rope_head_dim (both read).
   - qk_head_dim
+  # U2-R7: wall-clock -> position-id mapping constant on Qwen-VL vision
+  # (same family as position_id_per_seconds) — runtime plumbing, not structure.
+  - tokens_per_second
+  - position_id_per_seconds
   # spatial_patch_size: duplicate spelling beside patch_size (read) on Qwen-VL vision.
   - spatial_patch_size
   # rope_interleave: rotate-half vs interleaved WEIGHT LAYOUT — an implementation
@@ -82,7 +107,9 @@ keys:
   - auto_map
   - id2label
   - label2id
-  - is_encoder_decoder
+  # is_encoder_decoder REMOVED (Soumil's final vet): it decides the drawn
+  # seq2seq half, mask causality, and cross-attn schedules — ARCHITECTURE.
+  # It is CONSUMED into decoder.attention.mask at its deciding reads.
   - problem_type
   - chunk_size_feed_forward
   - ep_size
@@ -141,10 +168,12 @@ keys:
   # --- text-encoder (T5/CLIP) internals merged in from diffusion component
   # configs --- the diffusion adapter draws the encoder as a tower (depth/width),
   # not its T5-specific internals, so these are noise on the denoiser diagnostic.
+  # U2 P3b: feed_forward_proj / is_gated_act are NO LONGER ignored — they are
+  # positive FFN-gate/activation declarations read by the gated + activation
+  # decisions (t5-base dense-relu truth; flan gated-gelu).  A scoped ignore
+  # (per-surface) remains the U7 design.
   - d_kv
   - dropout_rate
-  - feed_forward_proj
-  - is_gated_act
   - num_decoder_layers
   - relative_attention_num_buckets
   - relative_attention_max_distance
@@ -175,8 +204,11 @@ keys:
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:
+  - layerdrop        # stochastic-depth training knob (layerdrop / encoder_layerdrop / …)
   - _token_id
   - _token_ids
+  # U2-R7: index spelling of the same token-id plumbing (llava image_token_index).
+  - _token_index
 
 # Nested component configs whose internals are owned by another adapter/domain.
 # The containing key must still be read; this only prevents the parent model's
@@ -187,6 +219,10 @@ opaque_scopes:
   # drawn (the LM/thinker is the rendered model); the omission is stated as a
   # parser note, never silent.
   - talker_config
+  # Codec-role composite slot (MusicGen/Parler audio_encoder — EnCodec/DAC):
+  # the tower is a STATED omission until audio-plan U-C draws it; the slot key
+  # itself is read by the codec warning.  REMOVE this row when U-C lands.
+  - audio_encoder
   - token2wav_config
   - code2wav_config
   - _scheduler_config

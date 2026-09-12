@@ -1,0 +1,91 @@
+{
+  "case": "sd14-ordinary",
+  "proof_result_sha256": "8262ff00002314944e5d454ed8ef2f1a176a9625419a9f3621291b5388262285",
+  "archived_source_bytes_verified": [
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8.py.gz",
+      "stored_sha256": "89ee2830f09ae95eb42ce27b877f84d58b2238b4c8a2b6f1ae747bf900949058",
+      "content_sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd.py.gz",
+      "stored_sha256": "50ba37d09828c69c653ab3fb3a37fa14ad270c097c65f7d0f178d5998c8e9caf",
+      "content_sha256": "051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26.py.gz",
+      "stored_sha256": "4d74d4bbced732998ac8a84c2c0e672ea7ac0afbfcfffa2fa300201965b4fca0",
+      "content_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c.py.gz",
+      "stored_sha256": "f5ea77c7414de3aa1bb5667920b32fa64749fda40ecfe73631c3c31cbc008a19",
+      "content_sha256": "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756.py.gz",
+      "stored_sha256": "40fd5143a23ab75642f5572f5f993b95fa3ed2e60c7d8fa7761b92903fc824c1",
+      "content_sha256": "2a62d6786e9be75cc0afae5fcf64bb336632db5182543c0af0e6bc6c8c865756"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc.py.gz",
+      "stored_sha256": "4dc0d5ab37908e14bc1340a9068c211cd90f573a255353492e7ec136869b0983",
+      "content_sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960.py.gz",
+      "stored_sha256": "db0b560bb3f73a1048ece31bc34c44243f6495f26398053deb1ec30c20c51cf9",
+      "content_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3.py.gz",
+      "stored_sha256": "ca1490b83f9ceb0045663675b2ece816f4e81d0446771d4c77edf663f832c1cd",
+      "content_sha256": "51e2d9d0a531c9c7cca2c999ade2d58f14c909eb543f91a6872b24c669becba3"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee.py.gz",
+      "stored_sha256": "eadc0dfa78afe621542821eb21884a204505b2a21cf5b76a66c30be6c9f9c504",
+      "content_sha256": "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36.py.gz",
+      "stored_sha256": "49e6ff6b2c5898433ad7a0f9c7591fc0d2c114e67b2f498927ddd298deec0c41",
+      "content_sha256": "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc.py.gz",
+      "stored_sha256": "1f53ad93d8386b0252596c498a9544ec4af1dc10e06d0a3f5dfa9170cb31a1cf",
+      "content_sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502.py.gz",
+      "stored_sha256": "c1a587546e1b58ce4b1fccac83c1ce0295cab0849906d4e1b50e5ebf648b981f",
+      "content_sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe.py.gz",
+      "stored_sha256": "e87d2fee26e11bfe4e8a62210a75c1f8e1823fad2f4a41339f582c06073f7819",
+      "content_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab.py.gz",
+      "stored_sha256": "3be1c82887194919244387ea30d5a017900cf99de993fd7a815441dc30f884da",
+      "content_sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84.py.gz",
+      "stored_sha256": "4e4d233c5f05423931fd466bc14b17c633e8cb82ffe7c886b8e15fd9490402ee",
+      "content_sha256": "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302.py.gz",
+      "stored_sha256": "caa74b5eec0cf45f11c689010c76ac74208e39f0fa5c335da3f117cf40cd0f91",
+      "content_sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302"
+    },
+    {
+      "artifact": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary/cited-source/f7300cb8338b2f84b770b8577ac10cc6d9bd1f9aa77c038d83961337fccb7e7b.py.gz",
+      "stored_sha256": "f20fb80ec24e3bf036a15fac791922974cb15123b623d699962d6db619f12bbd",
+      "content_sha256": "f7300cb8338b2f84b770b8577ac10cc6d9bd1f9aa77c038d83961337fccb7e7b"
+    }
+  ]
+}

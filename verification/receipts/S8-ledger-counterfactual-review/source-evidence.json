@@ -1,0 +1,75 @@
+{
+  "source_pins": {
+    "model_unfolder/parser.py": "84348825d63709d912e591679fff6e3ce0f92e31914089d429a5d3e53c25c75f",
+    "model_unfolder/evidence/receipts.py": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a",
+    "test_support/preservation.py": "22470d509c5c3198719de6419ed97cf9ec32783f046a344753e80272eaea52cb",
+    "tests/preservation_expected_manifest.json": "a1fe7d578c16bbed0d44b77ad9c60f77a210ded565473b25777c2b61716743a9"
+  },
+  "actual_bloom_receipt": {
+    "slug": "bloom",
+    "source_commit": "83140f1cae1171d76c98d999ac0f44680af59e67",
+    "input_sha256": "eeececc1c43f2e91a513d3e970fdc7bc20e8dd984432464a94e6aef1dddabac0",
+    "expected_ledger_sha256": "cb0f1c08fb94057f4400c55e893d680c3a6d428d45f1f9582942b2d7edd1a520",
+    "actual_ledger_sha256": "cb0f1c08fb94057f4400c55e893d680c3a6d428d45f1f9582942b2d7edd1a520",
+    "expected_hash_recovered": true,
+    "source_fingerprints_identical": true,
+    "elapsed_seconds": 4.016,
+    "parser_module": "/private/tmp/unfold-s8-ledger-source-83140f1/model_unfolder/__init__.py",
+    "comparator_module": "/private/tmp/unfold-s8-ledger-source-83140f1/test_support/preservation.py"
+  },
+  "proposal_executed": false,
+  "queue_changed": false,
+  "actual_bloom_ledger_canonical_sha256": "cb0f1c08fb94057f4400c55e893d680c3a6d428d45f1f9582942b2d7edd1a520",
+  "recorded_bloom_delta_count": 1,
+  "exact_scope_additions": [
+    [
+      "root.denoiser",
+      "cell_arithmetic"
+    ],
+    [
+      "root.denoiser",
+      "cell_connections"
+    ],
+    [
+      "root.denoiser",
+      "constructed_modules"
+    ],
+    [
+      "root.denoiser",
+      "constructed_parameter_shapes"
+    ],
+    [
+      "root.denoiser",
+      "constructed_stage_relations"
+    ],
+    [
+      "root.denoiser",
+      "context_connections"
+    ],
+    [
+      "root.denoiser",
+      "declared_constructor_defaults"
+    ],
+    [
+      "root.denoiser",
+      "ffn_mechanisms"
+    ],
+    [
+      "root.denoiser",
+      "primary_state_ports"
+    ],
+    [
+      "root.denoiser",
+      "runtime_primitives"
+    ],
+    [
+      "root.denoiser",
+      "spatial_mechanisms"
+    ],
+    [
+      "root.denoiser",
+      "stage_join_connections"
+    ]
+  ],
+  "exact_scope_removals": []
+}

@@ -1,0 +1,17 @@
+{
+  "scope": "Prepared recovered baseline31 to exact36 saved-data cause inventory",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "37408ce88ca2c737533de6859e0ec182f666330515100f69d7e783c2f1f96340"
+    },
+    {
+      "path": "contract.json",
+      "sha256": "20999f2171a66c0c424b39f64344deebb7853b2596b7b8443f1df7d0936c8509"
+    },
+    {
+      "path": "source-causes.json",
+      "sha256": "4de663b5ee0f676ef04bb36379b0a1329b4f9553423b540330fbd85b596e6bb4"
+    }
+  ]
+}

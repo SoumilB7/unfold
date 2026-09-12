@@ -1,0 +1,104 @@
+{
+  "directories": [
+    {
+      "archived": "fourteenth/qualification",
+      "original": "/private/tmp/unfold-s9a-fourteenth/qualification"
+    },
+    {
+      "archived": "fourteenth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/model_unfolder"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "fourteenth/qualification/result.json",
+      "bytes": 539,
+      "original": "/private/tmp/unfold-s9a-fourteenth/qualification/result.json",
+      "sha256": "28b900affa09c223d1c64916b5d9a895d1928519720cf6942b9a653ee074228b"
+    },
+    {
+      "archived": "fourteenth/qualification/schema-proof-metadata.log",
+      "bytes": 115,
+      "original": "/private/tmp/unfold-s9a-fourteenth/qualification/schema-proof-metadata.log",
+      "sha256": "728c467ebbbf25c656b52781013c7408849786151913fd7e9638f345059f96ba"
+    },
+    {
+      "archived": "fourteenth/run.py",
+      "bytes": 1179,
+      "original": "/private/tmp/unfold-s9a-fourteenth/run.py",
+      "sha256": "3f67a8ffa910e04af6d53f377ff5fe288cd57902d4bb9fc6683b426f961d7644"
+    },
+    {
+      "archived": "fourteenth/source-manifest.json",
+      "bytes": 14678,
+      "original": "/private/tmp/unfold-s9a-fourteenth/source-manifest.json",
+      "sha256": "35cc45beaed180a8d1b4eae97dddfd56191b0f0f50e694ab1e83bdddc91c8c69"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/model_unfolder/evidence/activation_registry.py",
+      "bytes": 34596,
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/model_unfolder/evidence/activation_registry.py",
+      "sha256": "47cbe0073e014becc8e593910f727d5d1fa3f6d8ec9e9c9b306607490b637aa9"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "fourteenth-independent-review/source/tests/test_reader_claims.py",
+      "bytes": 53195,
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/source/tests/test_reader_claims.py",
+      "sha256": "337a01cb36a757d6018a15543d128abf8e4d374bbfc0b480a2dd59d9cd38ccd9"
+    },
+    {
+      "archived": "fourteenth-independent-review/verdict.json",
+      "bytes": 2477,
+      "original": "/private/tmp/unfold-s9a-independent-fourteenth-review/verdict.json",
+      "sha256": "1afe51eba46e631730254946a598968e59a9cc23fb7a41c04225ddfadea2c7dc"
+    }
+  ],
+  "scope": "Released fourteenth candidate and fourteenth independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "fourteenth/changed-sources.tar.gz",
+      "archive_sha256": "91a74a48c25985509a5636c44d81961ff3846951197d76c8ff2794616af9204a",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 100,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-fourteenth",
+      "manifest_sha256": "35cc45beaed180a8d1b4eae97dddfd56191b0f0f50e694ab1e83bdddc91c8c69",
+      "phase": "fourteenth",
+      "uncompressed_bytes": 3566236
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 263008,
+    "copied_files": 8,
+    "source_files": 100
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

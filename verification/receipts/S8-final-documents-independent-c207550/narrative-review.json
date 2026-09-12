@@ -1,0 +1,52 @@
+{
+  "decision": "ACCEPT_FINAL_NARRATIVE__PACKAGING_INTEGRITY_PENDING",
+  "scope": "Actual complete gate counts, approval scope, provenance, remaininglimits and localnavigationlinks; no newmodel/test/rendererexecution",
+  "sheet_sha256": "528256c96925543b0270e0a856077101f2687b4968a45e51132b95537137dd16",
+  "owner_ready_sha256": "657f1a7e6c9a828dbc65b7c9e34daf3d47e8f8fa01caf1885e3fbdb5aa12bfa1",
+  "local_links": [
+    {
+      "target": "../12-design/S8/final-fb1f871/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/final-c38b008/render-phase/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/final-c38b008/component-render-96d0c1e/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/existing-qwen-route/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/output-deltas/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/examples-fb1f871/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/final-fb1f871/index.html",
+      "exists": true
+    },
+    {
+      "target": "../12-design/S8/existing-qwen-route/index.html",
+      "exists": true
+    }
+  ],
+  "material_overclaims": [],
+  "pending": "Final canonical DONE wording/root append and exact in-repo document snapshots after archive release",
+  "preserved_limits": [
+    "Original10workerRED and threeisolatedPASS remain independenthistory",
+    "Actual44coveragecheck attributed716; final29+1+14derivationexplicit",
+    "Selected59+1externalpins notexhaustive",
+    "Execution327unknown, partialmechanisms/configledger,S12presentation/navigation and Qwenobstruction remain open"
+  ]
+}

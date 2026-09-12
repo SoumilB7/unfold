@@ -1,0 +1,21 @@
+{
+  "case": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/changed",
+  "elapsed_seconds": 8.263,
+  "facts_sha256": "d603168c3ada91e62df1856e311919ea94869cc2b6dadf1844359094638ab6a6",
+  "indexed_source_nodes": 8,
+  "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+  "inventory_sha256": "41415e50c4e022a07c17daa2a09a8523e7398361dd19fc3a3b4ad81e673157d7",
+  "no_model_or_execution": true,
+  "root_and_external_nodes_archived": 2,
+  "root_sha256": "2b065a8d3a768b83ec5b6e29273a32a05136cff83d04449a05b76bfb6fd34e23",
+  "summary": {
+    "parameter_count": 2656985604,
+    "parameterized_module_count": 1102,
+    "population_fact_key": "root.denoiser.constructed_modules",
+    "scope": "denoiser",
+    "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+    "stage_count": 7,
+    "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+  },
+  "three_fact_values_exact": true
+}

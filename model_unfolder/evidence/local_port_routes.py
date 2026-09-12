@@ -1,0 +1,334 @@
+"""Bounded source wiring through local aliases and optional call boundaries.
+
+A call's arguments and returned slots are ports, not a claim that an input
+survives unchanged or that any particular argument determines one result.
+Unsupported joins stay explicit. This consumes the one ProgramIndex only.
+"""
+from dataclasses import dataclass
+
+from .program_index import SourceSpan
+
+
+def _before(left, right):
+    # The RHS is evaluated before its assignment writes the target. A binding
+    # whose statement contains the queried call cannot reach that call's args.
+    return (left.end_line or left.line, left.end_col or left.col) <= (right.line, right.col)
+
+
+def _disjoint(left, right):
+    for offset, (a, b) in enumerate(zip(left, right)):
+        if a == b:
+            continue
+        return left[:offset] == right[:offset] and a.span == b.span and {a.kind, b.kind} == {"if", "else"}
+    return False
+
+
+def _slot(target, name, prefix=()):
+    if target is None:
+        return None
+    if target.kind == "name":
+        return prefix if target.name == name else None
+    if target.kind == "starred":
+        return (("unresolved_unpack",) if any(_slot(child, name) is not None
+                                              for child in target.children) else None)
+    if target.kind in {"tuple", "list"}:
+        for number, child in enumerate(target.children):
+            found = _slot(child, name, (*prefix, number))
+            if found is not None:
+                if any(item is not None and item.kind == "starred" for item in target.children):
+                    return ("unresolved_unpack",)
+                return found
+    return None
+
+
+@dataclass(frozen=True)
+class LocalPortRoute:
+    """A reader result with exact source premises, not another structural IR."""
+
+    value: dict
+    spans: tuple[SourceSpan, ...]
+
+
+def read_local_port_route(index, forward, expression, before, guard=(), *, region_input=None):
+    """Trace one value to formal/selection/call ports, retaining both if arms.
+
+    Supports local assignment, tuple call-result unpacking, and one optional
+    assignment at each merge. Loops are explicit carried-value boundaries;
+    lexical source order never establishes the value of a prior iteration.
+    """
+    bindings = tuple(index.bindings_in(forward.symbol))
+    calls = {row.span: row for row in index.calls_in(forward.symbol)}
+    formals = {row.name for row in forward.params if row.name != "self"}
+    spans = set()
+
+    def outside_region(span):
+        return region_input is not None and _before(span, region_input[1])
+
+    def unknown(reason):
+        return {"kind": "unresolved", "reason": reason}
+
+    def visit(value, cutoff, context, seen):
+        if value is None or len(seen) > 48:
+            return unknown("route outside the bounded local reader")
+        if value.span is not None:
+            spans.add(value.span)
+            if any(binding.assignment_kind == "walrus" and binding.span is not None
+                   and (value.span.line, value.span.col) <= (binding.span.line, binding.span.col)
+                   and (binding.span.end_line, binding.span.end_col) <= (value.span.end_line, value.span.end_col)
+                   for binding in bindings):
+                return unknown("expression-local assignment requires evaluation-order closure before routing sibling operands")
+        for unsupported in index.unsupported_execution_in(forward.symbol):
+            span = unsupported.span
+            if span is not None and (span.line, span.col) <= (cutoff.line, cutoff.col) \
+                    and (cutoff.line, cutoff.col) <= (span.end_line or span.line, span.end_col or span.col):
+                spans.add(span)
+                return unknown("input occurs inside unsupported execution syntax")
+        if value.kind == "constant":
+            return {"kind": "literal", "value": value.const_value}
+        if value.kind == "name":
+            scoped_boundary = region_input is not None and value.name == region_input[0]
+            if region_input is not None and value.name == region_input[0] \
+                    and (cutoff.line, cutoff.col) <= (region_input[1].line, region_input[1].col):
+                if (cutoff.line, cutoff.col) < (region_input[1].line, region_input[1].col):
+                    return unknown("earlier carried-state version belongs to prior region history")
+                return {"kind": "region_input"}
+            address = (value.name, cutoff.line, cutoff.col, tuple(context))
+            if address in seen:
+                return unknown("cyclic local definition")
+            seen = (*seen, address)
+            for loop in index.loops_in(forward.symbol):
+                if any(step.span == loop.span for step in context) and loop.target is not None \
+                        and _slot(loop.target, value.name) is not None:
+                    spans.add(loop.span)
+                    return unknown("loop target supplies this local; formal identity does not survive binding")
+            matches = []
+            for binding in bindings:
+                if binding.span is None or (scoped_boundary and outside_region(binding.span)) or not _before(binding.span, cutoff) or _disjoint(binding.guard, context):
+                    continue
+                slots = [slot for target in binding.targets if (slot := _slot(target, value.name)) is not None]
+                if slots:
+                    if len(slots) != 1 or binding.assignment_kind not in {"assign", "annassign", "augassign"}:
+                        return unknown("unsupported assignment to routed local")
+                    matches.append((binding, slots[0]))
+            matches.sort(key=lambda row: (row[0].span.line, row[0].span.col))
+            if context and matches and all(_before(binding.span, context[0].span)
+                                           for binding, _ in matches):
+                # A side value established before the current guarded region
+                # enters at that region's boundary. Do not interpret earlier
+                # conditionals as though nested inside the consumer's loop.
+                # Any write to this local inside the region prevents this step.
+                inside_writes = [binding for binding in bindings
+                                 if any(_slot(target, value.name) is not None for target in binding.targets)
+                                 and any(step.span == context[0].span for step in binding.guard)]
+                effects = [row for row in index.unsupported_execution_in(forward.symbol)
+                           if row.construct_kind not in {"boolop", "ifexp"} and row.span is not None
+                           and not _before(row.span, context[0].span) and _before(row.span, cutoff)]
+                target_writes = [loop for loop in index.loops_in(forward.symbol)
+                                 if _slot(loop.target, value.name) is not None and loop.span is not None
+                                 and not _before(loop.span, context[0].span) and _before(loop.span, cutoff)]
+                if not inside_writes and not effects and not target_writes:
+                    return visit(value, context[0].span, (), seen)
+            def loop_else_binding(binding):
+                for loop in index.loops_in(forward.symbol):
+                    span = loop.else_span
+                    if span is not None and (span.line, span.col) <= (binding.span.line, binding.span.col) \
+                            and (binding.span.end_line or binding.span.line, binding.span.end_col or binding.span.col) \
+                                <= (span.end_line or span.line, span.end_col or span.col):
+                        return True
+                return False
+            guaranteed = [number for number, (binding, _) in enumerate(matches)
+                          if context[:len(binding.guard)] == binding.guard and not loop_else_binding(binding)]
+            base = guaranteed[-1] if guaranteed else -1
+            later = matches[base + 1:]
+
+            def overwritten_after(region):
+                # The latest guaranteed assignment can close a prior local
+                # rebinding. Its RHS is still investigated at its own cutoff.
+                return base >= 0 and _before(region, matches[base][0].span)
+
+            for loop in index.loops_in(forward.symbol):
+                if loop.span is not None and not (scoped_boundary and outside_region(loop.span)) and _before(loop.span, cutoff) \
+                        and not _disjoint(loop.guard, context) \
+                        and _slot(loop.target, value.name) is not None \
+                        and not overwritten_after(loop.span):
+                    spans.add(loop.span)
+                    return unknown("completed loop may have rebound this local; original formal identity is not established")
+            for region in index.unsupported_execution_in(forward.symbol):
+                if region.construct_kind in {"boolop", "ifexp"}:
+                    # Short-circuit selection is opaque, but evaluating a
+                    # predicate is not itself a local assignment. Named writes
+                    # still enter the explicit binding/refusal checks above.
+                    continue
+                if region.span is not None and not (scoped_boundary and outside_region(region.span)) and _before(region.span, cutoff) \
+                        and not _disjoint(region.guard, context) \
+                        and not overwritten_after(region.span):
+                    # With/try/match target bindings are not exhaustively
+                    # indexed. Their effects on locals can outlive the region;
+                    # absence from BindingObservation proves no preservation.
+                    spans.add(region.span)
+                    return unknown("prior unsupported execution may have rebound this local; no later guaranteed assignment closes it")
+
+            def assigned(binding, slot):
+                spans.add(binding.span)
+                if binding.assignment_kind == "augassign":
+                    operations = [row for row in index.dataflow
+                                  if row.enclosing_callable == forward.symbol
+                                  and row.span == binding.span and row.op.startswith("aug:")]
+                    if slot or len(operations) != 1:
+                        return unknown("augmented update has no exact indexed operator")
+                    return {"kind": "inplace_operation", "operator": operations[0].op[4:],
+                            "operands": [visit(binding.targets[0], binding.span, binding.guard, seen),
+                                         visit(binding.value, binding.span, binding.guard, seen)],
+                            "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"}
+                if slot:
+                    if any(type(position) is not int for position in slot):
+                        return unknown("starred unpack has no proven fixed result slot")
+                    call = calls.get(binding.value.span) if binding.value is not None else None
+                    if call is None:
+                        return unknown("unpacked result has no exact call boundary")
+                    return call_result(call, slot, binding.span, binding.guard, seen)
+                return visit(binding.value, binding.span, binding.guard, seen)
+
+            def seed():
+                # A formal assigned within this loop denotes its carried value,
+                # not necessarily the original argument after iteration zero.
+                loops = tuple(step for step in context if step.kind in {"for", "while"})
+                writes = [binding for binding in bindings
+                          if any(_slot(target, value.name) is not None for target in binding.targets)
+                          and any(loop in binding.guard for loop in loops)]
+                if writes:
+                    if base >= 0 and all(loop in matches[base][0].guard for loop in loops):
+                        return assigned(*matches[base])
+                    spans.update(row.span for row in writes if row.span is not None)
+                    return {"kind": "loop_carried", "formal": value.name,
+                            "initial_route": (assigned(*matches[base]) if base >= 0 else
+                                              {"kind": "region_input"} if scoped_boundary else
+                                              {"kind": "formal", "formal": value.name} if value.name in formals else
+                                              unknown("loop seed unresolved")),
+                            "reason": "initial value seeds the loop; subsequent iterations use the carried value"}
+                if base >= 0:
+                    return assigned(*matches[base])
+                if region_input is not None and value.name == region_input[0]:
+                    return {"kind": "region_input"}
+                if value.name not in formals:
+                    return unknown("local has no reaching assignment or formal")
+                return {"kind": "formal", "formal": value.name}
+
+            if not later:
+                return seed()
+            completed = [loop for loop in index.loops_in(forward.symbol)
+                         if loop.span is not None and loop.body_span is not None
+                         and _before(loop.span, cutoff)
+                         and not any(step.span == loop.span for step in context)
+                         and not _disjoint(loop.guard, context)
+                         and all(any(step.span == loop.span for step in binding.guard)
+                                 for binding, _ in later)]
+            if len(completed) == 1:
+                loop = completed[0]
+                spans.add(loop.span)
+                # A loop boundary carries the zero-iteration seed and the
+                # independently investigated end-of-body value. It does not
+                # pick an iteration or promote an arbitrary earlier write to
+                # the final value.
+                inside = next(step for binding, _ in later for step in binding.guard
+                              if step.span == loop.span)
+                end = loop.body_span
+                body_end = SourceSpan(end.source, end.end_line or end.line,
+                                      (end.end_col or end.col) + 1,
+                                      end.end_line or end.line, (end.end_col or end.col) + 1)
+                transfers = [row for row in index.control_transfers_in(forward.symbol)
+                             if row.span is not None
+                             and (loop.span.line, loop.span.col) <= (row.span.line, row.span.col)
+                             and (row.span.end_line or row.span.line, row.span.end_col or row.span.col)
+                                 <= (loop.span.end_line or loop.span.line, loop.span.end_col or loop.span.col)]
+                spans.update(row.span for row in transfers)
+                return {"kind": "loop_result", "local": value.name,
+                        "initial_route": visit(value, loop.span, loop.guard, seen),
+                        "iteration_result": (unknown("loop control transfer prevents one final body value") if transfers else
+                                             visit(value, body_end, (*loop.guard, inside), seen)),
+                        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"}
+            binding, slot = later[0]
+            if len(later) > 1:
+                binding, slot = later[-1]
+            extra = binding.guard[len(context):] if binding.guard[:len(context)] == context else ()
+            if len(extra) > 1 and extra[0].kind == "if":
+                step = extra[0]
+                spans.add(step.span)
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": visit(value, cutoff, (*context, step), seen),
+                        "when_false": visit(value, step.span, context, seen)}
+            if len(extra) > 1 and extra[0].kind == "else":
+                step = extra[0]
+                if_steps = [candidate for row in (*bindings, *calls.values()) for candidate in row.guard
+                            if candidate.span == step.span and candidate.kind == "if"]
+                if not if_steps:
+                    return unknown("nested else has no exact opposite source arm")
+                spans.add(step.span)
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": visit(value, cutoff, (*context, if_steps[0]), seen),
+                        "when_false": visit(value, cutoff, (*context, step), seen)}
+            if len(extra) != 1 or extra[0].kind not in {"if", "else"}:
+                return unknown("optional assignment is not one exact if arm")
+            step = extra[0]
+            spans.add(step.span)
+            if step.kind == "else":
+                if_steps = [candidate for row in (*bindings, *calls.values()) for candidate in row.guard
+                            if candidate.span == step.span and candidate.kind == "if"]
+                prior = (visit(value, binding.span, (*context, if_steps[0]), seen) if if_steps else
+                         visit(value, step.span, context, seen))
+                return {"kind": "conditional", "condition": "source guard unresolved",
+                        "when_true": prior, "when_false": assigned(binding, slot)}
+            return {"kind": "conditional", "condition": "source guard unresolved",
+                    "when_true": assigned(binding, slot),
+                    "when_false": visit(value, step.span, context, seen)}
+        if value.kind == "subscript" and len(value.children) == 2:
+            return {"kind": "selection", "source": visit(value.children[0], cutoff, context, seen),
+                    "selection": describe_selection(value.children[1])}
+        call = calls.get(value.span)
+        if call is not None:
+            return call_result(call, (), cutoff, context, seen)
+        if value.kind in {"tuple", "list"}:
+            return {"kind": "sequence", "items": [visit(child, cutoff, context, seen) for child in value.children]}
+        if value.kind == "ifexp" and len(value.children) == 3:
+            body, test, alternative = value.children
+            if test is not None and test.span is not None:
+                spans.add(test.span)
+            return {"kind": "conditional", "condition": "source expression guard unresolved",
+                    "when_true": visit(body, cutoff, context, seen),
+                    "when_false": visit(alternative, cutoff, context, seen)}
+        if value.kind == "binop":
+            return {"kind": "source_operation", "operator": value.operator,
+                    "operands": [visit(child, cutoff, context, seen) for child in value.children],
+                    "reason": "source operator ports; operand dispatch and result computation unresolved"}
+        return unknown("expression requires another mechanism reader")
+
+    def describe_selection(value):
+        if value.kind == "constant":
+            return {"kind": "index", "value": value.const_value}
+        if value.kind == "unaryop" and value.operator == "-" and len(value.children) == 1 \
+                and value.children[0].kind == "constant":
+            return {"kind": "index", "value": -value.children[0].const_value}
+        return {"kind": value.kind, "detail": "source selection; exact value unresolved"}
+
+    def call_result(call, slot, cutoff, context, seen):
+        spans.add(call.span)
+        # All actuals enter one opaque boundary. There is deliberately no
+        # argument-number -> result-number dependency assertion.
+        arguments = [{"port": str(number), "route": visit(actual, cutoff, context, seen)}
+                     for number, actual in enumerate(call.args)]
+        arguments.extend({"port": name, "route": visit(actual, cutoff, context, seen)}
+                         for name, actual in call.kwargs)
+        receiver = None
+        if call.callee.kind == "attribute" and call.callee.children:
+            base = call.callee.children[0]
+            receiver = {"kind": "lookup_receiver", "route": visit(base, cutoff, context, seen),
+                        "reason": "attribute lookup receiver; descriptor binding and computation unresolved"}
+        return {"kind": "call_result", "result_slot": list(slot),
+                "call_source": f"sha256:{call.span.source.content_fingerprint}:{call.span.line}:{call.span.col}:{call.span.end_line}:{call.span.end_col}",
+                "arguments": arguments, "mechanism": "unresolved",
+                "receiver": receiver,
+                "reason": "call argument and result wiring proven; internal computation not established"}
+
+    result = visit(expression, before, tuple(guard), ())
+    return LocalPortRoute(result, tuple(sorted(spans, key=lambda span: (
+        span.source.content_fingerprint, span.line, span.col, span.end_line or 0, span.end_col or 0))))

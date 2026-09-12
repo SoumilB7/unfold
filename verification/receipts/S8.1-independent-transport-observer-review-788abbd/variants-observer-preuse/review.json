@@ -1,0 +1,10 @@
+{
+  "decision": "ACCEPT_BOUNDED_PREUSE",
+  "pins": {
+    "/private/tmp/unfold-s81-browser-variants.py": "46acd4b5daa290bd5548497f2542c690eea9678d9105349d6114d2f181e1266e",
+    "/private/tmp/unfold-s81-browser-variants-steps.json": "a6561aeec86dacf110c442cfcc7c90d0046983b575b9480953580fdaba226174",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-card-payload/make_variant_fixture.py": "f125d1be787e7a408904ca6fb3de4a5ce6ae75e9283319fdc7426323ace5c5ed"
+  },
+  "scope": "Eight native synthetic variant/radio/node actions; exact own quantities, stale sibling and deeper clearing checks.",
+  "limits": "Synthetic control, not model evidence or latency median. Actual native outputs pending."
+}

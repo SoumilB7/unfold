@@ -1,0 +1,102 @@
+{
+  "added": [
+    {
+      "block_path": [
+        "instance_down_blocks__0__downsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__downsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Downsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__downsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__downsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Downsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__upsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__upsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Upsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__upsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__upsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Upsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "denoiser"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.declared_constructor_defaults"
+      ],
+      "node_ids": [
+        "denoiser"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "card_fact_lines"
+    }
+  ],
+  "after_count": 794,
+  "before_count": 789,
+  "removed": []
+}

@@ -97,17 +97,35 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
             continue
         ec = _download_json(hf_hub_download, model_id, "config.json", token, subfolder=key)
         if isinstance(ec, dict):
-            # Hydrate through the installed config CLASS at load time: raw
-            # component JSON omits class-default facts (Gemma-2's sliding/global
-            # alternation lives only in configuration_gemma2.py).  Doing it HERE
-            # (address resolution) keeps the parse identity-free — the stored
-            # config already carries the facts, exactly like by-id LLM loads.
-            from .parser import _hydrate_encoder_config_facts
-            ec = _hydrate_encoder_config_facts(ec)
+            # U2.2a vet: the loader STORES THE FILE, it does not prepare it.
+            # Hydrating here and again at the parse boundary prepared the same
+            # document twice and threw away the only thing the second
+            # preparation needed — the pre-hydration snapshot — so the FIRST
+            # hydration's class defaults then looked checkpoint-declared and no
+            # later reader could tell them from the file's own words.  The parse
+            # boundary prepares; what is stored stays the component's own
+            # config.json.
             ec.setdefault("_repo_id", model_id)   # provenance for remote-code source
             enc_cfgs[key] = ec
     if enc_cfgs:
         cfg.setdefault("_text_encoder_configs", enc_cfgs)
+
+    # An additional pipeline entry with the exact same component declaration as
+    # the selected denoiser is a companion ADDRESS. Fetch its own config; do not
+    # infer that its instantiated structure is equal merely from this address.
+    primary_decl = index.get(denoiser_key)
+    companion_cfgs: dict[str, Any] = {}
+    if isinstance(primary_decl, (list, tuple)):
+        for key, declaration in index.items():
+            if key == denoiser_key or not isinstance(declaration, (list, tuple)) \
+                    or tuple(declaration) != tuple(primary_decl):
+                continue
+            companion = _download_json(
+                hf_hub_download, model_id, "config.json", token, subfolder=key)
+            if isinstance(companion, dict):
+                companion_cfgs[str(key)] = companion
+    if companion_cfgs:
+        cfg.setdefault("_companion_denoiser_configs", companion_cfgs)
 
     cfg.setdefault("_pipeline_class_name", index.get("_class_name"))
     cfg.setdefault("_name_or_path", model_id)

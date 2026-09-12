@@ -1,0 +1,94 @@
+{
+  "scope": "Publication of saved actual37 fleet and finite sparse diagnostic pages only; no model imports or output blessing",
+  "validated_supplied_proofs": 522,
+  "links_checked": 85,
+  "outputs": [
+    {
+      "path": "z-docs/12-design/S9-schema/current-thirtyseventh.html",
+      "sha256": "19ac4484a75c2fdbcc0e4a4e0676cc425eca72660ff255f48c7da919f08abe85"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/index.html",
+      "sha256": "d1c184e44b45d675d6604a75762beed5c270c8311a692d07b58782850ca8f4ba"
+    },
+    {
+      "path": "z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "4b16ec8cf1793595d6bfd7a777c73409263e200326b96a2fc56614b1d8cd8d98"
+    },
+    {
+      "path": "z-docs/12-design/S9-transformer/index.html",
+      "sha256": "139348ee846dc11a017e4d93a0769b61e4fdc901133ac14e165b9dfc995da7b6"
+    },
+    {
+      "path": "z-docs/12-design/S9-unet/index.html",
+      "sha256": "d83a5d9eafd46fdafaa53e2f152d8f4e2354506d8e0dbac1ee052c387e6a3e34"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/ordinary.html",
+      "sha256": "bb56861342eaeb7654b1f0f056c7900d7403aec83a2272546eeebc3b9d056496"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/ordinary.input.json",
+      "sha256": "c3df161181ad2b4b42ca1d0fd86a077382c34ddbebbf2e285ef6b4ee8fc08c92"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/ordinary.result.json",
+      "sha256": "7f6ff1b73aabfd288b04dcfc4d65ce665483bec007cd6fa72af61376e6dfd7de"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/sparse.html",
+      "sha256": "a9ba70a855472e7216f132cc98e41d5b211a3d4d13eae2e9b29b866c3a51ced9"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/sparse.input.json",
+      "sha256": "ac2e047db81f59146003e8e4682bca0447357bb714d8743aff31e4b4f294b990"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/musicgen/sparse.result.json",
+      "sha256": "a7ed6eb5e72df53b541230976c1316c8cd7e1f1c22699f399b4345492d144697"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/ordinary.html",
+      "sha256": "cac1b49920189869a66a1cb2a86f82e6280b2153afdd679b161f6af526ee00a2"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/ordinary.input.json",
+      "sha256": "23f84920adfc10e68115959e32a32b5bd2a03d4a566984f1fbe66c5182289d26"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/ordinary.result.json",
+      "sha256": "683519153d99f17f5f76ec351e0badd483155287d69bc680df6dd36d2f528617"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/sparse.html",
+      "sha256": "8b526360209bd82328eab6cf803d1d5a8eb6ebd53ab69de81cc644720e7eb518"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/sparse.input.json",
+      "sha256": "1cbe0bd0a14a770f90a98beaf1ac7e49376ef7733ebc91db7cf28ee6a263424d"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtyseventh/bloom/sparse.result.json",
+      "sha256": "96208d84621fc9e6f9b4a5374e2f147f8924c8222c5d52f2c9d7594518f4892c"
+    }
+  ],
+  "before": [
+    {
+      "path": "before/z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "408434702e79f6e5782e09b6a83a10c3e7875b84622f9af6fc045f4a630bcbfa"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-schema/index.html",
+      "sha256": "b35e50e1314e2662b1f15ffb8b2fadcbfa0217e958146badd1c242d07c6f3513"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-transformer/index.html",
+      "sha256": "145b8691b3e9a61f440e5a5c852a63d48f6ae85b31d9eb60a790c24b4a898f85"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-unet/index.html",
+      "sha256": "71d7c3f2b9e0adfaa7e369f3b6b0c68260fb8a207fc3b9a5a6463b55ca2002e1"
+    }
+  ],
+  "generator_sha256": "e7af353218d3e73b79c0d681847a038c54555b042337b56110351b9a7f66d25e"
+}

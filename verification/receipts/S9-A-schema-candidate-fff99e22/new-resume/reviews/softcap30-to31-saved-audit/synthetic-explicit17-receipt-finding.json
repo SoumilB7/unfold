@@ -1,0 +1,26 @@
+{
+  "actual_HTML_attn_softcap_occurrences": 0,
+  "actual_receipt_type": "ProjectionReceipt(surface=opgraph, projection_kind=op, structural_target=attn_softcap, node_ids=[attn_softcap])",
+  "actual_render_event": {
+    "drawn_ops": [
+      "opaque",
+      "port"
+    ],
+    "node_ids": [
+      "block",
+      "region_out"
+    ]
+  },
+  "case": "explicit_17",
+  "classification": "S9-A projection qualification/accounting defect; rejecting receipt for undrawn op needs no new mechanism proof. Restoring a visible supported partial softcap graph is separate C/design mechanism work.",
+  "distinction": "Explicit17 native applied_function proof and bound/consumed config events remain established independently; they do not prove the op was drawn.",
+  "emitter": "model_unfolder/renderers/html/block_views/attention.py:69-78 selects nonnull fact without graph node membership;188-193 hardcodes op receipt node attn_softcap. receipts_from_projects preserves descriptor; render_graph carries receipt into actual RenderEvent.",
+  "exists_in_both30_and31": true,
+  "source_sha256": {
+    "model_unfolder/evidence/receipts.py": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a",
+    "model_unfolder/opgraph.py": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3",
+    "model_unfolder/renderers/html/block_views/attention.py": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+    "model_unfolder/renderers/html/graph_engine.py": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+    "model_unfolder/renderers/html/render_context.py": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+  }
+}

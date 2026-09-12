@@ -1,0 +1,12 @@
+{
+  "head": "736fdabab2ae62c47cc28d2a34018c0c16f80dbc",
+  "files": {
+    "model_unfolder/renderers/html/graph_engine.py": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+    "tests/test_empty_lane_geometry.py": "6ab7fc6500f0fd0fdb869e3ccfac76cbe2d6844a67590e0aa8fa8ad92b1790ab",
+    "tests/test_opgraph.py": "5e40c862a0054f3369a23816ea1adfad10e42f5278ae143bdb2cbaf9c751824d"
+  },
+  "pin_timing": "after focused run; geometry production bytes match saved before-run renderer replay hash",
+  "focused_command": "PYTHONPATH=. python3 -m pytest -q tests/test_empty_lane_geometry.py tests/test_opgraph.py::test_fused_gate_bypass_is_painted_in_the_actual_svg",
+  "exit_code": 0,
+  "result": "6 passed in 0.03s"
+}

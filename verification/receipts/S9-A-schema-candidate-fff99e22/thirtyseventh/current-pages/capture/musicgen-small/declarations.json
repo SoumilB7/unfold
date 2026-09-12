@@ -1,0 +1,2031 @@
+{
+  "decoder.attention.bias": {
+    "claim_kind": "existence",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "bias",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.cross_attention_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cross_attention_schedule:9a03252db7d72224",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.cross_attention_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.num_hidden_layers"
+    ],
+    "key": "cross_attention_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross"
+    ]
+  },
+  "decoder.attention.head_geometry": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.head_geometry:07b022170a9a766a",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:195:8:195:34",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:197:24:197:46",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:197:8:197:46",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:210:22:210:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:210:43:210:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:211:22:211:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:211:43:211:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:212:22:212:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:212:43:212:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:235:42:235:55",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:238:23:238:49",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:238:23:238:68",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:259:25:259:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:259:25:259:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:260:27:260:54",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:260:27:260:69",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:294:25:294:43",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:298:22:298:48",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.head_geometry",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.num_attention_heads",
+      "decoder.hidden_size"
+    ],
+    "key": "head_geometry",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 210,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 211,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 212,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 235,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 259,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 260,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 238,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 294,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 298,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 16,
+      "num_kv_heads": 16,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    }
+  },
+  "decoder.attention.mask": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "mask",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:195:8:195:34",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:197:8:197:46",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:210:22:210:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:210:43:210:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:211:22:211:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:211:43:211:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:212:22:212:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:212:43:212:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:235:42:235:55",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:238:23:238:49",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:238:23:238:68",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:259:25:259:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:259:25:259:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:260:27:260:54",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:260:27:260:69",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "decoder.num_attention_heads"
+    ],
+    "key": "mechanism",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 210,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 211,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 212,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 235,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 259,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 260,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 238,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 197,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "mha"
+  },
+  "decoder.attention.mixer_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:a55ee23466110fe2",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:12:447:96",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:13:447:54",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:52:447:53",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:59:447:60",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:64:447:95",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:447:70:447:94",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.mixer_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.num_hidden_layers"
+    ],
+    "key": "mixer_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 447,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:210:22:210:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:211:22:211:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:212:22:212:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:238:23:238:49",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:259:25:259:52",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:260:27:260:54",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 210,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 259,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 211,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 260,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 212,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 238,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split_qkv"
+  },
+  "decoder.attention.scores_scale": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "scores_scale",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 168,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.codebook_streams": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.codebook_streams:bd83fc0433c8e460",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:437:28:439:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:438:13:438:56",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:518:28:518:117",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:518:31:518:117",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:649:24:651:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:650:13:650:73",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:735:20:735:87",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:735:32:735:79",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.codebook_streams",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.codebook_streams.decoder_codebook_streams_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.codebook_streams.decoder_codebook_streams_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.num_codebooks"
+    ],
+    "key": "codebook_streams",
+    "owner": "decoder",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 437,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 438,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 518,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 649,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 650,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 735,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "embeddings_summed": true,
+      "heads_stacked": true,
+      "num": 4
+    }
+  },
+  "decoder.ffn.activation": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "activation",
+    "owner": "decoder.ffn",
+    "source_spans": [],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "gelu"
+  },
+  "decoder.ffn.gated": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.gated:973804cd719a4fb5",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:307:29:307:63",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:321:19:321:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:322:19:322:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:24:377:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:43:377:66",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:379:24:379:47",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:383:8:383:28",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.ffn.gated",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "gated",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 321,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 322,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 377,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 379,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 307,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 383,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": false
+  },
+  "decoder.ffn.intermediate_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.intermediate_size:eafda85f8bffe037",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:307:29:307:63",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:321:19:321:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:321:45:321:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:322:19:322:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:322:29:322:43",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:24:377:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:43:377:66",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:379:24:379:47",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:383:8:383:28",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.ffn.intermediate_size",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.ffn_dim"
+    ],
+    "key": "intermediate_size",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 321,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 322,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 377,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 379,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 307,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 383,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 4096
+  },
+  "decoder.ffn.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.projection_mode:acb1f8105eb06c41",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:307:29:307:63",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:321:19:321:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:322:19:322:72",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:24:377:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:377:43:377:66",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:379:24:379:47",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:383:8:383:28",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.ffn.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 321,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 322,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 377,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 379,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 307,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 383,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "dense"
+  },
+  "decoder.input.position_addition": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.input.position_addition:42da9e1daadc8625",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:113:8:113:55",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:116:22:116:71",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:121:8:121:70",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:133:14:133:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:133:25:133:39",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:133:41:133:55",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:133:8:133:89",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:137:8:137:48",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:143:23:143:92",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:143:24:143:45",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:143:24:143:70",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:143:48:143:70",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:143:8:143:92",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:147:15:147:66",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:147:44:147:65",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:534:20:534:71",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:535:8:535:74",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13"
+      ],
+      "fact_id": "decoder.input.position_addition",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_fixed.decoder_fixed_absolute_position_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_fixed.decoder_fixed_absolute_position_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "position_addition",
+    "owner": "decoder.input",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 534,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 535,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 147,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 143,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 121,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 116,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 133,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 137,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 113,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "position_application": "embedding_add",
+      "position_kind": "fixed_absolute"
+    }
+  },
+  "decoder.layer.norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:4dcb3749bc66e61e",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:310:36:310:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:320:39:320:67",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:323:32:323:60",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:347:24:347:64",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:362:28:362:71",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:376:24:376:60",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.layer.norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "norm_kind",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 347,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 310,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 362,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 320,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 376,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 323,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "layernorm"
+  },
+  "decoder.layer.norm_placement": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "norm_placement",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "parallel_norm_count",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "residual_topology",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "model.final_norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "final_norm_kind",
+    "owner": "model",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "root||decoder.hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|3fa611cc3552302b|3fa611cc3552302b"
+      ],
+      "fact_id": "model.hidden_size",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.hidden_size"
+    ],
+    "key": "hidden_size",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": 1024
+  },
+  "model.tie_word_embeddings": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "root||decoder.tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+      ],
+      "fact_id": "model.tie_word_embeddings",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "model_unfolder.adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.tie_word_embeddings"
+    ],
+    "key": "tie_word_embeddings",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": false
+  }
+}

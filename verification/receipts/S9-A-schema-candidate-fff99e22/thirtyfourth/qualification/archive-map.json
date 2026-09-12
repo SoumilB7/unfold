@@ -1,0 +1,35 @@
+{
+  "source": "/private/tmp/unfold-s9a-thirtyfourth/qualification",
+  "files": [
+    {
+      "path": "cache/entries/3a9d45c686c15b1891414a86c693649f87fc56e371ec510bd416b912e707eb3e.json",
+      "sha256": "3a9d45c686c15b1891414a86c693649f87fc56e371ec510bd416b912e707eb3e",
+      "bytes": 3116423
+    },
+    {
+      "path": "cache/parses/0dede077bf8c722895c4f3934fb6a47205d0e7e65512e0d91315c0d824b432e4.json",
+      "sha256": "0073201b3010397d91287a97fd8909aa95e44f70ac3db46d9e53c1952ec52cce",
+      "bytes": 83
+    },
+    {
+      "path": "cache/requests/86d42f8af89dd20ca876a33ca5b4121fc6820bfb0efc293d13297fced9ca04f4.json",
+      "sha256": "0073201b3010397d91287a97fd8909aa95e44f70ac3db46d9e53c1952ec52cce",
+      "bytes": 83
+    },
+    {
+      "path": "qualification.log",
+      "sha256": "8c4b46d0982ca79a5fac5944efa9536cdffc1ae3613a6bf846d88359dfe7e62c",
+      "bytes": 592
+    },
+    {
+      "path": "result.json",
+      "sha256": "226bfeb34b63625f21f8d18b38cc196689a1c40cd70f63565a64a495731d6ecb",
+      "bytes": 525
+    },
+    {
+      "path": "run-focus.py",
+      "sha256": "a17a45c3df64a923dda739916b84f9b5677846488bef061758230d172c1f69d5",
+      "bytes": 1582
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "source": "/private/tmp/unfold-s9a-thirtyfourth/bloom-default-diagnostic",
+  "files": [
+    {
+      "path": "bloom-default-diagnostic.log",
+      "sha256": "10c59dc33e6129215b848db4d61c43aa016659a3be2d3009d9ff69633896c054",
+      "bytes": 735
+    },
+    {
+      "path": "capture/missing_root_count/context-defaults.json",
+      "sha256": "b6e9cd6cbb8d27fd33b125dbd3b4c74a768e617eb005defd3916df8ee94e5f18",
+      "bytes": 79
+    },
+    {
+      "path": "capture/missing_root_count/count-resolution-traces.json",
+      "sha256": "e4bc8e2afad3c875828160b02083d5a2cef1816ed9d551a4efee8de513ef9db0",
+      "bytes": 1549
+    },
+    {
+      "path": "capture/missing_root_count/events.json",
+      "sha256": "56db0bb8ed66461f53652c452556313043f014d04bb81b5f28e633304da74b09",
+      "bytes": 1964
+    },
+    {
+      "path": "capture/missing_root_count/input.json",
+      "sha256": "1cbe0bd0a14a770f90a98beaf1ac7e49376ef7733ebc91db7cf28ee6a263424d",
+      "bytes": 924
+    },
+    {
+      "path": "capture/missing_root_count/native-facts.json",
+      "sha256": "7aaf43b28c6307d4ad3e5e868afbad04f98f4685b016004beca4fedecb45c8d2",
+      "bytes": 32715
+    },
+    {
+      "path": "capture/missing_root_count/prepared-documents.json",
+      "sha256": "5edaf405e82c7382fa9cbe4766ac5a783c5e65396f2c6ddd518ba2bb31b5bdba",
+      "bytes": 2953
+    },
+    {
+      "path": "capture/missing_root_count/result.json",
+      "sha256": "35c51a9ed9344a3706dd502dd84f890fd536fac24d291c1e36bc7296c167a048",
+      "bytes": 391
+    },
+    {
+      "path": "capture/ordinary/context-defaults.json",
+      "sha256": "e1b07b5ad9b84f56d2cf8859859fbf952af3219190e8852f6a6626b68516c6de",
+      "bytes": 63
+    },
+    {
+      "path": "capture/ordinary/count-resolution-traces.json",
+      "sha256": "af23245d7e3de444cb7c6e20c175ae0032a313b5e8d7250629502aae38d057d0",
+      "bytes": 6359
+    },
+    {
+      "path": "capture/ordinary/events.json",
+      "sha256": "95eaea8599ebba8e1c63392ee8e780317995bb9f239935bd527fb5fc79138533",
+      "bytes": 8431
+    },
+    {
+      "path": "capture/ordinary/input.json",
+      "sha256": "23f84920adfc10e68115959e32a32b5bd2a03d4a566984f1fbe66c5182289d26",
+      "bytes": 941
+    },
+    {
+      "path": "capture/ordinary/ir.json",
+      "sha256": "b74a765d53939f22a85325c0bc0c46e067947abfcb2665a264523a6acb22da65",
+      "bytes": 884847
+    },
+    {
+      "path": "capture/ordinary/native-facts.json",
+      "sha256": "082b94e077e4914c58a571c1da672ef714b1691d58f214068adefd1632a4c893",
+      "bytes": 60188
+    },
+    {
+      "path": "capture/ordinary/page.html",
+      "sha256": "c29645f614099bd9844bddba0b0686763ea2d03607fecac208a22b8ed88e643f",
+      "bytes": 63372
+    },
+    {
+      "path": "capture/ordinary/prepared-documents.json",
+      "sha256": "73e1961cc88fa8ac8a026302162a7019dad5938a4cb52e305555c90996ecc6ce",
+      "bytes": 2994
+    },
+    {
+      "path": "capture/ordinary/result.json",
+      "sha256": "683519153d99f17f5f76ec351e0badd483155287d69bc680df6dd36d2f528617",
+      "bytes": 79
+    },
+    {
+      "path": "result.json",
+      "sha256": "6105f34865f022658b9f7b3db087d68f0974215e4045a7c42e4f81005b35a17a",
+      "bytes": 558
+    },
+    {
+      "path": "bloom-default-diagnostic.py",
+      "sha256": "f7238a696ac34df55d5326dcd9b01bf59a015f7dd2f36bb27ae3cdda36236ea7",
+      "bytes": 3587
+    },
+    {
+      "path": "run-bloom-default-diagnostic.py",
+      "sha256": "05ae8a96a31f4936fb67c71a089f1247514164ff11d64b65861eb98e271cd2ef",
+      "bytes": 1088
+    }
+  ],
+  "scope": "LOCAL_ONLY exact failed actual34 sparse Bloom diagnostic. Missing n_layer parse fails with ConfigParseError before the final diagnostic assertion raises TypeError comparing None > 0. Both failures retained; no product bypass or bless."
+}

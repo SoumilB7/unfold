@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "8167e09a2d06030e9f03420abe39103b0688a8c097a01b3b62f6dddd07a90b19",
+  "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+  "input_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.auraflow_transformer_2d",
+    "qualname": "AuraFlowTransformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

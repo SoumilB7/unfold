@@ -1,0 +1,107 @@
+{
+  "approved_scope": {
+    "files": {
+      "matrix_json_byte_identical_fields": [
+        "sources (394 entries, equal to the Q11 stamp)",
+        "denominator",
+        "schema"
+      ],
+      "matrix_json_fields_changed": {
+        "artifacts": "39/39",
+        "logical_artifacts": "39/39",
+        "logical_relation_artifacts": "19/39",
+        "models_rows": "35/39",
+        "observation_artifacts": "1/39",
+        "relation_artifacts": "20/39"
+      },
+      "payloads_changed": 60,
+      "payloads_changed_by_group": {
+        "models": 39,
+        "observations": 1,
+        "relations": 20
+      },
+      "payloads_total": 117,
+      "payloads_unchanged": 57,
+      "rows_regenerated_by_hand": false,
+      "targets_json": "byte-identical",
+      "total_installed": 61
+    },
+    "fresh_equals_candidate37": {
+      "matrix_model_rows_equal": true,
+      "model_payloads_byte_identical": "39/39",
+      "note": "byte-identical, i.e. stronger than the logical identity the owner required against the matrix he audited in S9-A-review.md section 2",
+      "observations_byte_identical": "39/39",
+      "relations_byte_identical": "39/39",
+      "sources_map_equal": true
+    },
+    "not_in_scope": [
+      "No production source, renderer, gallery, example, coverage, preservation manifest or latency budget changes; all pinned as writer controls.",
+      "The sources map installed under Q11 stays byte-identical."
+    ],
+    "projection_kind_changes": {
+      "drawing_identical": {
+        "architecture_svg_sha_both": "806af6b0ab8acae7",
+        "cards": 13,
+        "checked_by": "owner (Claude), rendering deepseek-v4-flash on the pre-S9-A baseline worktree verify-s9-a-closure-baseline (fff99e22) and on HEAD",
+        "nodes": 7,
+        "svgs": 4
+      },
+      "leaves": "43 model.layers.N.input_layernorm + 43 model.layers.N.post_attention_layernorm",
+      "matrix_summary_row_effect": "rendered 2 -> 88; projection_unresolved 1413 -> 1327; structure_unaccounted 1413 -> 1327; blocking_findings 1604 -> 1431",
+      "model": "deepseek-v4-flash",
+      "occurrences_that_became_unresolved": 0,
+      "placed_by": "the decoder-norm reader's exact occurrence citation; proof kind retained_reader_projection, reader decoder_norm_kind_for_path",
+      "reason_class": "structure_unaccounted -> cleared (None)",
+      "ruling": "INSIDE the Q12 scope. Accounting only: already-drawn norm blocks now cite their occurrences. These are the '86 DeepSeek-V4 direct norm placements ... named re-proofs' the S9-A sheet named. The owner corrected the S9-A-review.md section 2 row that had claimed projection kind was identical on every occurrence, and added a section 9 addendum.",
+      "total_occurrences": 86,
+      "transition": "projection_unresolved -> rendered"
+    },
+    "reconciliation_vs_owner_matrix_audit": {
+      "blocking_findings": "70,186 -> 54,257",
+      "citations_removed": 0,
+      "claim_kinds_changed_on_existing_citations": 0,
+      "every_item_agrees_with_the_owner_audit": true,
+      "formerly_unqualified_now_qualified": 16324,
+      "identity_order_construction_execution_schedules": "identical on all 39 models",
+      "new_unqualified": "481, all scores_scale",
+      "newly_cited": 18565,
+      "occurrences": "44,088 = 44,088",
+      "provenance": "additive only, on 17 models",
+      "relations": "counts equal on all 39; five tying rows gain config_paths (bloom, command-a-03-2025, gemma-2-2b-it, granite-3-0-8b-instruct, lfm2-1-2b)",
+      "still_unqualified_from_that_denominator": 0
+    },
+    "regenerated_from": "a fresh full 39-model S7 shadow run on the committed head b45bab26 with a clean tree; lane rc 0, 1355.83 s, source bracket 4c1ca4691fb95f5a... and artifact bracket 5aed5480485a877c... equal before and after; active_matrix_renewed false",
+    "unit": "S7 payload renewal on the committed head b45bab26 (Q12)",
+    "why": "The committed verification/s7 payloads are stale against S9-A's claim-kind stamping. The Linux gate scripts/generate_s7_shadow.py --ci-shadow caught it on auraflow-v0-3 (committed 1823 blocking findings, live 1784). Only the source stamp was renewed under Q11; the payloads were not."
+  },
+  "approved_scope_sha256": "91920b254a1ad60fcdbeb3663c02ddfdb287fb5f5b5faec3ece0b9f9972c6f77",
+  "arbiter_approval": {
+    "covers": [
+      "Q12"
+    ],
+    "date": "2026-09-12",
+    "presented_as": "z-docs/11-execution/S9-A-review.md \u00a79 addendum",
+    "record": "z-docs/12-design/00-design-decisions-verbatim.md, section 'S7 payload renewal (Q12)'",
+    "verbatim": "I approve the S7 payload renewal for S9-A.",
+    "who": "Soumil"
+  },
+  "decision": "ACCEPT",
+  "evidence_sha256": {
+    "verification/receipts/S7-payload-renewal-b45bab26/renewal-reconciliation.json": "15f887c3c6b2ebb289ce0f10211ef035a929f3e7151c27b7a2b20ccc64110cf1",
+    "verification/receipts/S9-A-owner-review-37/matrix_audit.json": "514ecbd5644006438c43db793c744062d163168c675d84d6fc79904ac912b45d"
+  },
+  "implementer": "executor (Claude Fable 5.1)",
+  "limits": [
+    "Exact enumerated payload installation only. No source or model change, no release, no gallery re-bless, no hand-edited row.",
+    "The S7 check passes on a scratch overlay of these exact bytes; tests/test_s7_artifacts.py hardcodes ROOT/verification/s7 and can only run after installation.",
+    "Linux green at the pushed head still closes S9-A and S10-1; this verdict does not."
+  ],
+  "persisted_by": "Soumil (arbiter), 2026-09-12: \"I approve the S7 payload renewal for S9-A.\"",
+  "reviewed_at": "2026-09-12",
+  "reviewed_tree": "b45bab26539eca773c2f03519ebfd72ca7719d93 on audio-composite-support",
+  "reviewer": "owner (Claude), z-docs/11-execution/S9-A-review.md",
+  "reviewer_is_not_implementer": true,
+  "reviewer_review_document": "z-docs/11-execution/S9-A-review.md",
+  "reviewer_second_document": "z-docs/11-execution/S10-1-review.md",
+  "scope": "Renew the 117-payload S7 result and the matrix.json artifact/logical hash fields from a fresh shadow regenerated on the committed head b45bab26, so the committed evidence matches the S9-A code the Linux --ci-shadow gate re-runs. The sources map and targets.json stay byte-identical."
+}

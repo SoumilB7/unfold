@@ -1,0 +1,33 @@
+{
+  "checkpoint": "d3a4d61732233a14ee67917f48fe5ec11d41f10e",
+  "commands": [
+    {
+      "exit_code": 0,
+      "output": "binding-results.json",
+      "script": "replay_bindings.py"
+    },
+    {
+      "exit_code": 0,
+      "output": "ffn-results.json",
+      "script": "replay_ffn_fresh.py"
+    }
+  ],
+  "no_blessing": true,
+  "no_pytest": true,
+  "receipt_files": {
+    "README.md": "7ceeecbedeb916f3eb81613471d538b3de38663120ad67670d27a3f3321351ba",
+    "binding-results.json": "bf42fd56cad232621a5de353c9f8b5e3c539f7fb055cee3a0f6fdefb9ad84f3a",
+    "execution-scope.md": "2c88be3d74b437dee57f8064b2548c8f49832f7fff3215296172a40dbe0406e9",
+    "ffn-results.json": "7d91384477b0ec34ef27738613b8899526719478ef3e963d2dc9b389f818da21",
+    "fresh-evidence/implementation-before.json": "e21cc62963692bc96d8840ceeff2d8761c842d6cc26b7eec9b44da1139b35eba",
+    "fresh-evidence/input.json": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+    "fresh-evidence/inventory.json.gz": "4efeb27f5c487b77b8f189cd2ffc734d8932480c707a42b83d3484bf87efe9fd",
+    "fresh-evidence/result.json": "7fa570588bb55366df4d3551de7600bc77af0fcc216aee08e21ba4c66960cba3",
+    "replay_bindings.py": "47005780ed39eed620be78e54b24610707337fa424df66937fd7e41c76ff2289",
+    "replay_ffn_fresh.py": "6478821468810cdd62806612587fa7543746076d78b2a2c65717094fb84c1589"
+  },
+  "tracked_fingerprint_final": "2f06be744a94dfaccfd0dfef7edec10db2a772607833ea0f1ab146626ea0fd0c",
+  "tracked_fingerprint_matches_start": true,
+  "verdict": "RETURN R1; R5 and R7 bounded corrections PASS",
+  "worktree_clean_at_start_and_end": true
+}

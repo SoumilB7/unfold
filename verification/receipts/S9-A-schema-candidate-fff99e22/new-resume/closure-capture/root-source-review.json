@@ -1,0 +1,12 @@
+{
+  "decision": "ACCEPT bounded source replay and baseline output capture harness; runtime pending",
+  "manifest_sha256": "f083a217075e6c806c5e31a2e633bde7c7667ab408dfeb71caa24d820161b6b9",
+  "checks": [
+    "Exact actual39 targets,36changed and3unchangedcontrols",
+    "Real sourceaddress-only setup matches generator; no fabricated inventory authority",
+    "Portable multiset retains duplicates and failure sources and is checked against publicseal+eachactualmatrixseal",
+    "Cleanfff99 baseline guard and separate serialbefore/afterbrackets",
+    "BaselineactualIRandHTML preserved; afterpages neveroverwritten",
+    "Mismatches retained, no normalization or proof blessing"
+  ]
+}

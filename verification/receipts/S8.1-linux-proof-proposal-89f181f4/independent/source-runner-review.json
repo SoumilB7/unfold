@@ -1,0 +1,24 @@
+{
+  "decision": "ACCEPT_SOURCE_AND_CORRECTED_RUNNER_DESIGN",
+  "reviewer": "independent_review",
+  "candidate_manifest_sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+  "source_diff_sha256": "39fd39892b5b8473cc71995e2d29a652d7c8b3c2139c60ef7a60ceb5a52009c8",
+  "runner_sha256": "8ee48c46c9750435ee2c7bd225a0fc71b1ee15417fa79b10fb106c6946c2cb87",
+  "comparison_sha256": "9765d394d8efb2d281ffd7866833cd82a901a75b50cec9f6c913919e8d27bf4c",
+  "checks": [
+    "All8 original/current/candidate file hashes matched manifest during independent source read.",
+    "All10 persisted summary index seals call existing portable calculation; original calculation AST exactly preserved after extraction.",
+    "Local ProgramIndex fingerprint, authoritative object membership, and proof validation unchanged.",
+    "Memo restricted to exact frozen census/scalars; mutable or noncanonical inputs uncached; memo excluded serialization; original dataclass fields unchanged.",
+    "Meaningful actual constructor-default serialization relocation/content/ownership/provenance controls and checkpoint/membership/copy/count controls written.",
+    "Runner corrected to explicit selected portable controls, rejects optimized Python, and retains final candidate/comparison pins and lane errors.",
+    "Comparator retains actual outputs before assertions, admits exactly200 named model proof fingerprint leaves with known mappings, and checks fresh observation/relation semantics using unchanged comparator.",
+    "Proposal changes only scratch SDXL model plus matrix source/artifact/logical hashes, requiring unchanged116 other payloads and normal g.check validation."
+  ],
+  "limitations": [
+    "Source/runner acceptance only; no actual test or producer result inferred.",
+    "Generic constructor evidence_refs retain absolute paths; whole generic summary portability not claimed.",
+    "Owner approval remains required for new S7 payload renewal; no installation authorized by this verdict.",
+    "Original Linux failures retained."
+  ]
+}

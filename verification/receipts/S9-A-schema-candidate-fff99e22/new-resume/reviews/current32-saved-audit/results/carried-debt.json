@@ -1,0 +1,96 @@
+{
+  "prior_addendum": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current30-saved-audit-r2/owner-debt-addendum.json",
+  "prior_sha256": "6059e0906103405385c0208811acf0a604568c780c30a6968cd3e8377994ce4f",
+  "legacy_banner_models": [
+    "auraflow-v0-3",
+    "cogvideox-5b",
+    "flux-2-dev",
+    "fluxtransformer2dmodel",
+    "hunyuanvideo",
+    "ltx-video",
+    "lumina-image-2-0",
+    "mochi-1-preview",
+    "pixart-sigma-xl-2-1024-ms",
+    "prxpixel-t2i",
+    "qwen-image",
+    "sana-1600m-1024px-diffusers",
+    "stable-diffusion-3-5-large",
+    "wan2-2-t2v-a14b-diffusers"
+  ],
+  "markers_not_receipts": true,
+  "prior_debt_record": {
+    "reviewer": "placement_executor",
+    "verdict_reference_sha256": "44a3bd2948c318965b48d57c5a61a4abc4fe1c12916faa4201e52438b265a677",
+    "marker_distinction": {
+      "fact_backed_receipts": 24,
+      "legacy_diffusion_marker_only": 14,
+      "zero_value_model_names": [
+        "auraflow-v0-3",
+        "flux-2-dev",
+        "fluxtransformer2dmodel",
+        "ltx-video",
+        "lumina-image-2-0",
+        "mochi-1-preview",
+        "pixart-sigma-xl-2-1024-ms",
+        "prxpixel-t2i",
+        "sana-1600m-1024px-diffusers",
+        "stable-diffusion-3-5-large",
+        "wan2-2-t2v-a14b-diffusers"
+      ],
+      "value_3072_model_names": [
+        "cogvideox-5b",
+        "hunyuanvideo",
+        "qwen-image"
+      ],
+      "all14_model_names": [
+        "auraflow-v0-3",
+        "cogvideox-5b",
+        "flux-2-dev",
+        "fluxtransformer2dmodel",
+        "hunyuanvideo",
+        "ltx-video",
+        "lumina-image-2-0",
+        "mochi-1-preview",
+        "pixart-sigma-xl-2-1024-ms",
+        "prxpixel-t2i",
+        "qwen-image",
+        "sana-1600m-1024px-diffusers",
+        "stable-diffusion-3-5-large",
+        "wan2-2-t2v-a14b-diffusers"
+      ],
+      "owner": "S9-B restoration debt",
+      "meaning": "These cells display legacy canonical diffusion scalars without model.hidden_size native facts; no proof or occurrence citation is promoted. Their zero/unqualified values are not S9-A architecture accuracy/completion."
+    },
+    "unchanged_vae_materialization": {
+      "models": [
+        "flux-2-dev",
+        "hunyuanvideo",
+        "lumina-image-2-0",
+        "stable-diffusion-3-5-large"
+      ],
+      "operation_author": "model_unfolder/adapters/diffusor/blocks.py::_vae_decoder_children (mid_ops declarations around928)",
+      "materializer": "model_unfolder/renderers/html/metadata.py::_ensure_declared_op_cards (children assignment123)",
+      "downstream": "model_unfolder.labels.cards_from_region via model_unfolder.opgraph.ops_region",
+      "meaning": "The renderer adds inspect-card children from an already declared ops region; the adapter supplies the op claims. Exact before/after insertions match26 in allfour models. This is retained legacy scope, not new S9-A evidence or proof.",
+      "owner": "DiT/MMDiT restoration/re-proof in S9-B; family deletion follow-up under S10-n, not expansion of this A audit."
+    },
+    "source_pins": [
+      {
+        "path": "model_unfolder/renderers/html/metadata.py",
+        "sha256": "7604fb18b3b72c17ec22d1d1142271c36179e160bd0af31fe61da8cc6ac998d4"
+      },
+      {
+        "path": "model_unfolder/adapters/diffusor/blocks.py",
+        "sha256": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8"
+      }
+    ],
+    "output_blessing": false
+  },
+  "same_pre_post_render_mutation_models": [
+    "flux-2-dev",
+    "hunyuanvideo",
+    "lumina-image-2-0",
+    "stable-diffusion-3-5-large"
+  ],
+  "nested_limit": "147 separately audited nested deltas encode105 consumption obligations on80 child targets in15 models. This root-native audit establishes no child proof change or child ledger validity; actual child ledger observer is separate."
+}

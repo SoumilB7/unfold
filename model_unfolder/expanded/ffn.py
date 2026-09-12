@@ -8,30 +8,32 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..opgraph import ffn_region
+from ..opgraph import ffn_region, ffn_structure_declared, ffn_structure_state
 from .ops import edges_from_nodes, node
 from .region import region_to_json as _region_to_json
 from .utils import drop_none
 
 
-def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
+def build_ffn(ffn: dict, hidden: int | None,
+              group_path: str, evidence: dict | None = None) -> dict[str, Any]:
+    """Project canonical FFN; legacy global ``evidence`` is intentionally ignored."""
     kind = ffn.get("kind")
-    # gated is tri-state: True / False are declared facts; None means the config
-    # does not declare the inner structure.  Keep that distinction in the JSON
-    # (gated=null + structure_declared=false) rather than collapsing None to false.
-    declared = ffn.get("gated") is not None or kind == "moe"
+    structure_state = ffn_structure_state(ffn)
     out: dict[str, Any] = {
         "kind":              kind,
         "activation":        ffn.get("activation"),
         "activation_assumed": ffn.get("activation_assumed") or None,
         "activation_from_class": ffn.get("activation_from_class") or None,
         "intermediate_size": ffn.get("intermediate_size"),
-        "gated":             bool(ffn.get("gated")) if declared else None,
-        "structure_declared": None if declared else False,
+        "gated":             ffn.get("gated"),
+        "projection_mode":   ffn.get("projection_mode"),
+        "structure_state":    structure_state,
+        "structure_declared": ffn_structure_declared(ffn),
         "operation_graph":   _operation_graph(ffn, hidden),
         "trace": {
             "ir_path":          f"{group_path}.ffn",
-            "code_finding_ids": _evidence_ids(evidence, "ffn", _evidence_values(ffn)),
+            # A global (kind, value) bucket can belong to a sibling owner.
+            "code_finding_ids": [],
         },
     }
     if kind == "moe":
@@ -41,23 +43,44 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
         out["router"]  = drop_none({"num_experts": n, "top_k": k,
                                     "active_fraction": (k / n) if n and k else None,
                                     **routing})
-        out["experts"] = drop_none({"count": n,
-                                    "shared": ffn.get("num_shared_experts") or 0,
-                                    "expert_intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")})
-    return drop_none(out)
+        # These are independent expert facts. Preserve explicit unknowns so a
+        # consumer cannot borrow the ordinary FFN's width/storage when an
+        # expert-local value is absent.
+        out["experts"] = {
+            "count": n,
+            "shared": ffn.get("num_shared_experts"),
+            "expert_intermediate_size": ffn.get("expert_intermediate_size"),
+            "projection_mode": ffn.get("expert_projection_mode"),
+            "activation_formula": ffn.get("expert_activation_formula"),
+        }
+    # U4-C: unknown is data, not an omitted key that a downstream default may
+    # refill. Keep the top-level tri-state fields in the expanded contract.
+    return out
 
 
 # ---------- operation graph ----------
 
 
 def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
-    intermediate = ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")
     if ffn.get("kind") == "moe":
         # MoE keeps its router/template framing, but the expert's internals are
         # the same canonical region the renderer draws.
+        expert_mode = ffn.get("expert_projection_mode")
+        expert_gated = (
+            True if expert_mode in {"split", "fused_gate_up"}
+            else False if expert_mode == "dense"
+            else None
+        )
         expert = ffn_region(
-            {"kind": "dense", "gated": bool(ffn.get("gated", True)),
-             "activation": ffn.get("activation"), "intermediate_size": intermediate},
+            {
+                "kind": "dense",
+                "gated": expert_gated,
+                "activation": (
+                    (ffn.get("expert_activation_formula") or {}).get("kind")),
+                "activation_formula": ffn.get("expert_activation_formula"),
+                "intermediate_size": ffn.get("expert_intermediate_size"),
+                "projection_mode": expert_mode,
+            },
             hidden,
         )
         nodes = [
@@ -68,24 +91,3 @@ def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
         ]
         return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
     return _region_to_json(ffn_region(ffn, hidden))
-
-
-# ---------- evidence linking ----------
-
-
-def _evidence_values(ffn: dict) -> list[str]:
-    if ffn.get("kind") == "moe":
-        return ["mixture_of_experts"]
-    if ffn.get("gated") is None:
-        return []   # inner structure undeclared — claim no specific FFN evidence
-    return ["gated_dense_ffn" if ffn.get("gated") else "plain_dense_ffn"]
-
-
-def _evidence_ids(evidence: dict | None, kind: str, values: list[str]) -> list[str]:
-    if not evidence:
-        return []
-    detections = evidence.get("detections") or {}
-    out: list[str] = []
-    for v in values:
-        out.extend(((detections.get(kind) or {}).get(v) or {}).get("finding_ids") or [])
-    return out

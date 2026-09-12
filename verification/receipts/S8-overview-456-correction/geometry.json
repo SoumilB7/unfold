@@ -1,0 +1,164 @@
+{
+  "scope": "Renderer-only correction on saved actual4560449 IR; not a fresh candidate page or blessing",
+  "ir_sha256": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+  "renderer_sha256": "9d052fa81bb50af0ae0db4f825486cd242b08c68cfa71b1b69afcf73136403f7",
+  "before": {
+    "nodes": [
+      "instance_add_embedding",
+      "instance_add_time_proj",
+      "instance_conv_act",
+      "instance_conv_norm_out",
+      "instance_down_blocks__0",
+      "instance_down_blocks__1",
+      "instance_down_blocks__2",
+      "instance_mid_block",
+      "instance_time_embedding",
+      "instance_time_proj",
+      "instance_up_blocks__0",
+      "instance_up_blocks__1",
+      "instance_up_blocks__2",
+      "unet_context_0",
+      "unet_primary_region_0",
+      "unet_primary_region_1",
+      "unet_primary_region_2",
+      "unet_primary_region_3",
+      "unet_primary_region_4",
+      "unet_primary_region_5",
+      "unet_primary_region_6",
+      "unet_primary_region_7",
+      "unet_primary_region_8",
+      "unet_skip_bank"
+    ],
+    "routes": [
+      [
+        "unet_primary_region_0",
+        "unet_primary_region_1"
+      ],
+      [
+        "unet_primary_region_1",
+        "unet_primary_region_2"
+      ],
+      [
+        "unet_primary_region_2",
+        "unet_primary_region_3"
+      ],
+      [
+        "unet_primary_region_3",
+        "unet_primary_region_4"
+      ],
+      [
+        "unet_primary_region_4",
+        "unet_primary_region_5"
+      ],
+      [
+        "unet_primary_region_5",
+        "unet_primary_region_6"
+      ],
+      [
+        "unet_primary_region_6",
+        "unet_primary_region_7"
+      ],
+      [
+        "unet_primary_region_7",
+        "unet_primary_region_8"
+      ]
+    ],
+    "crossings": [
+      {
+        "source": "unet_primary_region_6",
+        "target": "unet_primary_region_7",
+        "crossed_card": "instance_conv_act",
+        "segment": [
+          [
+            820.0,
+            484.0
+          ],
+          [
+            820.0,
+            213.0
+          ]
+        ]
+      },
+      {
+        "source": "unet_primary_region_6",
+        "target": "unet_primary_region_7",
+        "crossed_card": "instance_conv_norm_out",
+        "segment": [
+          [
+            820.0,
+            484.0
+          ],
+          [
+            820.0,
+            213.0
+          ]
+        ]
+      }
+    ]
+  },
+  "after": {
+    "nodes": [
+      "instance_add_embedding",
+      "instance_add_time_proj",
+      "instance_conv_act",
+      "instance_conv_norm_out",
+      "instance_down_blocks__0",
+      "instance_down_blocks__1",
+      "instance_down_blocks__2",
+      "instance_mid_block",
+      "instance_time_embedding",
+      "instance_time_proj",
+      "instance_up_blocks__0",
+      "instance_up_blocks__1",
+      "instance_up_blocks__2",
+      "unet_context_0",
+      "unet_primary_region_0",
+      "unet_primary_region_1",
+      "unet_primary_region_2",
+      "unet_primary_region_3",
+      "unet_primary_region_4",
+      "unet_primary_region_5",
+      "unet_primary_region_6",
+      "unet_primary_region_7",
+      "unet_primary_region_8",
+      "unet_skip_bank"
+    ],
+    "routes": [
+      [
+        "unet_primary_region_0",
+        "unet_primary_region_1"
+      ],
+      [
+        "unet_primary_region_1",
+        "unet_primary_region_2"
+      ],
+      [
+        "unet_primary_region_2",
+        "unet_primary_region_3"
+      ],
+      [
+        "unet_primary_region_3",
+        "unet_primary_region_4"
+      ],
+      [
+        "unet_primary_region_4",
+        "unet_primary_region_5"
+      ],
+      [
+        "unet_primary_region_5",
+        "unet_primary_region_6"
+      ],
+      [
+        "unet_primary_region_6",
+        "unet_primary_region_7"
+      ],
+      [
+        "unet_primary_region_7",
+        "unet_primary_region_8"
+      ]
+    ],
+    "crossings": []
+  },
+  "nodes_preserved": true,
+  "primary_route_pairs_preserved": true
+}

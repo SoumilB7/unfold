@@ -1,0 +1,359 @@
+{
+  "status": "PENDING_WHOLE_GATE__29_OF_30_PRIOR_FAILURES_PASSED",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "schedule_bytes_equal": true,
+  "schedule_sha256": "ca3e24d815be65425f0a74f4776fb86ca0e4c455cb7a1ea88cd54896eabeac90",
+  "scheduled_total": 4461,
+  "prior_failure_rows": [
+    {
+      "nodeid": "tests/test_diffusion.py::test_sdxl_retains_both_encoders_and_conditional_added_embedding",
+      "batch": "batch-001",
+      "schedule_position": 36,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_published_image_decoder_keeps_own_projection_without_text_tower",
+      "batch": "batch-001",
+      "schedule_position": 37,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells",
+      "batch": "batch-001",
+      "schedule_position": 41,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn",
+      "batch": "batch-001",
+      "schedule_position": 42,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_image_unet_has_2d_occurrences_without_temporal_fabrication",
+      "batch": "batch-001",
+      "schedule_position": 43,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_sdxl_draws_constructed_transformer2d_and_qualified_ffn",
+      "batch": "batch-001",
+      "schedule_position": 44,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_context_argument_does_not_assert_unproved_kv_role",
+      "batch": "batch-001",
+      "schedule_position": 46,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_simple_cross_stage_occurrences_are_constructed_and_carded",
+      "batch": "batch-001",
+      "schedule_position": 47,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_structure_has_constructed_stages_and_nonzero_summary",
+      "batch": "batch-001",
+      "schedule_position": 48,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_component_entry_and_constructed_stages_couple",
+      "batch": "batch-001",
+      "schedule_position": 49,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_diffusion_recursive_depth_conforms[sdxl_unet]",
+      "batch": "batch-001",
+      "schedule_position": 67,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_overview_draws_the_source_bound_context_route",
+      "batch": "batch-001",
+      "schedule_position": 90,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_stage_drills_show_each_occurrences_own_weight_shape",
+      "batch": "batch-001",
+      "schedule_position": 93,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_resnet_is_one_drawn_occurrence_not_a_repeated_cell",
+      "batch": "batch-001",
+      "schedule_position": 94,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_attention_containment_does_not_invent_inner_compute",
+      "batch": "batch-001",
+      "schedule_position": 95,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_context_reference_couples_at_each_proved_deep_drill",
+      "batch": "batch-001",
+      "schedule_position": 96,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_external_context_drill_is_distinct_from_self_attention",
+      "batch": "batch-001",
+      "schedule_position": 97,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_component_entry_uses_its_actual_denoiser_label",
+      "batch": "batch-001",
+      "schedule_position": 98,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_overview_stage_occurrences_and_skip_routes_are_carded",
+      "batch": "batch-001",
+      "schedule_position": 99,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_entry_arrows_are_declared_ports_not_a_sampling_claim",
+      "batch": "batch-001",
+      "schedule_position": 100,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_stage_drills_keep_occurrence_cards_and_qualified_ffn_opener",
+      "batch": "batch-001",
+      "schedule_position": 101,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_mid_occurrences_preserve_shapes_with_stage_order_open",
+      "batch": "batch-001",
+      "schedule_position": 102,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_resnet_draws_proved_fragments_and_conditional_arithmetic",
+      "batch": "batch-001",
+      "schedule_position": 103,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "170 passed in 1659.06s (0:27:39)"
+    },
+    {
+      "nodeid": "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer",
+      "batch": "batch-002",
+      "schedule_position": 150,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "157 passed, 14 skipped in 1066.74s (0:17:46)"
+    },
+    {
+      "nodeid": "tests/test_code_evidence.py::test_unet_ffn_activation_anchored_to_declared_blocks",
+      "batch": "batch-004",
+      "schedule_position": 78,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "167 passed in 295.89s (0:04:55)"
+    },
+    {
+      "nodeid": "tests/test_fact_registry.py::test_every_registered_fact_is_observed_in_an_evidence_population",
+      "batch": "batch-012",
+      "schedule_position": 73,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "163 passed in 267.16s (0:04:27)"
+    },
+    {
+      "nodeid": "tests/test_s7_relation_observation.py::test_relation_recipe_is_version_qualified",
+      "batch": "batch-015",
+      "schedule_position": 137,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "162 passed, 2 xfailed in 185.28s (0:03:05)"
+    },
+    {
+      "nodeid": "tests/test_s6_physics.py::test_constructor_output_is_drained_without_deadlock_and_capture_is_bounded",
+      "batch": "batch-016",
+      "schedule_position": 62,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "164 passed in 334.24s (0:05:34)"
+    },
+    {
+      "nodeid": "tests/test_s6_physics.py::test_constructor_memory_cap_is_typed",
+      "batch": "batch-016",
+      "schedule_position": 63,
+      "actual_terminal_marker": ".",
+      "status": "PASS",
+      "batch_summary": "164 passed in 334.24s (0:05:34)"
+    },
+    {
+      "nodeid": "tests/test_coverage.py::test_every_registered_view_is_exercised_and_couples",
+      "batch": "batch-023",
+      "schedule_position": 150,
+      "actual_terminal_marker": null,
+      "status": "PENDING",
+      "batch_summary": null
+    }
+  ],
+  "completed_batch_summaries_at_review": [
+    {
+      "batch": "batch-000",
+      "summary": "344 passed in 7.91s",
+      "sha256": "5e41d3a79c34f2b012662c4e9f15ea0ea95ac7cd4fe48940d9736f1bb5511d74"
+    },
+    {
+      "batch": "batch-001",
+      "summary": "170 passed in 1659.06s (0:27:39)",
+      "sha256": "f0ac77d4be3e972a8efd0032ddd24ed237cde7fc39f4acfe1fb162d95de24b97"
+    },
+    {
+      "batch": "batch-002",
+      "summary": "157 passed, 14 skipped in 1066.74s (0:17:46)",
+      "sha256": "410b48bfa63df449f69bfb55d75d8a4fc3173209a074c30aada3057fd9ef3ed6"
+    },
+    {
+      "batch": "batch-003",
+      "summary": "170 passed in 37.32s",
+      "sha256": "4ae267406feb880a994561164718b3cf0ea6f924fe35454d9e77605c678a3a31"
+    },
+    {
+      "batch": "batch-004",
+      "summary": "167 passed in 295.89s (0:04:55)",
+      "sha256": "1221810592d942ea5d1c7db41a01225e42c35f8cf7ada605edeb30839d0d871b"
+    },
+    {
+      "batch": "batch-005",
+      "summary": "167 passed in 435.91s (0:07:15)",
+      "sha256": "bdc57c857183fdb8113d2682860c0d0c174c1013a3d2a52bd31ffba2dd02d6dc"
+    },
+    {
+      "batch": "batch-006",
+      "summary": "167 passed in 24.32s",
+      "sha256": "1b99b16428ff30aa291a83b681655aec06255340ce8097e738f5d969f80ebec1"
+    },
+    {
+      "batch": "batch-007",
+      "summary": "163 passed in 195.58s (0:03:15)",
+      "sha256": "2ec2e45047c28c3c8b3015c4780412bd4551b0135bfbafeec07fd020cd536344"
+    },
+    {
+      "batch": "batch-008",
+      "summary": "164 passed in 33.93s",
+      "sha256": "b2feef38d88473bb117ab1d48e939cc80f95277067b5d8071d4be6b2d3d9e406"
+    },
+    {
+      "batch": "batch-009",
+      "summary": "164 passed in 105.17s (0:01:45)",
+      "sha256": "5f17e139fb2cc9abb9e363be18dd1a524bdda81b5fc7024f483ef1e8fbf14cf1"
+    },
+    {
+      "batch": "batch-010",
+      "summary": "164 passed in 70.40s (0:01:10)",
+      "sha256": "5e84ec43bebb3715ea45cbb5d29c7fe89fac2a5e79cec7cd8e8d3e2cb9a29d2f"
+    },
+    {
+      "batch": "batch-011",
+      "summary": "163 passed in 59.11s",
+      "sha256": "3320a31fa2b45ab48f1e759e1ed7f30ae3916a1664feeebf6976743c32d25269"
+    },
+    {
+      "batch": "batch-012",
+      "summary": "163 passed in 267.16s (0:04:27)",
+      "sha256": "899cf7b129b353a853e987e63373e65ed38a319d22c3c2f5eaeb7d400eecad31"
+    },
+    {
+      "batch": "batch-013",
+      "summary": "164 passed in 104.52s (0:01:44)",
+      "sha256": "b90bca9cb1608ed0ade0d59efb88378d7622eb97b4734c2da9d0d7edf708ad44"
+    },
+    {
+      "batch": "batch-014",
+      "summary": "164 passed in 63.36s (0:01:03)",
+      "sha256": "c0135b0445be250c23f171599cc53dc7a6439c78c571c12425eb7973bdbeb75e"
+    },
+    {
+      "batch": "batch-015",
+      "summary": "162 passed, 2 xfailed in 185.28s (0:03:05)",
+      "sha256": "54c6e3ef3bed156df33ff76b069fa4bb96b42b3bafbee281673bfcce268c21a0"
+    },
+    {
+      "batch": "batch-016",
+      "summary": "164 passed in 334.24s (0:05:34)",
+      "sha256": "ed6e11da6871756d182fc31008745778233ab2ffcbd6a9bba3be5c6a1175ef49"
+    },
+    {
+      "batch": "batch-017",
+      "summary": "164 passed in 99.54s (0:01:39)",
+      "sha256": "c3cacdeaae30c5d8ec8a7ee710fc971e6f9c1716549cae92b5bc8673682bb978"
+    },
+    {
+      "batch": "batch-018",
+      "summary": "163 passed in 99.31s (0:01:39)",
+      "sha256": "ff67c1c2952bbaf72034bda87b19e4a24c177024a9544fe0ae5145dea2dab051"
+    },
+    {
+      "batch": "batch-020",
+      "summary": "163 passed in 54.48s",
+      "sha256": "3c6e43b454affb1043aa274ebeac9836af093f3963305c2d712718ab1b9916d7"
+    },
+    {
+      "batch": "batch-021",
+      "summary": "163 passed in 57.84s",
+      "sha256": "32ac4e425411ba18f8ac1f558f8073883a16a2f1db8211c9373f0f99f5cb9ae2"
+    }
+  ],
+  "reviewer_ran_models_tests_or_render": false,
+  "acceptance_limit": "No whole acceptance before all26 full batches, preservation and final source/artifact/external pins arrive; original10workerRED remains historicalactualRED",
+  "marker_method": "Original exact fullschedule position aligned with terminal pytest progress characters;29 oldfailed nodes are dots, not existing skips/xfails"
+}

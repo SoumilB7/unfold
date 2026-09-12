@@ -1,0 +1,19 @@
+{
+  "base_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "references": {
+    "model_unfolder/evidence/presentation_projection.py": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff",
+    "model_unfolder/evidence/reconciliation.py": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db",
+    "model_unfolder/renderers/html/render_context.py": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07",
+    "model_unfolder/renderers/html/cards.py": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80",
+    "model_unfolder/adapters/transformer/blocks/layers.py": "97c87c00b2e33b238243d2400a252b42585cdcc91f82f6587de682bb647c84db"
+  },
+  "saved_ordinary34_source_instance_paths": {
+    "bloom": 0,
+    "musicgen-small": 0
+  },
+  "growth": {
+    "added_lines": 160,
+    "deleted_lines": 0
+  },
+  "structural_write_census": "Source_fact_keys metadata is outside existing structural-write vocabulary, as with previously reviewed softcap citation. No counted structural sink added; root must verify census and paired matrix outcomes."
+}

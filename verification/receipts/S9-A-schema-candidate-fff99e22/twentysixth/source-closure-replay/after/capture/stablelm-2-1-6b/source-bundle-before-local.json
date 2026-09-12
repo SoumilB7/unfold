@@ -1,0 +1,35 @@
+{
+  "bundle": {
+    "architecture": "StableLmForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "StableLmForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/stablelm/modeling_stablelm.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "stablelm"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/stablelm/modeling_stablelm.py"
+    ],
+    "import_roots": {},
+    "model_id": "stabilityai/stablelm-2-1_6b",
+    "model_type": "stablelm",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/stablelm/configuration_stablelm.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

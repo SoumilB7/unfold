@@ -3,39 +3,82 @@ from __future__ import annotations
 
 
 from ...labels import attention_summary, kind_long
-from .patch_grid import coerce_grid, grid_card_phrase
+from .patch_grid import grid_card_phrase
 from .utils import _fmt_int
+
+
+_DRAW_KIND = {
+    "conv1d": "conv", "conv2d": "conv", "conv3d": "conv",
+    "pooling": "reshape", "pixel_shuffle": "reshape",
+    "pixel_unshuffle": "reshape", "resize": "reshape", "stack": "reshape",
+    "split": "slice", "embedding": "position",
+}
+
+
+def _declared_ops(operations: list[dict]) -> list[dict]:
+    """Translate evidence detail into the renderer's stable op alphabet.
+
+    This is presentation normalization only.  The exact source operation kind
+    remains in ``source_kind`` and its source-derived label is preserved; no
+    missing mechanism is filled in here.
+    """
+    out = []
+    for operation in operations:
+        item = dict(operation)
+        source_kind = item.get("kind")
+        drawn_kind = _DRAW_KIND.get(source_kind, source_kind)
+        if drawn_kind != source_kind:
+            item["source_kind"] = source_kind
+            item["kind"] = drawn_kind
+        out.append(item)
+    return out
 
 
 def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
     """The attention-view declarer for a facts-only encoder tower: one child
     card whose ``view``/``detail.attention`` open the canonical attention view
-    at the encoder's own dimensions.  Emitted only when heads are declared."""
+    at the encoder's own dimensions.  It projects canonical facts only; it
+    never reconstructs head geometry from sibling values."""
     heads = encoder.get("num_attention_heads")
-    if not heads:
-        return []
     hidden = encoder.get("hidden_size")
     kv = encoder.get("num_key_value_heads")
-    head_dim = encoder.get("head_dim") or (
-        hidden // heads if (hidden and heads and hidden % heads == 0) else None)
+    head_dim = encoder.get("head_dim")
+    observed_kind = encoder.get("attention_kind")
+    kind = (
+        observed_kind
+        if observed_kind in {
+            "mha", "gqa", "mqa", "mla", "linear", "gated_delta",
+            "recurrent", "rwkv", "ssm",
+        }
+        else None
+    )
+    if not heads and not kind:
+        return []
     # ONE source: this dict feeds the embedded view AND (via the central
     # vocabulary) the title + chips, so they cannot disagree.
     attn = {
-        "kind": ("gqa" if (kv and kv != heads) else "mha"),
+        # Head counts are geometry, not a mechanism classifier.  Unknown code
+        # stays an opaque attention region while preserving those dimensions.
+        "kind": kind,
         "num_heads": heads,
-        "num_kv_heads": kv or heads,
+        "num_kv_heads": kv,
         "head_dim": head_dim,
         "hidden": hidden,
-        "cached": False,
+        "cached": None,
     }
     facts = attention_summary(attn)[1]
     if hidden:
         facts = facts + [f"hidden {_fmt_int(hidden)}"]
     return [{
         "id": f"{prefix}_attn",
-        "title": kind_long(attn).replace(" attention", " self-attention"),
-        "description": "Self-attention over the encoder's token sequence — each token mixes "
-                       "context across the sequence.",
+        "title": (
+            kind_long(attn).replace(" attention", " self-attention")
+            if kind else "Attention mechanism unresolved"),
+        "description": (
+            "The exact tower source proves this token-mixing mechanism."
+            if kind else
+            "The tower declares head geometry, but its source evidence does "
+            "not yet prove how tokens are mixed; no MHA/GQA graph is inferred."),
         "facts": facts,
         # A supporting encoder tower's sublayer: a clickable DESCRIPTION card (dims + what
         # it does), not a generic Q/K/V drill (which would render all-static here). The hero
@@ -101,31 +144,50 @@ def _vision_title(path: dict) -> str:
         return "Image to projected states"
     if token_kind == "grid_visual_tokens":
         return "Vision to grid tokens"
-    return "Vision to soft tokens"
+    if token_kind == "soft_visual_tokens":
+        return "Vision to soft tokens"
+    return "Code-defined vision pathway"
 
 
-# One render-spec per modality, mirroring the parser-side MODALITY_REGISTRY.
-# Adding a modality block is a single entry here; the lookup loop never names
-# a specific modality. (key, block_id, view, kind, label, title,
-# describe, children) — callables receive the modality's path dict.
-_MODALITY_BLOCK_SPECS = (
+# Presentation vocabulary only.  Every structural kind and child mechanism is
+# read from the canonical path/fact payload; these entries select wording and
+# view layout, never architecture.
+_MODALITY_PRESENTATION_SPECS = (
     {
         "key": "vision", "block_id": "vision_path", "view": "vision_path",
-        "kind": lambda p: p.get("kind") or "image_to_soft_visual_tokens",
+        "kind": lambda p: p.get("kind") or "code_defined_modality_path",
         "label": _vision_label, "title": _vision_title,
         "describe": lambda p: _vision_description(p), "children": lambda p: _vision_children(p),
     },
     {
         "key": "audio", "block_id": "audio_path", "view": "audio_path",
-        "kind": lambda p: "audio_to_soft_tokens",
-        "label": lambda p: "Audio \u2192 tokens", "title": lambda p: "Audio to soft tokens",
+        "kind": lambda p: p.get("kind") or "code_defined_modality_path",
+        "label": lambda p: ("Audio \u2192 tokens"
+                             if (p.get("tokens") or {}).get("kind") == "soft_audio_tokens"
+                             else "Audio pathway"),
+        "title": lambda p: ("Audio to soft tokens"
+                             if (p.get("tokens") or {}).get("kind") == "soft_audio_tokens"
+                             else "Code-defined audio pathway"),
         "describe": lambda p: _audio_description(p), "children": lambda p: _audio_children(p),
     },
     {
         "key": "video", "block_id": "video_path", "view": "video_path",
-        "kind": lambda p: "video_to_grid_tokens",
-        "label": lambda p: "Video \u2192 grid", "title": lambda p: "Video to grid tokens",
+        "kind": lambda p: p.get("kind") or "code_defined_modality_path",
+        "label": lambda p: ("Video \u2192 grid"
+                             if (p.get("tokens") or {}).get("kind") == "grid_video_tokens"
+                             else "Video pathway"),
+        "title": lambda p: ("Video to grid tokens"
+                             if (p.get("tokens") or {}).get("kind") == "grid_video_tokens"
+                             else "Code-defined video pathway"),
         "describe": lambda p: _video_description(p), "children": lambda p: _video_children(p),
+    },
+    {
+        "key": "conditioning", "block_id": "conditioning_path", "view": "conditioning_path",
+        "kind": lambda p: p.get("kind") or "code_defined_modality_path",
+        "label": lambda p: ["Prompt", "encoder"],
+        "title": lambda p: "Prompt conditioning encoder",
+        "describe": lambda p: _conditioning_description(p),
+        "children": lambda p: _conditioning_children(p),
     },
 )
 
@@ -136,7 +198,7 @@ def _multimodal_block_lookup(ir: dict) -> dict:
     fusion = modalities.get("fusion") or {}
     blocks: dict[str, dict] = {}
 
-    for spec in _MODALITY_BLOCK_SPECS:
+    for spec in _MODALITY_PRESENTATION_SPECS:
         path = inputs.get(spec["key"])
         if not path:
             continue
@@ -155,12 +217,22 @@ def _multimodal_block_lookup(ir: dict) -> dict:
 
     if fusion:
         cross_attention = fusion.get("kind") == "cross_attention"
+        # Wording follows the proven fusion sources, never whichever declared
+        # lane happens to be present beside them.
+        source_names = tuple(str(item) for item in fusion.get("sources") or ())
+        conditioning_source = any(".conditioning." in item
+                                  for item in source_names)
+        vision_source = any(".vision." in item for item in source_names)
+        cross_label = (
+            "Encoder cross-attention" if conditioning_source and not vision_source
+            else "Vision cross-attention" if vision_source
+            else "Cross-attention")
         blocks["fusion"] = {
             "id": "fusion",
             "role": "fusion",
             "kind": "fusion",
-            "label": "Vision cross-attention" if cross_attention else "Multimodal fusion",
-            "title": "Vision cross-attention" if cross_attention else "Multimodal fusion",
+            "label": cross_label if cross_attention else "Multimodal fusion",
+            "title": cross_label if cross_attention else "Multimodal fusion",
             "description": _fusion_description(fusion)[0],
             "facts": _fusion_description(fusion)[1],
             "view": "multimodal_fusion",
@@ -181,12 +253,7 @@ def _vision_description(vision: dict) -> tuple[str, list[str]]:
     count = tokens.get("count")
     width = tokens.get("width")
     bits = [kind]
-    grid_geom = coerce_grid(
-        embedding.get("grid"),
-        (vision.get("input") or {}).get("image_size"),
-        embedding.get("patch_size") or (vision.get("input") or {}).get("patch_size"),
-    )
-    patch_desc = grid_card_phrase(grid_geom)
+    patch_desc = grid_card_phrase(embedding.get("grid"))
     if patch_desc:
         bits.append(patch_desc)
     tiling = vision.get("tiling") or {}
@@ -224,7 +291,9 @@ def _vision_description(vision: dict) -> tuple[str, list[str]]:
               if cross_attention_vision else
               "turns image pixels into grid-aware visual tokens for the decoder"
               if grid_vision else
-              "turns image pixels into soft visual tokens for the decoder")
+              "turns image pixels into soft visual tokens for the decoder"
+              if tokens.get("kind") == "soft_visual_tokens" else
+              "processes image pixels through a code-defined visual path")
     return f"The {bits[0]} {action}.", bits[1:]
 
 
@@ -237,8 +306,7 @@ def _vision_children(vision: dict) -> list[dict]:
 
     image_size = input_spec.get("image_size")
     input_channels = input_spec.get("channels")
-    patch_size = input_spec.get("patch_size") or embedding.get("patch_size")
-    grid_phrase = grid_card_phrase(coerce_grid(embedding.get("grid"), image_size, patch_size))
+    grid_phrase = grid_card_phrase(embedding.get("grid"))
     encoder_bits = [
         str(encoder.get("kind") or "vision encoder").replace("_", " "),
     ]
@@ -270,7 +338,10 @@ def _vision_children(vision: dict) -> list[dict]:
             encoder_bits.append(str(pos_kind).replace("_", " "))
     if encoder.get("source_owner"):
         encoder_bits.append(f"source {encoder.get('source_owner')}")
-    encoder_bits.append("separate vision tower")
+    source_proven = bool(
+        encoder.get("source_owner") or encoder.get("source_owners"))
+    if source_proven:
+        encoder_bits.append("source-proven vision tower")
 
     tiling = vision.get("tiling") or {}
     reduction = vision.get("reduction") or {}
@@ -286,7 +357,7 @@ def _vision_children(vision: dict) -> list[dict]:
         f"→ {_fmt_int(embedding.get('out_features'))} per patch"
         if embedding.get("out_features") else "",
     ) if f]
-    patch_ops = embedding.get("ops") or []
+    patch_ops = _declared_ops(embedding.get("ops") or [])
     if patch_ops:
         patch_card = {
             "id": "vision_patches",
@@ -299,8 +370,8 @@ def _vision_children(vision: dict) -> list[dict]:
     else:
         patch_card = {
             "id": "vision_patches",
-            "title": "Patch embedding",
-            "description": "Code-defined patch embedding; the exact backend and operation order are unresolved.",
+            "title": "Code-defined visual embedding",
+            "description": "The visual input embedding mechanism and operation order are unresolved.",
             "facts": patch_facts,
         }
 
@@ -319,9 +390,15 @@ def _vision_children(vision: dict) -> list[dict]:
         patch_card,
         {
             "id": "vision_encoder",
-            "title": "Vision encoder",
-            "description": f"{encoder_bits[0]} — a separate vision tower.",
-            "facts": [bit for bit in encoder_bits[1:] if bit and bit != "separate vision tower"],
+            "title": ("Vision encoder" if source_proven
+                      else "Code-defined visual encoder"),
+            "description": (
+                f"{encoder_bits[0]} — an exact source-owned vision tower."
+                if source_proven else
+                "A visual component is declared, but its executable tower "
+                "has not been resolved; no transformer cell is inferred."),
+            "facts": [bit for bit in encoder_bits[1:]
+                      if bit and bit != "source-proven vision tower"],
             "view": "vision_encoder",
             "children": [
                 {
@@ -335,7 +412,10 @@ def _vision_children(vision: dict) -> list[dict]:
                     "title": "Vision positions",
                     "description": "Position information is added before the visual transformer stack.",
                     "facts": [vision_input_pos_kind.replace("_", " ")] if vision_input_pos_kind else [],
-                }] if any(marker in vision_input_pos_kind for marker in ("learned", "fixed")) else []),
+                }] if vision_input_pos_kind in {
+                    "learned_absolute", "learned_absolute_plus_rope",
+                    "fixed_absolute",
+                } else []),
                 *_vision_cell_cards(encoder),
                 {
                     "id": "vision_encoded_states",
@@ -347,17 +427,23 @@ def _vision_children(vision: dict) -> list[dict]:
         *_reduction_children(reduction),
         {
             "id": "vision_projector",
-            **_projector_card_fields(projector),
+            **_projector_card_fields(projector, owner="root.vision"),
             **({"title": "Linear projection to decoder width"} if cross_attention_vision else {}),
         },
         {
             "id": "visual_tokens",
-            "title": "cross_attention_states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
+            "title": ("cross_attention_states" if cross_attention_vision
+                      else "Grid visual tokens" if grid_vision
+                      else "Soft visual tokens"
+                      if tokens.get("kind") == "soft_visual_tokens"
+                      else "Code-defined visual output"),
             "description": (
                 "Selected decoder cross-attention layers read these states as K/V; "
                 "they are not scattered into text token slots."
                 if cross_attention_vision
                 else "These are fused into the decoder input \u2014 not raw pixels."
+                if tokens.get("kind") in {"grid_visual_tokens", "soft_visual_tokens"}
+                else "The source route to the decoder is unresolved; no token form is asserted."
             ),
             "facts": [f for f in (
                 (f"{_fmt_int(token_count)} tokens per tile" if (token_count and cross_attention_vision)
@@ -394,19 +480,30 @@ def _audio_cell_cards(encoder: dict) -> list:
     )
 
 
-def _audio_norm_card(prefix: str, norm: str, placement: str = "pre"):
+def _norm_placement_description(placement: str | None) -> tuple[str, list[str]]:
+    """Project a closed placement value without supplying a default."""
     where = {
         "pre": "before each sublayer (pre-norm)",
         "double": ("on each sublayer's input AND output before the residual "
                    "add (sandwich placement)"),
         "post": "after each sublayer's residual add (post-norm)",
     }
+    if placement in where:
+        return where[placement], []
+    return "at an unresolved point relative to each sublayer", [
+        "placement unresolved",
+    ]
+
+
+def _audio_norm_card(prefix: str, norm: str, placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
         "description": (f"{norm} normalizes audio-frame features "
-                        f"{where.get(placement) or where['pre']} inside each "
+                        f"{placement_desc} inside each "
                         "repeated audio encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
     }
 
 
@@ -434,7 +531,10 @@ def _audio_description(audio: dict) -> tuple[str, list[str]]:
         bits.append(f"{_fmt_int(tokens.get('ms_per_token'))} ms/token")
     if tokens.get("width"):
         bits.append(f"width {_fmt_int(tokens.get('width'))}")
-    return f"The {bits[0]} turns raw audio into soft tokens for the decoder.", bits[1:]
+    action = ("turns raw audio into soft tokens for the decoder"
+              if tokens.get("kind") == "soft_audio_tokens"
+              else "processes raw audio through a code-defined path")
+    return f"The {bits[0]} {action}.", bits[1:]
 
 
 def _audio_children(audio: dict) -> list[dict]:
@@ -482,6 +582,9 @@ def _audio_children(audio: dict) -> list[dict]:
         str(encoder.get("source_component") or ""),
         str(encoder.get("source_file") or ""),
     ) if f]
+    source_proven = bool(
+        encoder.get("source_owner") or encoder.get("source_owners"))
+    position_kind = (encoder.get("position_encoding") or {}).get("kind")
     return [
         {
             "id": "audio_features",
@@ -494,8 +597,12 @@ def _audio_children(audio: dict) -> list[dict]:
         },
         {
             "id": "audio_encoder",
-            "title": "Audio encoder",
-            "description": "A separate audio tower whose structure is derived from its delegated source.",
+            "title": ("Audio encoder" if source_proven
+                      else "Code-defined audio encoder"),
+            "description": (
+                "A separate audio tower whose structure is derived from its delegated source."
+                if source_proven else
+                "An audio component is declared, but its executable tower is unresolved."),
             "facts": [*source_facts, *[bit for bit in encoder_bits[1:] if bit]],
             "view": "audio_encoder",
             "children": [
@@ -503,22 +610,17 @@ def _audio_children(audio: dict) -> list[dict]:
                 # builder when the typed layer facts resolved; the op-chain
                 # callable cards remain ONLY for towers without them.
                 *(_audio_cell_cards(encoder) if (encoder.get("sub_model") or {}).get("groups")
-                  else [
-                      *callable_children,
-                      {
-                          "id": "audio_residual_add", "title": "Residual add",
-                          "description": "Adds the saved audio-cell residual to the transformed branch.",
-                      },
-                      {
-                          "id": "audio_gate_mul", "title": "Element-wise multiply",
-                          "description": "Multiplies two source-proven audio branches element by element.",
-                      },
-                      *([] if callable_children else _encoder_attention_child("audio_enc", encoder)),
-                  ]),
-                {
-                    "id": "audio_position_add", "title": "Add fixed positions",
-                    "description": "Adds the fixed audio position embedding to the convolutional features.",
-                },
+                  else callable_children or [{
+                      "id": "audio_enc_op_unknown",
+                      "title": "Code-defined audio block",
+                      "description": "The exact repeated audio block is unresolved; no standard transformer cell is invented.",
+                  }]),
+                *([{
+                    "id": "audio_position_add",
+                    "title": "Audio positions",
+                    "description": "Source-proven position information enters the audio tower.",
+                    "facts": [str((encoder.get("position_encoding") or {}).get("kind"))],
+                }] if position_kind not in {None, "", "unknown"} else []),
             ],
         },
         {
@@ -527,15 +629,131 @@ def _audio_children(audio: dict) -> list[dict]:
         },
         {
             "id": "audio_tokens",
-            "title": "Soft audio tokens",
-            "description": "These are fused into the decoder input \u2014 not raw waveform samples.",
+            "title": ("Soft audio tokens" if tokens.get("kind") == "soft_audio_tokens"
+                      else "Code-defined audio output"),
+            "description": ("These are fused into the decoder input \u2014 not raw waveform samples."
+                            if tokens.get("kind") == "soft_audio_tokens"
+                            else "The source route to the decoder is unresolved; no token form is asserted."),
             "facts": [f for f in (
-                f"{_fmt_int(tokens.get('count'))} tokens" if tokens.get("count") else "variable token count",
+                f"{_fmt_int(tokens.get('count'))} tokens" if tokens.get("count") else "",
                 f"{_fmt_int(tokens.get('ms_per_token'))} ms/token" if tokens.get("ms_per_token") else "",
                 f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
             ) if f],
         },
     ]
+
+
+def _conditioning_description(cond: dict) -> tuple[str, list[str]]:
+    encoder = cond.get("encoder") or {}
+    projector = cond.get("projector") or {}
+    tokens = cond.get("tokens") or {}
+    name = str(encoder.get("model_type") or "conditioning").upper() \
+        if encoder.get("model_type") else "conditioning"
+    bits = []
+    if encoder.get("num_layers"):
+        bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
+    if encoder.get("hidden_size"):
+        bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    if projector.get("out_features"):
+        bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
+    cross = tokens.get("kind") == "cross_attention_states"
+    return (
+        f"The {name} encoder turns the text prompt into a sequence of states"
+        + (" the decoder reads through cross-attention on every step."
+           if cross else " that condition the decoder."),
+        bits,
+    )
+
+
+def _conditioning_norm_card(prefix: str, norm: str,
+                            placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
+    return {
+        "id": f"{prefix}_op_norm",
+        "title": norm,
+        "description": (f"{norm} normalizes prompt-token features "
+                        f"{placement_desc} inside each "
+                        "repeated encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
+    }
+
+
+def _conditioning_residual_card(prefix: str):
+    return {
+        "id": f"{prefix}_op_add",
+        "title": "Residual add",
+        "description": ("Adds the sublayer input back onto its output; both the "
+                        "attention and feed-forward sublayers of the encoder "
+                        "layer are wrapped in this residual."),
+    }
+
+
+def _conditioning_children(cond: dict) -> list[dict]:
+    input_spec = cond.get("input") or {}
+    encoder = cond.get("encoder") or {}
+    projector = cond.get("projector") or {}
+    tokens = cond.get("tokens") or {}
+    sub_model = encoder.get("sub_model") if isinstance(encoder.get("sub_model"), dict) else {}
+    cross = tokens.get("kind") == "cross_attention_states"
+
+    children: list[dict] = [{
+        "id": "prompt_tokens",
+        "title": "Prompt tokens",
+        "description": "The tokenized text prompt, input to the conditioning encoder.",
+        "facts": [f for f in (
+            f"{_fmt_int(input_spec.get('vocab_size'))} vocab"
+            if input_spec.get("vocab_size") else "",
+        ) if f],
+    }]
+    if sub_model.get("groups"):
+        # The SAME recursive projector every embedded tower uses (embedded ≡
+        # standalone): the whole encoder is one clickable tower block.
+        from ...submodel import submodel_block
+        tower = submodel_block(
+            sub_model, "conditioning_encoder",
+            name=str(encoder.get("model_type") or "prompt encoder"),
+            attn_description="Self-attention over the prompt token sequence.",
+            norm_fallback="Norm",
+            norm_card=_conditioning_norm_card,
+            residual_card=_conditioning_residual_card,
+        )
+        tower["title"] = "Prompt conditioning encoder"
+        tower["description"] = _conditioning_description(cond)[0]
+        tower["detail"]["exit_note"] = "→ decoder cross-attention K/V"
+        children.append(tower)
+    else:
+        children.append({
+            "id": "conditioning_encoder",
+            "title": "Prompt conditioning encoder",
+            "description": _conditioning_description(cond)[0],
+            "facts": [f for f in (
+                f"{_fmt_int(encoder.get('num_layers'))} layers"
+                if encoder.get("num_layers") else "",
+                f"hidden {_fmt_int(encoder.get('hidden_size'))}"
+                if encoder.get("hidden_size") else "",
+            ) if f],
+        })
+    if projector:
+        children.append({
+            "id": "conditioning_projector",
+            **_projector_card_fields(projector),
+        })
+    children.append({
+        # The exact tensor id when it feeds cross-attention: the card the
+        # per-layer side block's click lands on.
+        "id": "cross_attention_states" if cross else "encoder_states",
+        "title": ("Encoder states (cross-attention K/V)"
+                  if cross else "Encoder states"),
+        "description": (
+            "The encoder's output sequence — the decoder's cross-attention "
+            "layers read it as K/V at every generation step."
+            if cross else
+            "The encoder's output sequence, conditioning the decoder."),
+        "facts": [f for f in (
+            f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
+        ) if f],
+    })
+    return children
 
 
 def _slug_identifier(value: str) -> str:
@@ -575,7 +793,10 @@ def _video_description(video: dict) -> tuple[str, list[str]]:
         bits.append(f"merge {_fmt_int(grid.get('spatial_merge_size'))}\u00d7{_fmt_int(grid.get('spatial_merge_size'))}")
     if projector.get("out_features"):
         bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
-    return f"The {bits[0]} turns video frames into grid-aware tokens for the decoder.", bits[1:]
+    action = ("turns video frames into grid-aware tokens for the decoder"
+              if tokens.get("kind") == "grid_video_tokens"
+              else "processes video frames through a code-defined path")
+    return f"The {bits[0]} {action}.", bits[1:]
 
 
 def _video_children(video: dict) -> list[dict]:
@@ -585,6 +806,8 @@ def _video_children(video: dict) -> list[dict]:
     projector = video.get("projector") or {}
     tokens = video.get("tokens") or {}
     grid = tokens.get("grid") or {}
+    source_proven = bool(
+        encoder.get("source_owner") or encoder.get("source_owners"))
     return [
         {
             "id": "video_frames",
@@ -598,19 +821,26 @@ def _video_children(video: dict) -> list[dict]:
         },
         {
             "id": "video_patches",
-            "title": "Temporal patch embedding",
+            "title": ("Temporal patch embedding"
+                      if embedding.get("kind") == "temporal_patch_embedding"
+                      else "Code-defined video embedding"),
             "description": _join_desc([
                 f"spatial patches {_fmt_int(embedding.get('patch_size'))}" if embedding.get("patch_size") else "",
                 f"temporal patch {_fmt_int(input_spec.get('temporal_patch_size'))}" if input_spec.get("temporal_patch_size") else "",
                 f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
             ]),
-            **({"view": "ops", "detail": {"ops": embedding.get("ops")}}
+            **({"view": "ops", "detail": {
+                "ops": _declared_ops(embedding.get("ops") or [])}}
                if embedding.get("ops") else {}),
         },
         {
             "id": "video_encoder",
-            "title": "Vision encoder",
-            "description": f"{str(encoder.get('kind') or 'vision encoder').replace('_', ' ')} — the visual tower the video frames share.",
+            "title": ("Vision encoder" if source_proven
+                      else "Code-defined video encoder"),
+            "description": (
+                f"{str(encoder.get('kind') or 'vision encoder').replace('_', ' ')} — the exact visual tower shared by the video frames."
+                if source_proven else
+                "A video lane is declared, but its executable visual tower is unresolved."),
             "facts": [f for f in (
                 f"{_fmt_int(encoder.get('num_layers'))} layers" if encoder.get("num_layers") else "",
                 f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
@@ -620,14 +850,17 @@ def _video_children(video: dict) -> list[dict]:
         },
         {
             "id": "video_projector",
-            **_projector_card_fields(projector),
+            **_projector_card_fields(projector, owner="root.video"),
         },
         {
             "id": "video_tokens",
-            "title": "Video grid tokens",
+            "title": ("Video grid tokens" if tokens.get("kind") == "grid_video_tokens"
+                      else "Code-defined video output"),
             "description": _join_desc([
-                f"runtime grid {grid.get('runtime_input')}" if grid.get("runtime_input") else "dynamic video grid",
-                "T,H,W positions use multimodal RoPE",
+                (f"runtime grid {grid.get('runtime_input')}" if grid.get("runtime_input") else "dynamic video grid")
+                if tokens.get("kind") == "grid_video_tokens" else "source route unresolved",
+                "T,H,W positions use multimodal RoPE"
+                if tokens.get("kind") == "grid_video_tokens" else "",
                 f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
             ]),
         },
@@ -658,19 +891,16 @@ def _vision_cell_cards(encoder: dict) -> list:
     )
 
 
-def _vision_norm_card(prefix: str, norm: str, placement: str = "pre"):
-    where = {
-        "pre": "before each sublayer (pre-norm)",
-        "double": ("on each sublayer's input AND output before the residual "
-                   "add (sandwich placement)"),
-        "post": "after each sublayer's residual add (post-norm)",
-    }
+def _vision_norm_card(prefix: str, norm: str,
+                      placement: str | None = None):
+    placement_desc, placement_facts = _norm_placement_description(placement)
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
         "description": (f"{norm} normalizes patch-token features "
-                        f"{where.get(placement) or where['pre']} inside each "
+                        f"{placement_desc} inside each "
                         "repeated vision encoder layer."),
+        **({"facts": placement_facts} if placement_facts else {}),
     }
 
 
@@ -682,13 +912,6 @@ def _vision_residual_card(prefix: str):
                         "attention and MLP sublayers of the vision layer are "
                         "wrapped in this residual."),
     }
-
-
-
-def _head_dim(heads: int | None, hidden: int | None) -> int | None:
-    if heads and hidden and hidden % heads == 0:
-        return hidden // heads
-    return None
 
 
 
@@ -753,32 +976,74 @@ def _projector_ops(projector: dict) -> list[dict]:
     return ops
 
 
-def _projector_card_fields(projector: dict) -> dict:
+def _projector_card_fields(projector: dict, owner: str | None = None) -> dict:
     """Title, sentence, chips, and — when the dims are known — the declared-ops
     view for a modality connector.  ONE source: the same facts feed the chips
-    and the diagram, so they cannot disagree."""
-    kind = str(projector.get("kind") or "linear_projector")
+    and the diagram, so they cannot disagree.
+
+    U2: when ``owner`` is a receipted modality (vision/video) and the output
+    width is SOURCE-bound, the card declares the fact target it draws
+    (``projects``) so the drill's render event emits a projection receipt for
+    ``<owner>.projector_out_features``.  Config-only widths declare nothing."""
+    kind = str(projector.get("kind") or "code_defined_projector")
     inn, out = projector.get("in_features"), projector.get("out_features")
     facts = [f for f in (
         f"{_fmt_int(inn)} \u2192 {_fmt_int(out)}" if (inn and out) else "",
         str(projector.get("activation") or ""),
         f"{_fmt_int(projector.get('num_latents'))} latent queries" if projector.get("num_latents") else "",
         "learned latent queries" if projector.get("learned_queries") else "",
+        "projector evidence unresolved"
+        if projector.get("evidence_unresolved") else "",
     ) if f]
     fields = {
-        "title": _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
-        "description": _PROJECTOR_DESCS.get(kind, "Projects encoder features into the decoder's embedding space."),
+        "title": ("Projector evidence unresolved"
+                  if projector.get("evidence_unresolved") else
+                  _PROJECTOR_TITLES.get(
+                      kind, kind.replace("_", " ").capitalize())),
+        "description": (
+            "The side-reader could not attach the projector to an exact owner; "
+            "the proven main stack remains visible and no projector mechanism "
+            "is invented."
+            if projector.get("evidence_unresolved") else
+            _PROJECTOR_DESCS.get(
+                kind,
+                "Projects encoder features into the decoder's embedding space.")),
         "facts": facts,
     }
     ops = _projector_ops(projector)
     if ops:
         fields["view"] = "ops"
         fields["detail"] = {"ops": ops}
+    # U2-R5: the descriptor carries the DRAWN VALUE only — no status.  The
+    # actual projector (declared_ops) CITES the ledgered fact's status when it
+    # emits the receipt, so the evidence tier has exactly one author (the typed
+    # fact) and the renderer can never re-derive or invent one.
+    out_source = ((projector.get("source_evidence") or {}).get("out_width_source"))
+    in_source = ((projector.get("source_evidence") or {}).get("in_width_source"))
+    projects = []
+    if owner and inn and in_source in ("config_bound", "code_bound"):
+        projects.append({
+            "owner": owner, "fact": "projector_in_features",
+            "mechanism": "projector_in_width", "value": inn,
+        })
+    if owner and out and out_source in ("config_bound", "code_bound"):
+        projects.append({
+            "owner": owner, "fact": "projector_out_features",
+            "mechanism": "projector_out_width", "value": out,
+        })
+    if projects:
+        fields["projects"] = projects
     return fields
 
 
 def _join_desc(bits: list[str]) -> str:
     return "; ".join(bit for bit in bits if bit)
+
+
+def _is_conditioning_fusion(fusion: dict) -> bool:
+    """Cross-attention whose side source is a CONDITIONING (prompt-encoder)
+    composite, per the fusion's own sources — never guessed from wording."""
+    return any("conditioning" in str(s) for s in fusion.get("sources") or [])
 
 
 def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
@@ -792,6 +1057,9 @@ def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
             f"{_fmt_int(n_layers)} cross-attention layers" if n_layers else "",
             f"decoder width {_fmt_int(width)}" if width else "",
         ) if f]
+        if _is_conditioning_fusion(fusion):
+            return ("Encoded prompt states condition the decoder layers through "
+                    "cross-attention \u2014 they stay a separate stream.", facts)
         return ("Projected image states condition selected decoder layers through "
                 "cross-attention \u2014 they stay a separate stream.", facts)
     if fusion.get("kind") == "unified_multimodal_stream":
@@ -830,6 +1098,37 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
              "description": "The concatenated visual-prefix and text sequence."},
         ]
     if fusion.get("kind") == "cross_attention":
+        if _is_conditioning_fusion(fusion):
+            return [
+                {
+                    "id": "embed",
+                    "title": "hidden_states",
+                    "description": "The main decoder stream supplies Q to its cross-attention layers.",
+                },
+                {
+                    "id": "conditioning_path",
+                    "title": "Prompt to encoder states",
+                    "description": "The text prompt is encoded (and width-projected) before cross-attention reads it.",
+                },
+                {
+                    "id": "cross_attention_states",
+                    "title": "encoder_hidden_states",
+                    "description": "Encoded prompt states stay separate from the audio-token stream and supply K/V to the decoder's cross-attention layers.",
+                },
+                {
+                    "id": "cross_attention_adapter",
+                    "title": "Cross-attention layers",
+                    "description": (
+                        "Encoded prompt states stay separate; the decoder layers read them with "
+                        "cross-attention instead of inserting them into the input sequence."
+                    ),
+                },
+                {
+                    "id": "stack_input",
+                    "title": "updated hidden_states",
+                    "description": "Decoder hidden states after cross-attention has read the encoded prompt states.",
+                },
+            ]
         return [
             {
                 "id": "embed",
@@ -864,6 +1163,7 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
         return _unified_fusion_children(fusion, inputs)
 
     vision = inputs.get("vision") or {}
+    video = inputs.get("video") or {}
     audio = inputs.get("audio") or {}
     tokens = vision.get("tokens") or {}
     audio_tokens = audio.get("tokens") or {}
@@ -941,8 +1241,16 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
             "title": "Soft visual tokens",
             "description": f"{visual_span}; produced by the vision pathway before fusion.",
         })
-    if audio:
+    if video:
         children.insert(2 if vision else 1, {
+            "id": "video_path",
+            "title": "Video grid tokens",
+            "description": (
+                "Video features produced by the source-declared video pathway "
+                "before placeholder fusion."),
+        })
+    if audio:
+        children.insert(1 + bool(vision) + bool(video), {
             "id": "audio_path",
             "title": "Soft audio tokens",
             "description": f"{audio_span_desc}; produced by the audio pathway before fusion.",

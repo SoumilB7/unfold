@@ -1,0 +1,19 @@
+{
+  "after_bytes": 99990,
+  "after_sha256": "1ffaf5f734d4885885d79588ba343117ca04d60cc15718d40c9714ce7adee195",
+  "before_bytes": 99990,
+  "before_sha256": "ecedc94561fd264ff5f67f1e2064020edbd4b398539b1ed1afbd2cdb31fc5234",
+  "exact_new_mount_occurrences": 139,
+  "exact_old_mount_occurrences": 139,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-e9d79dca53",
+  "mount_identity_before": "uf-43131e0bf7",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "nemotron-h-8b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

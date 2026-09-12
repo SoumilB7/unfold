@@ -1,0 +1,33 @@
+{
+  "blessed": false,
+  "coverage": "Ten representative declared capability positives, twenty wrong-owner/uncited controls, ten real-emitter payload omissions and two actualFFN-render then discarded/partial SVG poisons. Not an exhaustive event census.",
+  "new_conditional_controls": {
+    "command": "python3 -m pytest -q tests/test_conditional_projection_contracts.py",
+    "failed": 0,
+    "passed": 42,
+    "pytest_elapsed_seconds": 0.04
+  },
+  "no_model_runs": true,
+  "receipt_limits": {
+    "followup": "Executor may schedule the unchanged short tests with retained logs and full source pins once the serial model lane is free.",
+    "registry_execution_pin": "Registry source hash was not captured at execution time; the existing source_sha256 list is the exact captured subset.",
+    "stdout_stderr": "Original pytest stdout/stderr was returned directly by tool calls and was not redirected to a retained filesystem log. No historical log is reconstructed here."
+  },
+  "related_boundary_controls": {
+    "command": "python3 -m pytest -q tests/test_projection_obligations.py tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent tests/test_s6_physics.py::test_lookup_boundary_reexports_only_the_same_frozen_request_result_types tests/test_s6_physics.py::test_parent_import_boundary_still_rejects_implementation_helpers",
+    "failed": 0,
+    "passed": 15,
+    "pytest_elapsed_seconds": 0.92
+  },
+  "source_sha256": {
+    "model_unfolder/evidence/unet_call_binding.py": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78",
+    "model_unfolder/renderers/html/block_views/unet.py": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+    "model_unfolder/renderers/html/cards.py": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+    "model_unfolder/renderers/html/fact_projection.py": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+    "physics/instance_inventory.py": "8cabfff97d57d573dbb2c1fe6ec9205b064d37b780ff082f227599b530679e82",
+    "tests/test_conditional_projection_contracts.py": "15fabfc58f28ed35c17c04ebbd5a53428f3449e2290152028e0d472527c6924a",
+    "tests/test_projection_obligations.py": "16a238a278ddb9ff7e91f51d863e9f734b45f833b5bd67d1f0440559973ba495",
+    "tests/test_s6_physics.py": "6bc82e803b918cdd771e5f397be9370ca23d6da8c684fbf593e3a5dbd8a78e53"
+  },
+  "source_state": "a83d704 plus reviewed conditional capability/DTO working changes; final commit pin pending executor integration"
+}

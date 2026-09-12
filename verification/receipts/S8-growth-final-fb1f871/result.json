@@ -1,0 +1,1210 @@
+{
+  "commit": "fb1f871df1675f8f8388ef80a193b61dc9c052f7",
+  "base": "83140f1",
+  "unit": "added/removed Python text lines from git numstat; files with a diff, excluding receipts/docs/images/JSON; no authority or deletion inference",
+  "totals": {
+    "production": {
+      "files": 51,
+      "added": 6981,
+      "deleted": 103
+    },
+    "scripts": {
+      "files": 5,
+      "added": 1204,
+      "deleted": 622
+    },
+    "test_support": {
+      "files": 35,
+      "added": 4069,
+      "deleted": 564
+    }
+  },
+  "rows": [
+    {
+      "path": "model_unfolder/adapters/diffusor/blocks.py",
+      "added": 31,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "added": 50,
+      "deleted": 12,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+      "added": 91,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_differential.py",
+      "added": 20,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "added": 513,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/block_schema.py",
+      "added": 2,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/diagram.py",
+      "added": 2,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/claim_evidence.py",
+      "added": 17,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/construction_summary.py",
+      "added": 74,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "added": 45,
+      "deleted": 9,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/execution_recipe.py",
+      "added": 783,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/import_source.py",
+      "added": 14,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/instance_population_claim.py",
+      "added": 117,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/instance_shape_claim.py",
+      "added": 87,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/local_port_routes.py",
+      "added": 334,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/primitive_semantics.py",
+      "added": 36,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/program_index.py",
+      "added": 108,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "added": 62,
+      "deleted": 5,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "added": 146,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/runtime_inventory.py",
+      "added": 60,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/runtime_source.py",
+      "added": 193,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/structural_writes.py",
+      "added": 10,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_call_binding.py",
+      "added": 250,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_cell_connections.py",
+      "added": 330,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_cell_mechanism.py",
+      "added": 118,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_claims.py",
+      "added": 541,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_iteration_binding.py",
+      "added": 199,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_lookup_closure.py",
+      "added": 466,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_nested_mechanism.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_primary_ports.py",
+      "added": 194,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_runtime.py",
+      "added": 100,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_selected_constructor.py",
+      "added": 45,
+      "deleted": 9,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_stage_cells.py",
+      "added": 16,
+      "deleted": 3,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_wrapper_binding.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/expanded/__init__.py",
+      "added": 1,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/expanded/loop.py",
+      "added": 3,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/ir.py",
+      "added": 70,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/params.py",
+      "added": 7,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/parser.py",
+      "added": 12,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/registry.py",
+      "added": 22,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/unet.py",
+      "added": 458,
+      "deleted": 13,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/cards.py",
+      "added": 46,
+      "deleted": 19,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "added": 73,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph.py",
+      "added": 12,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph_engine.py",
+      "added": 69,
+      "deleted": 7,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/sections.py",
+      "added": 7,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/views_diffusion.py",
+      "added": 59,
+      "deleted": 14,
+      "group": "production"
+    },
+    {
+      "path": "physics/attribute_bindings.py",
+      "added": 596,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "physics/framework_primitives.py",
+      "added": 42,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "physics/instance_inventory.py",
+      "added": 95,
+      "deleted": 4,
+      "group": "production"
+    },
+    {
+      "path": "physics/source_override.py",
+      "added": 89,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "scripts/demonstrate_s8_unet.py",
+      "added": 387,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/generate_s7_shadow.py",
+      "added": 10,
+      "deleted": 622,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/report_s8_demonstration.py",
+      "added": 591,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/rerender_s8_demonstration.py",
+      "added": 127,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/verify_s8_unet_family.py",
+      "added": 89,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "test_support/__init__.py",
+      "added": 32,
+      "deleted": 1,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_stage_fixture.py",
+      "added": 77,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_code_evidence.py",
+      "added": 27,
+      "deleted": 10,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_conditional_projection_contracts.py",
+      "added": 174,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_construction_summary.py",
+      "added": 143,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_coverage.py",
+      "added": 17,
+      "deleted": 1,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_diffusion.py",
+      "added": 549,
+      "deleted": 467,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_empty_lane_geometry.py",
+      "added": 76,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_opgraph.py",
+      "added": 27,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_projection_obligations.py",
+      "added": 30,
+      "deleted": 5,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s5_release.py",
+      "added": 2,
+      "deleted": 2,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s6_physics.py",
+      "added": 47,
+      "deleted": 4,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s7_artifacts.py",
+      "added": 8,
+      "deleted": 4,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "added": 34,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_attribute_bindings.py",
+      "added": 504,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_call_port_layout.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_card_projection_receipts.py",
+      "added": 141,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_cell_connections.py",
+      "added": 73,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_component_scope.py",
+      "added": 90,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_constructed_primitive_receipts.py",
+      "added": 109,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_constructor_bindings.py",
+      "added": 32,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_framework_primitives.py",
+      "added": 37,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_iteration_binding.py",
+      "added": 134,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_lookup_closure.py",
+      "added": 283,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_port_routes.py",
+      "added": 230,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_primary_ports.py",
+      "added": 241,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_retained_source_index.py",
+      "added": 115,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_runtime_source.py",
+      "added": 206,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_source_override.py",
+      "added": 114,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_try_observation.py",
+      "added": 196,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_unet_routing.py",
+      "added": 43,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_wrapper_binding.py",
+      "added": 77,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_nested_mechanism.py",
+      "added": 13,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_stage_cells.py",
+      "added": 54,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_stage_execution.py",
+      "added": 1,
+      "deleted": 70,
+      "group": "test_support"
+    }
+  ],
+  "production_delta_since716": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "716_sha256": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+      "779_sha256": "478b14edfe83e7d74a25b5da8871db5da539550c02117eb3183e4e880593e7cf"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_call_binding.py",
+      "716_sha256": "f6a1d4c1b179eb81de2f4315f7c885be5a03be648bf845b846d19648dc882bad",
+      "779_sha256": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/registry.py",
+      "716_sha256": "1410cd80eda6da06c6936b269299fb1d926dc82f354ca63217b7bf8e5e0bf414",
+      "779_sha256": "02f5726b5e6a0e39fca6369824b8c7ee4975efa68d288dad99b6a003b659731e"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/unet.py",
+      "716_sha256": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+      "779_sha256": "632a25c18fcd9b89eb7a69b3dbf4d537b7de3a62d16347545d2542d9b0296800"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "716_sha256": "809ceb195532cb7e0eecea89ffb9d144dc152c0b8c9c64ed8badba50324f534c",
+      "779_sha256": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph_engine.py",
+      "716_sha256": "b7a206c3677cecd013afef9b0835d1aaa428898b67fc393e8277177c231ad0cc",
+      "779_sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439"
+    },
+    {
+      "path": "physics/instance_inventory.py",
+      "716_sha256": "f28e18e35ebf25890d928ef2e9809eb7bc2947bb9494190c6c8f122be23c2444",
+      "779_sha256": "8cabfff97d57d573dbb2c1fe6ec9205b064d37b780ff082f227599b530679e82"
+    }
+  ],
+  "limitation": "Growth only. Prior exact caller/debt ledger remains separately scoped; no eliminated debt or new caller inference.",
+  "all_file_rows": [
+    {
+      "path": "model_unfolder/adapters/diffusor/blocks.py",
+      "added": 31,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "added": 50,
+      "deleted": 12,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+      "added": 91,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_differential.py",
+      "added": 20,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "added": 513,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/block_schema.py",
+      "added": 2,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/diagram.py",
+      "added": 2,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/claim_evidence.py",
+      "added": 17,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/construction_summary.py",
+      "added": 74,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "added": 45,
+      "deleted": 9,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/execution_recipe.py",
+      "added": 783,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/import_source.py",
+      "added": 14,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/instance_population_claim.py",
+      "added": 117,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/instance_shape_claim.py",
+      "added": 87,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/local_port_routes.py",
+      "added": 334,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/primitive_semantics.py",
+      "added": 36,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/program_index.py",
+      "added": 108,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "added": 62,
+      "deleted": 5,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "added": 146,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/runtime_inventory.py",
+      "added": 60,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/runtime_source.py",
+      "added": 193,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/structural_writes.py",
+      "added": 10,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_call_binding.py",
+      "added": 250,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_cell_connections.py",
+      "added": 330,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_cell_mechanism.py",
+      "added": 118,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_claims.py",
+      "added": 541,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_iteration_binding.py",
+      "added": 199,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_lookup_closure.py",
+      "added": 466,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_nested_mechanism.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_primary_ports.py",
+      "added": 194,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_runtime.py",
+      "added": 100,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_selected_constructor.py",
+      "added": 45,
+      "deleted": 9,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_stage_cells.py",
+      "added": 16,
+      "deleted": 3,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/evidence/unet_wrapper_binding.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/expanded/__init__.py",
+      "added": 1,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/expanded/loop.py",
+      "added": 3,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/ir.py",
+      "added": 70,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/params.py",
+      "added": 7,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/parser.py",
+      "added": 12,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/registry.py",
+      "added": 22,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/unet.py",
+      "added": 458,
+      "deleted": 13,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/cards.py",
+      "added": 46,
+      "deleted": 19,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "added": 73,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph.py",
+      "added": 12,
+      "deleted": 1,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph_engine.py",
+      "added": 69,
+      "deleted": 7,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/sections.py",
+      "added": 7,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "model_unfolder/renderers/html/views_diffusion.py",
+      "added": 59,
+      "deleted": 14,
+      "group": "production"
+    },
+    {
+      "path": "physics/attribute_bindings.py",
+      "added": 596,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "physics/framework_primitives.py",
+      "added": 42,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "physics/instance_inventory.py",
+      "added": 95,
+      "deleted": 4,
+      "group": "production"
+    },
+    {
+      "path": "physics/source_override.py",
+      "added": 89,
+      "deleted": 0,
+      "group": "production"
+    },
+    {
+      "path": "scripts/demonstrate_s8_unet.py",
+      "added": 387,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/generate_s7_shadow.py",
+      "added": 10,
+      "deleted": 622,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/report_s8_demonstration.py",
+      "added": 591,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/rerender_s8_demonstration.py",
+      "added": 127,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "scripts/verify_s8_unet_family.py",
+      "added": 89,
+      "deleted": 0,
+      "group": "scripts"
+    },
+    {
+      "path": "test_support/__init__.py",
+      "added": 32,
+      "deleted": 1,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/README.md",
+      "added": 5,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/if-first-original-invalid.json",
+      "added": 33,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/if-first-synthetic-default-head.json",
+      "added": 32,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/kandinsky-original-invalid.json",
+      "added": 35,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/kandinsky-published.json",
+      "added": 61,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_regression_inputs/provenance.json",
+      "added": 25,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "test_support/unet_stage_fixture.py",
+      "added": 77,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_code_evidence.py",
+      "added": 27,
+      "deleted": 10,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_conditional_projection_contracts.py",
+      "added": 174,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_construction_summary.py",
+      "added": 143,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_coverage.py",
+      "added": 17,
+      "deleted": 1,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_diffusion.py",
+      "added": 549,
+      "deleted": 467,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_empty_lane_geometry.py",
+      "added": 76,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_opgraph.py",
+      "added": 27,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_projection_obligations.py",
+      "added": 30,
+      "deleted": 5,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s5_release.py",
+      "added": 2,
+      "deleted": 2,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s6_physics.py",
+      "added": 47,
+      "deleted": 4,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s7_artifacts.py",
+      "added": 8,
+      "deleted": 4,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "added": 34,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_attribute_bindings.py",
+      "added": 504,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_call_port_layout.py",
+      "added": 133,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_card_projection_receipts.py",
+      "added": 141,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_cell_connections.py",
+      "added": 73,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_component_scope.py",
+      "added": 90,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_constructed_primitive_receipts.py",
+      "added": 109,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_constructor_bindings.py",
+      "added": 32,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_framework_primitives.py",
+      "added": 37,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_iteration_binding.py",
+      "added": 134,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_lookup_closure.py",
+      "added": 283,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_port_routes.py",
+      "added": 230,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_primary_ports.py",
+      "added": 241,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_retained_source_index.py",
+      "added": 115,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_runtime_source.py",
+      "added": 206,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_source_override.py",
+      "added": 114,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_try_observation.py",
+      "added": 196,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_unet_routing.py",
+      "added": 43,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_s8_wrapper_binding.py",
+      "added": 77,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_nested_mechanism.py",
+      "added": 13,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_stage_cells.py",
+      "added": 54,
+      "deleted": 0,
+      "group": "test_support"
+    },
+    {
+      "path": "tests/test_unet_stage_execution.py",
+      "added": 1,
+      "deleted": 70,
+      "group": "test_support"
+    }
+  ],
+  "all_file_totals": {
+    "production": {
+      "files": 51,
+      "added": 6981,
+      "deleted": 103
+    },
+    "scripts": {
+      "files": 5,
+      "added": 1204,
+      "deleted": 622
+    },
+    "test_support": {
+      "files": 41,
+      "added": 4260,
+      "deleted": 564
+    }
+  },
+  "difference_from_779": "Only tests/test_diffusion.py adds net two Python lines for explicit class_default assertion; production unchanged."
+}

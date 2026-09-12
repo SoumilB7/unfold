@@ -1,0 +1,15 @@
+{
+  "hidden_size": null,
+  "trace": [
+    {
+      "function": "_constructor_keeps_default",
+      "line": 181,
+      "return": true
+    },
+    {
+      "function": "_declaration",
+      "line": 209,
+      "return": null
+    }
+  ]
+}

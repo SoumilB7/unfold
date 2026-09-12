@@ -13,14 +13,25 @@
 omit_global: [reshape, elementwise, repeat, embedding, slice, dot_product]
 
 # Scoped omissions: "<family>/<view>=op" — drawn nowhere in THIS view only.
-omit_scoped: []
+#
+# cogvideox/block: the block's forward re-CATS the (already joint) text ‖
+# video sequence before its norm/attention and splits it back after — API
+# bookkeeping of one joined stream, which the blessed drawing represents as
+# the single joint sequence (the ‖ join shown once).  Surfaced when the
+# exact-ownership tier first bound CogVideoXBlock (rigorous gate 2026-07-08).
+omit_scoped: ["cogvideox/block=concat"]
 
 # A drawn composite block-op that SUBSUMES finer code ops (so they aren't
 # "missing"), and is itself justified when any subsumed op is present in the code.
 # "drawn_op=code_op,code_op". The FFN box stands in for its up/down linears + act
 # (the single-stream block fuses the down-proj into the shared output projection).
 composite:
-  - "ffn=linear,activation"
+  # route: an MoE block whose ROUTING is inlined in the layer's own forward
+  # (diffusion_gemma's text layer — unlike Mixtral, whose top-k lives one
+  # class down) — the drawn MoE ffn box subsumes it; the router is drawn
+  # explicitly at drill depth (nested conformance checks it there).  Surfaced
+  # when the structural block recognizer first bound that layer class.
+  - "ffn=linear,activation,route"
 
 # Drawn ops with NO direct forward() token that are legitimate synthesis:
 # "<family>/<view>=op".
@@ -40,4 +51,4 @@ draw_extra: ["flux2/single_stream=ffn,linear"]
 # silent upstream rename fails loudly instead of rotting. Empty by default — the
 # general entries (omit_global / composite) need no citation, and the op-set diff
 # itself already catches a forward() whose shape changed.
-since: []
+since: ["cogvideox/block=cat"]

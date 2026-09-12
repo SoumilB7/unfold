@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "restored_streams": 13,
+  "every_restored_size_and_sha256_matches": true,
+  "destination": "/private/tmp/unfold-s8-expected-generation-archive-check-710da8e",
+  "verify_restore_sha256": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+  "artifact_map_sha256": "ad44bcacb1cb8c16cbee3b959f00c3ba112ffa3838b8a1bdac5b5abc07b14d2c"
+}

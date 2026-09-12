@@ -1,0 +1,1675 @@
+{
+  "raw_closure_additions": 63,
+  "raw_closure_removals": 1,
+  "new_component_content_rows": 62,
+  "same_content_locator_expansion": {
+    "slug": "stable-diffusion-xl-base-1-0",
+    "before": {
+      "component": "root",
+      "content_sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+      "count": 1,
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    "after": {
+      "component": "root",
+      "content_sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+      "count": 1,
+      "external": false,
+      "external_provenance": "",
+      "locator": "models/activations.py"
+    },
+    "cause": "Adding Transformers activations.py means the pre-existing Diffusers activations.py now requires models/activations.py as shortest unique suffix; new Transformers rows use transformers/activations.py. No old source bytes or ownership changed."
+  },
+  "obligation_hash_crosschecks": {
+    "leaves_checked_against_enclosing_actual_fact": 233,
+    "nested_leaves_without_enclosing_fact": 147,
+    "limitations": [
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "ltx-video",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          7,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          20,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          21,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          22,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "lumina-image-2-0",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          27,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          7,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "flux-2-dev",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "auraflow-v0-3",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "auraflow-v0-3",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "auraflow-v0-3",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          6,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "auraflow-v0-3",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          4,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "pixart-sigma-xl-2-1024-ms",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          24,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          24,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          25,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          26,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-3-5-large",
+        "raw_delta_index": 54,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          28,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          7,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          22,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 54,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          22,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "fluxtransformer2dmodel",
+        "raw_delta_index": 55,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          23,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "prxpixel-t2i",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          4,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          4,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          7,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "cogvideox-5b",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          2,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          2,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          5,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "mochi-1-preview",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          1,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          9,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "stable-diffusion-xl-base-1-0",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "wan2-2-t2v-a14b-diffusers",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "wan2-2-t2v-a14b-diffusers",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          3,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "wan2-2-t2v-a14b-diffusers",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          6,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "wan2-2-t2v-a14b-diffusers",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          11,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          6,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          6,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          8,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          13,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          14,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          17,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "qwen-image",
+        "raw_delta_index": 54,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "target",
+          "owner"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          10,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          12,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          21,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          21,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          22,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          22,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          23,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          24,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          25,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          29,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 54,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          32,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 55,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          32,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 56,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          34,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 57,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          39,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 58,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          39,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 59,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          40,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "hunyuanvideo",
+        "raw_delta_index": 60,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          41,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 43,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          2,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 44,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          2,
+          "mechanism"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 45,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          4,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 46,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 47,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          15,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 48,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 49,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          16,
+          "target",
+          "key"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 50,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          17,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 51,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          18,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 52,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          19,
+          "expected_value_status_hash"
+        ]
+      },
+      {
+        "slug": "sana-1600m-1024px-diffusers",
+        "raw_delta_index": 53,
+        "path": [
+          "extras",
+          "config_access",
+          "projection_obligations",
+          24,
+          "expected_value_status_hash"
+        ]
+      }
+    ]
+  },
+  "new_width_facts": 24,
+  "embedding_citations": 24,
+  "existing_fact_triples_changed": 0,
+  "source_cause_findings": [],
+  "scope": "Raw paths retained. Source causes attributable; nested proof validity limits remain explicit, and this is not output approval."
+}

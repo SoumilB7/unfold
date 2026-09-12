@@ -1,0 +1,110 @@
+{
+  "actual_evidence": "Bloom first failing corpus fixture; view hash multiset and labeled view signature differ; locked/current count both4. Log does not identify changed view count or labels.",
+  "batch": "019",
+  "batch_result": {
+    "elapsed_seconds": 576.85,
+    "failed": 1,
+    "passed": 159
+  },
+  "blessed": false,
+  "candidate_source_change": {
+    "attribution_status": "Strong source candidate; affected actual Bloom view/edge not yet captured. Do not call this accepted baseline drift or assert all4views changed.",
+    "change": "Previously an empty lane immediately continued. New branch draws a tap dot, outgoing elbow and rail to each explicit lane/par destination when an actual source exists.",
+    "function": "_draw_parallel",
+    "lines": [
+      428,
+      448
+    ],
+    "path": "model_unfolder/renderers/html/graph_engine.py",
+    "reachability": "Existing region_to_graph(op_render.py133\u2013141) creates an empty lane only for an actual direct canonical edge into a merge. Such empty lanes also represent non-UNet residual/other direct paths."
+  },
+  "failing_test": "tests/test_sable.py::test_sable_regression_corpus",
+  "harness_output_retention": "check_regression calls sable(render_images=False), consumes its hashes/checks, returns drift prose only. No actualSVG, HTML, IR, or current per-view hashes are persisted by that path.",
+  "locked_views": [
+    {
+      "hash": "5448b42b14f8bdfa7b1a94772980d791",
+      "label": "architecture"
+    },
+    {
+      "hash": "f10a4ff3b20dfd43c8b41e303c5535ca",
+      "label": "architecture"
+    },
+    {
+      "hash": "bf0b533e1c953f2a11117824d0343219",
+      "label": "attn"
+    },
+    {
+      "hash": "9690073a99b038727d8ddfc9d75359d6",
+      "label": "ffn"
+    }
+  ],
+  "minimum_probe_after_lane_release": [
+    "Run exactly one sable(frozen Bloom fixture config, render_images=False) at716, with read-only capture of the final actualDiagram/HTML, per-view normalized SVG hashes and real Graph/Region edge/empty-lane records. No checkpoint weights or model forward.",
+    "Reuse that exact captured typed IR/warnings to render with the original83140 _draw_parallel function only in a diagnostic in-memory override. Keepallother716source and input values identical; assertallactualparallel sourcesnon-None before treating independent-input additions as irrelevant.",
+    "Compare every labeledSVG against current output and the locked signatures, recording each extra tap/rail/arrow and its exact declared source\u2192target edge. Persist native before/after images for actualchanged views and requestownerdisposition. Do not bless or change globalrendering until cause proven."
+  ],
+  "no_model_or_pytest_or_production_edits": true,
+  "old_preview_check": {
+    "previews/old/bloom/bloom.html": "0/4 locked hashes match; not the exact baseline",
+    "previews/run_77/bigscience__bloom/bigscience__bloom.html": "Only FFN9690073a99b038727d8ddfc9d75359d6 matches; not an exact baseline for remaining views"
+  },
+  "other_global_changes": "Independent src=None routing is guarded; cards return identical facts_html when fact_display_lines absent. Opgraph, lowering and previewhash implementation unchanged between pins (see source hashes).",
+  "source_sha256": {
+    "model_unfolder/opgraph.py": {
+      "7168440": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3",
+      "83140f1": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3",
+      "bytes_unchanged": true
+    },
+    "model_unfolder/preview.py": {
+      "7168440": "b9650cef820707e9be8b7c3f87b07fd828dc3be8155abfbb66ce477080f2796f",
+      "83140f1": "b9650cef820707e9be8b7c3f87b07fd828dc3be8155abfbb66ce477080f2796f",
+      "bytes_unchanged": true
+    },
+    "model_unfolder/renderers/html/block_views/attention.py": {
+      "7168440": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "83140f1": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "bytes_unchanged": true
+    },
+    "model_unfolder/renderers/html/block_views/feed_forward.py": {
+      "7168440": "15e8a59f84386fe711a8302fb479ff4d6859c2d7b12bf4b7d4c5739fa6adc149",
+      "83140f1": "15e8a59f84386fe711a8302fb479ff4d6859c2d7b12bf4b7d4c5739fa6adc149",
+      "bytes_unchanged": true
+    },
+    "model_unfolder/renderers/html/cards.py": {
+      "7168440": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+      "83140f1": "eef4515c131f40e2f6d595e00f65f6de9259f5ee94d091c2181f28d0019067fb",
+      "bytes_unchanged": false
+    },
+    "model_unfolder/renderers/html/graph.py": {
+      "7168440": "8b89d35ba2295a6cc8ce82ec3f09cc4018685cb90dbddc050d4dfa471a21d15f",
+      "83140f1": "22e4de4df712bf21bd189a46af1e6b78cc7fb35522e2257dd658c0789045e87a",
+      "bytes_unchanged": false
+    },
+    "model_unfolder/renderers/html/graph_engine.py": {
+      "7168440": "b7a206c3677cecd013afef9b0835d1aaa428898b67fc393e8277177c231ad0cc",
+      "83140f1": "0af57b9d7b101e1243bfdc760ed73e82317180f249673016d59b80aa81d8c2d3",
+      "bytes_unchanged": false
+    },
+    "model_unfolder/renderers/html/op_render.py": {
+      "7168440": "6b85ef7800b9593ebb2eadc96a6d7d56a8e94151049a5e516cc8f1007cc91c1d",
+      "83140f1": "6b85ef7800b9593ebb2eadc96a6d7d56a8e94151049a5e516cc8f1007cc91c1d",
+      "bytes_unchanged": true
+    },
+    "model_unfolder/sable.py": {
+      "7168440": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+      "83140f1": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+      "bytes_unchanged": true
+    },
+    "tests/sable_test_corpus/bloom.json": {
+      "7168440": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "83140f1": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+      "bytes_unchanged": true
+    },
+    "tests/test_sable.py": {
+      "7168440": "cf08d8f0af629b825ad61c7ca2355117a3e86f461c319b16717aa7013e2aea8e",
+      "83140f1": "cf08d8f0af629b825ad61c7ca2355117a3e86f461c319b16717aa7013e2aea8e",
+      "bytes_unchanged": true
+    }
+  },
+  "status": "DIAGNOSIS_REQUIRES_ACTUAL_OUTPUT_PROBE"
+}

@@ -1,0 +1,7 @@
+# Four distinct head-input diagnostics
+
+The exact input manifest separates the complete published Kandinsky config, the original rejected Kandinsky test dictionary, the original rejected first IF-like test dictionary, and a deliberately synthetic IF counterpart. Both rejected dictionaries were compared with AST-literal values from the exact a83 test source before launch. The synthetic IF counterpart removes only num_attention_heads; attention_head_dim remains omitted and may resolve through the constructor default. That input is not a verified publisher checkpoint and is distinct from the already tested second IF dictionary.
+
+The published Kandinsky file is copied byte-for-byte from the reviewer-pinned cache revision, SHA4f30206052776397195b5f1c9df9d7f7e34f50b1cb1ad9a027856021a94b62d6. Its complete widths and scale-shift fields are retained, not replaced by values from the synthetic test. The source URL/revision and exact installed-source qualification are included in the reviewer source review. Constructor field spelling does not itself establish a mechanism or an alias.
+
+All captures use immutable736 production and the pinned existing capture scripts. Expected failures must retain actual typed construction errors and limited HTML. Positive captures must preserve actual input, request, inventory, qualified source archive, IR, page, events and all seven validators/audits. Captures run serially and pause for coordinated graph tests. No baseline is blessed.

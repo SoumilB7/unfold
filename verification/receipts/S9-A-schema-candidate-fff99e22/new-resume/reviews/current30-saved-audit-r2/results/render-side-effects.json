@@ -1,0 +1,381 @@
+{
+  "scope": "Exact raw JSON differences, no normalization. Existing VAE renderer insertions are not promoted into proven facts.",
+  "rows": [
+    {
+      "slug": "flux-2-dev",
+      "phase": "ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            7,
+            "children",
+            3,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "flux-2-dev",
+      "phase": "diagram-ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            7,
+            "children",
+            3,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "hunyuanvideo",
+      "phase": "ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            8,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "hunyuanvideo",
+      "phase": "diagram-ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            8,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "phase": "ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            7,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "phase": "diagram-ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            7,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "phase": "ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            9,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "phase": "diagram-ir-",
+      "changes": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            9,
+            "children",
+            2,
+            "children"
+          ],
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": true,
+            "value": [
+              {
+                "description": "First residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op0",
+                "title": "ResNet"
+              },
+              {
+                "description": "Spatial self-attention in the decoder bottleneck.",
+                "facts": [
+                  "spatial attention"
+                ],
+                "id": "vae_mid_block_op1",
+                "title": "Attention"
+              },
+              {
+                "description": "Second residual cell in the VAE decoder mid block.",
+                "facts": [],
+                "id": "vae_mid_block_op2",
+                "title": "ResNet"
+              }
+            ]
+          }
+        }
+      ],
+      "identical_to_reference26_render_side_effect": true
+    }
+  ]
+}

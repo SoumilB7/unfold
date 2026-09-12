@@ -1,0 +1,15 @@
+{
+  "status": "INTENTIONALLY_SUPERSEDED_PARTIAL_NOT_COMPLETE",
+  "reason": "Final source gains independently reviewed typed-chip CSS; complete matrix must be generated at final37 source. Preserve36 partial outputs; no completed36 verdict.",
+  "returncode": -2,
+  "duration_seconds": 1294.0351077500018,
+  "source_artifact_brackets_equal": true,
+  "file_count": 111,
+  "model_artifact_files": 35,
+  "summary_matrix_present": false,
+  "archive_sha256": "55697f9d3f2d7185c6cd205a4661ba45c39b629a8c1c345ac9c21a0caf7c64ce",
+  "limits": [
+    "No complete36 matrix verdict exists. Never use this partial packet as a completed matrix baseline or replay its rows into37.",
+    "Latest completed matrix remains actual32. Final37 generator must run independently at exact source37."
+  ]
+}

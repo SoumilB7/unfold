@@ -1,0 +1,7 @@
+{
+  "verdict": "ACCEPT bounded recovery preparation; no capture executed by reviewer",
+  "script_sha256": "c927f0af793c7934aac03e4b326d34f31b2fb47533f14a11abba7077752c3743",
+  "closed_return": "Exact source verification now runs in finally after actual parse+canonical comparator payload, including exception and later hash-mismatch paths. Failed verification prevents success row; successful verification retains source-after identity receipt.",
+  "unchanged": "Pinned S7 parser/comparator, expected manifest (not U0), fresh output directory, actual payload hashes, stop-first-mismatch and no baseline writing retained.",
+  "limits": "Historical external library byte identity is not inferred from version labels; exact expected-sidecar recovery remains mandatory. Earlier reviewed script snapshot and pre-use finding preserved."
+}

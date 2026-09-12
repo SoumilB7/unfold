@@ -1,0 +1,19 @@
+{
+  "consumer_disposition": "stale fingerprint removal does not eliminate surviving raw-read obligations; do not repin new groups merely to pass",
+  "head": "4fdc741081a66071daede1401bd4187f8d13289f",
+  "mode": "read-only source/policy review; no models or pytest",
+  "source_sha256": {
+    "model_unfolder/adapters/diffusor/unet_cutover.py": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+    "model_unfolder/adapters/diffusor/unet_projection.py": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+    "model_unfolder/evidence/consumer_firewall.py": "785fb6ebc78f42f639b37e9aa8e7b548bd205304241d6e074515bd2aad6940dd",
+    "model_unfolder/evidence/context.py": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+    "model_unfolder/evidence/registry.py": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+    "model_unfolder/evidence/structural_debt.py": "cfd0a69ede4da851491a65c13cf058d9a20265aba38e73acae050869e0f81851",
+    "model_unfolder/evidence/structural_writes.py": "f640dcaf2eb2aa2677caf61983f308e607de6ff47d2a6f15f846a56581323008",
+    "model_unfolder/expanded/loop.py": "accf5e4d2756c70f35ec156c6bdbf749335c007a5bdcd3f298f82c0baa5c8075",
+    "model_unfolder/renderers/html/sections.py": "6c263501d1b03d08168063019a7bf030dcfe3a5f5066fb135d50d416ce4c4d49",
+    "model_unfolder/renderers/html/views_diffusion.py": "51773a01f75c24db0d6518dcdeb4023dd4b7c8eda33729d531d6ddea509b6182",
+    "model_unfolder/sable.py": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2"
+  },
+  "writer_disposition": "two exact reviewed author registrations lawful; no new sink vocabulary"
+}

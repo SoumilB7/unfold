@@ -1,0 +1,53 @@
+{
+  "scope": "Saved-source36 composition/growth/debt",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "05b0e0376fdef9795640e07233d87542f6518b5a33440dc0d696a44a7d519e7b"
+    },
+    {
+      "path": "authority-bridges-debt.json",
+      "sha256": "7b74b5193edb077b72397c425f2601f3171dbf6c804cee3f82b8607171b5213c"
+    },
+    {
+      "path": "baseline-source-inventory.json",
+      "sha256": "ec3a0f5741676e76171c3b89d47abb9e398e992b0f9ac5ea7a7c4fcc93db2dc9"
+    },
+    {
+      "path": "candidate-source-inventory.json",
+      "sha256": "37476e1d1af34f4fb7b292dcdecaba7b9ee7eb17f0f8f05dbaf663ec8664cc70"
+    },
+    {
+      "path": "composition-review.json",
+      "sha256": "9f7c0f63984a0d20099a49971c72b233fc7721b66edcdb6f6ba5fa5d134b77ac"
+    },
+    {
+      "path": "debt-rows.json",
+      "sha256": "cd8e9207f44909565a3d4545d442564b06776f8ed0b576ab6be66f8f62df75e7"
+    },
+    {
+      "path": "fixture-relocation.json",
+      "sha256": "1c5de3b4f41778b29be85059bffcf38b4673e211c8f15eb852cd1561cdac94c5"
+    },
+    {
+      "path": "latency-metadata-deltas.json",
+      "sha256": "a3aa9c13988d78ba6eb8d2344886e1355919e58469a3a369770430ef1119ec13"
+    },
+    {
+      "path": "line-growth.json",
+      "sha256": "c61fa39fdbaa9aa9d335ba6598f4db6c1dacad33159cbf45a38ec888a662a290"
+    },
+    {
+      "path": "retained-producers.json",
+      "sha256": "d9a144a4165b9c05d4e1eac8f01b590a6e12ba4afc71f3a36601fbf8b5a0328a"
+    },
+    {
+      "path": "sheet-ready.md",
+      "sha256": "f3424ab5acd17958aa04fce79a1c0540c75e278fe7ae8b7f0cce802d1f0d9818"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "1280139210eb74c2c591a09e5b58d593b430e55b649c0290dd0291ffe9a6c842"
+    }
+  ]
+}

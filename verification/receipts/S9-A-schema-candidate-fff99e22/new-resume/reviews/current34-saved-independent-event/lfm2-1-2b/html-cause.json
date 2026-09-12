@@ -1,0 +1,19 @@
+{
+  "after_bytes": 65251,
+  "after_sha256": "8e88c174bf99619aec57840ce48e8526d610b561c677830a8c94e6fed001f731",
+  "before_bytes": 65251,
+  "before_sha256": "1dfe6dec326c224a9c9d04cd77339c0ba65e6bc90bfc35f1aaf39333beb65aad",
+  "exact_new_mount_occurrences": 173,
+  "exact_old_mount_occurrences": 173,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-02e4861bb3",
+  "mount_identity_before": "uf-066dc55106",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "lfm2-1-2b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

@@ -1,0 +1,35 @@
+{
+  "bundle": {
+    "architecture": "Qwen3ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Qwen3ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3/modeling_qwen3.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "qwen3"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3/modeling_qwen3.py"
+    ],
+    "import_roots": {},
+    "model_id": "Qwen/Qwen3-8B",
+    "model_type": "qwen3",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3/configuration_qwen3.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

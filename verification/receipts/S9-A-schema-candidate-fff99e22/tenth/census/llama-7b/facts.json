@@ -1,0 +1,1383 @@
+{
+  "decoder.attention.bias": {
+    "value": false,
+    "status": "code_and_config",
+    "source": "decoder_attention_bias_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "existence",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.bias:df40488d7e9f5dfc",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:221:4:221:36",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:247:22:249:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:8:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:288:22:288:46"
+        ],
+        "fact_id": "decoder.attention.bias",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "df40488d7e9f5dfc"
+    }
+  },
+  "decoder.attention.cached": {
+    "value": true,
+    "status": "code_proven",
+    "source": "decoder_attention_cache_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.cached:7f3e293636cd0a7c",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:269:8:270:103",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:270:12:270:103",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:270:39:270:103",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+        ],
+        "fact_id": "decoder.attention.cached",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.cached",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    }
+  },
+  "decoder.attention.head_geometry": {
+    "value": {
+      "kind": "mha",
+      "num_heads": 32,
+      "num_kv_heads": 32,
+      "head_dim": 128,
+      "q_lora_rank": null,
+      "kv_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "status": "code_and_config",
+    "source": "decoder_attention_head_geometry_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.head_geometry:38a8326edd3aad06",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:232:24:232:101",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:32:239:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:61:239:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:242:32:242:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:245:32:245:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+        ],
+        "fact_id": "decoder.attention.head_geometry",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.head_geometry",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "38a8326edd3aad06"
+    }
+  },
+  "decoder.attention.mask": {
+    "value": "causal",
+    "status": "code_and_config",
+    "source": "decoder_attention_mask_execution_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mask:d633e0971d5d5f6d",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:38:214:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:8:214:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:281:12:281:26",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:318:27:318:41",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:355:17:355:37",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:25:357:31",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:8:357:32",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:22:405:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:8:405:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:413:31:413:42",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70"
+        ],
+        "fact_id": "decoder.attention.mask",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "d633e0971d5d5f6d"
+    }
+  },
+  "decoder.attention.mask_schedule": {
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ],
+    "status": "code_and_config",
+    "source": "decoder_attention_mask_execution_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mask_schedule:61f6df5c5123ba18",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:38:214:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:8:214:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:281:12:281:26",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:318:27:318:41",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:355:17:355:37",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:25:357:31",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:8:357:32",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:22:405:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:8:405:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:413:31:413:42",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70"
+        ],
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mask_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "61f6df5c5123ba18"
+    }
+  },
+  "decoder.attention.mechanism": {
+    "value": "mha",
+    "status": "code_and_config",
+    "source": "decoder_attention_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:32:239:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:61:239:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:242:32:242:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:245:32:245:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+        ],
+        "fact_id": "decoder.attention.mechanism",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "a615d6a9effdcd21"
+    }
+  },
+  "decoder.attention.mixer_schedule": {
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ],
+    "status": "code_and_config",
+    "source": "decoder_mixer_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mixer_schedule:db7d4c151cc72744",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:25:297:75",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97"
+        ],
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mixer_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "db7d4c151cc72744"
+    }
+  },
+  "decoder.attention.output_projection": {
+    "value": true,
+    "status": "code_proven",
+    "source": "decoder_attention_output_projection_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:221:4:221:36",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:247:22:249:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:8:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:288:22:288:46"
+        ],
+        "fact_id": "decoder.attention.output_projection",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.output_projection",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    }
+  },
+  "decoder.attention.position_schedule": {
+    "value": [
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      }
+    ],
+    "status": "code_and_config",
+    "source": "decoder_position_application_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:b558ebc2063408fd",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:25:297:75",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:65:297:74",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.position_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "b558ebc2063408fd"
+    }
+  },
+  "decoder.attention.projection_mode": {
+    "value": "split_qkv",
+    "status": "code_proven",
+    "source": "decoder_attention_projection_storage_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+        ],
+        "fact_id": "decoder.attention.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "21761fea3f037ea3"
+    }
+  },
+  "decoder.attention.rope_initialization": {
+    "value": {
+      "kind": "local_default",
+      "callable": "LlamaRotaryEmbedding.compute_default_rope_parameters",
+      "selector": null,
+      "parameters": {
+        "rope_parameters.rope_theta": 10000.0,
+        "rope_parameters.rope_type": "default"
+      }
+    },
+    "status": "code_and_config",
+    "source": "position_frequency_initialization",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.rope_initialization:9787accbb0ae34c0",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:111:15:111:51",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:85:11:85:25",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:43:87:76",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:8:87:76",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:89:8:89:68",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:93:4:120:41"
+        ],
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.rope_initialization",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "9787accbb0ae34c0"
+    }
+  },
+  "decoder.attention.rope_theta": {
+    "value": 10000.0,
+    "status": "code_and_config",
+    "source": "position_frequency_initialization",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.rope_theta:6f8aee9beb40ac24",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:111:15:111:51",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:85:11:85:25",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:43:87:76",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:8:87:76",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:89:8:89:68",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:93:4:120:41"
+        ],
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.rope_theta",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "6f8aee9beb40ac24"
+    }
+  },
+  "decoder.attention.scores_scale": {
+    "value": "sqrt(head_dim)",
+    "status": "code_proven",
+    "source": "decoder_attention_score_scaling_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "20496603e5af0c6f"
+    }
+  },
+  "decoder.ffn.activation": {
+    "value": "silu",
+    "status": "code_and_config",
+    "source": "decoder_ffn_mechanism_for_path:hidden_act",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "b9c82d4207301835"
+    }
+  },
+  "decoder.ffn.ffn_schedule": {
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense"
+    ],
+    "status": "code_and_config",
+    "source": "decoder_ffn_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.ffn_schedule:43c8dac4496c036b",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:299:19:299:35",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97"
+        ],
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.ffn_schedule",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "43c8dac4496c036b"
+    }
+  },
+  "decoder.ffn.gated": {
+    "value": true,
+    "status": "code_proven",
+    "source": "decoder_ffn_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+        ],
+        "fact_id": "decoder.ffn.gated",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.gated",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    }
+  },
+  "decoder.ffn.intermediate_size": {
+    "value": 11008,
+    "status": "code_and_config",
+    "source": "decoder_ffn_intermediate_width_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.intermediate_size:4c97e9d6f1864ba2",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:176:33:176:57",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+        ],
+        "fact_id": "decoder.ffn.intermediate_size",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.intermediate_size",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "4c97e9d6f1864ba2"
+    }
+  },
+  "decoder.ffn.projection_mode": {
+    "value": "split",
+    "status": "code_proven",
+    "source": "decoder_ffn_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+        ],
+        "fact_id": "decoder.ffn.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.projection_mode",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "386c50fca9c31bcd"
+    }
+  },
+  "decoder.layer.norm_kind": {
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "source": "decoder_norm_kind_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_kind:d23812867aded33c",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+        ],
+        "fact_id": "decoder.layer.norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "d23812867aded33c"
+    }
+  },
+  "decoder.layer.norm_placement": {
+    "value": "pre",
+    "status": "code_proven",
+    "source": "decoder_cell_topology_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:325:24:325:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:331:24:331:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:332:8:332:28",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+        ],
+        "fact_id": "decoder.layer.norm_placement",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "ab69c0b0326e77e9"
+    }
+  },
+  "decoder.layer.parallel_norm_count": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.residual_topology": {
+    "value": "sequential",
+    "status": "code_proven",
+    "source": "decoder_cell_topology_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:325:24:325:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:331:24:331:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:332:8:332:28",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+        ],
+        "fact_id": "decoder.layer.residual_topology",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "acdbd5fdb3a8c659"
+    }
+  },
+  "model.final_norm_kind": {
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "source": "final_stage_norm_evidence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "projection:model.final_norm_kind:d23812867aded33c",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:365:20:365:77",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:421:24:421:48",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:422:8:425:9",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+          "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+        ],
+        "fact_id": "model.final_norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "code_proven",
+      "value_status_hash": "d23812867aded33c"
+    }
+  },
+  "model.tie_word_embeddings": {
+    "value": false,
+    "status": "config_declared",
+    "source": "tie_word_embeddings",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        ],
+        "evidence_refs": [
+          "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+        ],
+        "fact_id": "model.tie_word_embeddings",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "model_unfolder.adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    }
+  }
+}

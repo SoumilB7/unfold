@@ -1,0 +1,269 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_name_or_path": "Qwen/Qwen2-VL-7B-Instruct",
+    "architectures": [
+      "Qwen2VLForConditionalGeneration"
+    ],
+    "chunk_size_feed_forward": 0,
+    "dtype": "bfloat16",
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "image_token_id": 151655,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "model_type": "qwen2_vl",
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "problem_type": null,
+    "return_dict": true,
+    "text_config": {
+      "_name_or_path": "",
+      "architectures": null,
+      "attention_dropout": 0.0,
+      "bos_token_id": 151643,
+      "chunk_size_feed_forward": 0,
+      "dtype": "bfloat16",
+      "eos_token_id": 151645,
+      "hidden_act": "silu",
+      "hidden_size": 3584,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "initializer_range": 0.02,
+      "intermediate_size": 18944,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "layer_types": [
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention"
+      ],
+      "max_position_embeddings": 32768,
+      "max_window_layers": 28,
+      "model_type": "qwen2_vl_text",
+      "num_attention_heads": 28,
+      "num_hidden_layers": 28,
+      "num_key_value_heads": 4,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "pad_token_id": null,
+      "problem_type": null,
+      "return_dict": true,
+      "rms_norm_eps": 1e-06,
+      "rope_parameters": {
+        "mrope_section": [
+          16,
+          24,
+          24
+        ],
+        "rope_theta": 1000000.0,
+        "rope_type": "default",
+        "type": "mrope"
+      },
+      "sliding_window": null,
+      "use_cache": true,
+      "use_sliding_window": false,
+      "vocab_size": 152064
+    },
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "video_token_id": 151656,
+    "vision_config": {
+      "_name_or_path": "",
+      "architectures": null,
+      "chunk_size_feed_forward": 0,
+      "depth": 32,
+      "dtype": null,
+      "embed_dim": 1280,
+      "hidden_act": "quick_gelu",
+      "hidden_size": 3584,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "in_channels": 3,
+      "in_chans": 3,
+      "initializer_range": 0.02,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "mlp_ratio": 4,
+      "model_type": "qwen2_vl_vision",
+      "num_heads": 16,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "patch_size": 14,
+      "problem_type": null,
+      "return_dict": true,
+      "spatial_merge_size": 2,
+      "spatial_patch_size": 14,
+      "temporal_patch_size": 2
+    },
+    "vision_end_token_id": 151653,
+    "vision_start_token_id": 151652,
+    "vision_token_id": 151654
+  },
+  "hash_signature": [
+    "000c82b0a96adbbd92b9e185a2c6795b",
+    "154cfe6b7e797a1b5ecf7e4dc31b8509",
+    "536f77e2592b41352d119ad55c5d7060",
+    "83ec299d0868e4d562c8388bde97e88b",
+    "a084abb5d4edf995ff1080d03ad7d93c",
+    "a82ae2d276e27f7f1f83e9804ab7cd45",
+    "af08169058fe7250a148c9db0b50a469",
+    "baa634dfcddee173bbf3a55bfc67a3b5",
+    "c01c8a92cec3e0d22006d1b2f5456bba",
+    "c514c819f533d468a8a54799bfa0bbaa",
+    "e7220fa964088846e1912959abfda3fc"
+  ],
+  "model": "Qwen2-VL-7B-Instruct",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.projection_mode",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.gated",
+    "decoder.ffn.intermediate_size",
+    "decoder.ffn.projection_mode",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.tie_word_embeddings",
+    "root.video.projector_out_features",
+    "root.vision.projector_out_features"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "000c82b0a96adbbd92b9e185a2c6795b",
+    "154cfe6b7e797a1b5ecf7e4dc31b8509",
+    "536f77e2592b41352d119ad55c5d7060",
+    "83ec299d0868e4d562c8388bde97e88b",
+    "87be025f271c402c8d03d60efba9735a",
+    "a084abb5d4edf995ff1080d03ad7d93c",
+    "a82ae2d276e27f7f1f83e9804ab7cd45",
+    "af08169058fe7250a148c9db0b50a469",
+    "baa634dfcddee173bbf3a55bfc67a3b5",
+    "c514c819f533d468a8a54799bfa0bbaa",
+    "e7220fa964088846e1912959abfda3fc"
+  ],
+  "view_signature": [
+    {
+      "hash": "536f77e2592b41352d119ad55c5d7060",
+      "label": "architecture"
+    },
+    {
+      "hash": "c01c8a92cec3e0d22006d1b2f5456bba",
+      "label": "architecture"
+    },
+    {
+      "hash": "000c82b0a96adbbd92b9e185a2c6795b",
+      "label": "attn"
+    },
+    {
+      "hash": "a82ae2d276e27f7f1f83e9804ab7cd45",
+      "label": "ffn"
+    },
+    {
+      "hash": "c514c819f533d468a8a54799bfa0bbaa",
+      "label": "fusion"
+    },
+    {
+      "hash": "83ec299d0868e4d562c8388bde97e88b",
+      "label": "video_patches"
+    },
+    {
+      "hash": "af08169058fe7250a148c9db0b50a469",
+      "label": "video_path"
+    },
+    {
+      "hash": "154cfe6b7e797a1b5ecf7e4dc31b8509",
+      "label": "vision_encoder"
+    },
+    {
+      "hash": "baa634dfcddee173bbf3a55bfc67a3b5",
+      "label": "vision_patches"
+    },
+    {
+      "hash": "a084abb5d4edf995ff1080d03ad7d93c",
+      "label": "vision_path"
+    },
+    {
+      "hash": "e7220fa964088846e1912959abfda3fc",
+      "label": "vision_projector"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/qwen2-vl-7b-instruct",
+    "manifest": true,
+    "png_count": 11
+  }
+}

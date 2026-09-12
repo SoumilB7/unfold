@@ -1,0 +1,4239 @@
+[
+  {
+    "after": "root.denoiser:act_fn",
+    "before": "root.denoiser:attention_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/0",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:addition_embed_type_num_heads",
+    "before": "root.denoiser:dropout",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/1",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:attention_type",
+    "before": "root.denoiser:reverse_transformer_layers_per_block",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/2",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:center_input_sample",
+    "before": "root.scheduler:shift",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/3",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:class_embed_type",
+    "before": "root.scheduler:use_dynamic_shifting",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/4",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:class_embeddings_concat",
+    "before": "root.text_encoder:apply_residual_connection_post_layernorm",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:conv_in_kernel",
+    "before": "root.text_encoder:attention_multiplier",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:conv_out_kernel",
+    "before": "root.text_encoder:attn_logit_softcapping",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:cross_attention_norm",
+    "before": "root.text_encoder:audio_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:downsample_padding",
+    "before": "root.text_encoder:clip_qkv",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:dropout",
+    "before": "root.text_encoder:embedding_multiplier",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:dual_cross_attention",
+    "before": "root.text_encoder:feed_forward_proj",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:encoder_hid_dim",
+    "before": "root.text_encoder:final_logit_softcapping",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:encoder_hid_dim_type",
+    "before": "root.text_encoder:hidden_size_per_layer_input",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:flip_sin_to_cos",
+    "before": "root.text_encoder:is_gated_act",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:freq_shift",
+    "before": "root.text_encoder:layer_norm_epsilon",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:in_channels",
+    "before": "root.text_encoder:logits_scaling",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:layers_per_block",
+    "before": "root.text_encoder:max_window_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:mid_block_only_cross_attention",
+    "before": "root.text_encoder:mlp_bias",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:mid_block_scale_factor",
+    "before": "root.text_encoder:moe_intermediate_size",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:mid_block_type",
+    "before": "root.text_encoder:norm_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:norm_eps",
+    "before": "root.text_encoder:num_experts",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:norm_num_groups",
+    "before": "root.text_encoder:num_experts_per_tok",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:num_attention_heads",
+    "before": "root.text_encoder:num_mtp_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:num_class_embeds",
+    "before": "root.text_encoder:num_nextn_predict_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:only_cross_attention",
+    "before": "root.text_encoder:num_shared_experts",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:out_channels",
+    "before": "root.text_encoder:query_pre_attn_scalar",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:resnet_out_scale_factor",
+    "before": "root.text_encoder:rms_norm_eps",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:resnet_skip_time_act",
+    "before": "root.text_encoder:scale_embedding",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:resnet_time_scale_shift",
+    "before": "root.text_encoder:sliding_window",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:reverse_transformer_layers_per_block",
+    "before": "root.text_encoder:sliding_window_pattern",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:time_cond_proj_dim",
+    "before": "root.text_encoder:swiglu_limit",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:time_embedding_act_fn",
+    "before": "root.text_encoder:tie_word_embeddings",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:time_embedding_dim",
+    "before": "root.text_encoder:use_bidirectional_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:time_embedding_type",
+    "before": "root.text_encoder:use_sliding_window",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:timestep_post_act",
+    "before": "root.text_encoder:vocab_size_per_layer_input",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:shift",
+    "before": "root.text_encoder_2:apply_residual_connection_post_layernorm",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:use_dynamic_shifting",
+    "before": "root.text_encoder_2:attention_multiplier",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:apply_residual_connection_post_layernorm",
+    "before": "root.text_encoder_2:attn_logit_softcapping",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:attention_multiplier",
+    "before": "root.text_encoder_2:audio_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:attn_logit_softcapping",
+    "before": "root.text_encoder_2:clip_qkv",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:audio_channels",
+    "before": "root.text_encoder_2:embedding_multiplier",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:clip_qkv",
+    "before": "root.text_encoder_2:feed_forward_proj",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:embedding_multiplier",
+    "before": "root.text_encoder_2:final_logit_softcapping",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:feed_forward_proj",
+    "before": "root.text_encoder_2:hidden_size_per_layer_input",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:final_logit_softcapping",
+    "before": "root.text_encoder_2:is_gated_act",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:hidden_size_per_layer_input",
+    "before": "root.text_encoder_2:layer_norm_epsilon",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:is_gated_act",
+    "before": "root.text_encoder_2:logits_scaling",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:layer_norm_epsilon",
+    "before": "root.text_encoder_2:max_window_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:logits_scaling",
+    "before": "root.text_encoder_2:mlp_bias",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/49",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:max_window_layers",
+    "before": "root.text_encoder_2:moe_intermediate_size",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/50",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:mlp_bias",
+    "before": "root.text_encoder_2:norm_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/51",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:moe_intermediate_size",
+    "before": "root.text_encoder_2:num_experts",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/52",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:norm_type",
+    "before": "root.text_encoder_2:num_experts_per_tok",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/53",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_experts",
+    "before": "root.text_encoder_2:num_mtp_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/54",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_experts_per_tok",
+    "before": "root.text_encoder_2:num_nextn_predict_layers",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/55",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_mtp_layers",
+    "before": "root.text_encoder_2:num_shared_experts",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/56",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_nextn_predict_layers",
+    "before": "root.text_encoder_2:query_pre_attn_scalar",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/57",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_shared_experts",
+    "before": "root.text_encoder_2:rms_norm_eps",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/58",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:query_pre_attn_scalar",
+    "before": "root.text_encoder_2:scale_embedding",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/59",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:rms_norm_eps",
+    "before": "root.text_encoder_2:sliding_window",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/60",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:scale_embedding",
+    "before": "root.text_encoder_2:sliding_window_pattern",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/61",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:sliding_window",
+    "before": "root.text_encoder_2:swiglu_limit",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/62",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:sliding_window_pattern",
+    "before": "root.text_encoder_2:tie_word_embeddings",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/63",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:swiglu_limit",
+    "before": "root.text_encoder_2:use_bidirectional_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/64",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:tie_word_embeddings",
+    "before": "root.text_encoder_2:use_sliding_window",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/65",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:use_bidirectional_attention",
+    "before": "root.text_encoder_2:vocab_size_per_layer_input",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/66",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:use_sliding_window",
+    "before": "root.vae:audio_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/67",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:vocab_size_per_layer_input",
+    "before": "root.vae:decoder_input_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/68",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:apply_residual_connection_post_layernorm",
+    "before": "root.vae:downsampling_ratios",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/69",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:attention_multiplier",
+    "before": "root.vae:latents_mean",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/70",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:attn_logit_softcapping",
+    "before": "root.vae:latents_std",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/71",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:audio_channels",
+    "before": "root.vae:mid_block_add_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/72",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:clip_qkv",
+    "before": "root.vae:num_vq_embeddings",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/73",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:embedding_multiplier",
+    "before": "root.vae:sampling_rate",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/74",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:feed_forward_proj",
+    "before": "root.vae:shift_factor",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/75",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:final_logit_softcapping",
+    "before": "root.vae:upsampling_ratios",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/76",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:hidden_size_per_layer_input",
+    "before": "root.vae:use_post_quant_conv",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/77",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:is_gated_act",
+    "before": "root.vae:use_quant_conv",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/78",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:layer_norm_epsilon",
+    "before": "root.vae:vq_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/absent_default/79",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:logits_scaling",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/80",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:max_window_layers",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/81",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:mlp_bias",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/82",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:moe_intermediate_size",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/83",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:norm_type",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/84",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_experts",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/85",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_experts_per_tok",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/86",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_mtp_layers",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/87",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_nextn_predict_layers",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/88",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_shared_experts",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/89",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:query_pre_attn_scalar",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/90",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:rms_norm_eps",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/91",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:scale_embedding",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/92",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:sliding_window",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/93",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:sliding_window_pattern",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/94",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:swiglu_limit",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/95",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:tie_word_embeddings",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/96",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:use_bidirectional_attention",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/97",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:use_sliding_window",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/98",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:vocab_size_per_layer_input",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/99",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:audio_channels",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/100",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:decoder_input_channels",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/101",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:downsampling_ratios",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/102",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:latents_mean",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/103",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:latents_std",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/104",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:mid_block_add_attention",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/105",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:num_vq_embeddings",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/106",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:sampling_rate",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/107",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:shift_factor",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/108",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:upsampling_ratios",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/109",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:use_post_quant_conv",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/110",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:use_quant_conv",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/111",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:vq_embed_dim",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_access/absent_default/112",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:addition_embed_type",
+    "before": "root.denoiser:act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:addition_time_embed_dim",
+    "before": "root.denoiser:addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:attention_head_dim",
+    "before": "root.denoiser:addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:block_out_channels",
+    "before": "root.denoiser:addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:cross_attention_dim",
+    "before": "root.denoiser:attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:down_block_types",
+    "before": "root.denoiser:block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:projection_class_embeddings_input_dim",
+    "before": "root.denoiser:center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:sample_size",
+    "before": "root.denoiser:class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:text_encoder",
+    "before": "root.denoiser:class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:text_encoder_2",
+    "before": "root.denoiser:conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:transformer_layers_per_block",
+    "before": "root.denoiser:conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:up_block_types",
+    "before": "root.denoiser:cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:upcast_attention",
+    "before": "root.denoiser:cross_attention_norm",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:use_linear_projection",
+    "before": "root.denoiser:down_block_types",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:beta_schedule",
+    "before": "root.denoiser:downsample_padding",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:num_train_timesteps",
+    "before": "root.denoiser:dual_cross_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:prediction_type",
+    "before": "root.denoiser:encoder_hid_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:scheduler",
+    "before": "root.denoiser:encoder_hid_dim_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.scheduler:timestep_spacing",
+    "before": "root.denoiser:flip_sin_to_cos",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:_name_or_path",
+    "before": "root.denoiser:freq_shift",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:architectures",
+    "before": "root.denoiser:in_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:hidden_act",
+    "before": "root.denoiser:layers_per_block",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:hidden_size",
+    "before": "root.denoiser:mid_block_only_cross_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:intermediate_size",
+    "before": "root.denoiser:mid_block_scale_factor",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:is_encoder_decoder",
+    "before": "root.denoiser:mid_block_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:layer_norm_eps",
+    "before": "root.denoiser:norm_eps",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:max_position_embeddings",
+    "before": "root.denoiser:norm_num_groups",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:model_type",
+    "before": "root.denoiser:num_attention_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_attention_heads",
+    "before": "root.denoiser:num_class_embeds",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:num_hidden_layers",
+    "before": "root.denoiser:only_cross_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder:vocab_size",
+    "before": "root.denoiser:out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:_name_or_path",
+    "before": "root.denoiser:projection_class_embeddings_input_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:architectures",
+    "before": "root.denoiser:resnet_out_scale_factor",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:hidden_act",
+    "before": "root.denoiser:resnet_skip_time_act",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:hidden_size",
+    "before": "root.denoiser:resnet_time_scale_shift",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:intermediate_size",
+    "before": "root.denoiser:sample_size",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:is_encoder_decoder",
+    "before": "root.denoiser:text_encoder",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:layer_norm_eps",
+    "before": "root.denoiser:text_encoder_2",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:max_position_embeddings",
+    "before": "root.denoiser:time_cond_proj_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:model_type",
+    "before": "root.denoiser:time_embedding_act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:num_hidden_layers",
+    "before": "root.denoiser:time_embedding_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.text_encoder_2:vocab_size",
+    "before": "root.denoiser:time_embedding_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:_class_name",
+    "before": "root.denoiser:timestep_post_act",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:_vae_config",
+    "before": "root.denoiser:transformer_layers_per_block",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:block_out_channels",
+    "before": "root.denoiser:up_block_types",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/49",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:down_block_types",
+    "before": "root.denoiser:upcast_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/50",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:latent_channels",
+    "before": "root.denoiser:use_linear_projection",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/51",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:layers_per_block",
+    "before": "root.scheduler:beta_schedule",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/52",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:norm_num_groups",
+    "before": "root.scheduler:num_train_timesteps",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/53",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:out_channels",
+    "before": "root.scheduler:prediction_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/54",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:scaling_factor",
+    "before": "root.scheduler:scheduler",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/55",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.vae:up_block_types",
+    "before": "root.scheduler:timestep_spacing",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed/56",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:_name_or_path",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/57",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:architectures",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/58",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:hidden_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/59",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:hidden_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/60",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:intermediate_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/61",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:is_encoder_decoder",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/62",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:layer_norm_eps",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/63",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:max_position_embeddings",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/64",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:model_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/65",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:num_attention_heads",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/66",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:num_hidden_layers",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/67",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder:vocab_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/68",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:_name_or_path",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/69",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:architectures",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/70",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:hidden_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/71",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:hidden_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/72",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:intermediate_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/73",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:is_encoder_decoder",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/74",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:layer_norm_eps",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/75",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:max_position_embeddings",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/76",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:model_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/77",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:num_hidden_layers",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/78",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.text_encoder_2:vocab_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/79",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:_class_name",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/80",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:_vae_config",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/81",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:block_out_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/82",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:down_block_types",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/83",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:latent_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/84",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:layers_per_block",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/85",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:norm_num_groups",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/86",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:out_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/87",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:scaling_factor",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/88",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.vae:up_block_types",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed/89",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:addition_embed_type",
+    "before": "root.denoiser:act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/0",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:addition_time_embed_dim",
+    "before": "root.denoiser:addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/1",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:attention_head_dim",
+    "before": "root.denoiser:addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/2",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:block_out_channels",
+    "before": "root.denoiser:addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/3",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:cross_attention_dim",
+    "before": "root.denoiser:attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/4",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:down_block_types",
+    "before": "root.denoiser:block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:projection_class_embeddings_input_dim",
+    "before": "root.denoiser:center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:sample_size",
+    "before": "root.denoiser:class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:transformer_layers_per_block",
+    "before": "root.denoiser:class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:up_block_types",
+    "before": "root.denoiser:conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:upcast_attention",
+    "before": "root.denoiser:conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:use_linear_projection",
+    "before": "root.denoiser:cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:cross_attention_norm",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:down_block_types",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:downsample_padding",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:dual_cross_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:encoder_hid_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:encoder_hid_dim_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:flip_sin_to_cos",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:freq_shift",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:in_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:layers_per_block",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:mid_block_only_cross_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:mid_block_scale_factor",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:mid_block_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:norm_eps",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:norm_num_groups",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:num_attention_heads",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:num_class_embeds",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:only_cross_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:out_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:projection_class_embeddings_input_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:resnet_out_scale_factor",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:resnet_skip_time_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:resnet_time_scale_shift",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:sample_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:time_cond_proj_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:time_embedding_act_fn",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:time_embedding_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:time_embedding_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:timestep_post_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:transformer_layers_per_block",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:up_block_types",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:upcast_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "root.denoiser:use_linear_projection",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_embed_type",
+    "before": "act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/0/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_embed_type",
+    "before": "act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/0/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_embed_type",
+    "before": "act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/0/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_time_embed_dim",
+    "before": "addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/1/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_time_embed_dim",
+    "before": "addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/1/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_time_embed_dim",
+    "before": "addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/1/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "attention_head_dim",
+    "before": "addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/2/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "attention_head_dim",
+    "before": "addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/2/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "attention_head_dim",
+    "before": "addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/2/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "block_out_channels",
+    "before": "addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/3/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "block_out_channels",
+    "before": "addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/3/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "block_out_channels",
+    "before": "addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/3/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "cross_attention_dim",
+    "before": "attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/4/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "cross_attention_dim",
+    "before": "attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/4/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "cross_attention_dim",
+    "before": "attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/4/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "down_block_types",
+    "before": "block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/5/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "down_block_types",
+    "before": "block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/5/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "down_block_types",
+    "before": "block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/5/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "projection_class_embeddings_input_dim",
+    "before": "center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/6/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "projection_class_embeddings_input_dim",
+    "before": "center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/6/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "projection_class_embeddings_input_dim",
+    "before": "center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/6/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "sample_size",
+    "before": "class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/7/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "sample_size",
+    "before": "class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/7/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "sample_size",
+    "before": "class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/7/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "transformer_layers_per_block",
+    "before": "class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/8/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "transformer_layers_per_block",
+    "before": "class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/8/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "transformer_layers_per_block",
+    "before": "class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/8/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "up_block_types",
+    "before": "conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/9/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "up_block_types",
+    "before": "conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/9/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "up_block_types",
+    "before": "conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/9/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "upcast_attention",
+    "before": "conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/10/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "upcast_attention",
+    "before": "conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/10/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "upcast_attention",
+    "before": "conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/10/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "use_linear_projection",
+    "before": "cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/11/canonical",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "use_linear_projection",
+    "before": "cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/11/path",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "use_linear_projection",
+    "before": "cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_access/accessed_unconsumed_exact/11/spelling",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "cross_attention_norm",
+      "component": "root.denoiser",
+      "path": "cross_attention_norm",
+      "spelling": "cross_attention_norm"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "down_block_types",
+      "component": "root.denoiser",
+      "path": "down_block_types",
+      "spelling": "down_block_types"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "downsample_padding",
+      "component": "root.denoiser",
+      "path": "downsample_padding",
+      "spelling": "downsample_padding"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "dual_cross_attention",
+      "component": "root.denoiser",
+      "path": "dual_cross_attention",
+      "spelling": "dual_cross_attention"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "encoder_hid_dim",
+      "component": "root.denoiser",
+      "path": "encoder_hid_dim",
+      "spelling": "encoder_hid_dim"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "encoder_hid_dim_type",
+      "component": "root.denoiser",
+      "path": "encoder_hid_dim_type",
+      "spelling": "encoder_hid_dim_type"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "flip_sin_to_cos",
+      "component": "root.denoiser",
+      "path": "flip_sin_to_cos",
+      "spelling": "flip_sin_to_cos"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "freq_shift",
+      "component": "root.denoiser",
+      "path": "freq_shift",
+      "spelling": "freq_shift"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "in_channels",
+      "component": "root.denoiser",
+      "path": "in_channels",
+      "spelling": "in_channels"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "layers_per_block",
+      "component": "root.denoiser",
+      "path": "layers_per_block",
+      "spelling": "layers_per_block"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "mid_block_only_cross_attention",
+      "component": "root.denoiser",
+      "path": "mid_block_only_cross_attention",
+      "spelling": "mid_block_only_cross_attention"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "mid_block_scale_factor",
+      "component": "root.denoiser",
+      "path": "mid_block_scale_factor",
+      "spelling": "mid_block_scale_factor"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "mid_block_type",
+      "component": "root.denoiser",
+      "path": "mid_block_type",
+      "spelling": "mid_block_type"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "norm_eps",
+      "component": "root.denoiser",
+      "path": "norm_eps",
+      "spelling": "norm_eps"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "norm_num_groups",
+      "component": "root.denoiser",
+      "path": "norm_num_groups",
+      "spelling": "norm_num_groups"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "num_attention_heads",
+      "component": "root.denoiser",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "num_class_embeds",
+      "component": "root.denoiser",
+      "path": "num_class_embeds",
+      "spelling": "num_class_embeds"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "only_cross_attention",
+      "component": "root.denoiser",
+      "path": "only_cross_attention",
+      "spelling": "only_cross_attention"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "out_channels",
+      "component": "root.denoiser",
+      "path": "out_channels",
+      "spelling": "out_channels"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "projection_class_embeddings_input_dim",
+      "component": "root.denoiser",
+      "path": "projection_class_embeddings_input_dim",
+      "spelling": "projection_class_embeddings_input_dim"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "resnet_out_scale_factor",
+      "component": "root.denoiser",
+      "path": "resnet_out_scale_factor",
+      "spelling": "resnet_out_scale_factor"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "resnet_skip_time_act",
+      "component": "root.denoiser",
+      "path": "resnet_skip_time_act",
+      "spelling": "resnet_skip_time_act"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "resnet_time_scale_shift",
+      "component": "root.denoiser",
+      "path": "resnet_time_scale_shift",
+      "spelling": "resnet_time_scale_shift"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "sample_size",
+      "component": "root.denoiser",
+      "path": "sample_size",
+      "spelling": "sample_size"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "time_cond_proj_dim",
+      "component": "root.denoiser",
+      "path": "time_cond_proj_dim",
+      "spelling": "time_cond_proj_dim"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "time_embedding_act_fn",
+      "component": "root.denoiser",
+      "path": "time_embedding_act_fn",
+      "spelling": "time_embedding_act_fn"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "time_embedding_dim",
+      "component": "root.denoiser",
+      "path": "time_embedding_dim",
+      "spelling": "time_embedding_dim"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "time_embedding_type",
+      "component": "root.denoiser",
+      "path": "time_embedding_type",
+      "spelling": "time_embedding_type"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "timestep_post_act",
+      "component": "root.denoiser",
+      "path": "timestep_post_act",
+      "spelling": "timestep_post_act"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "transformer_layers_per_block",
+      "component": "root.denoiser",
+      "path": "transformer_layers_per_block",
+      "spelling": "transformer_layers_per_block"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "up_block_types",
+      "component": "root.denoiser",
+      "path": "up_block_types",
+      "spelling": "up_block_types"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "upcast_attention",
+      "component": "root.denoiser",
+      "path": "upcast_attention",
+      "spelling": "upcast_attention"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "canonical": "use_linear_projection",
+      "component": "root.denoiser",
+      "path": "use_linear_projection",
+      "spelling": "use_linear_projection"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/accessed_unconsumed_exact/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": [
+      "root.denoiser"
+    ],
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_access/audit_incomplete",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_embed_type",
+    "before": "act_fn",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "addition_time_embed_dim",
+    "before": "addition_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "architectures",
+    "before": "addition_embed_type_num_heads",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "attention_head_dim",
+    "before": "addition_time_embed_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "beta_schedule",
+    "before": "architectures",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "block_out_channels",
+    "before": "attention_head_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "cross_attention_dim",
+    "before": "beta_schedule",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "down_block_types",
+    "before": "block_out_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "hidden_act",
+    "before": "center_input_sample",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "hidden_size",
+    "before": "class_embed_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "intermediate_size",
+    "before": "class_embeddings_concat",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "is_encoder_decoder",
+    "before": "conv_in_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "latent_channels",
+    "before": "conv_out_kernel",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "layer_norm_eps",
+    "before": "cross_attention_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "layers_per_block",
+    "before": "cross_attention_norm",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "max_position_embeddings",
+    "before": "down_block_types",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "model_type",
+    "before": "downsample_padding",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "norm_num_groups",
+    "before": "dual_cross_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "num_attention_heads",
+    "before": "encoder_hid_dim",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "num_hidden_layers",
+    "before": "encoder_hid_dim_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "num_train_timesteps",
+    "before": "flip_sin_to_cos",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "out_channels",
+    "before": "freq_shift",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "prediction_type",
+    "before": "hidden_act",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "projection_class_embeddings_input_dim",
+    "before": "hidden_size",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "sample_size",
+    "before": "in_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "scaling_factor",
+    "before": "intermediate_size",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "scheduler",
+    "before": "is_encoder_decoder",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "text_encoder",
+    "before": "latent_channels",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "text_encoder_2",
+    "before": "layer_norm_eps",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "timestep_spacing",
+    "before": "layers_per_block",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "transformer_layers_per_block",
+    "before": "max_position_embeddings",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "up_block_types",
+    "before": "mid_block_only_cross_attention",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "upcast_attention",
+    "before": "mid_block_scale_factor",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "use_linear_projection",
+    "before": "mid_block_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "vocab_size",
+    "before": "model_type",
+    "disposition": "blocking_finding",
+    "path": "/extras/config_audit/accessed/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "norm_eps",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "norm_num_groups",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "num_attention_heads",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "num_class_embeds",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "num_hidden_layers",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "num_train_timesteps",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "only_cross_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "out_channels",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "prediction_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/49",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "projection_class_embeddings_input_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/50",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "resnet_out_scale_factor",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/51",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "resnet_skip_time_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/52",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "resnet_time_scale_shift",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/53",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "sample_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/54",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "scaling_factor",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/55",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "scheduler",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/56",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "text_encoder",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/57",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "text_encoder_2",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/58",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "time_cond_proj_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/59",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "time_embedding_act_fn",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/60",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "time_embedding_dim",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/61",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "time_embedding_type",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/62",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "timestep_post_act",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/63",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "timestep_spacing",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/64",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "transformer_layers_per_block",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/65",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "up_block_types",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/66",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "upcast_attention",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/67",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "use_linear_projection",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/68",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "vocab_size",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/config_audit/accessed/69",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": "silu"
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/act_fn",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 64
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/addition_embed_type_num_heads",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": false
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/center_input_sample",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/class_embed_type",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": false
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/class_embeddings_concat",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 3
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/conv_in_kernel",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 3
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/conv_out_kernel",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/cross_attention_norm",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 1
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/downsample_padding",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": false
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/dual_cross_attention",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/encoder_hid_dim",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/encoder_hid_dim_type",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": true
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/flip_sin_to_cos",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 0
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/freq_shift",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 4
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/in_channels",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 2
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/layers_per_block",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/mid_block_only_cross_attention",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 1
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/mid_block_scale_factor",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": "UNetMidBlock2DCrossAttn"
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/mid_block_type",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 1e-05
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/norm_eps",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 32
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/norm_num_groups",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/num_attention_heads",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/num_class_embeds",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": false
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/only_cross_attention",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 4
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/out_channels",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": 1.0
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/resnet_out_scale_factor",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": false
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/resnet_skip_time_act",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": "default"
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/resnet_time_scale_shift",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/time_cond_proj_dim",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/time_embedding_act_fn",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/time_embedding_dim",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": "positional"
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/time_embedding_type",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "checkpoint": "omitted",
+      "provenance": "class_default",
+      "value": null
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/fact_provenance/root.denoiser.declared_constructor_defaults/value/timestep_post_act",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 in_channels: 4 (checkpoint omitted)",
+    "before": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "path": "/extras/render/loop_blocks/6/facts/0",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 out_channels: 4 (checkpoint omitted)",
+    "before": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "path": "/extras/render/loop_blocks/6/facts/1",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 center_input_sample: false (checkpoint omitted)",
+    "before": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "path": "/extras/render/loop_blocks/6/facts/2",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 flip_sin_to_cos: true (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/3",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 freq_shift: 0 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/4",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 layers_per_block: 2 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 downsample_padding: 1 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 mid_block_scale_factor: 1 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 act_fn: \"silu\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 norm_num_groups: 32 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 norm_eps: 1e-05 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/render/loop_blocks/6/facts/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/0/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/1/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/2/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/3/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/4/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/5/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/6/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/7/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/8/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/9/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/10/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/11/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_accessed_unprojected",
+      "message": "config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_standing_unconsumed",
+      "message": "root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_standing_unconsumed",
+      "message": "root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+      "surface": "config_occurrence"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": {
+      "check": "config_audit_incomplete",
+      "message": "root.denoiser",
+      "surface": "model"
+    },
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/extras/ship_findings/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/2",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/3",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/4",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "before": "Unresolved evidence \u2014 config_audit_incomplete evidence unresolved: root.denoiser",
+    "disposition": "blocking_finding",
+    "operation": "removed",
+    "path": "/warnings/49",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  }
+]

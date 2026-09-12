@@ -1,0 +1,13 @@
+{
+  "status": "ACCEPT bounded decision-page fidelity",
+  "page_sha256": "066bc2c7a77030cb9417cbc4a5e56add1d036d1c133f3220ae48281d677e5b2d",
+  "all29rows_exact_dispositions": true,
+  "all_local_targets_exist": true,
+  "all44native_image_bytes_exact_independent_receipt": true,
+  "17_reviewed_nonunet_plus_Bloom_plus_SDXL_view_rows": true,
+  "ten_ledger_only_rows": true,
+  "four_capture_order_diagnostic_caveat_explicit": true,
+  "Qwen_existing_defect_explicit": true,
+  "no_approval_claim": true,
+  "no_model_render_test": true
+}

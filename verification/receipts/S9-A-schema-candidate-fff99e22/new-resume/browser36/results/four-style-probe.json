@@ -1,0 +1,73 @@
+{
+  "scope": "Synthetic4 labels appended only in an isolated browser DOM; original HTML bytes untouched. Checks actual CSS rendering, does not imply four actual fact instances.",
+  "styles": [
+    {
+      "kind": "unresolved",
+      "background": "rgb(236, 253, 245)",
+      "color": "rgb(20, 83, 45)",
+      "border": "1px dashed rgb(77, 124, 15)",
+      "borderRadius": "999px",
+      "rect": {
+        "x": 45,
+        "y": 113.8125,
+        "width": 174.328125,
+        "height": 21,
+        "top": 113.8125,
+        "right": 219.328125,
+        "bottom": 134.8125,
+        "left": 45
+      }
+    },
+    {
+      "kind": "pending_design",
+      "background": "rgb(255, 251, 235)",
+      "color": "rgb(120, 53, 15)",
+      "border": "1px dotted rgb(180, 83, 9)",
+      "borderRadius": "4px",
+      "rect": {
+        "x": 45,
+        "y": 147.8125,
+        "width": 200.8125,
+        "height": 21,
+        "top": 147.8125,
+        "right": 245.8125,
+        "bottom": 168.8125,
+        "left": 45
+      }
+    },
+    {
+      "kind": "class_default",
+      "background": "rgb(239, 246, 255)",
+      "color": "rgb(30, 58, 138)",
+      "border": "1px solid rgb(96, 165, 250)",
+      "borderRadius": "999px",
+      "rect": {
+        "x": 45,
+        "y": 181.8125,
+        "width": 194.1875,
+        "height": 21,
+        "top": 181.8125,
+        "right": 239.1875,
+        "bottom": 202.8125,
+        "left": 45
+      }
+    },
+    {
+      "kind": "symbolic",
+      "background": "rgb(250, 245, 255)",
+      "color": "rgb(88, 28, 135)",
+      "border": "3px double rgb(168, 85, 247)",
+      "borderRadius": "999px",
+      "rect": {
+        "x": 45,
+        "y": 213.8125,
+        "width": 165.078125,
+        "height": 25,
+        "top": 213.8125,
+        "right": 210.078125,
+        "bottom": 238.8125,
+        "left": 45
+      }
+    }
+  ]
+}

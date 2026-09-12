@@ -1,0 +1,557 @@
+[
+  {
+    "path": "matrix/models/auraflow-v0-3.json.gz",
+    "sha256": "df7f93f585b92351eb68dd895de031c7b42992b1d33ea537ff2ad220f1acd076",
+    "bytes": 36917
+  },
+  {
+    "path": "matrix/models/bloom.json.gz",
+    "sha256": "4a833a9cd0251f632e264397b66608c4fbc8d3ffd5a01998e958d8e433249cb1",
+    "bytes": 44245
+  },
+  {
+    "path": "matrix/models/cogvideox-5b.json.gz",
+    "sha256": "15203302d067cfae8c8dc193d2209059bf7a125fe81cb16149c6c2ad3fecdd40",
+    "bytes": 41267
+  },
+  {
+    "path": "matrix/models/command-a-03-2025.json.gz",
+    "sha256": "ae5672a8b70395ebfdd5edfcbdddf11cf991e6119a86043590eb2ec1652afc7f",
+    "bytes": 172805
+  },
+  {
+    "path": "matrix/models/dbrx-base.json.gz",
+    "sha256": "91fe7e5491353ee15e576776f705a5ad11603d479923e2b9b5562676c74a1971",
+    "bytes": 182537
+  },
+  {
+    "path": "matrix/models/deepseek-coder-v2-lite.json.gz",
+    "sha256": "bafca5800bd84812936941a81dc4273a3d7fa690617442a3edc851f6b3c266ea",
+    "bytes": 47344
+  },
+  {
+    "path": "matrix/models/deepseek-v3.json.gz",
+    "sha256": "a6545a0ad111db6d2aa8e220ac1858329c7826e7a665d9135beaf4fc96868a29",
+    "bytes": 374775
+  },
+  {
+    "path": "matrix/models/deepseek-v4-flash.json.gz",
+    "sha256": "9c33880709290a285e3f9d418d182eabe0fbd6d3da9479c3f08bdec723353df6",
+    "bytes": 50452
+  },
+  {
+    "path": "matrix/models/flux-2-dev.json.gz",
+    "sha256": "a94344840822859e9965c0767fb4121c844e93efedfd8c0d2c299a802624d2c7",
+    "bytes": 30561
+  },
+  {
+    "path": "matrix/models/fluxtransformer2dmodel.json.gz",
+    "sha256": "e3f0abf0d51a9ffae6d6c7ed3f0c1e701498e856a9726bee73952e8fb11dba07",
+    "bytes": 38832
+  },
+  {
+    "path": "matrix/models/gemma-2-2b-it.json.gz",
+    "sha256": "5f9d92321eaf7b006175d3d15a671171a66204864576ad77ff5a399d1d33e23e",
+    "bytes": 132095
+  },
+  {
+    "path": "matrix/models/gemma-3n-e2b.json.gz",
+    "sha256": "143a02673468988225c2037bfcc42bd43a9148ab47332d73d6c69ca3166502e6",
+    "bytes": 70700
+  },
+  {
+    "path": "matrix/models/glm-4-5.json.gz",
+    "sha256": "a84a0f679516fd80543d5f1d4b0a267733c63f055c2b72c1356cc66b83968877",
+    "bytes": 578779
+  },
+  {
+    "path": "matrix/models/gpt-oss-20b.json.gz",
+    "sha256": "139ebd1348cabe7cc4cfd8690e4097b2a24f9cbc7456f0f62b7a2c0b66731794",
+    "bytes": 124042
+  },
+  {
+    "path": "matrix/models/granite-3-0-8b-instruct.json.gz",
+    "sha256": "e60fa43e5b937b603cc59e012e10b5f2996691e4bcee3ba495bd1e3db6972bd2",
+    "bytes": 190927
+  },
+  {
+    "path": "matrix/models/hunyuanvideo.json.gz",
+    "sha256": "c63a20426d059764e9bdfc9b7c7ae606e60de2c6ccf50094cae87b62b4e7299e",
+    "bytes": 54548
+  },
+  {
+    "path": "matrix/models/jamba-v0-1.json.gz",
+    "sha256": "451a95082068ec674bc948b6e118d24d33ed73ffa8e355c9f8e07a81c5553341",
+    "bytes": 14765
+  },
+  {
+    "path": "matrix/models/lfm2-1-2b.json.gz",
+    "sha256": "43129e6a883cf0be388833c3db95184bb6720c8de1878f5fabe1e3c537fa36ff",
+    "bytes": 35156
+  },
+  {
+    "path": "matrix/models/llama-7b.json.gz",
+    "sha256": "e064b81cde0dbebb58f1fdfe795925e7175c4b441d990ffd2047f1b7a5fb4482",
+    "bytes": 139665
+  },
+  {
+    "path": "matrix/models/ltx-video.json.gz",
+    "sha256": "d2ab61e30bd5ba7469fa6f2d1923182df47408540fca4cf88d0caa65bcc86dc1",
+    "bytes": 23937
+  },
+  {
+    "path": "matrix/models/lumina-image-2-0.json.gz",
+    "sha256": "886c11c266a381d3a098d256b38b1f68d1a0d7e32645798eb7eca1c8ed03c13e",
+    "bytes": 29968
+  },
+  {
+    "path": "matrix/models/mochi-1-preview.json.gz",
+    "sha256": "9e02d9feaac00419cfa2c182a38c472c4f08e3930639b7834611172207be54ab",
+    "bytes": 60910
+  },
+  {
+    "path": "matrix/models/musicgen-small.json.gz",
+    "sha256": "132827ed783dc28036d9fd6dba6b0a99ab47429f67be91d0bbd551839b1eb206",
+    "bytes": 25136
+  },
+  {
+    "path": "matrix/models/olmo-2-1124-7b.json.gz",
+    "sha256": "273e24b8f4caf46c0508057e10ab7924e6d89ae4adb82bb8226ccbf37540609a",
+    "bytes": 157656
+  },
+  {
+    "path": "matrix/models/pixart-sigma-xl-2-1024-ms.json.gz",
+    "sha256": "40349a88f3aaebab42d2096651f1808954e6c61a3f091e716482cf1557d79926",
+    "bytes": 27637
+  },
+  {
+    "path": "matrix/models/prxpixel-t2i.json.gz",
+    "sha256": "dc0a280a1a10a6f8e4b28de76c13359145e7a130b5b7cb4af91717f6fc6ff254",
+    "bytes": 25163
+  },
+  {
+    "path": "matrix/models/qwen-image.json.gz",
+    "sha256": "d1b7f502944ed8037f3ca7fbf9356bc3dd227c201fc2040366c2466292b6ae39",
+    "bytes": 64362
+  },
+  {
+    "path": "matrix/models/qwen2-vl-7b-instruct.json.gz",
+    "sha256": "f6a0e27a1a14c2606a33f12e2902b173bb1e86970e286ec2068f454294555320",
+    "bytes": 87005
+  },
+  {
+    "path": "matrix/models/qwen3-5-27b-text.json.gz",
+    "sha256": "409fba1b8c3a1719101af1640eeee09769f425ded3d11df1d9209a3ea03dcd57",
+    "bytes": 203430
+  },
+  {
+    "path": "matrix/models/qwen3-8b.json.gz",
+    "sha256": "4a29ecbf66396de40ed267af823bc641d99b3f8f41282d89d1a8875fb54a4488",
+    "bytes": 178727
+  },
+  {
+    "path": "matrix/models/sana-1600m-1024px-diffusers.json.gz",
+    "sha256": "efba4a8695370011dc360e11c6e7981e71913d68bf2960a49cef9af1ed7580a3",
+    "bytes": 28179
+  },
+  {
+    "path": "matrix/models/stable-diffusion-3-5-large.json.gz",
+    "sha256": "be0f216ffcadf98be279d9f34e44383a782f4da5773e191512660787bf04b6b5",
+    "bytes": 47875
+  },
+  {
+    "path": "matrix/models/stable-diffusion-xl-base-1-0.json.gz",
+    "sha256": "1dd2680d701f13ff05b4e4484ce6e99ea3245f01b59ff08c4a972fdad6ac9d39",
+    "bytes": 832402
+  },
+  {
+    "path": "matrix/models/stablelm-2-1-6b.json.gz",
+    "sha256": "db331fefb8d807df2abdb774c2f38aecd27af7d7652436ea12635342c371f021",
+    "bytes": 103401
+  },
+  {
+    "path": "matrix/models/wan2-2-t2v-a14b-diffusers.json.gz",
+    "sha256": "a92f8309b276c2c27830da4abde00295f032bdf6c2b8046e78734ff6a2baf71e",
+    "bytes": 30056
+  },
+  {
+    "path": "matrix/observations/auraflow-v0-3.json.gz",
+    "sha256": "7b3913a52a4a982c32c3474bf4573ebad3b27f24f2e9e540e24ede25a3a61727",
+    "bytes": 2908
+  },
+  {
+    "path": "matrix/observations/bloom.json.gz",
+    "sha256": "890bf4a2aaf45d9730f5c0f3934ef999ed52fce9ac94fbc2ed136722ff96a053",
+    "bytes": 12248
+  },
+  {
+    "path": "matrix/observations/cogvideox-5b.json.gz",
+    "sha256": "df0e5a8976d71f7d1dc4cb268fea6327c4fb4635d174464342bc2662ac4a2770",
+    "bytes": 3326
+  },
+  {
+    "path": "matrix/observations/command-a-03-2025.json.gz",
+    "sha256": "df7a09848ef870eda0e557b275009b71502f3819dcc0777470d39c510adf553a",
+    "bytes": 11473
+  },
+  {
+    "path": "matrix/observations/dbrx-base.json.gz",
+    "sha256": "854a62a1d0872a5b6e5454c5badc921d73d21b430285217bdca28e512ea71172",
+    "bytes": 2916
+  },
+  {
+    "path": "matrix/observations/deepseek-coder-v2-lite.json.gz",
+    "sha256": "9eaaa3c01f7d5520edb98933379e2ec00bb0f2c330ab05cf06a84f196e518cb1",
+    "bytes": 9105
+  },
+  {
+    "path": "matrix/observations/deepseek-v3.json.gz",
+    "sha256": "610c78cbfb00def06c5597c2784f6fc02a3e6627bcf84b04ad9dd1d25eaa4c58",
+    "bytes": 20448
+  },
+  {
+    "path": "matrix/observations/deepseek-v4-flash.json.gz",
+    "sha256": "8bb275e8a50305dc41ebcce45f4ea5f05af3d16091fbaaed14ab743549c64896",
+    "bytes": 34960
+  },
+  {
+    "path": "matrix/observations/flux-2-dev.json.gz",
+    "sha256": "1e91389bc141518f69980786dd5de0e99c2457cf6a4751f6a8715b3ec398fe42",
+    "bytes": 3067
+  },
+  {
+    "path": "matrix/observations/fluxtransformer2dmodel.json.gz",
+    "sha256": "2b18569c851b27d3cf2c56e3ffddaf06a7f67ebfbd99d1acd15abc6e76f3d02a",
+    "bytes": 3550
+  },
+  {
+    "path": "matrix/observations/gemma-2-2b-it.json.gz",
+    "sha256": "8a6647292fb944578bc911e3f435d166c113633ca349a20b3a9ef038a9556dd7",
+    "bytes": 8935
+  },
+  {
+    "path": "matrix/observations/gemma-3n-e2b.json.gz",
+    "sha256": "12c7302971c4546dea4d4481a72d520e842c6ce3849d2210044b57269b58f057",
+    "bytes": 17084
+  },
+  {
+    "path": "matrix/observations/glm-4-5.json.gz",
+    "sha256": "3df3b8abaf7404691f66f7b1178627ab28a4e3350a8f040ab0eca5f6128f0049",
+    "bytes": 26494
+  },
+  {
+    "path": "matrix/observations/gpt-oss-20b.json.gz",
+    "sha256": "18aaf4b5d1472db6bce122e66ec283826a078d00458f42e17dbd0bc852c4bf64",
+    "bytes": 10534
+  },
+  {
+    "path": "matrix/observations/granite-3-0-8b-instruct.json.gz",
+    "sha256": "201af3d6cef8dda32fd47c72f5e4654fcf08eeddb435450a79d484d170f22828",
+    "bytes": 10175
+  },
+  {
+    "path": "matrix/observations/hunyuanvideo.json.gz",
+    "sha256": "0db31600cbee64e49cbb33f2e3c784594ffe37bcf8d7138400cd389bb242a0e7",
+    "bytes": 3867
+  },
+  {
+    "path": "matrix/observations/jamba-v0-1.json.gz",
+    "sha256": "c6ddb93bd49f895b6827af06ad881a284aa659aeb9cd56d19051df6c56410308",
+    "bytes": 11386
+  },
+  {
+    "path": "matrix/observations/lfm2-1-2b.json.gz",
+    "sha256": "a53722d27d07e9768afef66a6bc26a43557923f132c6dc286bdac01e7d934b16",
+    "bytes": 5767
+  },
+  {
+    "path": "matrix/observations/llama-7b.json.gz",
+    "sha256": "03185d866c843c336f9cc0c77291c2e5628277afecd0db538940f192350c28c4",
+    "bytes": 8584
+  },
+  {
+    "path": "matrix/observations/ltx-video.json.gz",
+    "sha256": "30cfda4252f86d51deb3f08d74214dbf351969058037f0637a27eca42a93b999",
+    "bytes": 3760
+  },
+  {
+    "path": "matrix/observations/lumina-image-2-0.json.gz",
+    "sha256": "3b0890e4f675ee13a7733c23e005f71d09330bc8e29b2c031b6b79c7eddfbdbe",
+    "bytes": 3484
+  },
+  {
+    "path": "matrix/observations/mochi-1-preview.json.gz",
+    "sha256": "cd55f3ab471b118b0cd77050d518bd84a6149138f2096e3b085c0aef0212548e",
+    "bytes": 3593
+  },
+  {
+    "path": "matrix/observations/musicgen-small.json.gz",
+    "sha256": "99c0f2f23736a50843bc37c9347383b45afa9949ffc5f3ab9f0b8d70debd168f",
+    "bytes": 3069
+  },
+  {
+    "path": "matrix/observations/nemotron-h-8b.json.gz",
+    "sha256": "a127e7adedfe0c77159660cfa5c5f1990a59bbb6bdfd2a83c096561197e3f593",
+    "bytes": 8955
+  },
+  {
+    "path": "matrix/observations/olmo-2-1124-7b.json.gz",
+    "sha256": "ce23da99fceb66c9af7c6bf9a9eeb846190cd62ac1e4cfb419de0bfde899648f",
+    "bytes": 9428
+  },
+  {
+    "path": "matrix/observations/pixart-sigma-xl-2-1024-ms.json.gz",
+    "sha256": "ee206d9651fa8a3e367aaa39a2aa2061af84262199c568970ad81c84f4ee0f07",
+    "bytes": 751
+  },
+  {
+    "path": "matrix/observations/prxpixel-t2i.json.gz",
+    "sha256": "fe26340c719e7101ceb462242ddc9095be0de0bfa9229c12d0d810f9c4ac56b7",
+    "bytes": 10150
+  },
+  {
+    "path": "matrix/observations/qwen-image.json.gz",
+    "sha256": "f770d6112a9ae0e3f6ff4dc6766b48f2248731f523e41bb5add842df504df494",
+    "bytes": 3612
+  },
+  {
+    "path": "matrix/observations/qwen2-vl-7b-instruct.json.gz",
+    "sha256": "cf87f84f0f4f73b3000c2dd7611311c6ca0ca61ac544a2cbefe05458fc50737e",
+    "bytes": 8590
+  },
+  {
+    "path": "matrix/observations/qwen3-5-27b-text.json.gz",
+    "sha256": "a6d9378e6f99e7e4589f1b4339af5f8baf0b9b662f4cc6e4ea23545f9d89b377",
+    "bytes": 37746
+  },
+  {
+    "path": "matrix/observations/qwen3-8b.json.gz",
+    "sha256": "420d3b0341b7e1c0bad0ba92eaa0394617a63cf66dc5f58b8c45083217317294",
+    "bytes": 10170
+  },
+  {
+    "path": "matrix/observations/sana-1600m-1024px-diffusers.json.gz",
+    "sha256": "3a228c057097e18cbdf5f4abee283a87a507d66d136e0d5792ca69feb72c0fd1",
+    "bytes": 3728
+  },
+  {
+    "path": "matrix/observations/stable-diffusion-3-5-large.json.gz",
+    "sha256": "edb52aef8c62dd29c71c302f7b109551f497e9174bd40a855d1f378162c72644",
+    "bytes": 3162
+  },
+  {
+    "path": "matrix/observations/stable-diffusion-xl-base-1-0.json.gz",
+    "sha256": "f6301d9ba3c785ceb770929f0dd2941cb7aa36c0fb40c673859ddb2b980c4f45",
+    "bytes": 3737
+  },
+  {
+    "path": "matrix/observations/stablelm-2-1-6b.json.gz",
+    "sha256": "ac02978e083e82cd119c6d8d343b4bb87d10f6e6861751269a6824b0ac35e61d",
+    "bytes": 7442
+  },
+  {
+    "path": "matrix/observations/wan2-2-t2v-a14b-diffusers.json.gz",
+    "sha256": "cdca4c3186e614f21029b4bdd7fee8e8c6b20ffd377e0fae604837e4e7f98040",
+    "bytes": 3315
+  },
+  {
+    "path": "matrix/relations/auraflow-v0-3.json.gz",
+    "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "bytes": 212
+  },
+  {
+    "path": "matrix/relations/bloom.json.gz",
+    "sha256": "987f4afbd9edd9f85db6498e136c8ebc971ac80616a8a12a3c8a2046883132ad",
+    "bytes": 6891
+  },
+  {
+    "path": "matrix/relations/cogvideox-5b.json.gz",
+    "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "bytes": 215
+  },
+  {
+    "path": "matrix/relations/command-a-03-2025.json.gz",
+    "sha256": "dbd36c31bd4f70f0c9ce1d21221d3d29376d1ddd07edcd02d9fda9fcac17af71",
+    "bytes": 6598
+  },
+  {
+    "path": "matrix/relations/dbrx-base.json.gz",
+    "sha256": "4efe6fdfb473b4eccd213e31625548f18a8f57d847fd7d3e159f476625e33888",
+    "bytes": 236
+  },
+  {
+    "path": "matrix/relations/deepseek-coder-v2-lite.json.gz",
+    "sha256": "9bd57442381b9cf44e690fb30441a34a7f06b1b13a753cfbd02045d57b7add7f",
+    "bytes": 5273
+  },
+  {
+    "path": "matrix/relations/deepseek-v3.json.gz",
+    "sha256": "100ea9bd421c6b67330c29733b575c541d43db4c1ce66104ced0d0ce39331dba",
+    "bytes": 6486
+  },
+  {
+    "path": "matrix/relations/deepseek-v4-flash.json.gz",
+    "sha256": "89879129859d0e8f3aa78273f9bc550d2f6f3b2a300744e070cb69ca33264b66",
+    "bytes": 7101
+  },
+  {
+    "path": "matrix/relations/flux-2-dev.json.gz",
+    "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "bytes": 212
+  },
+  {
+    "path": "matrix/relations/fluxtransformer2dmodel.json.gz",
+    "sha256": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e",
+    "bytes": 235
+  },
+  {
+    "path": "matrix/relations/gemma-2-2b-it.json.gz",
+    "sha256": "b2953bec36d556647c748084524d3f436268141980571895c396b3eb2b5e4e56",
+    "bytes": 5271
+  },
+  {
+    "path": "matrix/relations/gemma-3n-e2b.json.gz",
+    "sha256": "9e71df60965ff0d923f9d8173e8722c25366c26b863e9546069781abefe014c7",
+    "bytes": 14952
+  },
+  {
+    "path": "matrix/relations/glm-4-5.json.gz",
+    "sha256": "8b12a6a0e9f9b2247e5f290a470200cf8bb4a3dd961b0f25c2c8d4157c585c83",
+    "bytes": 8193
+  },
+  {
+    "path": "matrix/relations/gpt-oss-20b.json.gz",
+    "sha256": "b885d0c4b645bfe90f82f39bfd665f922955c0f9e500419a79c95298087cabfb",
+    "bytes": 5291
+  },
+  {
+    "path": "matrix/relations/granite-3-0-8b-instruct.json.gz",
+    "sha256": "dac025ffca6621cf33ed447e9192e81fdc4018afb8cb0d8e6f99282dd0b970f0",
+    "bytes": 5813
+  },
+  {
+    "path": "matrix/relations/hunyuanvideo.json.gz",
+    "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "bytes": 212
+  },
+  {
+    "path": "matrix/relations/jamba-v0-1.json.gz",
+    "sha256": "66958d0b969bc2458e72034e35e9f7f273845bbc8c57913ada97a924a9fc462c",
+    "bytes": 5646
+  },
+  {
+    "path": "matrix/relations/lfm2-1-2b.json.gz",
+    "sha256": "9eb5cbbc417cbbfa7b34823441375a050a1f233f84d24f3e81953cd0423b86df",
+    "bytes": 4114
+  },
+  {
+    "path": "matrix/relations/llama-7b.json.gz",
+    "sha256": "ef4305dc4ad66bacbe99e62d5e8bdca6a9fa0602c58fe58770c2b1c2f89060b9",
+    "bytes": 5513
+  },
+  {
+    "path": "matrix/relations/ltx-video.json.gz",
+    "sha256": "b3b76bb6f250d4b1d926708cc36dc33e6091d2e3ea4058f9e7c5485795b03608",
+    "bytes": 358
+  },
+  {
+    "path": "matrix/relations/lumina-image-2-0.json.gz",
+    "sha256": "744d6fc9f0a0dce13732045dcb5c18cbeae1d855467fd58fb1bec2304de145a8",
+    "bytes": 215
+  },
+  {
+    "path": "matrix/relations/mochi-1-preview.json.gz",
+    "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "bytes": 215
+  },
+  {
+    "path": "matrix/relations/musicgen-small.json.gz",
+    "sha256": "3b425d3b65fe33d1977951d63ff0d8c88b16659a5710cb152f33ffa94b391b3c",
+    "bytes": 231
+  },
+  {
+    "path": "matrix/relations/olmo-2-1124-7b.json.gz",
+    "sha256": "267207a25d3959f16ab26dec08d8add1491c7f3e60ceeeb4890a4f57480a6b3e",
+    "bytes": 5491
+  },
+  {
+    "path": "matrix/relations/pixart-sigma-xl-2-1024-ms.json.gz",
+    "sha256": "a93689857654acff60b823d1debdba84d4e32b6c76fe7109a05d5d28bd07e94e",
+    "bytes": 204
+  },
+  {
+    "path": "matrix/relations/prxpixel-t2i.json.gz",
+    "sha256": "1da5cd8ca4ef10ba1575c293da5cfbb1c625f4ce5daf8b4b9693658f34cc3c61",
+    "bytes": 19794
+  },
+  {
+    "path": "matrix/relations/qwen-image.json.gz",
+    "sha256": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e",
+    "bytes": 235
+  },
+  {
+    "path": "matrix/relations/qwen2-vl-7b-instruct.json.gz",
+    "sha256": "a849f66fb5182495d18ea29f6d69ea10063c984f057ba775e54380ac49e31e80",
+    "bytes": 5951
+  },
+  {
+    "path": "matrix/relations/qwen3-5-27b-text.json.gz",
+    "sha256": "282741e11f64a0f60b9656205da67c2950883370f8facfc696721256c9e2ea29",
+    "bytes": 6820
+  },
+  {
+    "path": "matrix/relations/qwen3-8b.json.gz",
+    "sha256": "5210a06ac100df79e3189c0c1bf4dda4f8f6988f8e83fe2a119f0a0a54f5fe7f",
+    "bytes": 5625
+  },
+  {
+    "path": "matrix/relations/sana-1600m-1024px-diffusers.json.gz",
+    "sha256": "41d6aa25d3020b487f478b790a68a906b75402da901855cf1a8955378e8864c4",
+    "bytes": 231
+  },
+  {
+    "path": "matrix/relations/stable-diffusion-3-5-large.json.gz",
+    "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed",
+    "bytes": 212
+  },
+  {
+    "path": "matrix/relations/stable-diffusion-xl-base-1-0.json.gz",
+    "sha256": "09daad03a0e4e00a63754ab0b89fcd6939ab90dc463bb64458111495efbcb79f",
+    "bytes": 210
+  },
+  {
+    "path": "matrix/relations/stablelm-2-1-6b.json.gz",
+    "sha256": "93a5d91d6f70f735188d45ff395daa0c556f58cbf7d10b06a8afca6e48dbccff",
+    "bytes": 5370
+  },
+  {
+    "path": "matrix/relations/wan2-2-t2v-a14b-diffusers.json.gz",
+    "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f",
+    "bytes": 215
+  },
+  {
+    "path": "matrix-lane/result.json",
+    "sha256": "5400fe75241e62da1adaad5ab3fa96f2dd9593c3b4a3981ad82f5c39b81add41",
+    "bytes": 536
+  },
+  {
+    "path": "matrix-lane/s7-matrix-candidate.log",
+    "sha256": "ba66d28f0571cb07f0ffbe83d12de5a8848494c847e4a825e5fab2fe33ecdfcd",
+    "bytes": 3312
+  },
+  {
+    "path": "matrix-supersession.json",
+    "sha256": "3c09517cd877e41120d8f7d0bfffae3cc4b122b9b1fce4fc9bd4e3e5cb3357ff",
+    "bytes": 1055
+  },
+  {
+    "path": "run-matrix.py",
+    "sha256": "b2a56ef7c3191976eb45814d9ffed43fb2066cce31949eab566fc652688e3a8e",
+    "bytes": 1011
+  },
+  {
+    "path": "generate-matrix.py",
+    "sha256": "388d30b9895eca86b1284aad6d51a63433fb77b7e94edd85f8d0026450c66e78",
+    "bytes": 546
+  }
+]

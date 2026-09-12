@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "7ec5531d5f46ef7e8899350204cc38b098ab6cb04b8d0872216f08bf39f54077",
+  "input": "tests/sable_test_corpus/ltx-video.json",
+  "input_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_ltx",
+    "qualname": "LTXVideoTransformer3DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

@@ -1,0 +1,459 @@
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+...................................................FFFFF................ [ 31%]
+........................................................................ [ 39%]
+........................................................................ [ 47%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 70%]
+........................................................................ [ 78%]
+........................................................................ [ 86%]
+........................................................................ [ 94%]
+....................................................                     [100%]
+=================================== FAILURES ===================================
+____________ test_f3_production_render_is_honest_and_click_coupled _____________
+
+    def test_f3_production_render_is_honest_and_click_coupled():
+        from model_unfolder import unfold
+        from model_unfolder.block_schema import (
+            validate_block_tree, validate_click_coupling,
+        )
+        from test_support import FLUX, PIXART
+    
+>       flux = unfold(FLUX)
+               ^^^^^^^^^^^^
+
+tests/test_diffusion_config_binding.py:726: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/__init__.py:95: in unfold
+    ir = config_to_ir(
+model_unfolder/parser.py:56: in config_to_ir
+    return run_cached_parse(
+physics/result_cache.py:415: in run_cached_parse
+    result = producer()
+             ^^^^^^^^^^
+model_unfolder/parser.py:59: in <lambda>
+    lambda: config_to_ir(cfg_or_id, token=token, inspect_code=inspect_code,
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/config_access.py:1634: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/parser.py:505: in parse
+    return _parse_projected_denoiser(
+model_unfolder/adapters/diffusor/parser.py:415: in _parse_projected_denoiser
+    projection = project_diffusion_ir(bound_result.require_value())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:1464: in project_diffusion_ir
+    consumed = consumer.finish()
+               ^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:761: in finish
+    facts.record_typed(self.qualified_fact(EvidenceFact(
+model_unfolder/adapters/diffusor/projection_ir.py:526: in qualified_fact
+    return qualify_reader_fact(fact, result, witness.index, document) if witness is not None else fact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:470: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:397: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiffusionBookendClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId...e=396, end_col=9)), config_paths=(), detail='exact norm/modulation and residual-gate applications')), ambiguity=None)))
+owner = 'root.denoiser', key = 'diffusion_bookend_geometry'
+document = PreparedDocument(document={'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', 'attention_head_di...lared', '_vae_config.scaling_factor': 'checkpoint_declared', '_text_encoder_configs': 'loader_metadata'}, failure=None)
+
+    def project(self, owner, key, document):
+        from .reader_claims import ReaderFactProjection, reader_operand, reader_claim_scope_matches
+        if owner != "root.denoiser" or any(not reader_claim_scope_matches(
+                item, self.index, document) for item in self.dependencies):
+            raise ValueError("bookend fact requires actual scoped upstream readers")
+        if key == "diffusion_bookend_operations":
+            by_role = {}
+            for application in self.inventory.applications:
+                operations = by_role.setdefault(application.role, [])
+                for operation in application.operations:
+                    if operation.kind not in operations:
+                        operations.append(operation.kind)
+            value = {role: tuple(by_role.get(role, ()))
+                     for role in ("state_input", "conditioning_input", "state_output")}
+            value["temporal_operations"] = tuple(item.kind for item in self.inventory.temporal_operations)
+            spans = tuple(dict.fromkeys(span for application in self.inventory.applications
+                                       for span in (*application.operation_spans, *application.route_spans)))
+            return ReaderFactProjection(owner, key, "connection", value, "code_proven",
+                                        required_spans=spans)
+        if key != "diffusion_bookend_geometry":
+            raise ValueError("bookend reader cannot author another architectural question")
+        from .attention import exact_config_path_for_expression
+        from .diffusion_stack import declared_diffusion_operand
+        rows, operands, spans = {}, [], []
+        for application in self.inventory.applications:
+            node = self.root.graph.node_for(application.owner_occurrence)
+            for dimension in application.dimension_operands:
+                if dimension.expression.kind != "name":
+                    continue
+                path = exact_config_path_for_expression(self.index, node, dimension.expression)
+                if not path:
+                    continue
+                operand = declared_diffusion_operand(document, path)
+                if operand is None:
+                    continue
+                if dimension.slot in rows:
+>                   raise ValueError("bookend dimensions need unique source operation slots")
+E                   ValueError: bookend dimensions need unique source operation slots
+
+model_unfolder/evidence/diffusion_bookends.py:491: ValueError
+_________ test_f4_production_spec_receipts_join_exact_flux_stack_facts _________
+
+    def test_f4_production_spec_receipts_join_exact_flux_stack_facts():
+        """F4 closes config occurrence -> typed fact -> actual LayerSpec field.
+    
+        The receipt originates inside ``project_diffusion_ir`` and stays on the
+        ParseContext until the audit context stamps it.  The renderer does not
+        manufacture a receipt for this non-visual structural surface.
+        """
+>       extras, obligations, receipts = _production_flux_spec_chain()
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion_config_binding.py:779: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_diffusion_config_binding.py:761: in _production_flux_spec_chain
+    ir = config_to_ir(FLUX, parse_context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/config_access.py:1634: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/parser.py:505: in parse
+    return _parse_projected_denoiser(
+model_unfolder/adapters/diffusor/parser.py:415: in _parse_projected_denoiser
+    projection = project_diffusion_ir(bound_result.require_value())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:1464: in project_diffusion_ir
+    consumed = consumer.finish()
+               ^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:761: in finish
+    facts.record_typed(self.qualified_fact(EvidenceFact(
+model_unfolder/adapters/diffusor/projection_ir.py:526: in qualified_fact
+    return qualify_reader_fact(fact, result, witness.index, document) if witness is not None else fact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:470: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:397: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiffusionBookendClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId...e=396, end_col=9)), config_paths=(), detail='exact norm/modulation and residual-gate applications')), ambiguity=None)))
+owner = 'root.denoiser', key = 'diffusion_bookend_geometry'
+document = PreparedDocument(document={'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', 'attention_head_di...lared', '_vae_config.scaling_factor': 'checkpoint_declared', '_text_encoder_configs': 'loader_metadata'}, failure=None)
+
+    def project(self, owner, key, document):
+        from .reader_claims import ReaderFactProjection, reader_operand, reader_claim_scope_matches
+        if owner != "root.denoiser" or any(not reader_claim_scope_matches(
+                item, self.index, document) for item in self.dependencies):
+            raise ValueError("bookend fact requires actual scoped upstream readers")
+        if key == "diffusion_bookend_operations":
+            by_role = {}
+            for application in self.inventory.applications:
+                operations = by_role.setdefault(application.role, [])
+                for operation in application.operations:
+                    if operation.kind not in operations:
+                        operations.append(operation.kind)
+            value = {role: tuple(by_role.get(role, ()))
+                     for role in ("state_input", "conditioning_input", "state_output")}
+            value["temporal_operations"] = tuple(item.kind for item in self.inventory.temporal_operations)
+            spans = tuple(dict.fromkeys(span for application in self.inventory.applications
+                                       for span in (*application.operation_spans, *application.route_spans)))
+            return ReaderFactProjection(owner, key, "connection", value, "code_proven",
+                                        required_spans=spans)
+        if key != "diffusion_bookend_geometry":
+            raise ValueError("bookend reader cannot author another architectural question")
+        from .attention import exact_config_path_for_expression
+        from .diffusion_stack import declared_diffusion_operand
+        rows, operands, spans = {}, [], []
+        for application in self.inventory.applications:
+            node = self.root.graph.node_for(application.owner_occurrence)
+            for dimension in application.dimension_operands:
+                if dimension.expression.kind != "name":
+                    continue
+                path = exact_config_path_for_expression(self.index, node, dimension.expression)
+                if not path:
+                    continue
+                operand = declared_diffusion_operand(document, path)
+                if operand is None:
+                    continue
+                if dimension.slot in rows:
+>                   raise ValueError("bookend dimensions need unique source operation slots")
+E                   ValueError: bookend dimensions need unique source operation slots
+
+model_unfolder/evidence/diffusion_bookends.py:491: ValueError
+________________ test_f4_missing_production_spec_receipt_blocks ________________
+
+    def test_f4_missing_production_spec_receipt_blocks():
+>       extras, obligations, receipts = _production_flux_spec_chain()
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion_config_binding.py:803: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_diffusion_config_binding.py:761: in _production_flux_spec_chain
+    ir = config_to_ir(FLUX, parse_context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/config_access.py:1634: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/parser.py:505: in parse
+    return _parse_projected_denoiser(
+model_unfolder/adapters/diffusor/parser.py:415: in _parse_projected_denoiser
+    projection = project_diffusion_ir(bound_result.require_value())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:1464: in project_diffusion_ir
+    consumed = consumer.finish()
+               ^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:761: in finish
+    facts.record_typed(self.qualified_fact(EvidenceFact(
+model_unfolder/adapters/diffusor/projection_ir.py:526: in qualified_fact
+    return qualify_reader_fact(fact, result, witness.index, document) if witness is not None else fact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:470: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:397: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiffusionBookendClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId...e=396, end_col=9)), config_paths=(), detail='exact norm/modulation and residual-gate applications')), ambiguity=None)))
+owner = 'root.denoiser', key = 'diffusion_bookend_geometry'
+document = PreparedDocument(document={'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', 'attention_head_di...lared', '_vae_config.scaling_factor': 'checkpoint_declared', '_text_encoder_configs': 'loader_metadata'}, failure=None)
+
+    def project(self, owner, key, document):
+        from .reader_claims import ReaderFactProjection, reader_operand, reader_claim_scope_matches
+        if owner != "root.denoiser" or any(not reader_claim_scope_matches(
+                item, self.index, document) for item in self.dependencies):
+            raise ValueError("bookend fact requires actual scoped upstream readers")
+        if key == "diffusion_bookend_operations":
+            by_role = {}
+            for application in self.inventory.applications:
+                operations = by_role.setdefault(application.role, [])
+                for operation in application.operations:
+                    if operation.kind not in operations:
+                        operations.append(operation.kind)
+            value = {role: tuple(by_role.get(role, ()))
+                     for role in ("state_input", "conditioning_input", "state_output")}
+            value["temporal_operations"] = tuple(item.kind for item in self.inventory.temporal_operations)
+            spans = tuple(dict.fromkeys(span for application in self.inventory.applications
+                                       for span in (*application.operation_spans, *application.route_spans)))
+            return ReaderFactProjection(owner, key, "connection", value, "code_proven",
+                                        required_spans=spans)
+        if key != "diffusion_bookend_geometry":
+            raise ValueError("bookend reader cannot author another architectural question")
+        from .attention import exact_config_path_for_expression
+        from .diffusion_stack import declared_diffusion_operand
+        rows, operands, spans = {}, [], []
+        for application in self.inventory.applications:
+            node = self.root.graph.node_for(application.owner_occurrence)
+            for dimension in application.dimension_operands:
+                if dimension.expression.kind != "name":
+                    continue
+                path = exact_config_path_for_expression(self.index, node, dimension.expression)
+                if not path:
+                    continue
+                operand = declared_diffusion_operand(document, path)
+                if operand is None:
+                    continue
+                if dimension.slot in rows:
+>                   raise ValueError("bookend dimensions need unique source operation slots")
+E                   ValueError: bookend dimensions need unique source operation slots
+
+model_unfolder/evidence/diffusion_bookends.py:491: ValueError
+___________________ test_f4_spec_receipt_value_drift_blocks ____________________
+
+    def test_f4_spec_receipt_value_drift_blocks():
+>       extras, obligations, receipts = _production_flux_spec_chain()
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion_config_binding.py:814: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_diffusion_config_binding.py:761: in _production_flux_spec_chain
+    ir = config_to_ir(FLUX, parse_context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/config_access.py:1634: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/parser.py:505: in parse
+    return _parse_projected_denoiser(
+model_unfolder/adapters/diffusor/parser.py:415: in _parse_projected_denoiser
+    projection = project_diffusion_ir(bound_result.require_value())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:1464: in project_diffusion_ir
+    consumed = consumer.finish()
+               ^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:761: in finish
+    facts.record_typed(self.qualified_fact(EvidenceFact(
+model_unfolder/adapters/diffusor/projection_ir.py:526: in qualified_fact
+    return qualify_reader_fact(fact, result, witness.index, document) if witness is not None else fact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:470: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:397: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiffusionBookendClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId...e=396, end_col=9)), config_paths=(), detail='exact norm/modulation and residual-gate applications')), ambiguity=None)))
+owner = 'root.denoiser', key = 'diffusion_bookend_geometry'
+document = PreparedDocument(document={'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', 'attention_head_di...lared', '_vae_config.scaling_factor': 'checkpoint_declared', '_text_encoder_configs': 'loader_metadata'}, failure=None)
+
+    def project(self, owner, key, document):
+        from .reader_claims import ReaderFactProjection, reader_operand, reader_claim_scope_matches
+        if owner != "root.denoiser" or any(not reader_claim_scope_matches(
+                item, self.index, document) for item in self.dependencies):
+            raise ValueError("bookend fact requires actual scoped upstream readers")
+        if key == "diffusion_bookend_operations":
+            by_role = {}
+            for application in self.inventory.applications:
+                operations = by_role.setdefault(application.role, [])
+                for operation in application.operations:
+                    if operation.kind not in operations:
+                        operations.append(operation.kind)
+            value = {role: tuple(by_role.get(role, ()))
+                     for role in ("state_input", "conditioning_input", "state_output")}
+            value["temporal_operations"] = tuple(item.kind for item in self.inventory.temporal_operations)
+            spans = tuple(dict.fromkeys(span for application in self.inventory.applications
+                                       for span in (*application.operation_spans, *application.route_spans)))
+            return ReaderFactProjection(owner, key, "connection", value, "code_proven",
+                                        required_spans=spans)
+        if key != "diffusion_bookend_geometry":
+            raise ValueError("bookend reader cannot author another architectural question")
+        from .attention import exact_config_path_for_expression
+        from .diffusion_stack import declared_diffusion_operand
+        rows, operands, spans = {}, [], []
+        for application in self.inventory.applications:
+            node = self.root.graph.node_for(application.owner_occurrence)
+            for dimension in application.dimension_operands:
+                if dimension.expression.kind != "name":
+                    continue
+                path = exact_config_path_for_expression(self.index, node, dimension.expression)
+                if not path:
+                    continue
+                operand = declared_diffusion_operand(document, path)
+                if operand is None:
+                    continue
+                if dimension.slot in rows:
+>                   raise ValueError("bookend dimensions need unique source operation slots")
+E                   ValueError: bookend dimensions need unique source operation slots
+
+model_unfolder/evidence/diffusion_bookends.py:491: ValueError
+______ test_f4_source_only_spec_value_has_fact_and_real_consumer_receipt _______
+
+    def test_f4_source_only_spec_value_has_fact_and_real_consumer_receipt():
+        """A code-fixed mechanism is not exempt from the receipt law.
+    
+        FLUX's projected FFN form is fixed by the exact source occurrence and has
+        no F2 activation operand.  Before this poison, the value reached
+        ``FFNSpec`` but the config-only receipt path emitted neither a typed fact
+        nor a receipt.  Source-only and source+config projections must be equally
+        auditable.
+        """
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.parser import config_to_ir
+        from test_support import FLUX
+    
+        context = ParseContext.build(FLUX)
+>       ir = config_to_ir(FLUX, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion_config_binding.py:839: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/config_access.py:1634: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/parser.py:505: in parse
+    return _parse_projected_denoiser(
+model_unfolder/adapters/diffusor/parser.py:415: in _parse_projected_denoiser
+    projection = project_diffusion_ir(bound_result.require_value())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:1464: in project_diffusion_ir
+    consumed = consumer.finish()
+               ^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/diffusor/projection_ir.py:761: in finish
+    facts.record_typed(self.qualified_fact(EvidenceFact(
+model_unfolder/adapters/diffusor/projection_ir.py:526: in qualified_fact
+    return qualify_reader_fact(fact, result, witness.index, document) if witness is not None else fact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:470: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:397: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiffusionBookendClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId...e=396, end_col=9)), config_paths=(), detail='exact norm/modulation and residual-gate applications')), ambiguity=None)))
+owner = 'root.denoiser', key = 'diffusion_bookend_geometry'
+document = PreparedDocument(document={'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', 'attention_head_di...lared', '_vae_config.scaling_factor': 'checkpoint_declared', '_text_encoder_configs': 'loader_metadata'}, failure=None)
+
+    def project(self, owner, key, document):
+        from .reader_claims import ReaderFactProjection, reader_operand, reader_claim_scope_matches
+        if owner != "root.denoiser" or any(not reader_claim_scope_matches(
+                item, self.index, document) for item in self.dependencies):
+            raise ValueError("bookend fact requires actual scoped upstream readers")
+        if key == "diffusion_bookend_operations":
+            by_role = {}
+            for application in self.inventory.applications:
+                operations = by_role.setdefault(application.role, [])
+                for operation in application.operations:
+                    if operation.kind not in operations:
+                        operations.append(operation.kind)
+            value = {role: tuple(by_role.get(role, ()))
+                     for role in ("state_input", "conditioning_input", "state_output")}
+            value["temporal_operations"] = tuple(item.kind for item in self.inventory.temporal_operations)
+            spans = tuple(dict.fromkeys(span for application in self.inventory.applications
+                                       for span in (*application.operation_spans, *application.route_spans)))
+            return ReaderFactProjection(owner, key, "connection", value, "code_proven",
+                                        required_spans=spans)
+        if key != "diffusion_bookend_geometry":
+            raise ValueError("bookend reader cannot author another architectural question")
+        from .attention import exact_config_path_for_expression
+        from .diffusion_stack import declared_diffusion_operand
+        rows, operands, spans = {}, [], []
+        for application in self.inventory.applications:
+            node = self.root.graph.node_for(application.owner_occurrence)
+            for dimension in application.dimension_operands:
+                if dimension.expression.kind != "name":
+                    continue
+                path = exact_config_path_for_expression(self.index, node, dimension.expression)
+                if not path:
+                    continue
+                operand = declared_diffusion_operand(document, path)
+                if operand is None:
+                    continue
+                if dimension.slot in rows:
+>                   raise ValueError("bookend dimensions need unique source operation slots")
+E                   ValueError: bookend dimensions need unique source operation slots
+
+model_unfolder/evidence/diffusion_bookends.py:491: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_diffusion_config_binding.py::test_f3_production_render_is_honest_and_click_coupled
+FAILED tests/test_diffusion_config_binding.py::test_f4_production_spec_receipts_join_exact_flux_stack_facts
+FAILED tests/test_diffusion_config_binding.py::test_f4_missing_production_spec_receipt_blocks
+FAILED tests/test_diffusion_config_binding.py::test_f4_spec_receipt_value_drift_blocks
+FAILED tests/test_diffusion_config_binding.py::test_f4_source_only_spec_value_has_fact_and_real_consumer_receipt
+5 failed, 911 passed in 45.37s

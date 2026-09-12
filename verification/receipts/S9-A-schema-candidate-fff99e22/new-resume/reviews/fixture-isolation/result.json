@@ -1,0 +1,1188 @@
+{
+  "scope": "Saved-source AST audit, not runtime or importability approval",
+  "manifest_sha256": "ae3260e5df8a7215279836d211c439c2ca78e6280b97fde367b90a01072db6bc",
+  "files": [
+    {
+      "path": "test_support/s9_fixtures/__init__.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_clip.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_geometry.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_mechanism.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_sinks.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/cell_topology.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/cross_attention_replacement.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/cross_attention_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/decoder_norm.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/diffusion_reader_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/embedding_bookend.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/ffn_mechanism.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/ffn_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/mixer_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/mtp.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/portable_claim_summary.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_absolute.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_fixed.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_initialization.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_linear_bias.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_relative_bias.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/position_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/program_index.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/reader_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/s7_reconciliation.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_class_default_value.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_fact_unknowns.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_scalar_decisions.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "test_support/s9_fixtures/weight_tying.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_attention_clip.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_attention_geometry.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_attention_mechanism.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_attention_sinks.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_cell_topology.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_cross_attention_replacement.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_cross_attention_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_decoder_norm.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_diffusion_config_binding.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_diffusion_reader_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_embedding_bookend.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_ffn_mechanism.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_ffn_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_mixer_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_mtp.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_portable_claim_summary.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_absolute.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_fixed.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_initialization.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_linear_bias.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_relative_bias.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_position_schedule.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_program_index.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_reader_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_class_default_value.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_config_annotation_mro.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_diffusion_defaults.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_fact_unknowns.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_ffn_unbound.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_input_position_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_limited_document.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_norm_claims.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_operand_channels.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_presentation_chips.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_projection_claim_requirements.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_registered_default_events.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_scalar_decisions.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    },
+    {
+      "path": "tests/test_weight_tying.py",
+      "after_pin": true,
+      "reconstructed_before_pin": true,
+      "current_matches_held": true
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_attention_clip.py",
+      "unchanged_test_definitions": 4
+    },
+    {
+      "path": "tests/test_attention_geometry.py",
+      "unchanged_test_definitions": 16
+    },
+    {
+      "path": "tests/test_attention_mechanism.py",
+      "unchanged_test_definitions": 70
+    },
+    {
+      "path": "tests/test_attention_sinks.py",
+      "unchanged_test_definitions": 10
+    },
+    {
+      "path": "tests/test_cell_topology.py",
+      "unchanged_test_definitions": 45
+    },
+    {
+      "path": "tests/test_cross_attention_replacement.py",
+      "unchanged_test_definitions": 5
+    },
+    {
+      "path": "tests/test_cross_attention_schedule.py",
+      "unchanged_test_definitions": 12
+    },
+    {
+      "path": "tests/test_decoder_norm.py",
+      "unchanged_test_definitions": 15
+    },
+    {
+      "path": "tests/test_diffusion_config_binding.py",
+      "unchanged_test_definitions": 31
+    },
+    {
+      "path": "tests/test_diffusion_reader_claims.py",
+      "unchanged_test_definitions": 10
+    },
+    {
+      "path": "tests/test_embedding_bookend.py",
+      "unchanged_test_definitions": 18
+    },
+    {
+      "path": "tests/test_ffn_mechanism.py",
+      "unchanged_test_definitions": 52
+    },
+    {
+      "path": "tests/test_ffn_schedule.py",
+      "unchanged_test_definitions": 12
+    },
+    {
+      "path": "tests/test_mixer_schedule.py",
+      "unchanged_test_definitions": 11
+    },
+    {
+      "path": "tests/test_mtp.py",
+      "unchanged_test_definitions": 6
+    },
+    {
+      "path": "tests/test_portable_claim_summary.py",
+      "unchanged_test_definitions": 7
+    },
+    {
+      "path": "tests/test_position_absolute.py",
+      "unchanged_test_definitions": 17
+    },
+    {
+      "path": "tests/test_position_fixed.py",
+      "unchanged_test_definitions": 6
+    },
+    {
+      "path": "tests/test_position_initialization.py",
+      "unchanged_test_definitions": 17
+    },
+    {
+      "path": "tests/test_position_linear_bias.py",
+      "unchanged_test_definitions": 6
+    },
+    {
+      "path": "tests/test_position_relative_bias.py",
+      "unchanged_test_definitions": 7
+    },
+    {
+      "path": "tests/test_position_schedule.py",
+      "unchanged_test_definitions": 13
+    },
+    {
+      "path": "tests/test_program_index.py",
+      "unchanged_test_definitions": 62
+    },
+    {
+      "path": "tests/test_reader_claims.py",
+      "unchanged_test_definitions": 59
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "unchanged_test_definitions": 56
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "unchanged_test_definitions": 5
+    },
+    {
+      "path": "tests/test_s9_class_default_value.py",
+      "unchanged_test_definitions": 17
+    },
+    {
+      "path": "tests/test_s9_config_annotation_mro.py",
+      "unchanged_test_definitions": 5
+    },
+    {
+      "path": "tests/test_s9_diffusion_defaults.py",
+      "unchanged_test_definitions": 9
+    },
+    {
+      "path": "tests/test_s9_fact_unknowns.py",
+      "unchanged_test_definitions": 15
+    },
+    {
+      "path": "tests/test_s9_ffn_unbound.py",
+      "unchanged_test_definitions": 2
+    },
+    {
+      "path": "tests/test_s9_input_position_claims.py",
+      "unchanged_test_definitions": 7
+    },
+    {
+      "path": "tests/test_s9_limited_document.py",
+      "unchanged_test_definitions": 3
+    },
+    {
+      "path": "tests/test_s9_norm_claims.py",
+      "unchanged_test_definitions": 8
+    },
+    {
+      "path": "tests/test_s9_operand_channels.py",
+      "unchanged_test_definitions": 10
+    },
+    {
+      "path": "tests/test_s9_presentation_chips.py",
+      "unchanged_test_definitions": 26
+    },
+    {
+      "path": "tests/test_s9_projection_claim_requirements.py",
+      "unchanged_test_definitions": 2
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "unchanged_test_definitions": 9
+    },
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "unchanged_test_definitions": 11
+    },
+    {
+      "path": "tests/test_s9_registered_default_events.py",
+      "unchanged_test_definitions": 6
+    },
+    {
+      "path": "tests/test_s9_scalar_decisions.py",
+      "unchanged_test_definitions": 4
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "unchanged_test_definitions": 9
+    },
+    {
+      "path": "tests/test_weight_tying.py",
+      "unchanged_test_definitions": 17
+    }
+  ],
+  "moves": [
+    {
+      "source": "tests/test_attention_clip.py",
+      "destination": "test_support/s9_fixtures/attention_clip.py",
+      "name": "_bundle",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_clip.py",
+      "destination": "test_support/s9_fixtures/attention_clip.py",
+      "name": "_read",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "name": "_config",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "name": "_context",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "name": "_real_schedule",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "name": "_selector",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "name": "_PREFIX",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "name": "_gated_delta_mixer",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "name": "_pipeline",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "name": "_split_attention",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_sinks.py",
+      "destination": "test_support/s9_fixtures/attention_sinks.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_attention_sinks.py",
+      "destination": "test_support/s9_fixtures/attention_sinks.py",
+      "name": "_reader",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cell_topology.py",
+      "destination": "test_support/s9_fixtures/cell_topology.py",
+      "name": "_GUARDED_AUGMENTED_CELL",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cell_topology.py",
+      "destination": "test_support/s9_fixtures/cell_topology.py",
+      "name": "_GUARDED_NORMS",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cell_topology.py",
+      "destination": "test_support/s9_fixtures/cell_topology.py",
+      "name": "_read",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cell_topology.py",
+      "destination": "test_support/s9_fixtures/cell_topology.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cross_attention_replacement.py",
+      "destination": "test_support/s9_fixtures/cross_attention_replacement.py",
+      "name": "_case",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cross_attention_replacement.py",
+      "destination": "test_support/s9_fixtures/cross_attention_replacement.py",
+      "name": "_selector",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_cross_attention_schedule.py",
+      "destination": "test_support/s9_fixtures/cross_attention_schedule.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_decoder_norm.py",
+      "destination": "test_support/s9_fixtures/decoder_norm.py",
+      "name": "_read",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "CONFIG",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "REGISTERED_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "_bind",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "_inputs",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "name": "_write",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_diffusion_reader_claims.py",
+      "destination": "test_support/s9_fixtures/diffusion_reader_claims.py",
+      "name": "_projected",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_embedding_bookend.py",
+      "destination": "test_support/s9_fixtures/embedding_bookend.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_embedding_bookend.py",
+      "destination": "test_support/s9_fixtures/embedding_bookend.py",
+      "name": "_pipeline",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_embedding_bookend.py",
+      "destination": "test_support/s9_fixtures/embedding_bookend.py",
+      "name": "_with_final_norm",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_embedding_bookend.py",
+      "destination": "test_support/s9_fixtures/embedding_bookend.py",
+      "name": "_write",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_mechanism.py",
+      "destination": "test_support/s9_fixtures/ffn_mechanism.py",
+      "name": "_ATTENTION",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_mechanism.py",
+      "destination": "test_support/s9_fixtures/ffn_mechanism.py",
+      "name": "_PREFIX",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_mechanism.py",
+      "destination": "test_support/s9_fixtures/ffn_mechanism.py",
+      "name": "_config_selected_wrapper_reader",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_mechanism.py",
+      "destination": "test_support/s9_fixtures/ffn_mechanism.py",
+      "name": "_reader",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_schedule.py",
+      "destination": "test_support/s9_fixtures/ffn_schedule.py",
+      "name": "_CORPUS",
+      "same_ast_except_import_paths": false,
+      "corpus_relocation_only": true
+    },
+    {
+      "source": "tests/test_ffn_schedule.py",
+      "destination": "test_support/s9_fixtures/ffn_schedule.py",
+      "name": "_config",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_schedule.py",
+      "destination": "test_support/s9_fixtures/ffn_schedule.py",
+      "name": "_real_result",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_ffn_schedule.py",
+      "destination": "test_support/s9_fixtures/ffn_schedule.py",
+      "name": "_selector",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_mixer_schedule.py",
+      "destination": "test_support/s9_fixtures/mixer_schedule.py",
+      "name": "_CORPUS",
+      "same_ast_except_import_paths": false,
+      "corpus_relocation_only": true
+    },
+    {
+      "source": "tests/test_mixer_schedule.py",
+      "destination": "test_support/s9_fixtures/mixer_schedule.py",
+      "name": "_config",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_mixer_schedule.py",
+      "destination": "test_support/s9_fixtures/mixer_schedule.py",
+      "name": "_real_result",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_mixer_schedule.py",
+      "destination": "test_support/s9_fixtures/mixer_schedule.py",
+      "name": "_selector",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_mtp.py",
+      "destination": "test_support/s9_fixtures/mtp.py",
+      "name": "_read",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_mtp.py",
+      "destination": "test_support/s9_fixtures/mtp.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_portable_claim_summary.py",
+      "destination": "test_support/s9_fixtures/portable_claim_summary.py",
+      "name": "_defaults",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_absolute.py",
+      "destination": "test_support/s9_fixtures/position_absolute.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_absolute.py",
+      "destination": "test_support/s9_fixtures/position_absolute.py",
+      "name": "_result",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_fixed.py",
+      "destination": "test_support/s9_fixtures/position_fixed.py",
+      "name": "_CORPUS",
+      "same_ast_except_import_paths": false,
+      "corpus_relocation_only": true
+    },
+    {
+      "source": "tests/test_position_fixed.py",
+      "destination": "test_support/s9_fixtures/position_fixed.py",
+      "name": "_context",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_fixed.py",
+      "destination": "test_support/s9_fixtures/position_fixed.py",
+      "name": "_pipeline",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_fixed.py",
+      "destination": "test_support/s9_fixtures/position_fixed.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_initialization.py",
+      "destination": "test_support/s9_fixtures/position_initialization.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_initialization.py",
+      "destination": "test_support/s9_fixtures/position_initialization.py",
+      "name": "_result",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_linear_bias.py",
+      "destination": "test_support/s9_fixtures/position_linear_bias.py",
+      "name": "_pipeline",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_linear_bias.py",
+      "destination": "test_support/s9_fixtures/position_linear_bias.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_relative_bias.py",
+      "destination": "test_support/s9_fixtures/position_relative_bias.py",
+      "name": "_CORPUS",
+      "same_ast_except_import_paths": false,
+      "corpus_relocation_only": true
+    },
+    {
+      "source": "tests/test_position_relative_bias.py",
+      "destination": "test_support/s9_fixtures/position_relative_bias.py",
+      "name": "_t5_context",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_schedule.py",
+      "destination": "test_support/s9_fixtures/position_schedule.py",
+      "name": "_SOURCE",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_position_schedule.py",
+      "destination": "test_support/s9_fixtures/position_schedule.py",
+      "name": "_result",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_program_index.py",
+      "destination": "test_support/s9_fixtures/program_index.py",
+      "name": "_bundle",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_program_index.py",
+      "destination": "test_support/s9_fixtures/program_index.py",
+      "name": "_class",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_program_index.py",
+      "destination": "test_support/s9_fixtures/program_index.py",
+      "name": "_index",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_program_index.py",
+      "destination": "test_support/s9_fixtures/program_index.py",
+      "name": "_write",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_reader_claims.py",
+      "destination": "test_support/s9_fixtures/reader_claims.py",
+      "name": "_native_fact",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_reader_claims.py",
+      "destination": "test_support/s9_fixtures/reader_claims.py",
+      "name": "_qualified_final",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "CLASS",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "CONFIG_HASH",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "FP",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "_inventory",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "_product_index",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "name": "_product_ir",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s9_class_default_value.py",
+      "destination": "test_support/s9_fixtures/s9_class_default_value.py",
+      "name": "_fact",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s9_class_default_value.py",
+      "destination": "test_support/s9_fixtures/s9_class_default_value.py",
+      "name": "_read",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s9_fact_unknowns.py",
+      "destination": "test_support/s9_fixtures/s9_fact_unknowns.py",
+      "name": "investigated",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s9_scalar_decisions.py",
+      "destination": "test_support/s9_fixtures/s9_scalar_decisions.py",
+      "name": "_config",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_s9_scalar_decisions.py",
+      "destination": "test_support/s9_fixtures/s9_scalar_decisions.py",
+      "name": "_parse",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_weight_tying.py",
+      "destination": "test_support/s9_fixtures/weight_tying.py",
+      "name": "_reader",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    },
+    {
+      "source": "tests/test_weight_tying.py",
+      "destination": "test_support/s9_fixtures/weight_tying.py",
+      "name": "_source",
+      "same_ast_except_import_paths": true,
+      "corpus_relocation_only": false
+    }
+  ],
+  "test_definition_count": 732
+}

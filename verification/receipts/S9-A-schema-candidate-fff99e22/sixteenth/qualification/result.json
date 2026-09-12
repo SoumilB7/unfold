@@ -1,0 +1,11 @@
+{
+  "name": "schema-proof-metadata",
+  "returncode": 1,
+  "duration": 19.826395667158067,
+  "before": "6900c2b067bd3d71baac449f6cfc37f4644553e0a39578f1b964b054d678bec3",
+  "after": "6900c2b067bd3d71baac449f6cfc37f4644553e0a39578f1b964b054d678bec3",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-sixteenth/qualification/schema-proof-metadata.log",
+  "passed": false
+}

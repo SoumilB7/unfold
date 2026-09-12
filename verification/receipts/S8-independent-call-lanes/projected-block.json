@@ -1,0 +1,197 @@
+{
+  "id": "instance_up_blocks__0__join_0_operand_1__when_true",
+  "kind": "opaque",
+  "label": "Call result",
+  "title": "Call result",
+  "role": "source_port_route",
+  "description": "call argument and result wiring proven; internal computation not established",
+  "source_fact_keys": [
+    "root.denoiser.stage_join_connections"
+  ],
+  "facts": [
+    "Returned slot: [1]",
+    "Internal computation unresolved; argument-to-result dependence not asserted"
+  ],
+  "resolved": false,
+  "view": "runtime_port_route",
+  "detail": {
+    "port_route_kind": "call_result",
+    "result_slot": [
+      1
+    ],
+    "argument_ids": [
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_0",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_1",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_2",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_3",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_4",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_5",
+      "instance_up_blocks__0__join_0_operand_1__when_true__arg_6"
+    ],
+    "boundary_id": "instance_up_blocks__0__join_0_operand_1__when_true__call"
+  },
+  "children": [
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_0",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "expression requires another mechanism reader",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: 0"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "0"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_1",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: 1"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "1"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_2",
+      "kind": "slice",
+      "label": "Select saved value",
+      "title": "Select saved value",
+      "role": "source_port_route",
+      "description": "Exact source argument/result port wiring.",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "Selection: {\"kind\": \"index\", \"value\": -1}",
+        "Call argument port: 2"
+      ],
+      "children": [
+        {
+          "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_2__source",
+          "kind": "unknown",
+          "label": "Input unresolved",
+          "title": "Input unresolved",
+          "role": "source_port_route",
+          "description": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it",
+          "source_fact_keys": [
+            "root.denoiser.stage_join_connections"
+          ],
+          "facts": [
+            "investigation_missing \u00b7 input route \u00b7 owner: S8"
+          ],
+          "resolved": false
+        }
+      ],
+      "view": "runtime_port_route",
+      "detail": {
+        "port_route_kind": "selection",
+        "argument_port": "2"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_3",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "expression requires another mechanism reader",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: s1"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "s1"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_4",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "expression requires another mechanism reader",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: s2"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "s2"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_5",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "expression requires another mechanism reader",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: b1"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "b1"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__arg_6",
+      "kind": "unknown",
+      "label": "Input unresolved",
+      "title": "Input unresolved",
+      "role": "source_port_route",
+      "description": "expression requires another mechanism reader",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ],
+      "facts": [
+        "investigation_missing \u00b7 input route \u00b7 owner: S8",
+        "Call argument port: b2"
+      ],
+      "resolved": false,
+      "detail": {
+        "argument_port": "b2"
+      }
+    },
+    {
+      "id": "instance_up_blocks__0__join_0_operand_1__when_true__call",
+      "kind": "unknown",
+      "label": "Unresolved call",
+      "title": "Source call boundary",
+      "resolved": false,
+      "description": "These arguments enter this call; the selected output leaves it. No particular input-to-output dependence is asserted.",
+      "source_fact_keys": [
+        "root.denoiser.stage_join_connections"
+      ]
+    }
+  ]
+}

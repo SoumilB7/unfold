@@ -1,0 +1,108 @@
+--- r1/model_unfolder/evidence/document.py
++++ r2/model_unfolder/evidence/document.py
+@@ -100,7 +100,7 @@
+     class at this address" are different facts, and a downstream reader that has
+     to regex a message cannot act on either."""
+ 
+-    kind: str        # no_mapping | class_rejected
++    kind: str        # no_mapping | class_rejected | source_unavailable
+     stage: str       # snapshot | hydrate
+     message: str = ""
+ 
+@@ -330,6 +330,17 @@
+         class_address.validate(raw)
+         if already_prepared is not None:
+             raise ValueError("an addressed preparation must examine the current child anew")
++        try:
++            class_address.cache_identity(raw)
++        except OSError as exc:
++            checkpoint = _snapshot(raw)
++            return PreparedDocument(
++                document=raw, checkpoint=checkpoint,
++                provenance=_map_provenance(checkpoint, raw, loader_keys),
++                failure=PreparationFailure(
++                    "source_unavailable", "hydrate",
++                    "retained config-class source unavailable for component "
++                    f"{class_address.component}: {type(exc).__name__}"))
+     if already_prepared is not None:
+         # IDEMPOTENT, but only about the document it actually describes:
+         # returning any handed-in preparation would let a caller pair one file's
+--- r1/physics/result_cache.py
++++ r2/physics/result_cache.py
+@@ -504,11 +504,20 @@
+                 raise TypeError("preparation requires an exact ConfigClassAddress")
+             # Validate the current parent/child and resolved source binding
+             # BEFORE any historical replay. This imports no model framework.
+-            address_identity = class_address.cache_identity(raw)
++            class_address.validate(raw)
+         class_kwargs = {"class_address": class_address} if class_address is not None else {}
+         transaction = _ACTIVE.get()
+         if transaction is None or not transaction.supported or already_prepared is not None:
+             return producer(raw, loader_keys=loader_keys, merge=merge, already_prepared=already_prepared, **class_kwargs)
++        if class_address is not None:
++            try:
++                address_identity = class_address.cache_identity(raw)
++            except OSError as exc:
++                if transaction.entry is not None:
++                    raise _ReplayMismatch('class-address source unavailable') from exc
++                # The producer supplies a truthful typed preparation failure;
++                # neither a historical success nor a foreign binding escapes.
++                return producer(raw, loader_keys=loader_keys, merge=merge, **class_kwargs)
+         try:
+             address = (raw, tuple(sorted(loader_keys)), merge)
+             if address_identity is not None:
+--- r1/tests/test_s9_slot_config_class_address.py
++++ r2/tests/test_s9_slot_config_class_address.py
+@@ -144,3 +144,52 @@
+             prepare_document(child, merge=False, class_address=address)
+     finally:
+         result_cache._ACTIVE.reset(token)
++
++
++@pytest.mark.parametrize('mode', ['off', 'fresh', 'replay'])
++@pytest.mark.parametrize('source_error', ['missing', 'unreadable'])
++def test_unavailable_class_source_is_typed_and_cannot_replay_success(
++        monkeypatch, tmp_path, mode, source_error):
++    _, _, child, address, calls, support = _addressed(monkeypatch, tmp_path)
++    monkeypatch.setattr(result_cache, '_version', lambda name: 'fixture-version')
++    transaction = SimpleNamespace(supported=True, entry=None, preparations={})
++    token = result_cache._ACTIVE.set(transaction)
++    try:
++        baseline = prepare_document(child, merge=False, class_address=address)
++        assert baseline.failure is None
++        if mode == 'replay':
++            transaction.entry = {'preparations': dict(transaction.preparations),
++                'dependencies': {'packages': {'transformers': 'fixture-version'}}}
++        if mode == 'off':
++            result_cache._ACTIVE.set(None)
++        calls_before = len(calls)
++        if source_error == 'missing':
++            support.unlink()
++        else:
++            path_type = type(support)
++            read_bytes = path_type.read_bytes
++            def unreadable(path):
++                if path == support:
++                    raise PermissionError(f'private absolute path: {support}')
++                return read_bytes(path)
++            monkeypatch.setattr(path_type, 'read_bytes', unreadable)
++        # Foreign descriptor errors must still reject before source handling.
++        with pytest.raises(ValueError, match='original document address'):
++            prepare_document(child, merge=False,
++                             class_address=replace(address, registry_key='foreign'))
++        if mode == 'replay':
++            with pytest.raises(result_cache._ReplayMismatch, match='source unavailable'):
++                prepare_document(child, merge=False, class_address=address)
++            transaction.entry = None  # The outer cache performs a pristine retry.
++        limited = prepare_document(child, merge=False, class_address=address)
++        assert limited.failure.kind == 'source_unavailable'
++        assert limited.failure.stage == 'hydrate'
++        assert limited.document is child and limited.checkpoint == child
++        assert limited.class_overlay == {}
++        assert limited.provenance['width'] == 'checkpoint_declared'
++        assert 'text_encoder_2' in limited.failure.message
++        assert ('FileNotFoundError' if source_error == 'missing' else 'PermissionError') in limited.failure.message
++        assert str(tmp_path) not in limited.failure.message
++        assert len(calls) == calls_before
++    finally:
++        result_cache._ACTIVE.reset(token)

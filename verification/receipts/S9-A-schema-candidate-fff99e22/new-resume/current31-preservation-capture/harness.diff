@@ -1,0 +1,143 @@
+--- current30/capture_contract.py
++++ current31/capture_contract.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import hashlib,json,subprocess
+ HERE=Path(__file__).resolve().parent
+-FILES={'capture_preservation.py','capture_contract.py','run-capture.py','run-tests.py','plan.json','contract.json','saved-baseline-inventory.json','compare-recovered.py'}
++FILES={'capture_preservation.py','capture_contract.py','run-capture.py','run-tests.py','plan.json','contract.json','saved-baseline-inventory.json','compare-recovered.py','composition-audit.json','harness.diff'}
+ def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+ def files(root):
+     return {p.relative_to(root).as_posix():sha(p) for p in sorted(root.rglob('*')) if p.is_file()
+@@ -20,13 +20,13 @@
+         if sha(HERE/name)!=h: raise ValueError('Held harness changed: '+name)
+     plan=json.loads((HERE/'plan.json').read_bytes())
+     if source_pin!=plan['source_manifest_sha256'] or sha(Path(plan['source_manifest']))!=source_pin:
+-        raise ValueError('Explicit frozen30 source manifest pin differs')
++        raise ValueError('Explicit frozen31 source manifest pin differs')
+     selected=plan['lanes'][lane]; tree=Path(selected['tree'])
+     if tree.resolve()!=tree: raise ValueError('Worktree address differs')
+     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=tree,text=True).strip()
+     if head!=selected['head']: raise ValueError('Worktree HEAD differs')
+     rows=json.loads(Path(plan['source_manifest']).read_bytes()); sources={}
+-    if lane=='current30':
++    if lane=='current31':
+         for row in rows:
+             relative=row['path']; path=tree/relative
+             if path.resolve().relative_to(tree).as_posix()!=relative or relative in sources:
+--- current30/capture_preservation.py
++++ current31/capture_preservation.py
+@@ -1,4 +1,4 @@
+-"""Exact30 observation of the unchanged 52-test preservation lane.
++"""Exact31 observation of the unchanged 52-test preservation lane.
+ 
+ No verifier, unfold, Sable, renderer or baseline writer is invoked by this tool.
+ Only existing calls are delegated once, returning the original object.
+@@ -18,7 +18,7 @@
+ 
+ 
+ _ACTIVE = None
+-_OUTPUT_ENV = 'UNFOLD_S9A30_OUTPUT_CAPTURE'
++_OUTPUT_ENV = 'UNFOLD_S9A31_OUTPUT_CAPTURE'
+ 
+ 
+ def sha(raw):
+--- current30/compare-recovered.py
++++ current31/compare-recovered.py
+@@ -5,7 +5,7 @@
+ from capture_preservation import json_delta,json_bytes
+ p=argparse.ArgumentParser();p.add_argument('--source-manifest-sha256',required=True);a=p.parse_args()
+ # Exact source/script/input brackets remain valid before accepting saved packets.
+-before={name:validate(name,a.source_manifest_sha256) for name in ('current30','baseline')}
++before={name:validate(name,a.source_manifest_sha256) for name in ('current31','baseline')}
+ plan=json.loads((HERE/'plan.json').read_bytes())
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+ def load_packet(name):
+@@ -41,7 +41,7 @@
+         cases[slug]=(case,docs)
+     if set(cases)!=set(expected['witnesses']) or len(cases)!=29:raise ValueError('Saved29 membership differs')
+     return root,expected,cases
+-current_root,expected,current=load_packet('current30')
++current_root,expected,current=load_packet('current31')
+ _,baseline_expected,baseline=load_packet('baseline')
+ if baseline_expected!=expected:raise ValueError('Expected baseline manifests differ')
+ out=current_root/'recovered-deltas';out.mkdir(exist_ok=False)
+@@ -64,7 +64,7 @@
+     (target/'views.json').write_bytes(json_bytes(view_changes))
+     summary[slug]={'surfaces':surfaces,'view_delta_count':len(view_changes),
+                    'recovered_views_match_expected':old['views']==row['views']}
+-after={name:validate(name,a.source_manifest_sha256) for name in ('current30','baseline')}
++after={name:validate(name,a.source_manifest_sha256) for name in ('current31','baseline')}
+ if before!=after:raise ValueError('Saved-data comparison bracket changed')
+ record={'witnesses':summary,'all_surfaces_recovered':all(v['recovery_matches_expected'] for row in summary.values() for v in row['surfaces'].values()),
+  'authority':'Exact recovered canonical expected documents only. Full raw JSON/view deltas retained. No acceptance, blessing or value-cause inference.'}
+--- current30/contract.json
++++ current31/contract.json
+@@ -1,7 +1,7 @@
+ {
+   "status": "SOURCE_ONLY_NOT_EXECUTED",
+   "root_owns_execution": true,
+-  "generation": "thirtieth",
++  "generation": "thirtyfirst",
+   "scope": "29 committed preservation witnesses through the unchanged actual 52-test lane; one call of each original producer per original verifier call.",
+   "upstream_observer": {
+     "path": "verification/receipts/S8.1-output-deltas/capture_preservation.py",
+@@ -12,11 +12,16 @@
+   "baseline_recovery": "Separate optional serial --lane baseline uses exact fff99e22 worktree, same observer. Only per-surface hashes matching committed manifest permit use as recovered canonical baseline. Failure/mismatch remains typed gap.",
+   "no_write": "Only fresh scratch output roots; no guarded writer, active baseline/example/manifest artifact writes, approval or re-bless.",
+   "execution": [
+-    "Root runs --lane current30 after current pages and no overlapping test campaign.",
++    "Root runs --lane current31 after current pages and no overlapping test campaign.",
+     "If exact saved baseline documents remain missing, run --lane baseline serially.",
+-    "Both require explicit reviewed frozen30 source manifest SHA256.",
++    "Both require explicit reviewed frozen31 source manifest SHA256.",
+     "Exit nonzero retains actual preservation/test failure; packet_complete has separate meaning."
+   ],
+   "review_limits": "Historical docs can be stale. Candidate versions copied expected metadata are explicitly not measured. Raw HTML retained but not automatically approved; no chips-only causation inferred.",
+-  "saved_join": "After optional baseline lane, compare-recovered.py validates both saved brackets and original surface artifact hashes, permits each baseline surface only when its canonical hash matches the exact committed expected row, then writes full current-vs-recovered recursive deltas in fresh scratch. All unreproduced rows remain explicit failures."
++  "saved_join": "After optional baseline lane, compare-recovered.py validates both saved brackets and original surface artifact hashes, permits each baseline surface only when its canonical hash matches the exact committed expected row, then writes full current-vs-recovered recursive deltas in fresh scratch. All unreproduced rows remain explicit failures.",
++  "predecessor": {
++    "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current30-preservation-capture/manifest.json",
++    "sha256": "7f192e9d5e7f167d3b77ef1137ea1f1de49aff9f2ef487747e9f015d0e51e622"
++  },
++  "baseline_authority_unchanged": true
+ }
+--- current30/run-capture.py
++++ current31/run-capture.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,dataclasses,importlib.util,json,os,sys,traceback
+ from capture_contract import validate,HERE
+-p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current30','baseline'],required=True)
++p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current31','baseline'],required=True)
+ p.add_argument('--source-manifest-sha256',required=True); a=p.parse_args()
+ before=validate(a.lane,a.source_manifest_sha256)
+ plan=json.loads((HERE/'plan.json').read_bytes()); lane=plan['lanes'][a.lane]
+@@ -10,7 +10,7 @@
+ (out/'pins-before.json').write_text(json.dumps(before,indent=2)+'\n')
+ os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',TOKENIZERS_PARALLELISM='false',
+     UNFOLD_EVIDENCE_CACHE_DIR=str(out/'cache'),PYTEST_ADDOPTS='')
+-spec=importlib.util.spec_from_file_location('preservation30_verify',tree/'scripts/verify_commit.py')
++spec=importlib.util.spec_from_file_location('preservation31_verify',tree/'scripts/verify_commit.py')
+ m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+ result=None
+ try:
+--- current30/run-tests.py
++++ current31/run-tests.py
+@@ -2,14 +2,14 @@
+ from pathlib import Path
+ import argparse,json,os,sys,traceback
+ from capture_contract import validate,HERE
+-p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current30','baseline'],required=True)
++p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current31','baseline'],required=True)
+ p.add_argument('--source-manifest-sha256',required=True); a=p.parse_args()
+ before=validate(a.lane,a.source_manifest_sha256)
+ plan=json.loads((HERE/'plan.json').read_bytes()); lane=plan['lanes'][a.lane]
+ tree=Path(lane['tree']); out=Path(lane['output'])
+ if Path.cwd().resolve()!=tree: raise ValueError('Child cwd differs from exact tree')
+ sys.path.insert(0,str(tree))
+-os.environ['UNFOLD_S9A30_OUTPUT_CAPTURE']=str(out/'capture')
++os.environ['UNFOLD_S9A31_OUTPUT_CAPTURE']=str(out/'capture')
+ os.environ['PYTEST_ADDOPTS']=''
+ (out/'child-pins-before.json').write_text(json.dumps(before,indent=2)+'\n')
+ code=2; report=None

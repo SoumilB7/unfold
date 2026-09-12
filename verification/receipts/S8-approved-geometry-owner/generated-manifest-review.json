@@ -1,0 +1,276 @@
+{
+  "reviewer": "root",
+  "decision": "ACCEPT exact generated manifest delta scope",
+  "manifest_sha256": "84f0df7ade2f311adefbbb14f8ac0732b941f98d6110723f6554530a1d14b390",
+  "unchanged_versions": true,
+  "unchanged_all29_input_hashes": true,
+  "all_expected_surface_sets_exact": true,
+  "source_before_finally_maps_equal": true,
+  "external_before_finally_maps_equal": true,
+  "witnesses": [
+    {
+      "witness": "auraflow-v0-3",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "bloom",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "cogvideox-5b",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "dbrx-base",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "deepseek-v3",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "flux-2-dev",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "fluxtransformer2dmodel",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "gemma-2-2b-it",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "glm-4-5",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "gpt-oss-20b",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "granite-3-0-8b-instruct",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "hunyuanvideo",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "llama-7b",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "ltx-video",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "lumina-image-2-0",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "mochi-1-preview",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "musicgen-small",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "olmo-2-1124-7b",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "pixart-sigma-xl-2-1024-ms",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "prxpixel-t2i",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "qwen-image",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "qwen2-vl-7b-instruct",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "qwen3-5-27b-text",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "qwen3-8b",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "sana-1600m-1024px-diffusers",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "stable-diffusion-3-5-large",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "stable-diffusion-xl-base-1-0",
+      "changed_surfaces": [
+        "expanded",
+        "gallery",
+        "html_meta",
+        "ir",
+        "ledgers",
+        "params",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "stablelm-2-1-6b",
+      "changed_surfaces": [
+        "gallery",
+        "html_meta",
+        "ledgers",
+        "views"
+      ],
+      "input_sha256_unchanged": true
+    },
+    {
+      "witness": "wan2-2-t2v-a14b-diffusers",
+      "changed_surfaces": [
+        "ledgers"
+      ],
+      "input_sha256_unchanged": true
+    }
+  ],
+  "cause_evidence": "Approved per-witness preapproval source/geometry receipts plus new guarded gallery replacements; no new architectural claim from manifest hashes."
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "588dfc1c39435dda33c25f935aef1482290aa9624ee95845c4af2b41c0b9ab7b",
+  "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+  "input_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.pixart_transformer_2d",
+    "qualname": "PixArtTransformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

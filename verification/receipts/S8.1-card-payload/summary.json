@@ -1,0 +1,46 @@
+{
+  "status": "LOSSLESS_ARCHIVE_VERIFIED",
+  "streams": 348,
+  "raw_bytes": 102042912,
+  "stored_bytes": 5227175,
+  "artifact_map_sha256": "5ef6dde9e4471ca843dbecfe147c13f43296dbc123b81ea82ef85003ac0dae70",
+  "public_v1": {
+    "status": "FAILED",
+    "new_model_or_source_scan": false,
+    "error": "TypeError('Object of type frozenset is not JSON serializable')",
+    "production_sources_unchanged": true,
+    "inputs_unchanged": true,
+    "import_origins_correct": true
+  },
+  "public_v2": {
+    "status": "PUBLIC_RENDER_AND_EXACT_FRAGMENT_INVERSE_PASS",
+    "new_model_or_source_scan": false,
+    "html_generation_seconds": 5.204827709123492,
+    "packing_seconds": 3.0431948341429234,
+    "canonical_generation_seconds": 2.161632874980569,
+    "inverse_seconds": 1.2562835407443345,
+    "html_bytes": 2171535,
+    "html_sha256": "51d318d35ea6ae6abc23af285b63cb7d556a5740d2e39d22849274607801c7d2",
+    "canonical_bytes": 23748293,
+    "canonical_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+    "canonical_equals_reference": true,
+    "ir_after_render_equals_input": true,
+    "render_events_unchanged_by_pack": true,
+    "production_sources_unchanged": true,
+    "inputs_unchanged": true,
+    "import_origins_correct": true
+  },
+  "focused": [
+    {
+      "tests": 46,
+      "seconds": 0.5,
+      "source": "focused-46/test_card_payload.py"
+    },
+    {
+      "tests": 47,
+      "seconds": 0.16,
+      "source": "focused-47/test_card_payload.py"
+    }
+  ],
+  "scope": "Saved-IR renderer/transport observations only; no new model or source reproof; browser evidence is separately owned."
+}

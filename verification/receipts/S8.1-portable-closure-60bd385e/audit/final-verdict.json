@@ -1,0 +1,385 @@
+{
+  "decision": "COMPLETE_PORTABILITY_CENSUS_WITH_ROLE_QUALIFIED_ZERO_ONLY",
+  "reviewer": "independent_review",
+  "captured_snapshot": {
+    "head": "113d159fb97471c33c252e47c785e810c492fbd8",
+    "end_head": "113d159fb97471c33c252e47c785e810c492fbd8",
+    "installed_overlay": "approved10files; main S7 bytes captured after install; changed source/test8files captured separately",
+    "tracked_files": 15001,
+    "stored_bytes": 1005212034,
+    "decoded_bytes": 15286232816,
+    "decoded_leaves": 15001,
+    "unique_decoded_leaf_contents": 7873,
+    "gzip_layers": 11161,
+    "tar_containers": 0,
+    "zip_containers": 0,
+    "archive_links": 0,
+    "physical_symlinks": 0,
+    "errors": []
+  },
+  "all_snapshot_raw_pattern_counts": {
+    "matched_files": 3411,
+    "matched_tokens": 3674527,
+    "formats": {
+      "json": {
+        "files": 7378,
+        "matched_files": 2553,
+        "matched_tokens": 3670172
+      },
+      "non_json_text": {
+        "files": 24,
+        "matched_files": 13,
+        "matched_tokens": 38
+      },
+      "opaque_binary": {
+        "files": 1203,
+        "matched_files": 270,
+        "matched_tokens": 2349
+      },
+      "text": {
+        "files": 6396,
+        "matched_files": 575,
+        "matched_tokens": 1968
+      }
+    },
+    "known_four_old_local_digest_files": 67,
+    "known_four_old_local_digest_occurrences": 1400
+  },
+  "categories": {
+    "active_examples": {
+      "decoded_leaf_count": 10,
+      "decoded_bytes": 3071882,
+      "host_path_files": 0,
+      "host_path_token_occurrences": 0,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "active_s7": {
+      "decoded_leaf_count": 123,
+      "decoded_bytes": 147672824,
+      "host_path_files": 6,
+      "host_path_token_occurrences": 38,
+      "host_json_leaves": 6,
+      "known_local_digest_files": 0,
+      "index_field_count": 6217,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "legacy_s6": {
+      "decoded_leaf_count": 29,
+      "decoded_bytes": 16856415,
+      "host_path_files": 1,
+      "host_path_token_occurrences": 6,
+      "host_json_leaves": 1,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "retained_receipts": {
+      "decoded_leaf_count": 14080,
+      "decoded_bytes": 15084293515,
+      "host_path_files": 3293,
+      "host_path_token_occurrences": 3674335,
+      "host_json_leaves": 2143840,
+      "known_local_digest_files": 67,
+      "index_field_count": 42316,
+      "local_fingerprint_source_mention_files": 77
+    },
+    "test_fixture": {
+      "decoded_leaf_count": 528,
+      "decoded_bytes": 31050103,
+      "host_path_files": 96,
+      "host_path_token_occurrences": 102,
+      "host_json_leaves": 1,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    },
+    "test_source": {
+      "decoded_leaf_count": 229,
+      "decoded_bytes": 3264772,
+      "host_path_files": 14,
+      "host_path_token_occurrences": 44,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 2
+    },
+    "verification_metadata": {
+      "decoded_leaf_count": 2,
+      "decoded_bytes": 23305,
+      "host_path_files": 1,
+      "host_path_token_occurrences": 2,
+      "host_json_leaves": 0,
+      "known_local_digest_files": 0,
+      "index_field_count": 0,
+      "local_fingerprint_source_mention_files": 0
+    }
+  },
+  "active_s7": {
+    "state": "approved install, HEAD113d159f with exact10file uncommitted overlay",
+    "model_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+    "matrix_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+    "claim_summary_nonempty_index_fields": 200,
+    "claim_portable_mapping_counts": {
+      "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680": 8,
+      "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382": 192
+    },
+    "source_index_fields": 39,
+    "relation_plan_index_fields": 98,
+    "total_nonempty_index_fields": 337,
+    "other_active_nonportable_index_seals_identified": 0,
+    "literal_host_path_files": 6,
+    "literal_host_path_tokens": 38,
+    "literal_host_path_json_leaves": 6,
+    "host_path_roles": {
+      "verification/s7/observations/dbrx-base.json.gz": [
+        "$.attempts[0].stderr"
+      ],
+      "verification/s7/observations/fluxtransformer2dmodel.json.gz": [
+        "$.attempts[0].stderr"
+      ],
+      "verification/s7/observations/gpt-oss-20b.json.gz": [
+        "$.attempts[0].stderr"
+      ],
+      "verification/s7/observations/qwen-image.json.gz": [
+        "$.attempts[0].stderr"
+      ],
+      "verification/s7/observations/qwen3-vl-235b.json.gz": [
+        "$.attempts[0].stderr"
+      ],
+      "verification/s7/observations/sana-1600m-1024px-diffusers.json.gz": [
+        "$.attempts[0].stderr"
+      ]
+    },
+    "semantic_host_path_field_count": 0,
+    "limits": "Other116 payload bytes retained from completed original/candidate exact comparison and installation guard; final overall scan also visits them. Recognition scope is scanner declared host root, Windows drive and file URI pattern. Zero applies to identified current cross-machine proof identity defects, never historical raw path occurrences."
+  },
+  "other_scope_findings": {
+    "active_examples": "10files; zero recognized host tokens or typed index seals.",
+    "legacy_s6": "29files; one DBRX observation stderr contains6host tokens. Experimental frozen pilots are not active production architecture facts or eligible cache seeds.",
+    "test_fixtures": "528files;102raw matches across96files, mostly accidental drive-like bytes in PNG binaries. One actual JSON path is SDXL review_verdict.pixel_review.path, a historical review locator, not model identity.",
+    "verification_metadata": "2files; latency.md contains2example temp-directory mentions, not proof fields.",
+    "historical_receipts": "14080files retain old machine paths, exact failed/successful historical artifacts, source copies, and local cache/diagnostic address records. No historical bytes rewritten.",
+    "s2_current_diagnostic_writer": "scripts/profile_s2_latency.py:129/199 writes local index_fingerprint;21named persisted budget-profile records found. Current budget checker reads timings/medians, not portable equality of this diagnostic address.",
+    "s8_current_diagnostic_writer": "scripts/demonstrate_s8_unet.py:110/179 writes retained_index_fingerprints identifying locally retained indexed objects;39named persisted cited-source-audit records contain289values. These are source-archive diagnostics, not active S7 claim seals. Named-record count does not claim to identify opaque hashes in arbitrary other formats.",
+    "generic_constructor_source_caveat": "ConstructorExistenceClaimProof still includes absolute addresses in evidence_refs, deliberately unchanged by approved patch. No such refs occur in active39 S7 model payloads. Future generic-summary portability is not proved."
+  },
+  "raw_examples": {
+    "active_examples": [],
+    "active_s7": [
+      {
+        "logical": "verification/s7/observations/dbrx-base.json.gz!gzip",
+        "format": "json",
+        "tokens": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_subclasses/fake_tensor.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_ops.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_prims_common/wrappers.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_meta_registrations.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/__init__.py"
+        ],
+        "json_paths": [
+          {
+            "path": "$.attempts[0].stderr",
+            "value": "E<date> <time> <pid> site-packages/torch/_subclasses/fake_tensor.py:2759] failed while attempting to run meta for aten.mm.default\nE<date> <time> <pid> site-packages/torch/_subclasses/fake_tensor.py:2759] Traceback (most recent call last):\nE<date> <ti"
+          }
+        ]
+      },
+      {
+        "logical": "verification/s7/observations/fluxtransformer2dmodel.json.gz!gzip",
+        "format": "json",
+        "tokens": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_subclasses/fake_tensor.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_ops.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_prims_common/wrappers.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_meta_registrations.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/__init__.py"
+        ],
+        "json_paths": [
+          {
+            "path": "$.attempts[0].stderr",
+            "value": "The config attributes {'scheduler': ['diffusers', 'FlowMatchEulerDiscreteScheduler'], 'text_encoder': ['transformers', 'CLIPTextModel'], 'text_encoder_2': ['transformers', 'T5EncoderModel']} were passed to FluxTransformer2DModel, but are not expected"
+          }
+        ]
+      },
+      {
+        "logical": "verification/s7/observations/gpt-oss-20b.json.gz!gzip",
+        "format": "json",
+        "tokens": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_subclasses/fake_tensor.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_ops.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_prims_common/wrappers.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_meta_registrations.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/__init__.py"
+        ],
+        "json_paths": [
+          {
+            "path": "$.attempts[0].stderr",
+            "value": "E<date> <time> <pid> site-packages/torch/_subclasses/fake_tensor.py:2759] failed while attempting to run meta for aten._grouped_mm.default\nE<date> <time> <pid> site-packages/torch/_subclasses/fake_tensor.py:2759] Traceback (most recent call last):\nE<"
+          }
+        ]
+      }
+    ],
+    "legacy_s6": [
+      {
+        "logical": "verification/s6/pilots/dbrx-base/observation-text-eval-no-cache.json",
+        "format": "json",
+        "tokens": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_subclasses/fake_tensor.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_ops.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_prims_common/wrappers.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/_meta_registrations.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/torch/__init__.py"
+        ],
+        "json_paths": [
+          {
+            "path": "$.stderr",
+            "value": "E0904 17:27:04.257000 75895 site-packages/torch/_subclasses/fake_tensor.py:2759] failed while attempting to run meta for aten.mm.default\nE0904 17:27:04.257000 75895 site-packages/torch/_subclasses/fake_tensor.py:2759] Traceback (most recent call last"
+          }
+        ]
+      }
+    ],
+    "retained_receipts": [
+      {
+        "logical": "verification/receipts/S1-9a4e1e5/lanes/full.log",
+        "format": "text",
+        "tokens": [
+          "/private/tmp/model-unfolder-file-bracket/ae5dbb5c3a"
+        ],
+        "json_paths": []
+      },
+      {
+        "logical": "verification/receipts/S1-9a4e1e5/receipt.json",
+        "format": "json",
+        "tokens": [
+          "/private/tmp/model-unfolder-verification/9b8aa77d6b/collect.log",
+          "/private/tmp/model-unfolder-verification/9b8aa77d6b/focused.log",
+          "/private/tmp/model-unfolder-verification/9b8aa77d6b/full.log",
+          "/private/tmp/model-unfolder-verification/9b8aa77d6b/preservation.log",
+          "/private/tmp/model-unfolder-verification/9b8aa77d6b/static.log"
+        ],
+        "json_paths": [
+          {
+            "path": "$.lanes.u2-authority.log",
+            "value": "/private/tmp/model-unfolder-verification/9b8aa77d6b/u2-authority.log"
+          },
+          {
+            "path": "$.lanes.static.log",
+            "value": "/private/tmp/model-unfolder-verification/9b8aa77d6b/static.log"
+          },
+          {
+            "path": "$.lanes.preservation.log",
+            "value": "/private/tmp/model-unfolder-verification/9b8aa77d6b/preservation.log"
+          },
+          {
+            "path": "$.lanes.full.log",
+            "value": "/private/tmp/model-unfolder-verification/9b8aa77d6b/full.log"
+          },
+          {
+            "path": "$.lanes.focused.log",
+            "value": "/private/tmp/model-unfolder-verification/9b8aa77d6b/focused.log"
+          }
+        ]
+      },
+      {
+        "logical": "verification/receipts/S2-a9ca33c/lanes/full.log",
+        "format": "text",
+        "tokens": [
+          "/private/tmp/model-unfolder-verification/S2-a9ca33c/full-batches"
+        ],
+        "json_paths": []
+      }
+    ],
+    "test_fixture": [
+      {
+        "logical": "tests/sable_test_corpus/galleries/auraflow-v0-3/00__architecture.png",
+        "format": "opaque_binary",
+        "tokens": [
+          "d:\\\ufffd\ufffdJ\ufffd\ufffdX\ufffdz\ufffd\ufffd\ufffdXg\ufffd9\u019a\ufffd\u06d0\ufffd\u0756!\ufffd0J5\u045e2"
+        ],
+        "json_paths": []
+      },
+      {
+        "logical": "tests/sable_test_corpus/galleries/auraflow-v0-3/01__encoder_0.png",
+        "format": "opaque_binary",
+        "tokens": [
+          "r:/\ufffd\u000e\ufffdtP\u001f\ufffd\u001f\u0007\ufffdT\ufffd\ufffd\ufffd:\u007f\u067a\ufffd\ufffd\ufffd"
+        ],
+        "json_paths": []
+      },
+      {
+        "logical": "tests/sable_test_corpus/galleries/auraflow-v0-3/02__denoiser.png",
+        "format": "opaque_binary",
+        "tokens": [
+          "H:/\ufffdU\u0001",
+          "k:\\H\ufffd\ufffd\ufffdMw\ufffd\ufffd6@*;2\ufffdX\u0015\ufffd\u0011\ufffd;7t]\ufffdV\ufffd\ufffd\ufffd\ufffdo\ufffd"
+        ],
+        "json_paths": []
+      }
+    ],
+    "test_source": [
+      {
+        "logical": "tests/test_comprehension_observation.py",
+        "format": "text",
+        "tokens": [
+          "/tmp/foreign.py"
+        ],
+        "json_paths": []
+      },
+      {
+        "logical": "tests/test_conditional_projection_contracts.py",
+        "format": "text",
+        "tokens": [
+          "/root"
+        ],
+        "json_paths": []
+      },
+      {
+        "logical": "tests/test_config_scoped_owner.py",
+        "format": "text",
+        "tokens": [
+          "A:\\n",
+          "B:\\n"
+        ],
+        "json_paths": []
+      }
+    ],
+    "verification_metadata": [
+      {
+        "logical": "verification/latency.md",
+        "format": "text",
+        "tokens": [
+          "/private/tmp/unique-latency-receipt"
+        ],
+        "json_paths": []
+      }
+    ]
+  },
+  "literal_expected_zero_satisfied": false,
+  "identified_current_cross_machine_s7_identity_defects": 0,
+  "source_supplement": {
+    "files": 8,
+    "bytes": 302405,
+    "known_old_digests": 0,
+    "synthetic_test_host_tokens": 2,
+    "result_sha256": "83e92bf527929a026826e55378f928b32ab887774be80907a8bde487dc50eb49"
+  },
+  "limitations": [
+    "Raw counts are exact for declared recognized host-root/fileURI/Windows-drive token pattern, not a theorem covering every possible path spelling or hidden hash.",
+    "Opaque binary matches include accidental PNG byte sequences; binary data was never executed or deserialized.",
+    "337active nonempty seal fields are classified by current source producers:200claims,39sourceindex,98relationplan. Zero applies to identified active semantic identity defects; raw archive zero is false.",
+    "Directory aliases sharing identical raw bytes are covered through physical stored blobs/maps; counts use trackedphysicalfiles and decodedleaves, not a fabricated expansion of every logical alias.",
+    "Future closing receipt additions must use explicit additional-file scanner; self-descriptive copies of this audit excluded only by an exact declared path list.",
+    "Only audit/data decoding ran; no model/test/benchmark or baseline rewriting."
+  ],
+  "pins": {
+    "scan.py": "34d3c32e06ae2c3cd49cfc6344e3ee18bfe7a81489b42c87444a4c0ad3353eec",
+    "scan_additional.py": "d602124b1ff0630af00fd68e8c1bfd5d437fe5b4ff672f9e1c0d642574047302",
+    "files.json": "825b4df704acd3dc0bd9211df9c6d8df6dcfda8f4db395a8f5306006ed88dcae",
+    "findings.jsonl": "2ef78ada702c9116167632506212c4215f04127a0d7fba6cbba0be6cd3d5df11",
+    "result.json": "99ee72b8da2a847cecbb915ab37c931d334de33a48cd80856cc277142096e8b0",
+    "active-postinstall.json": "a9cf639de3f74821d873dea016e3abf22d0749d074ab7159435366ad8b5df900",
+    "installed-source-supplement/result.json": "83e92bf527929a026826e55378f928b32ab887774be80907a8bde487dc50eb49"
+  }
+}

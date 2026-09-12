@@ -1,0 +1,54 @@
+{
+  "actual_helper_false_result": 7,
+  "source": "import torch.nn as nn\nenabled = False\nclass Cell(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.child = nn.Identity()\n    @property\n    def opaque(self):\n        return unknown()\n    def helper(self, value):\n        if enabled:\n            ignored = self.opaque\n            return self.child(value)\n        return value\n    def forward(self, value):\n        value = self.helper(value)\n        return self.child(value)\n",
+  "targets": [
+    {
+      "call_line": 16,
+      "conditions": [
+        {
+          "branch": false,
+          "predicate": "enabled",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:212f30c200f98ad29f160b6809a704bab813493640ba4af84a21d7a85ca96f4a:11:11:11:18"
+        }
+      ],
+      "guards": [],
+      "kind": "helper",
+      "method": "Cell.forward"
+    },
+    {
+      "call_line": 17,
+      "conditions": [
+        {
+          "branch": false,
+          "predicate": "enabled",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:212f30c200f98ad29f160b6809a704bab813493640ba4af84a21d7a85ca96f4a:11:11:11:18"
+        }
+      ],
+      "guards": [],
+      "kind": "constructed_target",
+      "method": "Cell.forward"
+    },
+    {
+      "call_line": 13,
+      "conditions": [
+        {
+          "branch": false,
+          "predicate": "enabled",
+          "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+          "source": "sha256:212f30c200f98ad29f160b6809a704bab813493640ba4af84a21d7a85ca96f4a:11:11:11:18"
+        }
+      ],
+      "guards": [
+        {
+          "kind": "if",
+          "predicate": "enabled"
+        }
+      ],
+      "kind": "constructed_target",
+      "method": "Cell.helper"
+    }
+  ],
+  "wrapper_kind": "direct"
+}

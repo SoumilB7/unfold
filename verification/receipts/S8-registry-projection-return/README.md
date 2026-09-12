@@ -1,0 +1,3 @@
+# Registry projection obligation RETURN
+
+The actual full-suite batch015 at a83d704 fails the existing static registry projection obligation for10 new UNet facts declaring architecture_view. The static surface table is the union of legacy layer/model/decoder/input declared draw sets; it does not include these facts despite the separately passing dynamic actual-render audits. This is a real contract failure, not a waived test. Exact source bytes and complete finished batch log are retained. Root owns the bounded contract diagnosis; the frozen coordinator continues through full and preservation, with no source/test/baseline changes.

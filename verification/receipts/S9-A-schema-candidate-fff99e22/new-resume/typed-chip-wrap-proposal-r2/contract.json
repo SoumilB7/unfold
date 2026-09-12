@@ -1,0 +1,12 @@
+{
+  "status": "SOURCE_ONLY_PROPOSAL_NOT_APPLIED",
+  "scope": "Four existing typed chip classes only. Retain complete rendered text/metadata and four color/border distinctions. Modest4px radius avoids capsule border crossing multiline text; inline-block gives a bounded single box in inline and flex contexts. Ordinary uf-fact unchanged. No clipping/truncation/ellipsis/max-height/schema/graph/fact/receipt edits.",
+  "reason": "Saved36 real browser found default chips overflowing644px cards to1419/2267/3161px due inherited nowrap.",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "growth": {
+    "added": 9,
+    "deleted": 0
+  },
+  "validation": "Independent source review; actual browser comparison of exact saved36 pages with only this rendered CSS insertion. Full native candidate regeneration remains root-owned.",
+  "r1_visual_correction": "Actual first wrapping screenshots show inherited999px pill crossing multiline MusicGen text; separate inline long-token style probe fragments border across lines. R2 uses modest radius and bounded inline-block; source R1 retained."
+}

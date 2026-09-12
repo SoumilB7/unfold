@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+  "baseline_output": {
+    "ir_after_sha256": "39d3b960dc689118bf68db03d3c03c5803afe92a76e28bc8b4b88cdd8afa337c",
+    "ir_before_sha256": "39d3b960dc689118bf68db03d3c03c5803afe92a76e28bc8b4b88cdd8afa337c",
+    "page_bytes": 85914,
+    "page_sha256": "01fee2116d81c4fb606908bb014ff50254c6c515ef7b04c2a42cdb5250a7fb61",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+  "seconds": 0.42702845799976785,
+  "slug": "command-a-03-2025",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "cf66d7c13fe76633cd77c371e0cef809330835bac7e0394a0d495c6cad9f9895",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_cohere2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "8429149478ebb3424cc9cab80494eb7ff90dd32c0b21a7969b57b585a2ea2cc0",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_cohere2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "source_root": "/private/tmp/unfold-s8-approved-galleries-710da8e",
+  "source_file_count": 523,
+  "executed_script_manifest_count": 2,
+  "archived_streams": 525,
+  "pngs": 294,
+  "gallery_manifests": 19,
+  "her_eyes_reviews": 19,
+  "reports": 19,
+  "logical_paths_unique": true,
+  "stored_paths_unique": true,
+  "every_stream_decompressed_compared_byte_for_byte": true,
+  "source_before_after_identical": true,
+  "raw_bytes": 22003617,
+  "stored_bytes": 19472543,
+  "artifact_map_sha256": "ce9a3641d46b18b333e843a416254cb7dfd9c67f997a1e15e8af22c322972359",
+  "executed_pins": {
+    "capture_gallery.py": "436eeb77ce9b0f2a4bb458c150d6974dfbbf95401a2008b64b4cd0ce231f0130",
+    "input-manifest.json": "4d827363a5b06b83ef03057b236a3a13e64d233c525d39954bf5258653d4ebf5"
+  },
+  "historical_generation_pending_flags_preserved": true,
+  "fresh_sable_execution": false,
+  "baseline_write": false
+}

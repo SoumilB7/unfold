@@ -1,0 +1,94 @@
+--- before/model_unfolder/evidence/class_default_value.py
++++ held/model_unfolder/evidence/class_default_value.py
+@@ -85,13 +85,15 @@
+ 
+     bindings = tuple(index.bindings_in(constructor))
+ 
+-    def escaped(callee, arguments):
++    def escaped(callee, arguments, call_span):
+         if allowed_config_calls is None:
+             return False  # Existing child/root guard has no helper-effect theorem.
+         receiver = (callee.children[0] if callee.kind == 'attribute' and callee.children else None)
+         carries_operand = transported_config(receiver) or any(
+             transported_config(argument) for argument in arguments)
+-        return carries_operand and callee.span not in allowed_config_calls
++        # Construction sites and CallObservations identify the whole call,
++        # not its shorter callee token. Missing identity cannot be an allowance.
++        return carries_operand and (call_span is None or call_span not in allowed_config_calls)
+ 
+     def leaves(target):
+         if target.kind in {'tuple', 'list', 'starred'}:
+@@ -166,7 +168,7 @@
+                 return False
+             if parent is not None and parent.kind == 'call' and parent.children and escaped(
+                     parent.children[0], (*parent.children[1:],
+-                        *(value for _key, value in parent.keyword_children))):
++                        *(value for _key, value in parent.keyword_children)), parent.span):
+                 return False
+             if access.context not in {'store', 'del'}:
+                 continue
+@@ -182,7 +184,7 @@
+     # including unknown property names that may name the selected operand.
+     for call in index.calls_in(constructor):
+         callee = call.callee
+-        if escaped(callee, (*call.args, *(value for _key, value in call.kwargs))):
++        if escaped(callee, (*call.args, *(value for _key, value in call.kwargs)), call.span):
+             return False
+         # Namespace dictionaries are mutable protocol objects. Refuse their
+         # whole direct-call boundary, including vars(config), mapping mutators
+@@ -252,7 +254,7 @@
+     for node, binding, relative, alias, init in plans:
+         allowed = set()
+         if alias.status == 'resolved' and alias.value.constructor_parameter == binding.parameter:
+-            allowed.add(alias.value.super_call.callee.span)
++            allowed.add(alias.value.super_call.span)
+             spans.extend(alias.value.spans)
+             stored_field = alias.value.stored_field
+         else:
+--- before/tests/test_s9_child_class_default.py
++++ held/tests/test_s9_child_class_default.py
+@@ -114,6 +114,44 @@
+     assert _fact(result, index, document).value == 64
+ 
+ 
++def test_constructor_relay_allowance_uses_each_exact_whole_call(tmp_path, monkeypatch):
++    from model_unfolder.evidence.class_default_value import _constructor_preserves_operand
++    from model_unfolder.evidence.program_index import SymbolId
++
++    _, index, _, _ = _child(tmp_path, factory=False,
++        after='        self.other = Child(config.text_config)\n')
++    owner = next(record.symbol for record in index.classes
++                 if record.symbol.source.component_key == 'root'
++                 and record.symbol.qualified_name == 'Wrapper')
++    constructor = SymbolId(owner.source, 'Wrapper.__init__')
++    calls = tuple(index.calls_in(constructor))
++    twins = tuple(call for call in calls if call.callee.name == 'Child')
++    assert len(twins) == 2
++    assert twins[0].span != twins[1].span
++    assert all(call.span != call.callee.span for call in twins)
++    allowed = frozenset(call.span for call in calls)
++
++    def kept(addresses):
++        return _constructor_preserves_operand(index, owner, 'config', None,
++            ('text_config', 'hidden_size'), allowed_config_calls=addresses)
++
++    assert kept(allowed)
++    # An identical callee spelling at another source address cannot inherit
++    # the first construction's allowance. A shorter token is not a call ID.
++    assert not kept(allowed - {twins[1].span})
++    assert not kept(frozenset(call.callee.span for call in calls))
++    assert not kept(frozenset({None}))
++    original_calls_in = type(index).calls_in
++
++    def missing_call_identity(active_index, symbol):
++        return tuple(replace(call, span=None) if symbol == constructor and call == twins[0]
++                     else call for call in original_calls_in(active_index, symbol))
++
++    monkeypatch.setattr(type(index), 'calls_in', missing_call_identity)
++    # Even an allowlist containing None cannot admit an unstamped call.
++    assert not kept(allowed | {None})
++
++
+ def test_unknown_wrapper_cannot_reintroduce_locally_hydrated_bias_as_bound_default():
+     from model_unfolder import unfold
+     nested = {'model_type': 'composite_xyz', 'architectures': ['CompositeForConditionalGeneration'],

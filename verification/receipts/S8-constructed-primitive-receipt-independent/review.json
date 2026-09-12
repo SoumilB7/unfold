@@ -1,0 +1,20 @@
+{
+  "verdict": "ACCEPT bounded static receipt correction; actual controls and SVD rerender pending",
+  "source_pins": {
+    "model_unfolder/renderers/html/block_views/unet.py": "632a25c18fcd9b89eb7a69b3dbf4d537b7de3a62d16347545d2542d9b0296800",
+    "tests/test_s8_constructed_primitive_receipts.py": "6a7f57a6abed2f5d2288c45d081b3bd6c172385dcebf8ac1a8d3ab621d6a9576",
+    "model_unfolder/renderers/html/render_context.py": "75cea5d3a5cbf70fe0b8d044fe2583ff5a28d98e2514398100bfb31eda9f16f5"
+  },
+  "checks": {
+    "same_box_layout_loop_AST": true,
+    "same_fit_svg_arguments_AST": true,
+    "no_source_reader_or_config_reads_added": true,
+    "exact_canonical_parent_child_address_and_fact_member_match_required": true,
+    "actual_returned_node_and_exact_text_required": true,
+    "event_scoped_to_one_child_one_runtime_primitive_key_only": true,
+    "no_drawn_ops_or_order_claim_added": true,
+    "fifteen_controls_cover_actual_label_and_omission_foreign_uncited_unqualified_discard_partial_negative_cases": true
+  },
+  "execution": "No pytest/models/rerender by reviewer. Existing SVD red preserved in previous receipt.",
+  "next_evidence": "Actual15controls; unchanged saved SVD IR -> byte-identical HTML; only own primitive-label events added; full7checks must pass without suppressing original failure."
+}

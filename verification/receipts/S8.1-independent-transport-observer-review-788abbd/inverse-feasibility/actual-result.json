@@ -1,0 +1,12 @@
+{
+  "status": "SERIALIZED_FULL_CANONICAL_INVERSE_PASS",
+  "cards": 11717,
+  "canonical_bytes": 23748293,
+  "canonical_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "json_script_safe_payload_bytes": 2017168,
+  "original_shell_and_original_interactions_retained": true,
+  "ordered_card_placements_exact": true,
+  "all_per_card_bytes_exact": true,
+  "less_than_escaped": true,
+  "scope": "Read-only serialization feasibility; not a production page or browser performance measurement."
+}

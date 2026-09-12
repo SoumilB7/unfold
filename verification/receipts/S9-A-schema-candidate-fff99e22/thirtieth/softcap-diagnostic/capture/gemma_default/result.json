@@ -1,0 +1,49 @@
+{
+  "caps": [
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    50.0
+  ],
+  "case": "gemma_default",
+  "consumed_softcap_events": 1,
+  "layers": 26,
+  "native_softcap": {
+    "claim_kind": "applied_function",
+    "has_proof": true,
+    "status": "class_default",
+    "unknown_reason": null,
+    "value": 50.0
+  },
+  "native_softcap_present": true,
+  "page_bytes": 108210,
+  "page_sha256": "3be44b33ba8ba721138e7a652a5dc368a23f40992c3f320dc79fce839c429591",
+  "reader_statuses": [
+    [
+      "('decoder.attention.logit_softcap', ())",
+      "resolved"
+    ]
+  ]
+}

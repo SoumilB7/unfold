@@ -1,0 +1,1305 @@
+{
+  "directories": [
+    "v1",
+    "v1/capture",
+    "v1/capture/controller",
+    "v1/capture/controller/cases",
+    "v1/capture/controller/cases/llama-7b",
+    "v1/capture/controller/cases/llama-7b/attempt-01",
+    "v1/capture/controller/pytest",
+    "v2",
+    "v2/capture",
+    "v2/capture/controller",
+    "v2/capture/controller/cases",
+    "v2/capture/controller/cases/llama-7b",
+    "v2/capture/controller/cases/llama-7b/attempt-01",
+    "v2/capture/controller/pytest"
+  ],
+  "entries": {
+    "v1/capture/controller/capture-result.json": {
+      "raw": {
+        "bytes": 24602,
+        "sha256": "743ee9753514db476b8b3d9eabc7e63a06ad935d1e850b45d144f493e9928946"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/capture-result.json",
+      "storage": {
+        "bytes": 3488,
+        "sha256": "0e5cf58cc38c738b83d56e07a02cc0f11b0a51086410f4fc2bd3170d99ead918"
+      },
+      "stored": "streams/v1/capture/controller/capture-result.json.gzip"
+    },
+    "v1/capture/controller/capture_preservation.executed.py": {
+      "raw": {
+        "bytes": 23868,
+        "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/capture_preservation.executed.py",
+      "storage": {
+        "bytes": 7015,
+        "sha256": "f3f44c5b6181dcb6c3afe8449fd7c96795024dc9fce971ef9273b104aeaf61c4"
+      },
+      "stored": "streams/v1/capture/controller/capture_preservation.executed.py.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json": {
+      "raw": {
+        "bytes": 279904,
+        "sha256": "e6ce39711e9fff3ea1f6fb6931fbef2ff2897d864ab7c771f6c4dfd6314cdccf"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json",
+      "storage": {
+        "bytes": 17918,
+        "sha256": "844e2b3427865207859307bbca1ea550a1b6b1b22e1e75c3137ee204b874d46b"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json": {
+      "raw": {
+        "bytes": 279351,
+        "sha256": "0157e854f59d6946be051598026bb4229b9ca0a6764e57a8c8438a13add22d52"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json",
+      "storage": {
+        "bytes": 16195,
+        "sha256": "355845fcd1d93919a804dba5d699715bcf266b92657188079826ea5dda2f4729"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json": {
+      "raw": {
+        "bytes": 557,
+        "sha256": "16891dd55dbf90d588d5b2f79985d2c2712b95772f7c74ad984eaa42ad0135d3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json",
+      "storage": {
+        "bytes": 378,
+        "sha256": "9b186ae02f389095cfc1758cd41964e4ba7bb925165baacdb12e372f63979010"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json": {
+      "raw": {
+        "bytes": 275,
+        "sha256": "a11a8a96a192fb2c76c993dd569ff3447371d1f63c7b312b88b68a63c49ef51f"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json",
+      "storage": {
+        "bytes": 172,
+        "sha256": "30a9500d7cd28a7e740310b1366391ee6a5fc7abf79284e60d79886b3aeba413"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/input.json": {
+      "raw": {
+        "bytes": 5524,
+        "sha256": "41a9bb408dce7c2227a9d9070cb74327df1bf4e1967fa331967000c963ab1931"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/input.json",
+      "storage": {
+        "bytes": 2055,
+        "sha256": "83542e4f46d1c7fbacd05623a9817ea8a4300d1414cc69884d334a2adbedf742"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/input.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "1a8d227348cb4254120b480ecce50250614e5226e5b63d10de5c813cf218b55c"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "6287442a52f6650142459538abef38822d41b8158ee82b66c9ac4f8857969bf2"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "1a8d227348cb4254120b480ecce50250614e5226e5b63d10de5c813cf218b55c"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "6287442a52f6650142459538abef38822d41b8158ee82b66c9ac4f8857969bf2"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "1a8d227348cb4254120b480ecce50250614e5226e5b63d10de5c813cf218b55c"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "6287442a52f6650142459538abef38822d41b8158ee82b66c9ac4f8857969bf2"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "1a8d227348cb4254120b480ecce50250614e5226e5b63d10de5c813cf218b55c"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "6287442a52f6650142459538abef38822d41b8158ee82b66c9ac4f8857969bf2"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "e130bc7388f7ddb792714c86f2106ed0723374f00d5be5354b7dccfc838021e1"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "41ba04275adcf24a67043f2583ee4ae421afaac32d09382e7f061c21fae7d17e"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "e130bc7388f7ddb792714c86f2106ed0723374f00d5be5354b7dccfc838021e1"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "41ba04275adcf24a67043f2583ee4ae421afaac32d09382e7f061c21fae7d17e"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "fab7fdd05b302bd46fc42e8058bf94a481e82c1acf553ec321fa84249abe1b86"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "fee42daa0341e3595fa5d7df59ca79a4f53f9618c1bb90362560e7077e8462da"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "fab7fdd05b302bd46fc42e8058bf94a481e82c1acf553ec321fa84249abe1b86"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html",
+      "storage": {
+        "bytes": 10228,
+        "sha256": "fee42daa0341e3595fa5d7df59ca79a4f53f9618c1bb90362560e7077e8462da"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "f9c1cd4c5bd53e8d76e6a39c42830ac9390db53ac83d0352056daa9f0f47abe0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "ec0c3a3e3aae9bc523facede7828dad8bf48e23ba3b88666a38eb46b9b34c829"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "f9c1cd4c5bd53e8d76e6a39c42830ac9390db53ac83d0352056daa9f0f47abe0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "ec0c3a3e3aae9bc523facede7828dad8bf48e23ba3b88666a38eb46b9b34c829"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-000-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "1b1eec882e16d742211473448b4959366ee099ef805c92ba5f783ba173d83a46"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-000-events.json",
+      "storage": {
+        "bytes": 2324,
+        "sha256": "7a29e851c149fd40ba6cb198fffb0ec6e184843a036359d971fa1a6bec7555fa"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-000-events.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "78ea5f6a45241bf22d924a63d2b956a047ab57f7df9fad7bd9aefe35b7518775"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json",
+      "storage": {
+        "bytes": 319,
+        "sha256": "08b2f515300d746092e9e251234aed6b185d0d74a3c1540e49bd27b623822b0f"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "f9c1cd4c5bd53e8d76e6a39c42830ac9390db53ac83d0352056daa9f0f47abe0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "ec0c3a3e3aae9bc523facede7828dad8bf48e23ba3b88666a38eb46b9b34c829"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "f9c1cd4c5bd53e8d76e6a39c42830ac9390db53ac83d0352056daa9f0f47abe0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "ec0c3a3e3aae9bc523facede7828dad8bf48e23ba3b88666a38eb46b9b34c829"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-001-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "5ef1a62cc85f6f05176a5431af24c3daae4e09ebfd84cd31c09d54a96975d84f"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-001-events.json",
+      "storage": {
+        "bytes": 2323,
+        "sha256": "8e5b149c4d0d276b7139f3dc242a9a958caf6756120d009f87eaf27e0555bbe7"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-001-events.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "78ea5f6a45241bf22d924a63d2b956a047ab57f7df9fad7bd9aefe35b7518775"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json",
+      "storage": {
+        "bytes": 319,
+        "sha256": "08b2f515300d746092e9e251234aed6b185d0d74a3c1540e49bd27b623822b0f"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "1a9cd0c63da215289ae5d1eb982639a8de1fe00fb48121262d1a7f6bef078312"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html",
+      "storage": {
+        "bytes": 10535,
+        "sha256": "37cd4d8639f9c3769e9a569abbdabd90cc7b9463a642d78287c22a6e44b4f180"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "1a9cd0c63da215289ae5d1eb982639a8de1fe00fb48121262d1a7f6bef078312"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html",
+      "storage": {
+        "bytes": 10535,
+        "sha256": "37cd4d8639f9c3769e9a569abbdabd90cc7b9463a642d78287c22a6e44b4f180"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-002-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "4b9516dc90868e48fc65d133e0ef2e8906b3f6b2f54ca9d953378e547c7d8cf5"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-002-events.json",
+      "storage": {
+        "bytes": 2325,
+        "sha256": "4dd2ce2aaf25dc3eece17ab18e0cab1e2c6c749124c8946e3133ea96b994b42c"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-002-events.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "5131767df738127b180e977f7de617157bd73359129973955d649efe340659a3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json",
+      "storage": {
+        "bytes": 318,
+        "sha256": "91c6ec4bdbc7584b6acae1be2da70bfaa1018599031986289caf48e69673abe2"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "74b104183e624cef72d0854ad227d6a39d366d8f919ad4b6186e889a2a252630"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "cc48b7be32db7d61bf381bea81176eac7fd7fac16732ce9490705b22a0522ed0"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "74b104183e624cef72d0854ad227d6a39d366d8f919ad4b6186e889a2a252630"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "cc48b7be32db7d61bf381bea81176eac7fd7fac16732ce9490705b22a0522ed0"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-003-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "48ae016e7b7fdd38e00cce1a37970624725e3b321a1e84f4c86395c4973f1144"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-003-events.json",
+      "storage": {
+        "bytes": 2324,
+        "sha256": "60d555a65a297338a70c924928374b2064f8e24f7d382d6a753bdc01b0e9da5f"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-003-events.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "efb7a99268b63b321c44d32b8714180ac58cabdfdcf4e1cd5176c956a2b70ff1"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json",
+      "storage": {
+        "bytes": 319,
+        "sha256": "4a435ee082d2d818a66cd2e29525aeadfae885992f7e77f24ae21fd94a2709b7"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json.gzip"
+    },
+    "v1/capture/controller/cases/llama-7b/attempt-01/result.json": {
+      "raw": {
+        "bytes": 19129,
+        "sha256": "9b94e2fd655c8dbf2dc6e4dd02db258b9e92443724e47f68c4369039b30cf305"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/cases/llama-7b/attempt-01/result.json",
+      "storage": {
+        "bytes": 2644,
+        "sha256": "90fb2e9e08da8adaed055f0b547f5aeb7b9720e2ad820d965272809d5dcc52df"
+      },
+      "stored": "streams/v1/capture/controller/cases/llama-7b/attempt-01/result.json.gzip"
+    },
+    "v1/capture/controller/expected.executed.json": {
+      "raw": {
+        "bytes": 68954,
+        "sha256": "00bf924b13aeff81ac6bcfd0f842fda2a9922ce5da2a299d582e3d8709c3e2bc"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/expected.executed.json",
+      "storage": {
+        "bytes": 21153,
+        "sha256": "cb397007cbe6b0ca09dc3cb80165705b7cb1b84bd090388061380f996eeb5719"
+      },
+      "stored": "streams/v1/capture/controller/expected.executed.json.gzip"
+    },
+    "v1/capture/controller/launch.json": {
+      "raw": {
+        "bytes": 549,
+        "sha256": "46b2d32d4b55e12056c83257f105111d9098443ac6aac41da2425cda07cca479"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/launch.json",
+      "storage": {
+        "bytes": 324,
+        "sha256": "35e4d793187bf1f817d1ea233d6f3ee8e126f554a2423f6bef84e4da6e75a1c1"
+      },
+      "stored": "streams/v1/capture/controller/launch.json.gzip"
+    },
+    "v1/capture/controller/pins-after.json": {
+      "raw": {
+        "bytes": 253974,
+        "sha256": "cb7c272905c0fa722edc72aa814e80d6888e15694e261faf345532a80c3084e7"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pins-after.json",
+      "storage": {
+        "bytes": 48649,
+        "sha256": "8e20d05c6cce04ec1a0bc4d41705bfa434b65188a0de3b1f63bb617ac0572731"
+      },
+      "stored": "streams/v1/capture/controller/pins-after.json.gzip"
+    },
+    "v1/capture/controller/pins-before.json": {
+      "raw": {
+        "bytes": 253974,
+        "sha256": "cb7c272905c0fa722edc72aa814e80d6888e15694e261faf345532a80c3084e7"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pins-before.json",
+      "storage": {
+        "bytes": 48649,
+        "sha256": "8e20d05c6cce04ec1a0bc4d41705bfa434b65188a0de3b1f63bb617ac0572731"
+      },
+      "stored": "streams/v1/capture/controller/pins-before.json.gzip"
+    },
+    "v1/capture/controller/pytest-session.json": {
+      "raw": {
+        "bytes": 22,
+        "sha256": "db49b6eccd6f93e6984c5b8375b2d44248cabf785ff38882ba6831f2217f20c3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest-session.json",
+      "storage": {
+        "bytes": 42,
+        "sha256": "be3095efb90063aa5bb6c76d0d2a972d3b92fb3227112ab9528f834c04401397"
+      },
+      "stored": "streams/v1/capture/controller/pytest-session.json.gzip"
+    },
+    "v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json": {
+      "raw": {
+        "bytes": 963,
+        "sha256": "2ec01aff752810a2b5d2e587235dee4c360b30c12546644eb3e48b3bc17d3a8b"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json",
+      "storage": {
+        "bytes": 519,
+        "sha256": "f5c16a577da7334c08931bcc82c3314c2e5a9d016771a639f8e4157bf52326a6"
+      },
+      "stored": "streams/v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json.gzip"
+    },
+    "v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json": {
+      "raw": {
+        "bytes": 161,
+        "sha256": "afab852418b43af10f5ddc7dd19b27edbfae6f9e7b7c1c62d569726ada60cf16"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json",
+      "storage": {
+        "bytes": 143,
+        "sha256": "1be9e84889ea88caeb02b72288e9eb940a2850206e128dd548e6911cefc2bf7f"
+      },
+      "stored": "streams/v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json.gzip"
+    },
+    "v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json": {
+      "raw": {
+        "bytes": 164,
+        "sha256": "0fa4235329a6dd4af892d4f99b9f40b4c0b1e6573d1bb2b2f632189ceeca2855"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json",
+      "storage": {
+        "bytes": 144,
+        "sha256": "a42d2bf6e855b838bb4f22642e0545249e08dad0f655b28129886b28c66e5c06"
+      },
+      "stored": "streams/v1/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json.gzip"
+    },
+    "v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json": {
+      "raw": {
+        "bytes": 149,
+        "sha256": "72b4ac6616ebcced9bb3ab6710e8d85fa9e76fd2e3c03f0d58f437d3cf4cef82"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json",
+      "storage": {
+        "bytes": 130,
+        "sha256": "f6fff270d985355640bc141a0845aeda9e0b599d64269137ab980e65689c07cd"
+      },
+      "stored": "streams/v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json.gzip"
+    },
+    "v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json": {
+      "raw": {
+        "bytes": 150,
+        "sha256": "ca36c43926779fed7de2307faac73ed18b937c6d45c95533f35b461f2d18dc71"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json",
+      "storage": {
+        "bytes": 131,
+        "sha256": "09ed4584fb4bb8d0177870ea73b8af4edfc58ec86b16c2016aacd71b099c6ba2"
+      },
+      "stored": "streams/v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json.gzip"
+    },
+    "v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json": {
+      "raw": {
+        "bytes": 153,
+        "sha256": "22bcb71f9417c75c5e1342aaa6c40ef021ac42fe0d60f8670256b1e1716e3768"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json",
+      "storage": {
+        "bytes": 132,
+        "sha256": "aac536c1798a43d91c6e3414485fa600a4a4a171a225f44949b7d4e433e2e05e"
+      },
+      "stored": "streams/v1/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json.gzip"
+    },
+    "v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json": {
+      "raw": {
+        "bytes": 156,
+        "sha256": "43e77c3bce84f735757a1cf11539d09102e54d48cdce42c60a03c530f2c972c8"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json",
+      "storage": {
+        "bytes": 130,
+        "sha256": "ca452c23ca3303a6a30cb0865232da89463b766f0879f5aeeffbd3461a9b9e8f"
+      },
+      "stored": "streams/v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json.gzip"
+    },
+    "v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json": {
+      "raw": {
+        "bytes": 157,
+        "sha256": "0ed00fa62d796a343e42615cc9bfaad2d9953249aa3af446485a0baa1679c1be"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json",
+      "storage": {
+        "bytes": 129,
+        "sha256": "216cf3e4a96675f5186a7101d3e1033ec2b8f7b79b92731644883e6111e2a415"
+      },
+      "stored": "streams/v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json.gzip"
+    },
+    "v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json": {
+      "raw": {
+        "bytes": 160,
+        "sha256": "bf7043a3ad3a2588d1a3ad92412a618f95a1bbf8d4642202ef890ad34d109102"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json",
+      "storage": {
+        "bytes": 132,
+        "sha256": "1349ff4a88238dabaa8380752223986ce155ca1d8c0f75c28c85e46539f929c7"
+      },
+      "stored": "streams/v1/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json.gzip"
+    },
+    "v1/capture/report.json": {
+      "raw": {
+        "bytes": 26630,
+        "sha256": "b27f278cc8730535bc6d583a1ddec84fd49aa8f8caf233070ba7351fb48f6f6f"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture/report.json",
+      "storage": {
+        "bytes": 4090,
+        "sha256": "1b2b21b202e2311e9ccc0ae88f7267bd797aecf7d5dee34efbc8b3c9855b63d6"
+      },
+      "stored": "streams/v1/capture/report.json.gzip"
+    },
+    "v1/capture_preservation.executed.py": {
+      "raw": {
+        "bytes": 23868,
+        "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/capture_preservation.executed.py",
+      "storage": {
+        "bytes": 7015,
+        "sha256": "f3f44c5b6181dcb6c3afe8449fd7c96795024dc9fce971ef9273b104aeaf61c4"
+      },
+      "stored": "streams/v1/capture_preservation.executed.py.gzip"
+    },
+    "v1/launch.json": {
+      "raw": {
+        "bytes": 2160,
+        "sha256": "b84c6c4181f646f5d42c1dd8a00ae65847be0e6c8c62afd1ace2191cd61c60da"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/launch.json",
+      "storage": {
+        "bytes": 909,
+        "sha256": "2a0acf306f4a41e6e3258a2f492019d8bc5ce52ce822bd925fefc66007ba4581"
+      },
+      "stored": "streams/v1/launch.json.gzip"
+    },
+    "v1/pytest.log": {
+      "raw": {
+        "bytes": 1219,
+        "sha256": "610e44c785e32dcdd63e33277dd1795c5f6b1aaad0e31049493216dc99a80b31"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/pytest.log",
+      "storage": {
+        "bytes": 548,
+        "sha256": "00b7f92690c4b1ed80e62ac3a43d50636790fa42ba3ee53d2503f711073b2ea2"
+      },
+      "stored": "streams/v1/pytest.log.gzip"
+    },
+    "v1/report.log": {
+      "raw": {
+        "bytes": 224,
+        "sha256": "4f40d6416a6604f9d693a89d0732b255fbcf9b88b074d295b41c9cea6609be90"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/report.log",
+      "storage": {
+        "bytes": 163,
+        "sha256": "4d9028703c4969d804bc0641fb3f17f24c679c0d6ab22fb01d78a6259982c6d1"
+      },
+      "stored": "streams/v1/report.log.gzip"
+    },
+    "v1/result.json": {
+      "raw": {
+        "bytes": 4471,
+        "sha256": "b711f104323ed2ee88736a56d1e8cc715bc0a5b35f3025727a06ef14823c2426"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/result.json",
+      "storage": {
+        "bytes": 1253,
+        "sha256": "88a0f924a8e9fe7de87396821bd51bee47c6465a1022a61ed4f6e081b70e8d2c"
+      },
+      "stored": "streams/v1/result.json.gzip"
+    },
+    "v1/validate_observer.executed.py": {
+      "raw": {
+        "bytes": 5953,
+        "sha256": "283be2879c6bcfe2ab814ff3ae462b4ea682dea0c5ecfd0601f1ff4e82400abf"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v1/validate_observer.executed.py",
+      "storage": {
+        "bytes": 2305,
+        "sha256": "e7eddd1efbf7fc5913164220436de3fa16ce577606234b2aae14c7c1543b9cf2"
+      },
+      "stored": "streams/v1/validate_observer.executed.py.gzip"
+    },
+    "v2/capture/controller/capture-result.json": {
+      "raw": {
+        "bytes": 23691,
+        "sha256": "3ba697191731bbfad0ffc734e06d62e99ff1a6dbab6d783cdac517335744b98c"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/capture-result.json",
+      "storage": {
+        "bytes": 2996,
+        "sha256": "ebed1dd69eb4941dd309504ddb46b6a2f2e18d9389d0b5f68b51d2a7171557ab"
+      },
+      "stored": "streams/v2/capture/controller/capture-result.json.gzip"
+    },
+    "v2/capture/controller/capture_preservation.executed.py": {
+      "raw": {
+        "bytes": 23868,
+        "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/capture_preservation.executed.py",
+      "storage": {
+        "bytes": 7015,
+        "sha256": "f3f44c5b6181dcb6c3afe8449fd7c96795024dc9fce971ef9273b104aeaf61c4"
+      },
+      "stored": "streams/v2/capture/controller/capture_preservation.executed.py.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json": {
+      "raw": {
+        "bytes": 279379,
+        "sha256": "911180f0b4226550bd1e237265c0a862fe7d88d09cbb9b15307685d5be6d9f86"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json",
+      "storage": {
+        "bytes": 17719,
+        "sha256": "c4ff9524148be8eb769447f44534b764322ceb8d40cd55dc377784ef30cacb8a"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/actual-surfaces.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json": {
+      "raw": {
+        "bytes": 278826,
+        "sha256": "53139829cf3dcc74a9962dc94c34d6fde6a49690605fca5b34715019649460cd"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json",
+      "storage": {
+        "bytes": 15992,
+        "sha256": "01e2d1c6c6b7b2d96682dd9a2d78f05e2567c90fd77e9998772cdf95094bf365"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/call-00-canonical_surfaces.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json": {
+      "raw": {
+        "bytes": 557,
+        "sha256": "16891dd55dbf90d588d5b2f79985d2c2712b95772f7c74ad984eaa42ad0135d3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json",
+      "storage": {
+        "bytes": 378,
+        "sha256": "9b186ae02f389095cfc1758cd41964e4ba7bb925165baacdb12e372f63979010"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/call-01-gallery_witness.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json": {
+      "raw": {
+        "bytes": 275,
+        "sha256": "a11a8a96a192fb2c76c993dd569ff3447371d1f63c7b312b88b68a63c49ef51f"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json",
+      "storage": {
+        "bytes": 172,
+        "sha256": "30a9500d7cd28a7e740310b1366391ee6a5fc7abf79284e60d79886b3aeba413"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/call-02-_view_hashes.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/input.json": {
+      "raw": {
+        "bytes": 5524,
+        "sha256": "41a9bb408dce7c2227a9d9070cb74327df1bf4e1967fa331967000c963ab1931"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/input.json",
+      "storage": {
+        "bytes": 2055,
+        "sha256": "83542e4f46d1c7fbacd05623a9817ea8a4300d1414cc69884d334a2adbedf742"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/input.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "16761218fcd37a0ee3f2f923eef994d735b4f5adc4fce064ab838e697905cad2"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html",
+      "storage": {
+        "bytes": 10225,
+        "sha256": "abc666cbe9443b7c9a985811ac21a82f9a69a50f7c4eca51837292c53b47f88a"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-000-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "16761218fcd37a0ee3f2f923eef994d735b4f5adc4fce064ab838e697905cad2"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html",
+      "storage": {
+        "bytes": 10225,
+        "sha256": "abc666cbe9443b7c9a985811ac21a82f9a69a50f7c4eca51837292c53b47f88a"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-000-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "16761218fcd37a0ee3f2f923eef994d735b4f5adc4fce064ab838e697905cad2"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html",
+      "storage": {
+        "bytes": 10225,
+        "sha256": "abc666cbe9443b7c9a985811ac21a82f9a69a50f7c4eca51837292c53b47f88a"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-001-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "16761218fcd37a0ee3f2f923eef994d735b4f5adc4fce064ab838e697905cad2"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html",
+      "storage": {
+        "bytes": 10225,
+        "sha256": "abc666cbe9443b7c9a985811ac21a82f9a69a50f7c4eca51837292c53b47f88a"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-001-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "b9b852765671dc2b569bd632095a41f587048517f8f4d50389004c40c5c26fd6"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html",
+      "storage": {
+        "bytes": 10227,
+        "sha256": "35bbb50a4142717fd79372801310389f464331ee8c3163d9dbfc9ff64ec9b7fc"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-002-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "b9b852765671dc2b569bd632095a41f587048517f8f4d50389004c40c5c26fd6"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html",
+      "storage": {
+        "bytes": 10227,
+        "sha256": "35bbb50a4142717fd79372801310389f464331ee8c3163d9dbfc9ff64ec9b7fc"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-002-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "259ece4d2025336f16c0ce53f60f97849411f310e65456b794251e5ab5cf3a94"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html",
+      "storage": {
+        "bytes": 10227,
+        "sha256": "34ed033b24c775396872fd17903719abab60efaa40ec4053146ace646be65ade"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-003-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html": {
+      "raw": {
+        "bytes": 55464,
+        "sha256": "259ece4d2025336f16c0ce53f60f97849411f310e65456b794251e5ab5cf3a94"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html",
+      "storage": {
+        "bytes": 10227,
+        "sha256": "34ed033b24c775396872fd17903719abab60efaa40ec4053146ace646be65ade"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/pack-003-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "80dd6f0a71d42457566317a4c5455d28029b352f3a5f13b6178412ddf04175b5"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "96d4f8699dc54a71d7252fefccf7cada2b10e82ff9a038d9c667b673dc065888"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-000-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "80dd6f0a71d42457566317a4c5455d28029b352f3a5f13b6178412ddf04175b5"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "96d4f8699dc54a71d7252fefccf7cada2b10e82ff9a038d9c667b673dc065888"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-000-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-000-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "b5b1c0780d0c37d7dd45cb44a6b53e5409019dcfa75c874641b30598b4a642d9"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-000-events.json",
+      "storage": {
+        "bytes": 2321,
+        "sha256": "c860e6bd341f4ed0072645206c02eca13fb490a8e5cd22ac5033a82182198f5e"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-000-events.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "7e568e5e6392b6e376f307d475ad4ebef69c88cfd6e5982fc4aaa6e61bfdfccc"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json",
+      "storage": {
+        "bytes": 317,
+        "sha256": "f4ac89d22407c87a9fcea4aadf426c725abc22c0fb3d2929a5290725d35690e1"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-000-svg-occurrences.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "80dd6f0a71d42457566317a4c5455d28029b352f3a5f13b6178412ddf04175b5"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "96d4f8699dc54a71d7252fefccf7cada2b10e82ff9a038d9c667b673dc065888"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-001-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "80dd6f0a71d42457566317a4c5455d28029b352f3a5f13b6178412ddf04175b5"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "96d4f8699dc54a71d7252fefccf7cada2b10e82ff9a038d9c667b673dc065888"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-001-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-001-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "dd9a0217356856365e3a70bf294c66a4d6f2117188ce52f178276d9f037b4c20"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-001-events.json",
+      "storage": {
+        "bytes": 2321,
+        "sha256": "1c79509834b1a66a14b32894fee1388a3687206adc180cb1825dff6eabe4336c"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-001-events.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "7e568e5e6392b6e376f307d475ad4ebef69c88cfd6e5982fc4aaa6e61bfdfccc"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json",
+      "storage": {
+        "bytes": 317,
+        "sha256": "f4ac89d22407c87a9fcea4aadf426c725abc22c0fb3d2929a5290725d35690e1"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-001-svg-occurrences.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "1bbc3e28954b51d1d6b1ee63f585f509faebee153773b903c8fbff6528f7f888"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "e3d70dbcc6d240281a661cecc4f03ce2c0922c75e7b6c03c5b1bee25380518ab"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-002-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "1bbc3e28954b51d1d6b1ee63f585f509faebee153773b903c8fbff6528f7f888"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html",
+      "storage": {
+        "bytes": 10534,
+        "sha256": "e3d70dbcc6d240281a661cecc4f03ce2c0922c75e7b6c03c5b1bee25380518ab"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-002-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-002-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "1c55a5e55bdc0bf1b6acaf2cec43f32ddb787f10f7ed24d649eb1adb3a0efb33"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-002-events.json",
+      "storage": {
+        "bytes": 2323,
+        "sha256": "398759cb2d909480bd27349aa054089c5669f07dc5b5dfae6cd703c70dcd09b1"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-002-events.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "d878c783bf97887c2e046ca16e752039e9c1e9b1248f0fc31502a913f6fe8bd6"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json",
+      "storage": {
+        "bytes": 316,
+        "sha256": "27d77947dba2c3346b77b8be776aa1355127907075f245ad8791833d903f5e44"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-002-svg-occurrences.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "c72a7cabdf5866188e9690d7cf3ccdea8c6f7da7db38abdf0036f50d3ebcfc85"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html",
+      "storage": {
+        "bytes": 10533,
+        "sha256": "ecc97bd9882b042acf068373d609ef47e31136250e2cdc6c9f1fd6500a9c13d7"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-003-actual.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html": {
+      "raw": {
+        "bytes": 56120,
+        "sha256": "c72a7cabdf5866188e9690d7cf3ccdea8c6f7da7db38abdf0036f50d3ebcfc85"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html",
+      "storage": {
+        "bytes": 10533,
+        "sha256": "ecc97bd9882b042acf068373d609ef47e31136250e2cdc6c9f1fd6500a9c13d7"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-003-canonical.html.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-003-events.json": {
+      "raw": {
+        "bytes": 22599,
+        "sha256": "a5ac74318fc51d93887b4e93bf92e5f448688e5fa364a3d348833a5df9e5c192"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-003-events.json",
+      "storage": {
+        "bytes": 2328,
+        "sha256": "f76a39e2a89bdbb59c3f572e1d20f3982c387ca577de9f6d6ff309376a986091"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-003-events.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json": {
+      "raw": {
+        "bytes": 546,
+        "sha256": "10ad70bbae0fa6f7837cdb0392665fbf11018c18f925b9a8caca88cf42ad7cc1"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json",
+      "storage": {
+        "bytes": 315,
+        "sha256": "df321debb21a3c27f967851ec210d2a3b76010f9e252f3bbad5cde325d09d0ff"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/render-003-svg-occurrences.json.gzip"
+    },
+    "v2/capture/controller/cases/llama-7b/attempt-01/result.json": {
+      "raw": {
+        "bytes": 19037,
+        "sha256": "36e2539c34cf536ac13eb6152d981f64b7d7330dad8304ad39fa1bcb50397989"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/cases/llama-7b/attempt-01/result.json",
+      "storage": {
+        "bytes": 2563,
+        "sha256": "32affd190b484f9e667158a2fb8005b770cc800a97b5880f3f8a1221a93a912c"
+      },
+      "stored": "streams/v2/capture/controller/cases/llama-7b/attempt-01/result.json.gzip"
+    },
+    "v2/capture/controller/expected.executed.json": {
+      "raw": {
+        "bytes": 68954,
+        "sha256": "00bf924b13aeff81ac6bcfd0f842fda2a9922ce5da2a299d582e3d8709c3e2bc"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/expected.executed.json",
+      "storage": {
+        "bytes": 21153,
+        "sha256": "cb397007cbe6b0ca09dc3cb80165705b7cb1b84bd090388061380f996eeb5719"
+      },
+      "stored": "streams/v2/capture/controller/expected.executed.json.gzip"
+    },
+    "v2/capture/controller/launch.json": {
+      "raw": {
+        "bytes": 548,
+        "sha256": "20c6c5db3a0226dc70cde511569618b842cbe906d299a32030d33b78e0967814"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/launch.json",
+      "storage": {
+        "bytes": 323,
+        "sha256": "d74350fa48d04eb6a12cb97fc4a782c10805dce8067c8f5d78a55d42fd7e31dd"
+      },
+      "stored": "streams/v2/capture/controller/launch.json.gzip"
+    },
+    "v2/capture/controller/pins-after.json": {
+      "raw": {
+        "bytes": 253974,
+        "sha256": "b67e2750664c5724bf108b4ee0559cb3f7ae2175947be549389af4afea7933c0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pins-after.json",
+      "storage": {
+        "bytes": 48648,
+        "sha256": "8abc3a850730df59b2c57a5adef1153d3643cdaaf66ecb16464baf60918a32e7"
+      },
+      "stored": "streams/v2/capture/controller/pins-after.json.gzip"
+    },
+    "v2/capture/controller/pins-before.json": {
+      "raw": {
+        "bytes": 253974,
+        "sha256": "b67e2750664c5724bf108b4ee0559cb3f7ae2175947be549389af4afea7933c0"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pins-before.json",
+      "storage": {
+        "bytes": 48648,
+        "sha256": "8abc3a850730df59b2c57a5adef1153d3643cdaaf66ecb16464baf60918a32e7"
+      },
+      "stored": "streams/v2/capture/controller/pins-before.json.gzip"
+    },
+    "v2/capture/controller/pytest-session.json": {
+      "raw": {
+        "bytes": 22,
+        "sha256": "89853e3e5d3285daee18bc852b38c22241b94cc75dc335ab2a423726dd928620"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest-session.json",
+      "storage": {
+        "bytes": 42,
+        "sha256": "92cf1d313f7b094633bcdc314bf1dde7d6e6b173fbde4c03039a220f9a72e8f9"
+      },
+      "stored": "streams/v2/capture/controller/pytest-session.json.gzip"
+    },
+    "v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json": {
+      "raw": {
+        "bytes": 160,
+        "sha256": "015faf4a25421e84a8f59be710de38b5fb726a078907ce95ef565bc9fd8d659a"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json",
+      "storage": {
+        "bytes": 142,
+        "sha256": "ee416052112c5d3a5e1a2c4ced9bdc49a9651d0dfe5f23b344eb882cab9616e9"
+      },
+      "stored": "streams/v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-call.json.gzip"
+    },
+    "v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json": {
+      "raw": {
+        "bytes": 161,
+        "sha256": "afab852418b43af10f5ddc7dd19b27edbfae6f9e7b7c1c62d569726ada60cf16"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json",
+      "storage": {
+        "bytes": 143,
+        "sha256": "1be9e84889ea88caeb02b72288e9eb940a2850206e128dd548e6911cefc2bf7f"
+      },
+      "stored": "streams/v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-setup.json.gzip"
+    },
+    "v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json": {
+      "raw": {
+        "bytes": 164,
+        "sha256": "0fa4235329a6dd4af892d4f99b9f40b4c0b1e6573d1bb2b2f632189ceeca2855"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json",
+      "storage": {
+        "bytes": 144,
+        "sha256": "a42d2bf6e855b838bb4f22642e0545249e08dad0f655b28129886b28c66e5c06"
+      },
+      "stored": "streams/v2/capture/controller/pytest/06110ec61b7723bdb25e16cf14c47f8fc8998bb0688a11fb1bcd65e1dda272bf-teardown.json.gzip"
+    },
+    "v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json": {
+      "raw": {
+        "bytes": 149,
+        "sha256": "72b4ac6616ebcced9bb3ab6710e8d85fa9e76fd2e3c03f0d58f437d3cf4cef82"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json",
+      "storage": {
+        "bytes": 130,
+        "sha256": "f6fff270d985355640bc141a0845aeda9e0b599d64269137ab980e65689c07cd"
+      },
+      "stored": "streams/v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-call.json.gzip"
+    },
+    "v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json": {
+      "raw": {
+        "bytes": 150,
+        "sha256": "ca36c43926779fed7de2307faac73ed18b937c6d45c95533f35b461f2d18dc71"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json",
+      "storage": {
+        "bytes": 131,
+        "sha256": "09ed4584fb4bb8d0177870ea73b8af4edfc58ec86b16c2016aacd71b099c6ba2"
+      },
+      "stored": "streams/v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-setup.json.gzip"
+    },
+    "v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json": {
+      "raw": {
+        "bytes": 153,
+        "sha256": "22bcb71f9417c75c5e1342aaa6c40ef021ac42fe0d60f8670256b1e1716e3768"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json",
+      "storage": {
+        "bytes": 132,
+        "sha256": "aac536c1798a43d91c6e3414485fa600a4a4a171a225f44949b7d4e433e2e05e"
+      },
+      "stored": "streams/v2/capture/controller/pytest/b47879bf6c5fc4b4161b450cbe4402bfa8af2eb66ec85ea83b076ff319f0c413-teardown.json.gzip"
+    },
+    "v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json": {
+      "raw": {
+        "bytes": 156,
+        "sha256": "43e77c3bce84f735757a1cf11539d09102e54d48cdce42c60a03c530f2c972c8"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json",
+      "storage": {
+        "bytes": 130,
+        "sha256": "ca452c23ca3303a6a30cb0865232da89463b766f0879f5aeeffbd3461a9b9e8f"
+      },
+      "stored": "streams/v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-call.json.gzip"
+    },
+    "v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json": {
+      "raw": {
+        "bytes": 157,
+        "sha256": "0ed00fa62d796a343e42615cc9bfaad2d9953249aa3af446485a0baa1679c1be"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json",
+      "storage": {
+        "bytes": 129,
+        "sha256": "216cf3e4a96675f5186a7101d3e1033ec2b8f7b79b92731644883e6111e2a415"
+      },
+      "stored": "streams/v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-setup.json.gzip"
+    },
+    "v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json": {
+      "raw": {
+        "bytes": 160,
+        "sha256": "bf7043a3ad3a2588d1a3ad92412a618f95a1bbf8d4642202ef890ad34d109102"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json",
+      "storage": {
+        "bytes": 132,
+        "sha256": "1349ff4a88238dabaa8380752223986ce155ca1d8c0f75c28c85e46539f929c7"
+      },
+      "stored": "streams/v2/capture/controller/pytest/ff32cc85fb9eb1ec892b9abd77b4a50c9d391c79e7ee5bbfecd75eed73fc7dac-teardown.json.gzip"
+    },
+    "v2/capture/report.json": {
+      "raw": {
+        "bytes": 25676,
+        "sha256": "c25f4efb83a8b037a592ec8d381dae20d9ed41d16acd3b478aeedc8e4e8113e3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture/report.json",
+      "storage": {
+        "bytes": 3606,
+        "sha256": "95c7317ddaadb250deddb435fb7630805a827ad16d48c958601926e53c614b0a"
+      },
+      "stored": "streams/v2/capture/report.json.gzip"
+    },
+    "v2/capture_preservation.executed.py": {
+      "raw": {
+        "bytes": 23868,
+        "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/capture_preservation.executed.py",
+      "storage": {
+        "bytes": 7015,
+        "sha256": "f3f44c5b6181dcb6c3afe8449fd7c96795024dc9fce971ef9273b104aeaf61c4"
+      },
+      "stored": "streams/v2/capture_preservation.executed.py.gzip"
+    },
+    "v2/launch.json": {
+      "raw": {
+        "bytes": 3314,
+        "sha256": "824ae6aea37bbaaadf942ee4a8d094bbbe7d0d2e8f69d355dc7b600a0341bae6"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/launch.json",
+      "storage": {
+        "bytes": 1228,
+        "sha256": "e399ed9a53c82d606c010475101e4a5fd7582b227e5dc2b6c2b6f914cfabeb89"
+      },
+      "stored": "streams/v2/launch.json.gzip"
+    },
+    "v2/pytest.log": {
+      "raw": {
+        "bytes": 109,
+        "sha256": "434d25140c59fdca31d9a36e598e30003cfd350397830565dea02c4820b09717"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/pytest.log",
+      "storage": {
+        "bytes": 62,
+        "sha256": "61d9585898c417a4b74e9266852c69267f873b225742b4779e87bea9edd2f169"
+      },
+      "stored": "streams/v2/pytest.log.gzip"
+    },
+    "v2/report.log": {
+      "raw": {
+        "bytes": 181,
+        "sha256": "4256908620d7f1454103829c78ab0c4636a1f127f71f0b4b7eb9a72800c97a33"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/report.log",
+      "storage": {
+        "bytes": 141,
+        "sha256": "24a69baa537425e0797c7b631b4291cbe2b51d0183d05e8ba04153544590fe5d"
+      },
+      "stored": "streams/v2/report.log.gzip"
+    },
+    "v2/result.json": {
+      "raw": {
+        "bytes": 5733,
+        "sha256": "f1e89d2f11041f41e90af5aba710a783e0de47fda4c7a52be07e8d7ccd5a49d9"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/result.json",
+      "storage": {
+        "bytes": 1452,
+        "sha256": "f48923b7438eb1e3d540296cc83595cbc5958a1e41b28cd3e0b7f1cb373159bf"
+      },
+      "stored": "streams/v2/result.json.gzip"
+    },
+    "v2/structural-controls.log": {
+      "raw": {
+        "bytes": 100,
+        "sha256": "c00eb1049c587e1283e0e8de022fd50604911590cd673294bfe3cfdf1f29d447"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/structural-controls.log",
+      "storage": {
+        "bytes": 53,
+        "sha256": "a4c240eb8bfbf6b4d796d34b2f34515fb6b562def448e0f053ea97e8ebc0c5a9"
+      },
+      "stored": "streams/v2/structural-controls.log.gzip"
+    },
+    "v2/validate_observer.executed.py": {
+      "raw": {
+        "bytes": 7464,
+        "sha256": "b442e00fc0fc03ea5895863f5bc204a19903009d74ef399c9419c997bd6e3718"
+      },
+      "source": "/private/tmp/unfold-s81-output-observer-preuse-v2/validate_observer.executed.py",
+      "storage": {
+        "bytes": 2663,
+        "sha256": "3db7103fd1f28633055ae962ed7b054b015ed7bd19aa6d021a321e98291f343d"
+      },
+      "stored": "streams/v2/validate_observer.executed.py.gzip"
+    }
+  },
+  "storage_rule": "Append .gzip to each full logical path; originals unchanged."
+}

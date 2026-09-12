@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "reviewer": "root",
+  "scope": "Independent byte restoration against live original files, stored/raw hashes, injective file membership, archived directory membership. Profiles/pickles treated as opaque bytes; no model/test execution. Does not reinterpret historical outcomes.",
+  "artifact_map_sha256": "77026faed6b75b5b9061945d0e2f25a1f047f5257cb9718677e8750737a51c2d",
+  "streams": 248,
+  "directories": 50,
+  "raw_bytes": 178734388,
+  "seconds": 0.7208886668086052
+}

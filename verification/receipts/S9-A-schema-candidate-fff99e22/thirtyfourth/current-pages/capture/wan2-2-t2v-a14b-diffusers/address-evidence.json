@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "7cec883955f7e6619e41b75a9cbe515e191f53e8dc7abf437cbc41711837286a",
+  "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+  "input_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_wan",
+    "qualname": "WanTransformer3DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

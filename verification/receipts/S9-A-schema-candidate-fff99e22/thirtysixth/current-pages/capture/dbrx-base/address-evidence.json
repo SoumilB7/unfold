@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "3f66c0d48aa93566dac93ac90edad53a11bbf06e4d3047e0311fcaebd0cc8e64",
+  "input": "tests/sable_test_corpus/dbrx-base.json",
+  "input_sha256": "c9bb6bd55d1e7141d192386ea699371030d4d54583550e1d0cf5ac013741fa31",
+  "resolved_class": {
+    "module": "transformers.models.dbrx.modeling_dbrx",
+    "qualname": "DbrxForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

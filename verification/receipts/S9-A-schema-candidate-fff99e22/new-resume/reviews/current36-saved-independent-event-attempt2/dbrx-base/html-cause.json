@@ -1,0 +1,19 @@
+{
+  "after_bytes": 89743,
+  "after_sha256": "ccf458fdcd8e8f6c5f94108a914f7a0673b1ebdd3ecee381732cdf8d845829af",
+  "before_bytes": 89743,
+  "before_sha256": "ae86df80a10de3b0f0304b15edf723dc3a49b37c4c755bc0aa043ea616219b8f",
+  "exact_new_mount_occurrences": 205,
+  "exact_old_mount_occurrences": 205,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-9eb6dc9bbe",
+  "mount_identity_before": "uf-68e3795e04",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 6,
+  "raw_ordered_svg_count_before": 6,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "dbrx-base",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

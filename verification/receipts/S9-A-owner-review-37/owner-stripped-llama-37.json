@@ -1,0 +1,116 @@
+{
+ "full": {
+  "seconds": 4.12,
+  "layers": null,
+  "facts": {
+   "model.hidden_size": {
+    "status": "config_declared",
+    "value": 4096
+   },
+   "decoder.attention.head_geometry": {
+    "status": "code_and_config",
+    "value": {
+     "kind": "mha",
+     "num_heads": 32,
+     "num_kv_heads": 32,
+     "head_dim": 128,
+     "q_lora_rank": null,
+     "kv_lora_rank": null,
+     "qk_nope_head_dim": null,
+     "qk_rope_head_dim": null,
+     "v_head_dim": null
+    }
+   },
+   "decoder.ffn.activation": {
+    "status": "code_and_config",
+    "value": "silu"
+   },
+   "decoder.ffn.intermediate_size": {
+    "status": "code_and_config",
+    "value": 11008
+   },
+   "decoder.attention.mask": {
+    "status": "code_and_config",
+    "value": "causal"
+   },
+   "decoder.layer.norm_kind": {
+    "status": "code_proven",
+    "value": "rmsnorm"
+   }
+  },
+  "status_counts": {
+   "code_and_config": 12,
+   "code_proven": 10,
+   "ambiguous": 1,
+   "config_declared": 2
+  },
+  "chips": {
+   "unresolved": 1,
+   "class_default": 0,
+   "symbolic": 0,
+   "pending_design": 0
+  },
+  "nodes": 26,
+  "cards": 30,
+  "html_bytes": 60258,
+  "warnings": 1
+ },
+ "stripped": {
+  "seconds": 0.22,
+  "layers": null,
+  "facts": {
+   "model.hidden_size": {
+    "status": "config_declared",
+    "value": 4096
+   },
+   "decoder.attention.head_geometry": {
+    "status": "class_default",
+    "value": {
+     "kind": "mha",
+     "num_heads": 32,
+     "num_kv_heads": 32,
+     "head_dim": 128,
+     "q_lora_rank": null,
+     "kv_lora_rank": null,
+     "qk_nope_head_dim": null,
+     "qk_rope_head_dim": null,
+     "v_head_dim": null
+    }
+   },
+   "decoder.ffn.activation": {
+    "status": "class_default",
+    "value": "silu"
+   },
+   "decoder.ffn.intermediate_size": {
+    "status": "class_default",
+    "value": 11008
+   },
+   "decoder.attention.mask": {
+    "status": "code_and_config",
+    "value": "causal"
+   },
+   "decoder.layer.norm_kind": {
+    "status": "code_proven",
+    "value": "rmsnorm"
+   }
+  },
+  "status_counts": {
+   "class_default": 6,
+   "code_proven": 12,
+   "code_and_config": 5,
+   "ambiguous": 1,
+   "config_declared": 1
+  },
+  "chips": {
+   "unresolved": 1,
+   "class_default": 0,
+   "symbolic": 0,
+   "pending_design": 0
+  },
+  "nodes": 26,
+  "cards": 30,
+  "html_bytes": 60302,
+  "warnings": 1
+ },
+ "structure_equal": true
+}

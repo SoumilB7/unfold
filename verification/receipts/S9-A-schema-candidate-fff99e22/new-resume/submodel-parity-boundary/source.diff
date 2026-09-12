@@ -1,0 +1,61 @@
+--- before/tests/test_submodel_parity.py
++++ held/tests/test_submodel_parity.py
+@@ -97,11 +97,13 @@
+     altitude transforms and the evidence-resolved extras."""
+     from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+     from model_unfolder.adapters.transformer.blocks.feed_forward import ffn_detail
+-    from model_unfolder.adapters.transformer.parser import parse as parse_transformer
++    from model_unfolder.parser import config_to_ir
+     from model_unfolder.evidence.context import ParseContext
+     from model_unfolder.ir import distinct_layer_groups
+ 
+-    standalone = parse_transformer(cfg, context=ParseContext.build(cfg, source="local"))
++    # Compare real parser boundaries: the encoder path enters its prepared
++    # document, and the public standalone path must enter its own as well.
++    standalone = config_to_ir(cfg, parse_context=ParseContext.build(cfg, source="local"))
+     groups = distinct_layer_groups(standalone.layers)
+     spec = _direct_spec(cfg)
+     assert len(spec["groups"]) == len(groups)
+@@ -126,6 +128,42 @@
+         got_ffn = dict(spec_group["ffn"])
+         assert got_ffn.pop("hidden") == standalone.hidden_size
+         assert got_ffn == expected_ffn
++
++
++@pytest.mark.parametrize("name,operand,expected", [
++    ("llama_gqa_rope", "head_dim", 128),
++    ("t5_gated_relbias_unscaled", "d_kv", 64),
++])
++def test_context_default_candidates_need_the_actual_prepared_boundary(name, operand, expected):
++    from model_unfolder.adapters.transformer.parser import parse as parse_transformer
++    from model_unfolder.evidence.config_access import current_prepared_document
++    from model_unfolder.evidence.context import ParseContext
++    from model_unfolder.parser import config_to_ir
++
++    cfg = ENCODER_CASES[name]
++    assert operand not in cfg
++    context = ParseContext.build(cfg, source="local")
++    assert context.class_defaults[operand] == expected
++    assert current_prepared_document.get() is None
++    assert not context.prepared_documents
++    limited = parse_transformer(cfg, context=context)
++    # A hydrated candidate on the context is not an active default premise.
++    assert all(layer.attention.head_dim is None for layer in limited.layers)
++    assert not context.prepared_documents
++    assert current_prepared_document.get() is None
++
++    actual_context = ParseContext.build(cfg, source="local")
++    standalone = config_to_ir(cfg, parse_context=actual_context)
++    prepared = actual_context.prepared_documents["root"].prepared
++    assert operand not in prepared.checkpoint
++    assert prepared.class_overlay[operand] == expected
++    assert all(layer.attention.head_dim == expected for layer in standalone.layers)
++    if name == "llama_gqa_rope":
++        assert "attention_bias" not in cfg
++        assert all(layer.attention.bias is None for layer in limited.layers)
++        assert prepared.class_overlay["attention_bias"] is False
++        assert all(layer.attention.bias is False for layer in standalone.layers)
++    assert current_prepared_document.get() is None
+ 
+ 
+ @pytest.mark.parametrize("name,cfg", sorted(ENCODER_CASES.items()))

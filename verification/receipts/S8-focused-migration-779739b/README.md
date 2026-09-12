@@ -1,0 +1,5 @@
+# Frozen focused obligation run779739b — retained one-test failure
+
+The exact29 selected targets ran serially in the detached779739b checkout:28 passed, one failed in622.64 pytest seconds. All25 migrated obligations, three original-input negatives and actual ordinary/differential view coverage are selected in `invocation.json`. Only the synthetic default-head assertion failed: it incorrectly required code_proven for a class_default record. No product failure or evidence promotion follows. The owner accepted explicit class_default/value8 assertion correction atfb1f871; its separate actual rerun is pending.
+
+Production/tests/support pre/post manifests are equal. Physics has a separately labelled during-run exact-commit check and identical post-run check; it is not mislabelled as an execution-start timestamp. The raw pytest log is losslessly gzip-compressed, and the exact executed coordinator source is retained as data. All five legacy view emissions and six current view emissions passed the existing coupling/census checks. No output baselines were changed.

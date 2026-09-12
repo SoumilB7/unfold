@@ -1,0 +1,11 @@
+{
+  "failure": {
+    "detail": "TypeError: empty(): argument 'size' failed to unpack the object at pos 2 with error \"type must be tuple of ints,but got NoneType\"",
+    "kind": "ConstructionFailed",
+    "stage": "construct"
+  },
+  "inventory": null,
+  "status": "failed",
+  "stderr": "The config attributes {'scheduler': ['diffusers', 'EulerDiscreteScheduler'], 'text_encoder': ['transformers', 'CLIPTextModel'], 'text_encoder_2': ['transformers', 'CLIPTextModelWithProjection']} were passed to UNet2DConditionModel, but are not expected and will be ignored. Please verify your config.json configuration file.\n",
+  "stdout": ""
+}

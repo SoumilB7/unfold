@@ -1,0 +1,21 @@
+{
+  "case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/ddpm-cifar10/ordinary",
+  "elapsed_seconds": 4.774,
+  "facts_sha256": "3150cc01176e786a322f5308f1d7555ab3631ac7270f1625f59e1cd165a3688e",
+  "indexed_source_nodes": 2,
+  "input_sha256": "294054d1575eb18a7889f072cd6e9fff7f3cf93ad45d45046f3fd32e4b3cb1f3",
+  "inventory_sha256": "c61c6b627ee5991e7ee55946ee39ee5a7c51a268a8c680ad995aa690db2b1158",
+  "no_model_or_execution": true,
+  "root_and_external_nodes_archived": 2,
+  "root_sha256": "ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+  "summary": {
+    "parameter_count": 35746307,
+    "parameterized_module_count": 164,
+    "population_fact_key": "root.denoiser.constructed_modules",
+    "scope": "denoiser",
+    "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+    "stage_count": 9,
+    "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+  },
+  "three_fact_values_exact": true
+}

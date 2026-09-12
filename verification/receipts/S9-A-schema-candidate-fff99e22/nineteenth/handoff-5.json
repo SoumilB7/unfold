@@ -1,0 +1,22 @@
+{
+  "schema": "s9a-config-annotation-first-base-v1",
+  "source_only": true,
+  "runtime": "NOT RUN",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/framework_config.py",
+      "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014",
+      "bytes": 62121,
+      "eighteenth_sha256": "ef26900089e7d9be110a5c1b16eb331178f1e28475e5e6a46cdcd29ce1575061"
+    },
+    {
+      "path": "tests/test_s9_config_annotation_mro.py",
+      "sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06",
+      "bytes": 5335,
+      "eighteenth_sha256": null
+    }
+  ],
+  "scope": "First direct unshadowed local base OWN unconditional annotation under ordinary C3 only; no fork ancestor traversal; root-own annotation precedence and single-base path preserved. D1 guard unchanged.",
+  "focused_command": "python3 -m pytest -q tests/test_s9_config_annotation_mro.py tests/test_framework_config.py tests/test_s9_class_default_value.py",
+  "diffusion_status": "Unready/paused; pin sixteenth diffusion sources in next candidate."
+}

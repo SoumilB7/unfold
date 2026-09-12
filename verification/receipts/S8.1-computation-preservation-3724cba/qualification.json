@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "error_absent": true,
+    "external": true,
+    "lane_artifacts_equal": true,
+    "lane_exit_zero": true,
+    "lane_source_equal": true,
+    "passed": true,
+    "source_artifacts": true,
+    "staged_artifacts": true,
+    "tools": true,
+    "tree": true
+  },
+  "commit": "3724cba4e12a206fdf812a45b4abc5fda09647f1",
+  "scope": "Read-only equality checks of retained actual result.json; not another execution.",
+  "selected_external_count": 60
+}

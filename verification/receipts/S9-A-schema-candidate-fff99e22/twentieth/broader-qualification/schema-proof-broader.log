@@ -1,0 +1,165 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 36%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+......F...................F............................................. [ 93%]
+......................................................................F. [ 97%]
+..................................................                       [100%]
+=================================== FAILURES ===================================
+____________ test_fused_bloom_parser_projects_the_divided_dimension ____________
+
+    def test_fused_bloom_parser_projects_the_divided_dimension():
+        config = AutoConfig.for_model("bloom")
+        context = ParseContext.build(config, source="local")
+>       ir = config_to_ir(config, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_geometry.py:241: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1472: in parse
+    _ffn_mechanism = _ffn_mechanism_result(
+model_unfolder/adapters/transformer/parser.py:271: in _ffn_mechanism_result
+    return context.cached_reader_result(
+model_unfolder/evidence/context.py:314: in cached_reader_result
+    self.reader_results[key] = factory()
+                               ^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:274: in <lambda>
+    lambda: decoder_ffn_mechanism_for_path(
+model_unfolder/evidence/reader_claims.py:318: in invoke
+    fingerprint = (checkpoint_fingerprint(prepared.checkpoint)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+checkpoint = BloomConfig {
+  "apply_residual_connection_post_layernorm": false,
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  ...alse,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.12.1",
+  "use_cache": true,
+  "vocab_size": 250880
+}
+
+
+    def checkpoint_fingerprint(checkpoint) -> str:
+        """Stable serialized-content identity for one checkpoint snapshot."""
+        if not isinstance(checkpoint, dict):
+>           raise TypeError("checkpoint claim evidence requires a mapping snapshot")
+E           TypeError: checkpoint claim evidence requires a mapping snapshot
+
+model_unfolder/evidence/config_access.py:1405: TypeError
+_________ test_exact_mtp_path_authors_one_fact_block_and_real_receipt __________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5884/test_exact_mtp_path_authors_on0')
+
+    def test_exact_mtp_path_authors_one_fact_block_and_real_receipt(tmp_path):
+        ir, _context = _parse(tmp_path)
+        extras = ir.extras or {}
+        facts = extras.get("fact_provenance") or {}
+        expected = {
+            "num_modules": 2,
+            "shares_embedding": True,
+            "shares_output_head": True,
+            "hidden_norm_kind": "LayerNorm",
+            "embedding_norm_kind": "LayerNorm",
+            "reuses_stage_block_class": True,
+        }
+>       assert facts["decoder.mtp_modules"] == {
+            "value": expected, "status": "code_and_config",
+            "source": "decoder_mtp_construction_for_path",
+        }
+E       AssertionError: assert {'presentatio...': True, ...}} == {'source': 'd...': True, ...}}
+E         
+E         Omitting 3 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'presentation_reference': {'claim_proof': None,
+E                                     'completeness': 'complete',
+E                                     'fact_key': 'decoder.mtp_modules',
+E                                     'owner': 'decoder',...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/test_mtp.py:176: AssertionError
+____________ test_parser_and_conformance_share_one_exact_ffn_result ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x178df0050>
+
+    def test_parser_and_conformance_share_one_exact_ffn_result(monkeypatch):
+        from model_unfolder import config_to_ir
+        from model_unfolder.evidence import ffn_mechanism as mechanism_module
+        from model_unfolder.evidence.conformance import check_fact_conformance
+        from model_unfolder.parser import _coerce
+    
+        config = json.loads(
+            (_CORPUS / "musicgen-small.json").read_text(encoding="utf-8"))["config"]
+        cfg = _coerce(config)
+        context = ParseContext.build(cfg)
+        real_reader = mechanism_module.decoder_ffn_mechanism_for_path
+        calls = []
+    
+        def counted_reader(*args, **kwargs):
+            calls.append((args[2], kwargs.get("allow_root_stage")))
+            return real_reader(*args, **kwargs)
+    
+        monkeypatch.setattr(
+            mechanism_module, "decoder_ffn_mechanism_for_path", counted_reader)
+>       ir = config_to_ir(cfg, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ffn_mechanism.py:1033: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1472: in parse
+    _ffn_mechanism = _ffn_mechanism_result(
+model_unfolder/adapters/transformer/parser.py:271: in _ffn_mechanism_result
+    return context.cached_reader_result(
+model_unfolder/evidence/context.py:314: in cached_reader_result
+    self.reader_results[key] = factory()
+                               ^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:274: in <lambda>
+    lambda: decoder_ffn_mechanism_for_path(
+tests/test_ffn_mechanism.py:1029: in counted_reader
+    return real_reader(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(canonical_path='/Library/Framewor... 'MusicgenPreTrainedModel', 'text_encoder': 'T5Model'}, pipeline_components=(), companion_components=()), ('decoder',))
+kwargs = {'allow_root_stage': True, 'config_selector': <function _ffn_mechanism_result.<locals>._select at 0x165f74fe0>}
+
+    @wraps(function)
+    def invoke(*args, **kwargs):
+        if function.__code__ is not code or getattr(module, function.__name__, None) is not invoke \
+                or _PRODUCER_CALLABLES.get(symbol) != (function, code, invoke, intended_claims):
+>           raise ValueError("reader claim producer callable changed after registration")
+E           ValueError: reader claim producer callable changed after registration
+
+model_unfolder/evidence/reader_claims.py:315: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_attention_geometry.py::test_fused_bloom_parser_projects_the_divided_dimension
+FAILED tests/test_mtp.py::test_exact_mtp_path_authors_one_fact_block_and_real_receipt
+FAILED tests/test_ffn_mechanism.py::test_parser_and_conformance_share_one_exact_ffn_result
+3 failed, 1775 passed in 136.96s (0:02:16)

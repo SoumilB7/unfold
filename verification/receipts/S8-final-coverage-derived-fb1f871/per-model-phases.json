@@ -1,0 +1,354 @@
+[
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+    "input_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/auraflow-v0-3/sable-report.json",
+    "report_sha256": "917b49afb347236a951542b70c11bf77efacf568fefebc5ec8f3e3c38fcb55ea"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/bloom.json",
+    "input_sha256": "ec3c45693cfa29ebab32657ca294ab592fce04aedbca0dc1d7aef13ea6371eaa",
+    "phase": "actual736_sable_row_plus_current_same_IR_geometry_and_semantic_event_derivation",
+    "report_path": "/private/tmp/unfold-s8-bloom-current-736fdab/capture/sable-report.json",
+    "report_sha256": "b8294a5509b155c91c95ad4996c7405c6ebff7c7b4f9fee41ef015edb4805d78"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/cogvideox-5b.json",
+    "input_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/cogvideox-5b/sable-report.json",
+    "report_sha256": "9f41e3237b9d0d00307dc500c7e69afa3f930f93db5d1c62938121dd18918316"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/dbrx-base.json",
+    "input_sha256": "de3977b959954db6244bccd18313843cb215a7a818957313247180e92c65d971",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/dbrx-base/sable-report.json",
+    "report_sha256": "7d8773b0d2c7b2d3c56fe615ada44e503454a9f721194ea06852b756005b3f7a"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/deepseek-v3.json",
+    "input_sha256": "6a9b6f9d6aa62732ac1647e98189f7608feb58bf4f2d3928ddd0f129fa39487c",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/deepseek-v3/sable-report.json",
+    "report_sha256": "1d649ba38304fa4e88f4548b267f3623704da38494aa45dfc3e593954c5b0106"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/flux-2-dev.json",
+    "input_sha256": "40e7bd462e7147b740c662eecaa462521d5248b5100d4bee85d192076d153098",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/flux-2-dev/sable-report.json",
+    "report_sha256": "0feeec232630a162cfdd5b0dd9e0178eab0d74d0483d82e75c825ebc5a2d4a43"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
+    "input_sha256": "f2c817111b55fe7093e9e5b34307e606e6f3c3a4ae8d9eacfe65f9343fc12a30",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/fluxtransformer2dmodel/sable-report.json",
+    "report_sha256": "8c4d1c73ff9bba4666c7e4b24999c6407cbad0e87f4e426971d7656c707565e0"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+    "input_sha256": "4b8942e8ef17b03f0d583a4be0cd9edbc7ff43990396d68a7d585064a037c586",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/gemma-2-2b-it/sable-report.json",
+    "report_sha256": "bbe14d23d713f9b18f5a24f62d26778a9283a8b8142dce76911997adbfa5df91"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/glm-4-5.json",
+    "input_sha256": "add9612a16d9906ed97915d79e14ccb6c69cb487a9dae15361cb223db3c3e412",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/glm-4-5/sable-report.json",
+    "report_sha256": "a883b55110d737dbab49e13aff7cb3a0021778be0eade29f5327e09878754adb"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+    "input_sha256": "6ee34b8e21f8745ae873ec2379e9fcbfafd53c7e1ce4e45e4178758c3f5e78b0",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/gpt-oss-20b/sable-report.json",
+    "report_sha256": "96506d6d8a8a4c563092829806b3d51c3c43aab4e8d6a52d1f48991b878e5360"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+    "input_sha256": "bd9f2345a33dca2ad7b91c26de015d5c81e6e5cad1546a02f082600c3eee2d6c",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/granite-3-0-8b-instruct/sable-report.json",
+    "report_sha256": "3b8188954a39b33171aeb8a637e1d4c1f2b4c062b4a79addb574e8f7272b729f"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/hunyuanvideo.json",
+    "input_sha256": "78c2016104de932e4a147ca15d48407964804415c0c1b8f033d6c9d0262d3e23",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/hunyuanvideo/sable-report.json",
+    "report_sha256": "7eaeb0bf00c0baf08a384052267af2df1e16bf4d6c6c6113903d7271799bd89f"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/llama-7b.json",
+    "input_sha256": "c33b6c8ca00034db5c1154d83feda8d7520c36da35d3c6cef8933296f88e60e8",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/llama-7b/sable-report.json",
+    "report_sha256": "83c126bea9c3aa458c3de7aa820dc96c08ac989c34c3f1df14ae532ffe2f0185"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/ltx-video.json",
+    "input_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/ltx-video/sable-report.json",
+    "report_sha256": "e8514011bf45369a83824c00629ca1b5f0703b039418184ccd2fed633104079f"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+    "input_sha256": "d1ee2ad6baba0e8e7950a2f1e12fd33f09d069dd5b7b59fc96d7f85081f4c56d",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/lumina-image-2-0/sable-report.json",
+    "report_sha256": "aebdb88deb49eae95f775b4d40e660277c033088ec0e30dda8b50b09b82ed802"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/mochi-1-preview.json",
+    "input_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/mochi-1-preview/sable-report.json",
+    "report_sha256": "6f1779c7b1947ff93c0f0997cf7b0cec31530672ef3667a8d63dfd26e3319ab4"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/musicgen-small.json",
+    "input_sha256": "200a4dec968d42ca29ae7b2ee066bcec69f66b16657db46335086965e7785f86",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/musicgen-small/sable-report.json",
+    "report_sha256": "b74d152d4eccf8bf6cb85ed3fbe313e9240f1a81a7ad3b8f45585ed45e95fea2"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+    "input_sha256": "26ccdfd1f1e12885cc36d60cbc555336bfd17e0e0bdfc61b94ee3efbfa418c0a",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/olmo-2-1124-7b/sable-report.json",
+    "report_sha256": "7f2cf87c5b148ecda153642e19b01a242fd8bd0f0dc76a0f27f987c159c985e8"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+    "input_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/pixart-sigma-xl-2-1024-ms/sable-report.json",
+    "report_sha256": "e1b601d45ffba97a20302e15bb6c56886bcf3cdf9aa4b17418a544d45c6c9c7c"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+    "input_sha256": "0f832626277f138f2fe3c4ac7594192ca76d661f850db1a4634a8210ea5c8088",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/prxpixel-t2i/sable-report.json",
+    "report_sha256": "1c185daaec5164a379b88418a9acff300ebc415542fb22651c877da51337f424"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/qwen-image.json",
+    "input_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/qwen-image/sable-report.json",
+    "report_sha256": "048f6e09a5877c4d1bb221306aba7b7b4800a9264a363821dc7df49c8a071402"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+    "input_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/qwen2-vl-7b-instruct/sable-report.json",
+    "report_sha256": "383c45cc14e37b7917b7154bc4c56c4f33bb3652d4b40ccba3993429d842f3d5"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+    "input_sha256": "e0a6c2efb9c7fc156befc4e90090aabc83826715feae992271dbf405e5017863",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/qwen3-5-27b-text/sable-report.json",
+    "report_sha256": "439bee3569e58cc23812ee81d1d6d8a5c043e1da627babf15ebd86f376acfa1a"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/qwen3-8b.json",
+    "input_sha256": "03c84d3d82e7d7cdada3a196dba402f7849452c4731d76582b55c57441c425cf",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/qwen3-8b/sable-report.json",
+    "report_sha256": "052bcad98f7dff524afec8b9df4495101cb67580417c61680a63b2370d20efc9"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+    "input_sha256": "7ce2a9f648f00ef9bc8bf2d402eeb2ab59d4fcc9fbcee9bf5961eddb13946a5b",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/sana-1600m-1024px-diffusers/sable-report.json",
+    "report_sha256": "df7e649a51c87307a194e0e7684aa8d1dfe54df0ba698b1773a56c4d9e0f7516"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+    "input_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/stable-diffusion-3-5-large/sable-report.json",
+    "report_sha256": "11eacb84a94082d38b2c83f696e06ef2133ac4156775a67d4e11d78493151784"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+    "input_sha256": "05de128f956d5140df7cbadf8d9bbc2e6751da9614ce957235b645a45b470751",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/example-sable/stable-diffusion-xl-base-1-0/sable-report.json",
+    "report_sha256": "0ecaf0ae5d33f4b0541ba5d25249ddd527980b5e3e5fb5be9da35f9b25478033"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+    "input_sha256": "78d6d3a7528069cd18efa3fabd0b0f7b8e3c905ccc56fa203df52b9e6dfc0443",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/stablelm-2-1-6b/sable-report.json",
+    "report_sha256": "d373c8f3faddc69b3311194ada4a6885ea814a8ccd6bc3b72ca17c7796a5130c"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+    "input_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/wan2-2-t2v-a14b-diffusers/sable-report.json",
+    "report_sha256": "ec088c3fe1eb27b8a61662c2385c30cda87674a828ca56b61b54f918fd7eaa03"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/command-a-03-2025.json",
+    "input_sha256": "6a56c1d2c171197959088403e1fe4113aae079b70eca57a43ed1e2ae3b0af300",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+    "input_sha256": "a966dc1455a8328c32ada699174cf2d472cb414f811c62fc61f863f0b109c9d8",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/glm-4-9b.json",
+    "input_sha256": "35299f6398b48ce3718eea706e0875b53db7ce14e4df6c5e9bee62637eaac271",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/gpt-neox-20b.json",
+    "input_sha256": "401ca7866b9c709423746bdd94c215da44fed5aec3831810339091262403043b",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/hunyuandit-v1-2.json",
+    "input_sha256": "5cd3fc08b8f1902444419e304595f47e8f7214a65f8d467a7175b7526181b169",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/jamba-v0-1.json",
+    "input_sha256": "0dd8df0799c1849d6caf7dad2cf23023b67cdc2e156ca5015faebf1eb38c98aa",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+    "input_sha256": "aef76f29d8213deaaa121fd4ed5e06a7c498560e6ef28488d5bcd969c9043c08",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/minimax-m2.json",
+    "input_sha256": "0a2f4a45d014bac242912017576169d6c8337a095bd9d7d9fe715bfc2a7c6568",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+    "input_sha256": "3613cacae919e52e25d64ac34f63227357bda2cfde1ebda0bd35a47c1c237082",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/qwen3-6-35b-a3b.json",
+    "input_sha256": "3b3e697dc808ab22dbe6247427a2e63fa8ff959b19e9ef708f94cca022054de0",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+    "input_sha256": "5b1dc2c869c5fecabc90722393633bd789598b28a830bafba92f366a52d85973",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+    "input_sha256": "3fb6ef34f671f4f98d7d6c828d78be6e8a54f771bb09ebaffdc059088af13530",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/sana-1-5-4-8b.json",
+    "input_sha256": "7d80f13016ca48fe3383a5e8d7b030cd59cb08829273d2abffa45e9777ce0ea3",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/sd-v1-4.json",
+    "input_sha256": "c5dd075d93072828c01293b3c7ad32cce983a1a0007d94764089464256fa7ee1",
+    "phase": "actual_current_fb1_sable",
+    "report_path": "/private/tmp/unfold-s8-current-captures-fb1f871/sd-v1-4-cwd-corrected/sable-report.json",
+    "report_sha256": "58059193b9a9ce4ef013baea91e2bf5d7abea9c18ecd47c88c7fb49bf7677ed6"
+  },
+  {
+    "full_row_equal716": true,
+    "input": "tests/unseen_model_configs/seed-oss-36b.json",
+    "input_sha256": "09a13cb45e64f899e8d0e6e012dc2d3e8b01e52f6000370ef88bda1a46f737b8",
+    "phase": "historical716_actual_row_current_source_input_applicability_guard",
+    "report_path": null,
+    "report_sha256": null
+  }
+]

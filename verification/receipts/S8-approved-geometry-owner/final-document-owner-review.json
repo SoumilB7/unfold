@@ -1,0 +1,345 @@
+{
+  "status": "ACCEPT_FINAL_ROOT_DOCUMENTS",
+  "gate": "S8-approved-workers2-full-verification-c207550",
+  "owner_gate_audit": "S8-approved-geometry-owner/completed-workers2-c207550-gate-review.json",
+  "canonical_files": {
+    "z-docs/11-execution/S8-review.md": {
+      "sha256": "a4d0f1d9ce178667928fe51f5ae0fbaf7e0f1dbfcc35c7dd5c8c56180175fad9",
+      "bytes": 105672
+    },
+    "z-docs/12-design/S8/index.html": {
+      "sha256": "96a172e0e0232a3200fd13d846475e1753cf758140c413dba129ee8556ff5f24",
+      "bytes": 15364
+    },
+    "z-docs/12-design/S8/output-deltas/index.html": {
+      "sha256": "df6cad3535035f9320e8a3e750695057bbc8807f96ed53930d7e7fb843d46f36",
+      "bytes": 23780
+    }
+  },
+  "local_targets_checked": [
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "head-diagnostics-736fdab/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "bloom-routing/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "examples-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "existing-qwen-route/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "output-deltas/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-ordinary.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "../../11-execution/S8.md"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "../../11-execution/S8-review.md"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-sparse.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-misleading.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-c38b008/render-phase/changed-pair/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-changed.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-c38b008/render-phase/missing-pair/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-missing.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-refiner.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/sdxl-inpainting.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/ddpm-cifar10.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "final-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_today.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_today.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_today_denoiser.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_shipped.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_shipped.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/index.html",
+      "target": "img/sdxl_shipped_denoiser.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../bloom-routing/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../existing-qwen-route/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../final-fb1f871/sdxl-ordinary.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../final-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../../../11-execution/S8.md"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "per-witness-dispositions.json"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "../examples-fb1f871/index.html"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "00-dbrx-base/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "00-dbrx-base/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "17-deepseek-v3/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "17-deepseek-v3/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "01-flux-2-dev/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "01-flux-2-dev/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "02-gemma-2-2b-it/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "02-gemma-2-2b-it/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "03-gemma-2-2b-it/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "03-gemma-2-2b-it/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "04-glm-4-5/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "04-glm-4-5/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "05-glm-4-5/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "05-glm-4-5/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "06-gpt-oss-20b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "06-gpt-oss-20b/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "07-gpt-oss-20b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "07-gpt-oss-20b/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "18-granite-3-0-8b-instruct/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "18-granite-3-0-8b-instruct/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "19-hunyuanvideo/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "19-hunyuanvideo/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "20-llama-7b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "20-llama-7b/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "08-lumina-image-2-0/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "08-lumina-image-2-0/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "09-lumina-image-2-0/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "09-lumina-image-2-0/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "21-musicgen-small/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "21-musicgen-small/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "10-olmo-2-1124-7b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "10-olmo-2-1124-7b/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "11-prxpixel-t2i/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "11-prxpixel-t2i/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "12-qwen3-5-27b-text/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "12-qwen3-5-27b-text/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "13-qwen3-8b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "13-qwen3-8b/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "14-sana-1600m-1024px-diffusers/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "14-sana-1600m-1024px-diffusers/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "15-sana-1600m-1024px-diffusers/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "15-sana-1600m-1024px-diffusers/current.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "16-stablelm-2-1-6b/old.png"
+    },
+    {
+      "page": "z-docs/12-design/S8/output-deltas/index.html",
+      "target": "16-stablelm-2-1-6b/current.png"
+    }
+  ],
+  "local_target_count": 79,
+  "preserved_output_witness_rows": 29,
+  "preserved_native_images": 44,
+  "historical_review_body_preserved": true,
+  "browser_interaction_tested": false,
+  "exact_final_canonical_snapshot_count": 4,
+  "stored_gzip_raw_and_current_canonical_bytes_equal": true,
+  "canonical_snapshot_manifest_sha256": "638ad40d28397b12863b9129e0de684b4b427dcfbd2c29e1f55bd8ef055c34da"
+}

@@ -1,0 +1,229 @@
+{
+  "artifacts": {
+    "dbrx-base/inventory.json": "14fa7e36fc98c3128124612197d9a0c8976fa435da79e973828e59d69df37e5c",
+    "dbrx-base/observation-attention-block-0-bf16.json": "63ff8acbe8664eb5d3c0e595dbd58670104ef7e4d8b2f1d4dc21f7e4ef4fceac",
+    "dbrx-base/observation-text-eval-no-cache.json": "e570386287fac307f63532c6c6eae60fcdf8a10178608c5de13cf391dd6fcc50",
+    "dbrx-base/request.json": "2c8dfd2c6e1211cfe18544725bae27f2a302c040d80e9197cdb53b407e6b771b",
+    "deepseek-v3/inventory.json": "f8333b24e65ff598c501b3c9ba54f55e0d30a615974bcb551c04177d44595ad2",
+    "deepseek-v3/observation-text-eval-no-cache.json": "c9e55251437d160c7ec001ac6195b6845e70964c0b25cce2a844f8c2cc06fb3a",
+    "deepseek-v3/request.json": "9c5bdb2f07cc4555e815515a170e86587e014c173fd81cfbdf0dc97b6a93501f",
+    "llama-7b/inventory.json": "d309af0ede4859aae326980ff0fee63646ea155ca06aa28d3a0d9d89ebe6858f",
+    "llama-7b/observation-text-eval-no-cache.json": "6c84a64c34aa4b177fba07550ecdd1f0365a11992b2e2600a94d0aa29853b65d",
+    "llama-7b/request.json": "194d6a9e15f61b1c3055533570a9273b710411c0efe029d3b8b08a6ab1169b76",
+    "musicgen-small/inventory.json": "26fe33e2b1cda1e8f493a0ce51c3efa7b28b7d66a40cc285d039d290b6976864",
+    "musicgen-small/observation-text-audio-eval-no-cache.json": "06c10cb608e2708c103e1f44451984b4f3efdc80cba32c0865f481013c0c02d7",
+    "musicgen-small/request.json": "07345e2839e62bf41a6dfcd69b64e8957719518ab2a92b3a755605d30ed2027b",
+    "pixart-sigma-xl-2-1024-ms/inventory.json": "a98083ef663207ba95ab0c1ca4907d84c24e5c1226f2eac8920758ab3a50b353",
+    "pixart-sigma-xl-2-1024-ms/observation-latent-eval-conditioned.json": "73263cdbed267284b492378b2f1e5c7b28cdf62b54256115c909045727624ab3",
+    "pixart-sigma-xl-2-1024-ms/request.json": "2c68589e0fb215658054406c8091c9b1365c07ccba4f28463cc8726014355378",
+    "qwen2-vl-7b-instruct/inventory.json": "d22ed04df856c63f7f918a02bca96eed142c43b74a72854c5addba3cdcbe4d08",
+    "qwen2-vl-7b-instruct/observation-text-eval-no-cache.json": "d4bd12ef7f4f1ba84a8e13d0a7194c0aad103dbb50ce9d000f8dcef5cd822698",
+    "qwen2-vl-7b-instruct/observation-vision-mlp-block-0.json": "3fb78e6e600408a613062592a91b1819df68ba13d8b83392a397cbcbc2e58d98",
+    "qwen2-vl-7b-instruct/observation-vision-tower-eval.json": "e9ba63619e8159f9bf8660def993560cfa1015d203605ff5227e50c4837a63a2",
+    "qwen2-vl-7b-instruct/request.json": "455e141778558d405bfd8c08370832e88f1a2d154892c32aac57a4812ab24560",
+    "stable-diffusion-3-5-large/inventory.json": "01f1175b11a4c955e15457beedaa007d79636a89a69aa101b87a29e74d441970",
+    "stable-diffusion-3-5-large/observation-transformer-block-0-bf16.json": "97c0d59c64661d1239ef54fa168b5fc78f3395ff5c8bbbdfd7fc2534cf468d49",
+    "stable-diffusion-3-5-large/request.json": "fd91f637959265ea117145410e3d09a55d5d3bea97ab6ec518676b6e1ca403cf",
+    "stable-diffusion-xl-base-1-0/inventory.json": "26ebf3210ebbd91f9a861b3f414f56411132be9c4ce81fe7e5c2ddf46dc57763",
+    "stable-diffusion-xl-base-1-0/observation-unet-eval-conditioned.json": "02f28ecbaca794fb087ac71fe9ca936bdc37b6062cea8dc5ad89822148f8fe86",
+    "stable-diffusion-xl-base-1-0/request.json": "7e72567b7c02cba7b31ad192fdffd2d2c16439daed8a36938390f67656a5f075"
+  },
+  "pilots": {
+    "dbrx-base": {
+      "inventory_status": "ok",
+      "observations": {
+        "attention-block-0-bf16": "ok",
+        "text-eval-no-cache": "failed"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "transformers.models.dbrx.modeling_dbrx",
+        "qualname": "DbrxForCausalLM"
+      }
+    },
+    "deepseek-v3": {
+      "inventory_status": "ok",
+      "observations": {
+        "text-eval-no-cache": "ok"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+        "qualname": "DeepseekV3ForCausalLM"
+      }
+    },
+    "llama-7b": {
+      "inventory_status": "ok",
+      "observations": {
+        "text-eval-no-cache": "ok"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "transformers.models.llama.modeling_llama",
+        "qualname": "LlamaForCausalLM"
+      }
+    },
+    "musicgen-small": {
+      "inventory_status": "ok",
+      "observations": {
+        "text-audio-eval-no-cache": "ok"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "transformers.models.musicgen.modeling_musicgen",
+        "qualname": "MusicgenForConditionalGeneration"
+      }
+    },
+    "pixart-sigma-xl-2-1024-ms": {
+      "inventory_status": "ok",
+      "observations": {
+        "latent-eval-conditioned": "ok"
+      },
+      "packages": [
+        {
+          "package": "diffusers",
+          "version": "0.38.0"
+        },
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "diffusers.models.transformers.pixart_transformer_2d",
+        "qualname": "PixArtTransformer2DModel"
+      }
+    },
+    "qwen2-vl-7b-instruct": {
+      "inventory_status": "ok",
+      "observations": {
+        "text-eval-no-cache": "ok",
+        "vision-mlp-block-0": "ok",
+        "vision-tower-eval": "failed"
+      },
+      "packages": [
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        },
+        {
+          "package": "transformers",
+          "version": "5.12.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "transformers.models.qwen2_vl.modeling_qwen2_vl",
+        "qualname": "Qwen2VLForConditionalGeneration"
+      }
+    },
+    "stable-diffusion-3-5-large": {
+      "inventory_status": "ok",
+      "observations": {
+        "transformer-block-0-bf16": "ok"
+      },
+      "packages": [
+        {
+          "package": "diffusers",
+          "version": "0.38.0"
+        },
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "diffusers.models.transformers.transformer_sd3",
+        "qualname": "SD3Transformer2DModel"
+      }
+    },
+    "stable-diffusion-xl-base-1-0": {
+      "inventory_status": "ok",
+      "observations": {
+        "unet-eval-conditioned": "ok"
+      },
+      "packages": [
+        {
+          "package": "diffusers",
+          "version": "0.38.0"
+        },
+        {
+          "package": "python",
+          "version": "3.12.10"
+        },
+        {
+          "package": "torch",
+          "version": "2.9.1"
+        }
+      ],
+      "resolved_class": {
+        "module": "diffusers.models.unets.unet_2d_condition",
+        "qualname": "UNet2DConditionModel"
+      }
+    }
+  },
+  "schema_version": 1
+}

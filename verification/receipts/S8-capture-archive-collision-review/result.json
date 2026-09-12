@@ -1,0 +1,126 @@
+{
+  "map_sha256": "c1c214d800bbb0ce468b2593a28ea4b8a75d659bf30378a8f4c4ff42a877362a",
+  "map_entries": 1647,
+  "passing_entries": 1639,
+  "mismatches": [
+    {
+      "original": "examples/granite-3-0-8b-instruct/ir.json",
+      "stored": "examples/granite-3-0-8b-instruct/ir.json.gz",
+      "expected_raw_sha256": "acce8ebed6e17484b2ee5331ccac7d146aec0f5862252d72829cd1b4dc680e33",
+      "stored_payload_sha256": "2e97385e183cc8652e644b4225a030da8701f9cae89f4e5c69870692f21701d6",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/granite-3-0-8b-instruct/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/granite-3-0-8b-instruct/ir.json.gz"
+    },
+    {
+      "original": "examples/pixart-sigma-xl-2-1024-ms/ir.json",
+      "stored": "examples/pixart-sigma-xl-2-1024-ms/ir.json.gz",
+      "expected_raw_sha256": "558ab57dbb3b0aab49b1f2c5115165fb3891d41627ee11ff28fe93f6ace86ad0",
+      "stored_payload_sha256": "9726ecb69f4bf5e2ef90067a01338d91b37b60ac0dfd1aa8ce798902e8093adf",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/pixart-sigma-xl-2-1024-ms/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/pixart-sigma-xl-2-1024-ms/ir.json.gz"
+    },
+    {
+      "original": "examples/hunyuanvideo/ir.json",
+      "stored": "examples/hunyuanvideo/ir.json.gz",
+      "expected_raw_sha256": "8c76522d498133a4089b1daa8830d17cbe67d94e696f477f8c1773eccc1b4482",
+      "stored_payload_sha256": "96207aede0780ff870a776da08c3c76bcb4af88e14e6e5251e0d230e164bf890",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/hunyuanvideo/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/hunyuanvideo/ir.json.gz"
+    },
+    {
+      "original": "examples/qwen2-vl-7b-instruct/ir.json",
+      "stored": "examples/qwen2-vl-7b-instruct/ir.json.gz",
+      "expected_raw_sha256": "83fbca1d74afe8dd519ddee10ba3437d670e855e3f2a017c09c9720a177cd14c",
+      "stored_payload_sha256": "390541c090cdca27814656ebfe9a0096c8fc5b0c331056be46e0197186d9e32c",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/qwen2-vl-7b-instruct/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/qwen2-vl-7b-instruct/ir.json.gz"
+    },
+    {
+      "original": "examples/deepseek-v3/ir.json",
+      "stored": "examples/deepseek-v3/ir.json.gz",
+      "expected_raw_sha256": "2997dcd3002a3b04eb70c215bf3cd56feb7ab65723fbc1db9097033cb6eea302",
+      "stored_payload_sha256": "2229f268d81b559d054f6a1182659f38f010c0f6ea0b25fa3d8fcbe00d70cb87",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/deepseek-v3/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/deepseek-v3/ir.json.gz"
+    },
+    {
+      "original": "examples/musicgen-small/ir.json",
+      "stored": "examples/musicgen-small/ir.json.gz",
+      "expected_raw_sha256": "40e411b4bade1c93b429a1592183b825f60faec7c3fe1cd9954683a5868cd838",
+      "stored_payload_sha256": "94564eda8bc8393d5286232e10f6f244d1b7115d4918e6853cac04cda59f9b01",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/musicgen-small/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/musicgen-small/ir.json.gz"
+    },
+    {
+      "original": "examples/llama-7b/ir.json",
+      "stored": "examples/llama-7b/ir.json.gz",
+      "expected_raw_sha256": "03e253fd9bed99de14f999cea7db556c3f33a754746245024fd6bee32e781273",
+      "stored_payload_sha256": "44faaa9ec47e0f990e92f49f4d2a1a0f9becce3537834a1b204713174fb16af0",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/llama-7b/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/llama-7b/ir.json.gz"
+    },
+    {
+      "original": "examples/stable-diffusion-xl-base-1-0/ir.json",
+      "stored": "examples/stable-diffusion-xl-base-1-0/ir.json.gz",
+      "expected_raw_sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47",
+      "stored_payload_sha256": "70f134e707687e38fb554c6188a49ae8ed2ca2d5f366ab991fa62939c55e6981",
+      "raw_original_still_exact": true,
+      "stored_file_equals_original_gzip_companion": true,
+      "raw_original_path": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/stable-diffusion-xl-base-1-0/ir.json",
+      "canonical_structural_companion": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/stable-diffusion-xl-base-1-0/ir.json.gz"
+    }
+  ],
+  "duplicate_destinations": {
+    "examples/granite-3-0-8b-instruct/ir.json.gz": [
+      "examples/granite-3-0-8b-instruct/ir.json",
+      "examples/granite-3-0-8b-instruct/ir.json.gz"
+    ],
+    "examples/pixart-sigma-xl-2-1024-ms/ir.json.gz": [
+      "examples/pixart-sigma-xl-2-1024-ms/ir.json",
+      "examples/pixart-sigma-xl-2-1024-ms/ir.json.gz"
+    ],
+    "examples/hunyuanvideo/ir.json.gz": [
+      "examples/hunyuanvideo/ir.json",
+      "examples/hunyuanvideo/ir.json.gz"
+    ],
+    "examples/qwen2-vl-7b-instruct/ir.json.gz": [
+      "examples/qwen2-vl-7b-instruct/ir.json",
+      "examples/qwen2-vl-7b-instruct/ir.json.gz"
+    ],
+    "examples/deepseek-v3/ir.json.gz": [
+      "examples/deepseek-v3/ir.json",
+      "examples/deepseek-v3/ir.json.gz"
+    ],
+    "examples/musicgen-small/ir.json.gz": [
+      "examples/musicgen-small/ir.json",
+      "examples/musicgen-small/ir.json.gz"
+    ],
+    "examples/llama-7b/ir.json.gz": [
+      "examples/llama-7b/ir.json",
+      "examples/llama-7b/ir.json.gz"
+    ],
+    "examples/stable-diffusion-xl-base-1-0/ir.json.gz": [
+      "examples/stable-diffusion-xl-base-1-0/ir.json",
+      "examples/stable-diffusion-xl-base-1-0/ir.json.gz"
+    ]
+  },
+  "cause": "Packaging mapped raw ir.json and preexisting structural ir.json.gz onto one destination; latter overwrote former",
+  "raw_actual_captures_intact": true,
+  "minimum_correction": "Preserve original map in receipt, store only eight fullIR streams at distinct filenames, update only corresponding stored path/hash entries, preserve existing structural gz bytes, full uniqueness/hash census",
+  "read_only_originals": true,
+  "no_model_or_production_change": true
+}

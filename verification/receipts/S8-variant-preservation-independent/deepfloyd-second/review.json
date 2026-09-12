@@ -1,0 +1,177 @@
+{
+  "verdict": "ACCEPT bounded exact-input stage construction/placement preservation; historical absent-unet cause unresolved",
+  "exact_a83_test_input_reconstructed_from_AST_matches_capture": true,
+  "source_before_after_equal": true,
+  "all_cited_archived_sources_verified": true,
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "stages": {
+    "down_blocks.0": {
+      "id": "instance_down_blocks__0",
+      "constructed": {
+        "children": [
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "ResnetDownsampleBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "down_blocks.1": {
+      "id": "instance_down_blocks__1",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnDownBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "down_blocks.2": {
+      "id": "instance_down_blocks__2",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnDownBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "down_blocks.3": {
+      "id": "instance_down_blocks__3",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnDownBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "mid_block": {
+      "id": "instance_mid_block",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "UNetMidBlock2DSimpleCrossAttn"
+      },
+      "actual_node_and_card": true
+    },
+    "up_blocks.0": {
+      "id": "instance_up_blocks__0",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnUpBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "up_blocks.1": {
+      "id": "instance_up_blocks__1",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnUpBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "up_blocks.2": {
+      "id": "instance_up_blocks__2",
+      "constructed": {
+        "children": [
+          "attentions",
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "SimpleCrossAttnUpBlock2D"
+      },
+      "actual_node_and_card": true
+    },
+    "up_blocks.3": {
+      "id": "instance_up_blocks__3",
+      "constructed": {
+        "children": [
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "ResnetUpsampleBlock2D"
+      },
+      "actual_node_and_card": true
+    }
+  },
+  "qualified_stage_relation": {
+    "consumer_field": "up_blocks",
+    "consumer_stages": [
+      "up_blocks.0",
+      "up_blocks.1",
+      "up_blocks.2",
+      "up_blocks.3"
+    ],
+    "intermediate_stages": [
+      "mid_block"
+    ],
+    "producer_field": "down_blocks",
+    "producer_stages": [
+      "down_blocks.0",
+      "down_blocks.1",
+      "down_blocks.2",
+      "down_blocks.3"
+    ],
+    "skip_route": {
+      "accumulation": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1159:12:1159:49",
+      "consumer": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1210:25:1219:17",
+      "producer": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1145:38:1153:17",
+      "selection": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1201:12:1201:80"
+    },
+    "unresolved_relations": [
+      {
+        "kind": "whole_callable_open",
+        "reason": "positive local stage evidence; whole-callable CFG coverage is open",
+        "reason_class": "investigation_missing"
+      },
+      {
+        "kind": "direct_stage_order_open",
+        "reason": "inter-loop source position does not prove unconditional execution order",
+        "reason_class": "investigation_missing"
+      }
+    ]
+  },
+  "original_test_migration": "Use qualified producer/down, intermediate/mid and consumer/up relation addresses and exact actual node/card IDs. Preserve absence of constructed attention children at first down/final up. Do not infer absence of any functional attention, complete cross-attention roles, or execution order from containment/position.",
+  "historical_limit": "Original broad KeyError did not retain construction/reader diagnostics. Current same exact input succeeds; do not relabel that old failure constructor-invalid.",
+  "artifact_pins": {
+    "input.json": "d18fab14bf405165701be9fb0082178d7daec3a62684d2c61e123eb894c57742",
+    "ir.json": "6b4443c741d4c9ceee5574c5fc30b8b19e258b1e12b1d7c54335cc0ffe537887",
+    "page.html": "f52bcf2ce57d875fd163b2ac8977ea4e009306f55362111ac583d621b5d36b76",
+    "qualified-facts.json": "cc1523318933a194ff47860763f3c339b20edc097aa01fe7d69b049014d15501",
+    "render-events.json.gz": "3bbf75e7d3642b7c80689367bff175b7ab814b3b6cb8f24614ad2a302b8d9dd4",
+    "checks.json": "321623d0d32803762e0770b76f2df4330871f62f7db145b6ee93f0412e33bbb1"
+  },
+  "independent_execution": "Read-only source/bytes/artifacts; no pytest/model/rerender"
+}

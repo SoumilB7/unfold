@@ -1,0 +1,11 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "clean_checkout": true,
+  "script_sha256": {
+    "scripts/report_s8_demonstration.py": "3bb08985e0759afe28f785fe49e1904c7bfb8a2703f4bf7337b6acb93a95d246",
+    "scripts/demonstrate_s8_unet.py": "e111270161d2b29c1d7252f7ba73d9294507137abe0731046ae62c28924c8dd0"
+  },
+  "standalone_exit_code": 0,
+  "pytest_run": false,
+  "model_run": false
+}

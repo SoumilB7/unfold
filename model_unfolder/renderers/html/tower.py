@@ -20,7 +20,9 @@ from __future__ import annotations
 from .graph import Edge, Graph, Group, Node, SideInput
 from .graph_engine import render_graph
 
-#: tower block ``kind`` -> engine node kind (anything else falls back to norm).
+#: tower block ``kind`` -> engine node kind.  Unknown values are rendered as
+#: opaque by :func:`tower_graph`; presentation must never turn an unrecognized
+#: architectural block into a familiar normalization operation.
 _KIND_TO_NODE = {
     "norm": "norm",
     "attention": "attention",
@@ -46,10 +48,11 @@ def tower_cell(
     *,
     attn_label,
     norm_label,
-    placement: str = "pre",
+    placement: str = "unknown",
     attn_sub=None,
     ffn_kind=None,
     ffn_label=None,
+    ffn_fact: dict | None = None,
     input_id: str | None = None,
     attn_gate: str | None = None,
     ffn_gate: str | None = None,
@@ -72,11 +75,17 @@ def tower_cell(
       _op_norm2 / _op_ffn / _op_add2`` (+ ``_post`` norms, ``_gate`` muls) —
       cards and drills key on these, identically in every tower.
     """
-    if placement not in ("pre", "post", "double"):
-        return [{"id": f"{prefix}_op_unknown", "kind": "norm",
-                 "label": unknown_label or "Code-defined block", "resolved": False}]
-    ffn_text = ffn_label or (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
-                             else "Feed-forward (FFN)")
+    if ffn_label is not None:
+        ffn_text = ffn_label
+    elif isinstance(ffn_fact, dict):
+        from ...labels import ffn_label as canonical_ffn_label
+        ffn_text = canonical_ffn_label(ffn_fact)
+    else:
+        # Role-only fallback for legacy callers that have not yet supplied a
+        # canonical FFN fact.  It says only that this is the FFN sublayer; it
+        # does not claim dense/gated/storage internals.
+        ffn_text = (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
+                    else "Feed-forward (FFN)")
 
     def _sublayer(op_block: dict, n: str, add_id: str, skip_from: str,
                   gate: str | None, align: dict) -> list[dict]:
@@ -90,8 +99,16 @@ def tower_cell(
             out.append({"id": f"{n}_post", "kind": "norm", "label": norm_label,
                         "target": f"{prefix}_op_norm"})
         if gate:
-            out.append({"id": f"{op_block['id']}_gate", "kind": "gate_mul",
-                        "label": "×", "sub": gate})
+            out.append({
+                "id": f"{op_block['id']}_gate",
+                "kind": "gate_mul",
+                "label": "×",
+                # This is a tensor/parameter operand, not a numeric constant.
+                # The generic tower projector turns it into a visible side
+                # source and edge; a caption alone must never clear Dable's
+                # two-input connector law.
+                "meta": {"operand_source": gate},
+            })
         out.append({"id": add_id, "kind": "residual_add",
                     "residual_from": skip_from, **align.get(add_id, {})})
         if placement == "post":
@@ -103,6 +120,44 @@ def tower_cell(
     attn = {"id": f"{prefix}_op_selfattn", "kind": "attention",
             "label": attn_label, "sub": attn_sub}
     ffn = {"id": f"{prefix}_op_ffn", "kind": "ffn", "label": ffn_text}
+    # The handwriting font is materially wider/taller than the conservative
+    # character metric used by the generic graph node.  Unknown-safe FFN
+    # labels deliberately carry a second explanatory line; give that exact
+    # truth-bearing form enough room instead of letting "storage unresolved"
+    # escape the node in denoiser/refiner towers.  Ordinary one-line and MoE
+    # labels retain the canonical glyph dimensions.
+    if (
+        isinstance(ffn_text, list)
+        and any(
+            marker in str(line).lower()
+            for line in ffn_text
+            for marker in ("unresolved", "unsupported")
+        )
+    ):
+        ffn.update({"w": 340, "h": 76})
+    if placement not in ("pre", "post", "double"):
+        # Preserve the independently known attention/FFN mechanisms and norm
+        # kind.  Only their order, norm occurrences and residual taps are
+        # withheld; collapsing the entire cell would lose real drills merely
+        # because one different fact is unknown.
+        norm_known = str(norm_label).lower() not in {
+            "", "norm", "normalization", "unknown",
+        }
+        return [
+            attn,
+            {
+                "id": f"{prefix}_op_wiring_unknown",
+                "kind": "norm",
+                "label": (
+                    [norm_label, "wiring unresolved"]
+                    if norm_known else
+                    unknown_label or "Wiring unresolved"
+                ),
+                "resolved": False,
+                "static": True,
+            },
+            ffn,
+        ]
     if placement == "post":
         # BERT shape: h = norm(h + op(h)) — the first skip taps the cell input.
         skip1 = input_id or f"{prefix}_op_in"
@@ -125,10 +180,13 @@ def tower_graph(spec: dict) -> Graph:
     nodes: list[Node] = []
     flow: list[str] = []
     edges: list[Edge] = []
+    side_inputs: list[SideInput] = []
 
-    def add(block: dict, *, default_kind: str = "norm", static: bool | None = None) -> str:
+    def add(block: dict, *, default_kind: str = "opaque",
+            static: bool | None = None) -> str:
         node_id = block["id"]
         kind = _KIND_TO_NODE.get(block.get("kind"), default_kind)
+        meta = dict(block.get("meta") or {})
         nodes.append(Node(
             node_id, kind,
             label=block.get("label"),
@@ -138,7 +196,15 @@ def tower_graph(spec: dict) -> Graph:
             static=block.get("static", False) if static is None else static,
             w=block.get("w"),
             h=block.get("h"),
+            meta=meta,
         ))
+        operand_source = meta.get("operand_source")
+        if kind == "gate_mul" and isinstance(operand_source, str) \
+                and operand_source:
+            source_id = f"{node_id}_operand"
+            nodes.append(Node(
+                source_id, "source", label=operand_source, static=True))
+            side_inputs.append(SideInput(source_id, node_id, "right"))
         flow.append(node_id)
         if block.get("residual_from"):
             edges.append(Edge(block["residual_from"], node_id, "residual"))
@@ -172,7 +238,6 @@ def tower_graph(spec: dict) -> Graph:
     # Lateral side inputs: an off-flow source block feeding one flow node from the
     # side (e.g. encoded text → a UNet cross-attention). The node joins ``nodes``
     # (so it has a glyph) but NOT ``flow`` — the engine places it beside its target.
-    side_inputs = []
     for si in spec.get("side_inputs") or []:
         nb = si["node"]
         nodes.append(Node(

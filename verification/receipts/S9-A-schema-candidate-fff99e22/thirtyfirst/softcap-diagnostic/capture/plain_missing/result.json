@@ -1,0 +1,59 @@
+{
+  "caps": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "case": "plain_missing",
+  "consumed_softcap_events": 0,
+  "layers": 32,
+  "native_softcap": {
+    "claim_kind": "applied_function",
+    "has_proof": false,
+    "status": "unknown",
+    "unknown_reason": {
+      "concrete_reason": "softcap_operand_unavailable",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "native_softcap_present": true,
+  "page_bytes": 70227,
+  "page_sha256": "164b5f21f0ddbbf87218a635f6926a514cd65f0ffabd0e037557035c4059769d",
+  "reader_statuses": [
+    [
+      "('decoder.attention.logit_softcap', ())",
+      "resolved"
+    ]
+  ]
+}

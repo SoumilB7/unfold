@@ -1,0 +1,2654 @@
+[
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [
+      "reshape",
+      "linear",
+      "concat"
+    ],
+    "after_type": "list",
+    "before": [
+      "reshape",
+      "linear",
+      "concat"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [
+      0,
+      24
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      24
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [
+      "norm",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "norm",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "after": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 15360
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 15360
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      "activation",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "activation",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      "linear",
+      "concat"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear",
+      "concat"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      "concat",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "concat",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[1].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      0,
+      40
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      40
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "flux-2-dev"
+  },
+  {
+    "after": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 64
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 4096
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 64
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 4096
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [
+      0,
+      12
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      12
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/4/detail/sub_model/schedule/runs/0",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/4/detail/sub_model/schedule/runs/1",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      "conv3d",
+      "reshape",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "conv3d",
+      "reshape",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      "three_dimensional_convolution",
+      "three_dimensional_convolution"
+    ],
+    "after_type": "list",
+    "before": [
+      "three_dimensional_convolution",
+      "three_dimensional_convolution"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate",
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      0,
+      32
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      32
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      0,
+      12
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      12
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/4/detail/sub_model/schedule/runs/0",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "after": [
+      {
+        "application_role": "conditioning_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_output",
+        "dimension_role": "output_width",
+        "operation_kind": "linear",
+        "value": 128
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "conditioning_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 128
+      },
+      {
+        "application_role": "state_output",
+        "dimension_role": "output_width",
+        "operation_kind": "linear",
+        "value": 128
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      "linear",
+      "reshape"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear",
+      "reshape"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      "norm",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "norm",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "ltx-video"
+  },
+  {
+    "after": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "output_width",
+        "operation_kind": "linear",
+        "value": 2304
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "output_width",
+        "operation_kind": "linear",
+        "value": 2304
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      "linear",
+      "reshape"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear",
+      "reshape"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/2",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/3",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/4",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/5",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/6",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/7",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/8",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/9",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/10",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/11",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/12",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/13",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/14",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/15",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/16",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/17",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/18",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/19",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/20",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/21",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/22",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/23",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/24",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/25",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [
+      "reshape"
+    ],
+    "after_type": "list",
+    "before": [
+      "reshape"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "after": [
+      {
+        "application_role": "conditioning_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 2048
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "conditioning_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 2048
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      "norm",
+      "elementwise",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "norm",
+      "elementwise",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      0,
+      28
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      28
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "after": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 64
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 3584
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 64
+      },
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 3584
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [
+      0,
+      28
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      28
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "qwen-image"
+  },
+  {
+    "after": [
+      "reshape"
+    ],
+    "after_type": "list",
+    "before": [
+      "reshape"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      "norm",
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "norm",
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      "bare_gate"
+    ],
+    "after_type": "list",
+    "before": [
+      "bare_gate"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/attention",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/cross_attention",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/value/ffn",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/1",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/2",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/3",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/4",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/5",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/6",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/7",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/8",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/9",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/10",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/11",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/12",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/13",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/14",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/15",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/16",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/17",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/18",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/19",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/20",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/21",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/22",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/23",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/24",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      1,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/25",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "after": [
+      0,
+      12
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      12
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "after": [
+      0,
+      32
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      32
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/4/detail/sub_model/schedule/runs/0",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "after": [
+      0,
+      1
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      1
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/5/detail/sub_model/schedule/runs/0",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "after": [
+      1,
+      23
+    ],
+    "after_type": "list",
+    "before": [
+      1,
+      23
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/5/detail/sub_model/schedule/runs/1",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "after": [
+      0,
+      12
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      12
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": [
+      0,
+      32
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      32
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/4/detail/sub_model/schedule/runs/0",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/2",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/3",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/4",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/5",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/6",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/7",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/8",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/9",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/10",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/11",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/12",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/13",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/14",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/15",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/16",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/17",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/18",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/19",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/20",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/21",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/22",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/23",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/24",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/25",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/26",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/27",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/28",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/29",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/30",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/31",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/32",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/33",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/34",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/35",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/36",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/37",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/38",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/39",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/40",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/41",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/42",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/43",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/44",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/45",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/46",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/47",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/48",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_audit_incomplete evidence unresolved: root.denoiser",
+    "after_type": "str",
+    "before": "Unresolved evidence \u2014 config_audit_incomplete evidence unresolved: root.denoiser",
+    "before_type": "EvidenceWarning",
+    "kind": "type_changed",
+    "path": "/warnings/49",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "after": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_channels",
+        "operation_kind": "conv3d",
+        "value": 16
+      }
+    ],
+    "after_type": "list",
+    "before": [
+      {
+        "application_role": "state_input",
+        "dimension_role": "input_channels",
+        "operation_kind": "conv3d",
+        "value": 16
+      }
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_geometry/value",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "after": [],
+    "after_type": "list",
+    "before": [],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/conditioning_input",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "after": [
+      "conv3d",
+      "reshape"
+    ],
+    "after_type": "list",
+    "before": [
+      "conv3d",
+      "reshape"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_input",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "after": [
+      "linear"
+    ],
+    "after_type": "list",
+    "before": [
+      "linear"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/state_output",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "after": [
+      "three_dimensional_convolution"
+    ],
+    "after_type": "list",
+    "before": [
+      "three_dimensional_convolution"
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/fact_provenance/root.denoiser.diffusion_bookend_operations/value/temporal_operations",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "after": [
+      0,
+      24
+    ],
+    "after_type": "list",
+    "before": [
+      0,
+      24
+    ],
+    "before_type": "tuple",
+    "kind": "type_changed",
+    "path": "/extras/render/loop_blocks/3/detail/sub_model/schedule/runs/0",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  }
+]

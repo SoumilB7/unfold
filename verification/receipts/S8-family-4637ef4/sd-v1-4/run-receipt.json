@@ -1,0 +1,16 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "command": [
+    "python3",
+    "scripts/verify_s8_unet_family.py",
+    "--input",
+    "/private/tmp/unfold-s8-4637ef4-family/sd-v1-4-input.json",
+    "--output",
+    "/private/tmp/unfold-s8-4637ef4-family/sd-v1-4"
+  ],
+  "elapsed_seconds": 134.907,
+  "returncode": 0,
+  "html_bytes": 1864195,
+  "html_sha256": "bcb26385f3d4315ce8004ed643fe0edcff804adb4d79fd317811a23b013ff414",
+  "svg_count": 400
+}

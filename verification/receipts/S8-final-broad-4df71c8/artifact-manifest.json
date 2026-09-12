@@ -1,0 +1,50 @@
+[
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-7168440/command.json",
+    "artifact": "outer/command.json",
+    "original_sha256": "58c83112e8e426472501d6751aabba49b64400a85c7d2f04c1f8813197affee6",
+    "artifact_sha256": "58c83112e8e426472501d6751aabba49b64400a85c7d2f04c1f8813197affee6"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-7168440/coordinator.log",
+    "artifact": "outer/coordinator.log",
+    "original_sha256": "bac6f756cc15bc8f8fafd247b4c72fafbf9130d42a69cf4ce05b571542303b75",
+    "artifact_sha256": "bac6f756cc15bc8f8fafd247b4c72fafbf9130d42a69cf4ce05b571542303b75"
+  },
+  {
+    "original": "/private/tmp/unfold-s8-final-broad-7168440/receipt.json",
+    "artifact": "outer/receipt.json",
+    "original_sha256": "549d9aff29448ae5d1e4aa62f98a3b510123cc5f1ee735f3a7b28dfa395bbcba",
+    "artifact_sha256": "549d9aff29448ae5d1e4aa62f98a3b510123cc5f1ee735f3a7b28dfa395bbcba"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/ee416b74b1/collect.log",
+    "artifact": "coordinator/collect.log",
+    "original_sha256": "67ef8bf2f7721d22da412ec87b9df1802d94e5cf9006cbd190dd87549f9d0ba2",
+    "artifact_sha256": "67ef8bf2f7721d22da412ec87b9df1802d94e5cf9006cbd190dd87549f9d0ba2"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/ee416b74b1/focused.log",
+    "artifact": "coordinator/focused.log",
+    "original_sha256": "481708ec01b3d9cd6441c4e8afee2ece9f41beba9040bca74f07d5350e921914",
+    "artifact_sha256": "481708ec01b3d9cd6441c4e8afee2ece9f41beba9040bca74f07d5350e921914"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/ee416b74b1/receipt.json",
+    "artifact": "coordinator/receipt.json",
+    "original_sha256": "512a4c0960fd88c74b85c4e9601134c6621765bfc74d973a96ffee383e744391",
+    "artifact_sha256": "512a4c0960fd88c74b85c4e9601134c6621765bfc74d973a96ffee383e744391"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/ee416b74b1/static.log",
+    "artifact": "coordinator/static.log",
+    "original_sha256": "ed65b5eda23b5fb0f1570decbd2e1ad92c7c0dd8927244300971327261a56251",
+    "artifact_sha256": "ed65b5eda23b5fb0f1570decbd2e1ad92c7c0dd8927244300971327261a56251"
+  },
+  {
+    "original": "/private/tmp/model-unfolder-verification/ee416b74b1/u2-authority.log",
+    "artifact": "coordinator/u2-authority.log",
+    "original_sha256": "7a361841f03b126be20ab62d4cead62c930f1f7661049716adc1a1d76ef4c78b",
+    "artifact_sha256": "7a361841f03b126be20ab62d4cead62c930f1f7661049716adc1a1d76ef4c78b"
+  }
+]

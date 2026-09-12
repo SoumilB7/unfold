@@ -1,0 +1,13 @@
+{
+  "status": "PASS_LOSSLESS_CLOSURE_RECEIPT",
+  "logical_streams": 53,
+  "unique_streams": 50,
+  "raw_bytes": 25007029,
+  "stored_bytes": 1566289,
+  "checks": [
+    "stored/raw hashes",
+    "complete decoded byte equality to original sources",
+    "physical content membership"
+  ],
+  "linux": "PENDING"
+}

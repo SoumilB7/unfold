@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "command": "python3 unfold-pkg/verification/receipts/S8-approved-current-gallery-710da8e/verify_restore.py --out /private/tmp/unfold-s8-current-gallery-archive-check-710da8e",
+  "restored_streams": 525,
+  "every_restored_file_sha256_matches": true,
+  "verify_restore_sha256": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+  "artifact_map_sha256": "ce9a3641d46b18b333e843a416254cb7dfd9c67f997a1e15e8af22c322972359"
+}

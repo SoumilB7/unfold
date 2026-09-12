@@ -1,0 +1,203 @@
+{
+  "status": "RED_five_failures_retained",
+  "totals": {
+    "passed": 5481,
+    "failed": 5,
+    "skipped": 14,
+    "xfailed": 2,
+    "xpassed": 0,
+    "errors": 0
+  },
+  "files": [
+    {
+      "path": "batches/batch-000.log",
+      "sha256": "9ee8800daa5b22e69642bbd916e396cec23a4d366c5ea5d48f296bd3dcd0cfa1",
+      "bytes": 421
+    },
+    {
+      "path": "batches/batch-001.log",
+      "sha256": "ae145d13d7336dcd72de600006fde771ac768a511e84284980ac752012dd79e3",
+      "bytes": 271
+    },
+    {
+      "path": "batches/batch-002.log",
+      "sha256": "501e1069f337ebdf5fec8a4eab315f4eec4770b59ea92add5f7786582bf41b70",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-003.log",
+      "sha256": "6e46b75fb904b944ff9d1a12d8828d7766d6efad94f0f15b162dda76130eca5d",
+      "bytes": 2945
+    },
+    {
+      "path": "batches/batch-004.log",
+      "sha256": "8e29e9f929380bf692e984537c92897ab06d6c546c06e73bbddcb698ce5a6fa2",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-005.log",
+      "sha256": "7b3cd741ec10bf8b07a1a4596eecc13e5f9986d99e4c2a9b49b4fd9bc78061a1",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-006.log",
+      "sha256": "8489a0c7958531ec18fab5d4329f47464569777e604e0c54c147ad846f3cd9a0",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-007.log",
+      "sha256": "b42b7ba31ed536a7bcd6f406fcf8a892ed14cb5bfc8af31f4451a47c400152df",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-008.log",
+      "sha256": "32f0326458a6dc9f114dd923cc07176559d1265f24f359ea5bada950720f56e8",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-009.log",
+      "sha256": "4b9fcd1e85bbe5ac374b7e8439131c691ac3f289f724e2504da8836986fe1216",
+      "bytes": 271
+    },
+    {
+      "path": "batches/batch-010.log",
+      "sha256": "fcc8449185779151d4909c47feea63611557de655be5a767ebaec9737ac796fa",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-011.log",
+      "sha256": "21ddbeaecfaf32c2c113185d502c47a74661e226054cd5f7752f16651abdb703",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-012.log",
+      "sha256": "5b7761ec2d56e02eb3a36be7a9afc62f727023738c1e4df103c206033fda5272",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-013.log",
+      "sha256": "429e7afb0cb23dea2770a155b22de53eee6beb878efc5e97739320c3a896c9d6",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-014.log",
+      "sha256": "68005373889c660e765ec31846dbe9da22bc6cb63b4459a4b0116f5a05a0f47a",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-015.log",
+      "sha256": "59d2a22d9e7f02a0bc788aaa2fbda099ecdbee800b7cb368a398ba24d2f6dda6",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-016.log",
+      "sha256": "056af8746f94e3e3cf7d41eabd1bc3c15b599978e545bbce73f9b7c2d8d8427b",
+      "bytes": 5558
+    },
+    {
+      "path": "batches/batch-017.log",
+      "sha256": "3d2a99db3f13fd7d765e069356cf94626d8937c049b1942e7be0a03c5c1395ac",
+      "bytes": 283
+    },
+    {
+      "path": "batches/batch-018.log",
+      "sha256": "14b3e5ce0d6376699d26ba647ac84b1d71770440a62b68297885395ea14d4c47",
+      "bytes": 271
+    },
+    {
+      "path": "batches/batch-019.log",
+      "sha256": "3f562c9f434970d006b19d0db145fd4c142911e5abe1272a257c98e8e9b1fdbd",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-020.log",
+      "sha256": "4a325d762697b68ccd54d986e6b1f7ccc7680c79d25aa2c0d1e6098cea0cfe69",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-021.log",
+      "sha256": "399ed7c76c55bc1996b2b496e429303add9204a75640f1bb900aac6f45c4bbb4",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-022.log",
+      "sha256": "e6ae46e518d9cdc2ca71b96c282dcdd952a8355278f135250f2cf6787429e200",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-023.log",
+      "sha256": "20973bda963a31f8e972fdd08576af38a3cd7b72eacec0f943df199b42d7778a",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-024.log",
+      "sha256": "53a0d0b4d4786930a4d9c06c085cb01cd716479a0e60eb44c9371a08647c1a7a",
+      "bytes": 273
+    },
+    {
+      "path": "batches/batch-025.log",
+      "sha256": "5828915ddae5573f3a0e58f4d541c77b6865d376de173fb500590dcba3f11dae",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-026.log",
+      "sha256": "595f5e2fe04ef6e61df8d55f63211905a43c30589cf558df5d0294f709b1f09a",
+      "bytes": 261
+    },
+    {
+      "path": "batches/batch-027.log",
+      "sha256": "20fb0eb73c6c4db0be517abffc06d8a6cb0b2d6454882c33cbb3351d648e4d02",
+      "bytes": 271
+    },
+    {
+      "path": "batches/batch-028.log",
+      "sha256": "f767f40ad56686afe28a9c09994f914d30eddcc20945e197a57789b0e3636211",
+      "bytes": 272
+    },
+    {
+      "path": "batches/batch-029.log",
+      "sha256": "adb1021448ed07e8c448bf8d3c366482472d59e902a27c293d783e857ed264ce",
+      "bytes": 2098
+    },
+    {
+      "path": "batches/batch-030.log",
+      "sha256": "189377af701228823eb99bbb2e7d53b2232d5e11bc5b34500808614ce5f450d1",
+      "bytes": 271
+    },
+    {
+      "path": "batches/batch-031.log",
+      "sha256": "e0a033a012fefa051164328333984647b1a81d0feaef6845e7bb428b5f7bafb0",
+      "bytes": 272
+    },
+    {
+      "path": "batches/schedule.json",
+      "sha256": "79960bff601559578b77c6fc3022c79b0ce5733dd1f369dddc5e96e5530165c5",
+      "bytes": 1139092
+    },
+    {
+      "path": "failure-inventory.json",
+      "sha256": "72c040dfea110e1e94cff43df63269e3f089cc5207ce04b9a234b06552d3e6b9",
+      "bytes": 3796
+    },
+    {
+      "path": "full-remainder.log",
+      "sha256": "841c7d274516b7e0634a5b9518b6bbb119da2aa88130b461f6602e8432438630",
+      "bytes": 636348
+    },
+    {
+      "path": "result.json",
+      "sha256": "0dc43a44fc67ef5236779344fdab8b404a064cd3228a29ebc005d962aacbbd48",
+      "bytes": 524
+    },
+    {
+      "path": "totals.json",
+      "sha256": "a638c7c7d55533baadb892845512cd5a9c522df27bbc6e5c97db0e52cc12ab1d",
+      "bytes": 100
+    },
+    {
+      "path": "run-full.py",
+      "sha256": "bf07ac08f260053258ff34b7db2a70e5b0f9a5db4012093f7c207f1ab74e138b",
+      "bytes": 1147
+    }
+  ]
+}

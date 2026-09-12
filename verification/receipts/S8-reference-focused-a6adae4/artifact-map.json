@@ -1,0 +1,56 @@
+[
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/command.json",
+    "stored": "command.json.gzip",
+    "original_sha256": "b3563ae1974a7263385619e33149b35915d3b04303dabc682c179035e54cece1",
+    "stored_sha256": "08355a3db922896eb2655113532ef621cbedc6949d482db592ef24be14c1f79a"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/pytest.log",
+    "stored": "pytest.log.gzip",
+    "original_sha256": "1ee1eec25cbc482a82ae94f46b5dff98d531f299673698753d4d6d012e9dceef",
+    "stored_sha256": "73e61540028f70bba2ae66a7146476f76cc0b315d745c392629fab087bd0b05c"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/result.json",
+    "stored": "result.json.gzip",
+    "original_sha256": "50bcda1863f7e2a92c541213fba184411952449b2352c3df6802f31e7bb3a89a",
+    "stored_sha256": "283e5055f07b31cfd8842c617d99cccfc4a84cd94b3e01f9afb0a99f9cf36ad9"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/selected-external-after-finally.json",
+    "stored": "selected-external-after-finally.json.gzip",
+    "original_sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/selected-external-before.json",
+    "stored": "selected-external-before.json.gzip",
+    "original_sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/source-after-finally.json",
+    "stored": "source-after-finally.json.gzip",
+    "original_sha256": "dae08ca488fad930b4a5536b4a95510b51dc4c45a25f895706414cb39789b31a",
+    "stored_sha256": "ad2ed48608b53a41c3135b4547ca6c473349ed195015e1f9951a25bd6edff659"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-reference-focused-results-a6adae4/source-before.json",
+    "stored": "source-before.json.gzip",
+    "original_sha256": "dae08ca488fad930b4a5536b4a95510b51dc4c45a25f895706414cb39789b31a",
+    "stored_sha256": "ad2ed48608b53a41c3135b4547ca6c473349ed195015e1f9951a25bd6edff659"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-static-a6adae4/result.json",
+    "stored": "historical-static/result.json.gzip",
+    "original_sha256": "302c0b9a86c743a05c794a38ba4ddc8eb64681f9dab933cee0accdfbdfc58e0b",
+    "stored_sha256": "dd037cec3ca745930998c50236a8d8dd66d6a8a2e9871b60f6a400e34772281a"
+  },
+  {
+    "original_path": "/private/tmp/unfold-s8-static-a6adae4/static.log",
+    "stored": "historical-static/static.log.gzip",
+    "original_sha256": "05200269d75088b3052f3fbd04ee92bcf9c259cd47129b595e7f97dd218c9d94",
+    "stored_sha256": "18f88b597002d0b43241c322c68044441e65a4275f82069ad2d70204a843a027"
+  }
+]

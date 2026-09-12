@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/0/provenance/0/spans/0/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/1/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/2/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/3/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/4/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/5/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  },
+  {
+    "path": "/0/provenance/0/spans/6/source/canonical_path",
+    "before": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/no_mechanism/model.py",
+    "after": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/no_mechanism/model.py"
+  }
+]

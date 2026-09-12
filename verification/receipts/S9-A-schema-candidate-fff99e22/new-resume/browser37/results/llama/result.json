@@ -1,0 +1,90 @@
+{
+  "input": "S9-transformer/schema-thirtyseventh/llama-7b.html",
+  "sha256": "c162872a08d4b0cd1d53d0ee369d1cabe5e5f2d489b9941b6b5a4f71fc5469a0",
+  "bytes": 60329,
+  "load_ms": 75.74645899876487,
+  "initial_dom": {
+    "elements": 465,
+    "cards": 28,
+    "op_nodes": 26,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1404
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "attn",
+      "click_to_card_ms": 76.75345900497632,
+      "card": {
+        "id": "attn",
+        "text": "Attention\nMulti-head self-attention \u2014 every head attends over the sequence.\n32 heads\nhead dim 128\nRoPE \u03b8 10,000\nbias-free projections\nQK norm unresolved\nin/out 4,096\nin (4,096)\nK/V cache\nupdate + read\nQ K^T\nsqrt(dim)\nSoftmax\nConcat heads\nLinear (out)\nLinear (K)\napply RoPE\nK\n\u03b8 10000\nLinear (V)\nLinear (Q)\napply RoPE\nQ\n\u03b8 10000",
+        "rect": {
+          "x": 348,
+          "y": 44.265625,
+          "width": 644,
+          "height": 910.921875,
+          "top": 44.265625,
+          "right": 992,
+          "bottom": 955.1875,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": []
+      },
+      "dom": {
+        "elements": 465,
+        "cards": 28,
+        "op_nodes": 26,
+        "visible_cards": [
+          "attn"
+        ],
+        "chip_kinds": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 2265
+        }
+      }
+    }
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 465,
+    "cards": 28,
+    "op_nodes": 26,
+    "visible_cards": [
+      "attn"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 2265
+    }
+  }
+}

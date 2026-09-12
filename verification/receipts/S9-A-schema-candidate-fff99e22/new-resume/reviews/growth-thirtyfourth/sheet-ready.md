@@ -1,0 +1,5 @@
+Frozen34 versus separately held S10-1: **production +8,316/−676; tests +6,263/−1,781; fixture support +2,086/−0; scripts +1/−0; total +16,666/−2,457**. The two-file increment from33 is production+14/−1 and tests+63/−0. It adds one test module and no product module. Cumulative S9-A remains nine product modules added, zero deleted.
+
+The same48 retained readers in40 modules declare52 finite claim triples. Structural debt101→101 and three identified compatibility paths remain; fixture relocation81 definitions/1,703 lines retains its separate accounting. The exact layer-count default correction adds no authority deletion or bridge credit. Actual qualification of the original142 schedule citations awaits current34 matrix/proof verification, not another implementation-approval gate. Soumil and independent verdict are still required before output re-bless.
+
+S10 remains separate: only its existing latency receipt-map pointer differs, with measurements, medians, host data and budgets unchanged. Root34 focused447pass is recorded separately from source accounting and the retained failed33/full30 results. No final current gate or acceptance is claimed.

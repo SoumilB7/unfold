@@ -1,0 +1,75 @@
+{
+  "verdict": "RETURN_VISUAL_READABILITY_WITH_FUNCTIONAL_INTERACTIONS_PASS",
+  "runtime_manifest_sha256": "caa71a4996fa7192313bfe961ca9a73963014122375353ae5e9e480afb1e57cf",
+  "original_run_retained": {
+    "manifest_sha256": "a9f6a696fb22bd48661d02a1cb6c41d24827d986a067205e8f6580cad93e1da8",
+    "correction": "R1 incorrectly expected no SDXL default chip, contrary to already captured declared_constructor_defaults. R2 corrects that expectation and waits for actual CSS animations before screenshots; production unchanged."
+  },
+  "functional": "All six existing card clicks and SDXL nested down_blocks.0 drill succeed with zero page-level JavaScript errors. Four actual stylesheet classes have distinct computed border/color/background combinations in a separately labelled synthetic probe.",
+  "visual_findings": [
+    {
+      "case": "sdxl",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 2267,
+      "clientWidth": 644
+    },
+    {
+      "case": "bloom-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 1419,
+      "clientWidth": 644
+    },
+    {
+      "case": "musicgen-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 3161,
+      "clientWidth": 644
+    }
+  ],
+  "additional_existing_text_finding": {
+    "cases": [
+      "musicgen-ordinary",
+      "musicgen-sparse"
+    ],
+    "observed_description": "the projected image states produce K and V",
+    "observed_graph_label": "Encoded text",
+    "earliest_source": "model_unfolder/labels.py:382",
+    "status": "Existing contradictory description; owning family restoration review required. Screenshot alone does not establish the implementation mechanism."
+  },
+  "source_cause": {
+    "path": "model_unfolder/renderers/html/styles.py:308",
+    "rule": ".uf-fact white-space:nowrap",
+    "meaning": "Long typed default JSON values extend beyond644px card and viewport. No CSS/producer edits performed."
+  },
+  "screenshots_inspected": [
+    "R1 six card views, SDXL nested card and four-style probe",
+    "R2 stable Bloom sparse and MusicGen sparse card views"
+  ],
+  "timings": {
+    "scope": "Incidental headless saved-file observations under concurrent matrix, not latency-baseline samples",
+    "load_ms_range": [
+      40.34512499492848,
+      232.053707994055
+    ],
+    "click_ms_range": [
+      75.47329200315289,
+      78.90212500205962
+    ]
+  },
+  "limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection.",
+  "tool_versions": {
+    "python": "3.12.10",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "chrome": "152.0.7977.84",
+    "playwright": "1.62.0",
+    "executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "profile": "Playwright-created fresh temporary profile; no personal profile accessed",
+    "network": "HTTP(S) blocked for saved-artifact scope; external Google Fonts use CSS fallback",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "input_hashes_unchanged": true,
+  "output_blessed": false
+}

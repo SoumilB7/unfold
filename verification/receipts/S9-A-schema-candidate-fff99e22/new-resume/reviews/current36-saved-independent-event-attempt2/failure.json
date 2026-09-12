@@ -1,0 +1,4 @@
+{
+  "status": "FAILED_OVERSTRICT_SAVED_PAYLOAD_ASSERTION",
+  "reason": "Full raw HTML matched after one exact Diagram mount-ID substitution, but a deferred payload also contains that mount ID. Raw parsed payload leaves therefore legitimately differ; require the same finite substitution eliminates every payload difference and retain those raw leaves, not blanket raw payload equality. Prior completed per-model results remain here unchanged."
+}

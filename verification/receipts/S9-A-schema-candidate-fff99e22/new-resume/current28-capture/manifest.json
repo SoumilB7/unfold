@@ -1,0 +1,11 @@
+{
+  "scope": "HELD source-only current28 capture; root review and serial execution required",
+  "files": {
+    "census.py": "09065724c60b1b7d2c192ecac1e7683ec8efdf863fa8ce032370dc5c0e74e10d",
+    "run-census.py": "cff8db1c5152d12ffb50cf6435f7f58101747b339943e1287bcd45a96dfb4094",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "plan.json": "1c9beb3ab0f4514fec70d396bf44b4a3637c1663bb3330edd10e386167923048",
+    "contract.json": "e0f8c4369843acc1ae3cc81e8c43ee317eb22087cb20dd1925b925dd664659e4"
+  },
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current28-capture/run-census.py"
+}

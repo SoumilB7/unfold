@@ -1,0 +1,11 @@
+{
+  "name": "s7-matrix-candidate",
+  "returncode": -2,
+  "duration": 1294.0351077500018,
+  "before": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+  "after": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtysixth/matrix-lane/s7-matrix-candidate.log",
+  "passed": false
+}

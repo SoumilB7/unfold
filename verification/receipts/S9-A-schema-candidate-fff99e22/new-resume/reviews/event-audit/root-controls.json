@@ -1,0 +1,73 @@
+{
+  "scope": "Independent root saved-JSON controls; no model/product imports",
+  "script_sha256": "6b9334f9cf9e71feecbd5eca57c6a5560486a3ec4ceced28c7c32b3303597886",
+  "positive": "PASS",
+  "poisons": [
+    {
+      "poison": "bad_hash",
+      "rejected": true,
+      "findings": [],
+      "event_failure_count": 1
+    },
+    {
+      "poison": "missing_hash",
+      "rejected": true,
+      "findings": [],
+      "event_failure_count": 1
+    },
+    {
+      "poison": "stale_target",
+      "rejected": true,
+      "findings": [
+        {
+          "kind": "decision_multiplicity",
+          "target": "decoder.attention.mechanism",
+          "path": "num_attention_heads",
+          "expected": 1,
+          "actual": 0
+        }
+      ],
+      "event_failure_count": 1
+    },
+    {
+      "poison": "duplicate",
+      "rejected": true,
+      "findings": [
+        {
+          "kind": "decision_multiplicity",
+          "target": "decoder.attention.mechanism",
+          "path": "num_attention_heads",
+          "expected": 1,
+          "actual": 2
+        }
+      ],
+      "event_failure_count": 0
+    },
+    {
+      "poison": "missing",
+      "rejected": true,
+      "findings": [
+        {
+          "kind": "decision_multiplicity",
+          "target": "decoder.attention.mechanism",
+          "path": "num_attention_heads",
+          "expected": 1,
+          "actual": 0
+        }
+      ],
+      "event_failure_count": 0
+    },
+    {
+      "poison": "wrong_reader",
+      "rejected": true,
+      "findings": [],
+      "event_failure_count": 1
+    },
+    {
+      "poison": "default_as_checkpoint",
+      "rejected": true,
+      "findings": [],
+      "event_failure_count": 1
+    }
+  ]
+}

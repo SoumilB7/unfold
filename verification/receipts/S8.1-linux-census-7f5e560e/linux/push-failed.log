@@ -1,0 +1,57 @@
+evidence-receipts	Config-consumption census is current	﻿2026-09-10T07:56:48.7219245Z ##[group]Run python scripts/census.py --check
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7219857Z ^[[36;1mpython scripts/census.py --check^[[0m
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7262214Z shell: /usr/bin/bash -e {0}
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7262481Z env:
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7262770Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7263214Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7263646Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7264049Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7264466Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7264859Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+evidence-receipts	Config-consumption census is current	2026-09-10T07:56:48.7265191Z ##[endgroup]
+evidence-receipts	Config-consumption census is current	2026-09-10T07:57:22.9260734Z [transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+evidence-receipts	Config-consumption census is current	2026-09-10T07:57:22.9262923Z [transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2876705Z 
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2877714Z census is STALE — run: python3 scripts/census.py
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2878474Z --- committed
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2878929Z +++ regenerated
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2879324Z @@ -48,9 +48,9 @@
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2880104Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2880602Z  ## Owners with NO consumption at all (audit_incomplete)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2881264Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2881603Z -- none
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2883090Z +- `root.denoiser` — 1 witnesses (e.g. ['stable-diffusion-xl-base-1-0']); **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2884530Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2884859Z -## Standing accessed-but-unconsumed occurrences: 0
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2885774Z +## Standing accessed-but-unconsumed occurrences: 2
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2886106Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2886454Z  Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2887021Z  supplying alias differs. The row key is the FULL occurrence, so two paths
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2887449Z @@ -61,7 +61,13 @@
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2887805Z  mechanism whether a model is parsed standalone or embedded in a pipeline.
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2888353Z  Prefix a row with its document to address the value in the witness file.
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2888756Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2889043Z -## PENDING occurrences (dispositioned, exact debt rows): 13
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2890063Z +### `root.denoiser` — 2 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2890643Z +
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2890869Z +Paths relative to: the top-level document
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2891163Z +
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2891363Z +`act_fn` (1w), `norm_eps` (1w)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2891632Z +
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2891905Z +## PENDING occurrences (dispositioned, exact debt rows): 45
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2892267Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2892564Z  Each row here is EXCUSED by one exact config_read StructuralDebt row
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2893065Z  (evidence/structural_debt.py): owner + exact path + U3-U14 unit +
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2893456Z @@ -73,9 +79,9 @@
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2893666Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2893942Z  `embedding_multiplier` (1w, U14), `logits_scaling` (1w, U14)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2894297Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2894553Z -### `root.denoiser` — 11 pending rows
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2894895Z +### `root.denoiser` — 43 pending rows
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2895166Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2896397Z -`addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `encoder_hid_dim` (1w, U11), `encoder_hid_dim_type` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2901883Z +`addition_embed_type` (1w, U11), `addition_embed_type_num_heads` (1w, U11), `addition_time_embed_dim` (1w, U11), `attention_head_dim` (1w, U15), `block_out_channels` (1w, U11), `center_input_sample` (1w, U11), `class_embed_type` (1w, U11), `class_embeddings_concat` (1w, U11), `conv_in_kernel` (1w, U11), `conv_out_kernel` (1w, U11), `cross_attention_dim` (1w, U15), `cross_attention_norm` (1w, U11), `down_block_types` (1w, U11), `downsample_padding` (1w, U11), `dual_cross_attention` (1w, U11), `encoder_hid_dim` (1w, U11), `encoder_hid_dim_type` (1w, U11), `flip_sin_to_cos` (1w, U15), `freq_shift` (1w, U15), `in_channels` (1w, U15), `layers_per_block` (1w, U11), `mid_block_only_cross_attention` (1w, U11), `mid_block_scale_factor` (1w, U11), `mid_block_type` (1w, U11), `norm_num_groups` (1w, U11), `num_attention_heads` (1w, U15), `num_class_embeds` (1w, U11), `only_cross_attention` (1w, U15), `out_channels` (1w, U15), `projection_class_embeddings_input_dim` (1w, U11), `resnet_out_scale_factor` (1w, U11), `resnet_skip_time_act` (1w, U11), `resnet_time_scale_shift` (1w, U11), `sample_size` (1w, U15), `time_cond_proj_dim` (1w, U11), `time_embedding_act_fn` (1w, U11), `time_embedding_dim` (1w, U11), `time_embedding_type` (1w, U11), `timestep_post_act` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11), `upcast_attention` (1w, U15), `use_linear_projection` (1w, U15)
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2906091Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2906292Z  ## Reads whose LOCATION is unknown: 0
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:05.2906542Z  
+evidence-receipts	Config-consumption census is current	2026-09-10T07:58:08.3100062Z ##[error]Process completed with exit code 1.

@@ -1,0 +1,206 @@
+[
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "sdxl_render",
+    "line": 24,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_pixart_caption_projection_is_explicit_and_code_shaped",
+    "line": 266,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_vae_decoder_surfaces_input_conv_and_attention_mid_block",
+    "line": 297,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_main_view_is_the_sampling_loop",
+    "line": 337,
+    "original_call": "unfold(FLUX).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_denoiser_drills_into_the_dit_stack",
+    "line": 367,
+    "original_call": "unfold(FLUX).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_text_encoders_render_as_separate_blocks",
+    "line": 387,
+    "original_call": "unfold(FLUX).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_text_encoder_breaks_into_drillable_ops",
+    "line": 401,
+    "original_call": "unfold(FLUX).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_text_encoder_ffn_summary_drill_and_cards_share_one_region",
+    "line": 513,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn",
+    "line": 834,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_diffusion_recursive_depth_conforms",
+    "line": 1174,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_non_kl_vae_stays_honest",
+    "line": 1411,
+    "original_call": "unfold(cfg).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_vae_decoder_upsample_matches_diffusers_placement",
+    "line": 1433,
+    "original_call": "unfold(cfg).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_sampling_loop_json_matches_html_nodes",
+    "line": 1530,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_dual_encoder_internals_survive_without_an_inferred_concat",
+    "line": 1687,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_encoder_bridge_own_linear_shape_and_conditional_call_ports",
+    "line": 1715,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_text_encoder_attention_drills_are_canonical_and_positionally_honest",
+    "line": 1960,
+    "original_call": "d.to_html()"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_config_only_heterogeneous_encoder_schedule_cannot_split_the_tower",
+    "line": 2050,
+    "original_call": "d.to_html()"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_moe_text_encoder_opens_the_canonical_moe_drill",
+    "line": 2092,
+    "original_call": "d.to_html()"
+  },
+  {
+    "file": "tests/test_diffusion.py",
+    "function": "test_moe_text_encoder_opens_the_canonical_moe_drill",
+    "line": 2118,
+    "original_call": "unfold(FLUX).to_html()"
+  },
+  {
+    "file": "tests/test_submodel_parity.py",
+    "function": "test_recursion_contract_nested_submodel_projects_and_couples",
+    "line": 209,
+    "original_call": "diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_mtp_count_without_constructed_modules_is_not_rendered",
+    "line": 550,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_diffusion_gemma_block_diffusion",
+    "line": 631,
+    "original_call": "d.to_html()"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_diffusion_gemma_block_worthiness",
+    "line": 681,
+    "original_call": "d.to_html()"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_moe_gate_view_is_source_bound_and_shared_expert_drawn",
+    "line": 977,
+    "original_call": "unfold(base).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_gemma4_ple_shaped_config_cannot_create_an_unproved_pathway",
+    "line": 1244,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_gemma4_multimodal_fusion_render",
+    "line": 1265,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_cross_attention_fusion_side_block_does_not_overlap_the_spine",
+    "line": 1328,
+    "original_call": "unfold(cfg).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_vision_position_evidence_never_fabricates_an_attention_mechanism",
+    "line": 1408,
+    "original_call": "qwen_diagram.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_gemma4_video_token_activates_only_the_source_supported_soft_video_path",
+    "line": 1433,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_non_gated_dense_ffn_has_plain_mlp_view",
+    "line": 1537,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_dbrx_nested_config_routes_to_gqa_moe",
+    "line": 1682,
+    "original_call": "d.to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_declared_residual_multiplier_does_not_manufacture_scale_connectors",
+    "line": 1922,
+    "original_call": "unfold(cfg).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_smoke.py",
+    "function": "test_declared_residual_multiplier_does_not_manufacture_scale_connectors",
+    "line": 1927,
+    "original_call": "unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)"
+  },
+  {
+    "file": "tests/test_code_evidence.py",
+    "function": "test_unet_ffn_activation_anchored_to_declared_blocks",
+    "line": 2173,
+    "original_call": "diagram.to_html()"
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "verdict": "ACCEPT bounded source-only fixture relocation; runtime remains required",
+  "manifest_sha256": "ae3260e5df8a7215279836d211c439c2ca78e6280b97fde367b90a01072db6bc",
+  "audit_result_sha256": "e1a538fcbe3970e1444836b13ee064c300892a5c0ce4dd20abc2b1ff5a8e7c6b",
+  "files": 73,
+  "unchanged_test_definitions": 732,
+  "moved_definitions": 81,
+  "four_corpus_constants": "Same repository corpus after relocation; only moved helper AST difference besides import paths.",
+  "dependency_checks": {
+    "imports_checked": 94,
+    "resolved_named_imports": true,
+    "support_graph_acyclic": true,
+    "reflected_module_identity_dependencies_found": 0
+  },
+  "live_snapshot_differences": [],
+  "limits": [
+    "No project modules imported, tests run, or import-time behavior executed.",
+    "AST test identity does not replace collection/isolation/full-gate runtime.",
+    "No product/output approval."
+  ]
+}

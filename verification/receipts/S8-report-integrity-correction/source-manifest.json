@@ -1,0 +1,9 @@
+{
+  "base_checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "scope": "Working-tree report correction; no model, production renderer, pytest, or blessed outputs changed",
+  "files": {
+    "scripts/report_s8_demonstration.py": "f8284b521d89e2362bb62c2944a5b923c9590434f2cdab66ee917431094e615e",
+    "verification/receipts/S8-report-integrity-correction/probe_report.py": "2d02b75fd448eb2f5d9f41c241ffd617fe16b7a09ac5693beaa648f64ea69ab9",
+    "verification/receipts/S8-demonstration-review-independent/reproduce_report.py": "3b3cd6b27b66fa55b92fc07fd148be32aca9274789602a628942749f0ac27a9d"
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "path": "audit-matrix.py",
+    "sha256": "8c92314ca48d5e7d1d9704515fbca659e75a06a8105495262f8d84278a045971"
+  },
+  {
+    "path": "generate-matrix.py",
+    "sha256": "d2562b43999e78f46461901828c0039b48c32294f7928558014955a11eda558a"
+  },
+  {
+    "path": "handoffs.json",
+    "sha256": "9b06bfe11fe1555c446a27e531cef81bb0304e3bb8fe39545c1ddc18ffe50289"
+  },
+  {
+    "path": "qualification/result.json",
+    "sha256": "fb6d2fa3d98787a89dc3f3fc5ebc0e83a0b5904389a31ffd58149809b370b6c0"
+  },
+  {
+    "path": "qualification/schema-proof-metadata.log",
+    "sha256": "2ebcfff5bfeb68ca02c8bcd44f05337a5f01000134adb1ba384136d7219d63a2"
+  },
+  {
+    "path": "run-broader.py",
+    "sha256": "7be940bbf9ff2500623fe6b6a6a132483861c97c53efa1d9937164c4153f710c"
+  },
+  {
+    "path": "run-matrix.py",
+    "sha256": "8052c0cdb382d669a9bccacf3ea7bfbfe91913a12321e2dcbc67ce49bb0e7457"
+  },
+  {
+    "path": "run-sparse.py",
+    "sha256": "5458c0f23762f45a40c32c320bf84842c1166f3ad1da8b53113abf593af922b5"
+  },
+  {
+    "path": "run.py",
+    "sha256": "2462e0b0ae3eeb816c2105ce2b19a7fdc1a02871b4898fda187a25c9a4dee491"
+  },
+  {
+    "path": "run_sparse.py",
+    "sha256": "0cc13b9517b965337dd86ee80a8fce76988cbf5efe915e49a98dbffc68b0cf0a"
+  },
+  {
+    "path": "source-manifest.json",
+    "sha256": "6ed0f48a55a10550c6460a972c8d1cf39ae92cf3cf57ae0e093faaf9814fd52f"
+  },
+  {
+    "path": "source.tar.gz",
+    "sha256": "1f4f9df379338db574af84f17ab6cd87c95a1a2354fee3b588feecf1eab1712e"
+  },
+  {
+    "path": "sparse-plan.json",
+    "sha256": "ad0aeb58d8ecb5c82240a721e618b049827bee81800dfb42886c8591691c4d06"
+  }
+]

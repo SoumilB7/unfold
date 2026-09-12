@@ -1,0 +1,324 @@
+{
+  "status": "TESTED_PROPOSAL_OWNER_APPROVAL_REQUIRED",
+  "base_commit": "89f181f4306e21122d1ac4cc98573454a5937427",
+  "files": [
+    {
+      "path": "candidate/README.md",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/README.md",
+      "sha256": "3c7d3dcabf3a32370f2ddd44ff6e11916e0d4fc31275e5112979cca526b23c2f",
+      "bytes": 2957
+    },
+    {
+      "path": "candidate/growth.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/growth.json",
+      "sha256": "b6c2dbdd8088cabfa7aeafc957696ed57e2e20cf83156e330cc0b4ba883d6272",
+      "bytes": 801
+    },
+    {
+      "path": "candidate/manifest.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/manifest.json",
+      "sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+      "bytes": 2901
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/claim_evidence.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/claim_evidence.py",
+      "sha256": "aa47c42df0bf15ef794719f89abff199a5d78cf5413dc78ec6219231f5f2a969",
+      "bytes": 19036
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/instance_population_claim.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/instance_population_claim.py",
+      "sha256": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7",
+      "bytes": 5736
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/program_index.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/program_index.py",
+      "sha256": "3b3bdda9cc95f84a78324de723c421e2ed3f735ca037dd4fe564ffac74293da5",
+      "bytes": 151603
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/unet_cell_connections.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/unet_cell_connections.py",
+      "sha256": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074",
+      "bytes": 19046
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/unet_claims.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/unet_claims.py",
+      "sha256": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169",
+      "bytes": 30397
+    },
+    {
+      "path": "candidate/model_unfolder/evidence/unet_primary_ports.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/model_unfolder/evidence/unet_primary_ports.py",
+      "sha256": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc",
+      "bytes": 11036
+    },
+    {
+      "path": "candidate/source.diff",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/source.diff",
+      "sha256": "39fd39892b5b8473cc71995e2d29a652d7c8b3c2139c60ef7a60ceb5a52009c8",
+      "bytes": 19626
+    },
+    {
+      "path": "candidate/tests/test_portable_claim_summary.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/tests/test_portable_claim_summary.py",
+      "sha256": "654cf999d9530c40a04a1c79cb9f6a20528af4954a106eea53d3e162346e4c79",
+      "bytes": 8759
+    },
+    {
+      "path": "candidate/tests/test_s7_reconciliation.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-candidate/tests/test_s7_reconciliation.py",
+      "sha256": "4b237e4979d658d0c6d8e06757330cc1622e96006337ac260d6b423ee8a091b8",
+      "bytes": 56792
+    },
+    {
+      "path": "checks/actual-sdxl-proposal.log",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/actual-sdxl-proposal.log",
+      "sha256": "81e2c63051691373fbcd7aa56416643e05eed14e1c362f13bef9eec056253419",
+      "bytes": 938
+    },
+    {
+      "path": "checks/final-pins.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/final-pins.json",
+      "sha256": "297f2956e7f0e8e8db0c43bf3ffecf43be2227d5db957985f27b7e3354ef84dc",
+      "bytes": 1171
+    },
+    {
+      "path": "checks/portable-proof-controls.log",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/portable-proof-controls.log",
+      "sha256": "2e8b50174e7cebc44a2502ff65bb2dc681fb3f94c84512e5363ed32a1d49ca3a",
+      "bytes": 180
+    },
+    {
+      "path": "checks/result.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/result.json",
+      "sha256": "e3d10e5091d55e2ffa3e7a662eb35c81cb4460688dd464573ef0101a16658ef1",
+      "bytes": 1809
+    },
+    {
+      "path": "comparison/actual-model.json.gz",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/actual-model.json.gz",
+      "sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+      "bytes": 832493
+    },
+    {
+      "path": "comparison/actual-observation.json.gz",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/actual-observation.json.gz",
+      "sha256": "f6301d9ba3c785ceb770929f0dd2941cb7aa36c0fb40c673859ddb2b980c4f45",
+      "bytes": 3737
+    },
+    {
+      "path": "comparison/actual-relations.json.gz",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/actual-relations.json.gz",
+      "sha256": "09daad03a0e4e00a63754ab0b89fcd6939ab90dc463bb64458111495efbcb79f",
+      "bytes": 210
+    },
+    {
+      "path": "comparison/full-semantic-delta.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/full-semantic-delta.json",
+      "sha256": "2d595f7d1fbf1c42a0809861b44b7d84ba7373295dac0767cdc60c9a6370e61c",
+      "bytes": 52958
+    },
+    {
+      "path": "comparison/matrix-delta.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/matrix-delta.json",
+      "sha256": "479cbfde8b041f1076fcfe12d067c38af10573354d9d314a85f36f54d9d4c5b4",
+      "bytes": 1941
+    },
+    {
+      "path": "comparison/result.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/result.json",
+      "sha256": "33cdd215b49a41ebd4b1a60b280e2514e6764065b3fab4a5082e9cf688b988f7",
+      "bytes": 30380
+    },
+    {
+      "path": "decision/build_page.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-decision/build_page.py",
+      "sha256": "6b310e359ae307c01e1050df3a908cee75bcaa6ac3869ed94e1571e91cd2cb1d",
+      "bytes": 9990
+    },
+    {
+      "path": "decision/full-semantic-delta.json",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/full-semantic-delta.json",
+      "sha256": "2d595f7d1fbf1c42a0809861b44b7d84ba7373295dac0767cdc60c9a6370e61c",
+      "bytes": 52958
+    },
+    {
+      "path": "decision/independent-verdict.json",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/independent-verdict.json",
+      "sha256": "8023d2d92a0aa813733bcc31b871838c370903f0779ca1bd14876e50967fddf3",
+      "bytes": 2535
+    },
+    {
+      "path": "decision/index.html",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/index.html",
+      "sha256": "818d2ba39399ecc578eacd3d28cca865d9e51e092777847e3fb3903890be5af6",
+      "bytes": 4349
+    },
+    {
+      "path": "decision/index.inputs.json",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/index.inputs.json",
+      "sha256": "7abf75e2be530704b94a962fe17c347f68639f116a7d44790474e4ac4e3fa983",
+      "bytes": 2649
+    },
+    {
+      "path": "decision/linux-result.json",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/linux-result.json",
+      "sha256": "9791f76d6f290a9e5029c66182aea408bc462baafcac62f51ac6b20463e79b26",
+      "bytes": 2775
+    },
+    {
+      "path": "decision/source-manifest.json",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/proof-portability/source-manifest.json",
+      "sha256": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+      "bytes": 2901
+    },
+    {
+      "path": "diagnostic/proof-address-diagnostic.log",
+      "origin": "/private/tmp/unfold-s81-proof-address-diagnostic/proof-address-diagnostic.log",
+      "sha256": "d46b03a7765d9c45a87d82b04a8114065ec71c0dd96ef497f394afc4b71cdde6",
+      "bytes": 583
+    },
+    {
+      "path": "diagnostic/proofs.json",
+      "origin": "/private/tmp/unfold-s81-proof-address-diagnostic/proofs.json",
+      "sha256": "e17026b2f368bd4c1d91fb35e7846b416a4a28ee1f12288e1aeca19d6ca2ead4",
+      "bytes": 202147
+    },
+    {
+      "path": "diagnostic/result.json",
+      "origin": "/private/tmp/unfold-s81-proof-address-diagnostic/result.json",
+      "sha256": "3a6f3ead3990c8c0d0e82a6229727b1850a2e64789395a5fee8a445da1869a65",
+      "bytes": 794
+    },
+    {
+      "path": "independent/actual-proposal-review.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-independent-review/actual-proposal-review.json",
+      "sha256": "8023d2d92a0aa813733bcc31b871838c370903f0779ca1bd14876e50967fddf3",
+      "bytes": 2535
+    },
+    {
+      "path": "independent/audit_proposal.py",
+      "origin": "/private/tmp/unfold-s81-portable-proof-independent-review/audit_proposal.py",
+      "sha256": "f6e307556a004e52cad9e0c1b0a01f887b3207731c26808358fed36913123a0f",
+      "bytes": 5077
+    },
+    {
+      "path": "independent/final-verdict.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-independent-review/final-verdict.json",
+      "sha256": "1761c2c4e4756820fb2177e98501a6c21a29f5f2379932609368d7bd1b26fdf2",
+      "bytes": 1980
+    },
+    {
+      "path": "independent/source-runner-review.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-independent-review/source-runner-review.json",
+      "sha256": "1874c6c3c4c7aa8894768574470a342f7b58e28f619bba5d27a10f1fdd78f512",
+      "bytes": 2046
+    },
+    {
+      "path": "linux/census-push-failed.log",
+      "origin": "/private/tmp/unfold-s81-approved-linux/census-push-failed.log",
+      "sha256": "1b1a8f275bbf525fb48e16892df8366863e65e96b4c8b023886fa1b97da6b8e5",
+      "bytes": 9922
+    },
+    {
+      "path": "linux/census-push-final.json",
+      "origin": "/private/tmp/unfold-s81-approved-linux/census-push-final.json",
+      "sha256": "9791f76d6f290a9e5029c66182aea408bc462baafcac62f51ac6b20463e79b26",
+      "bytes": 2775
+    },
+    {
+      "path": "linux/committed-proof-census.json",
+      "origin": "/private/tmp/unfold-s81-approved-linux/committed-proof-census.json",
+      "sha256": "ad7ed2d969f761ed0959f779e3f91e8545eb33c9d0832e511518e6f2cd8abd46",
+      "bytes": 795
+    },
+    {
+      "path": "linux/compare_portable_proof_artifact.py",
+      "origin": "/private/tmp/unfold-s81-approved-linux/compare_portable_proof_artifact.py",
+      "sha256": "9765d394d8efb2d281ffd7866833cd82a901a75b50cec9f6c913919e8d27bf4c",
+      "bytes": 5128
+    },
+    {
+      "path": "linux/diagnose_proof_addresses.py",
+      "origin": "/private/tmp/unfold-s81-approved-linux/diagnose_proof_addresses.py",
+      "sha256": "151b4238c6970a93575d03564f8665ef5838c246305be447208c85b99ca6236a",
+      "bytes": 3795
+    },
+    {
+      "path": "linux/record_proof_proposal.py",
+      "origin": "/private/tmp/unfold-s81-approved-linux/record_proof_proposal.py",
+      "sha256": "afbb166b9c4ec443639efa20a537c47bd93353e1bc1f88f85bece00d3c7db6df",
+      "bytes": 7519
+    },
+    {
+      "path": "linux/verify_portable_proof_candidate.py",
+      "origin": "/private/tmp/unfold-s81-approved-linux/verify_portable_proof_candidate.py",
+      "sha256": "8ee48c46c9750435ee2c7bd225a0fc71b1ee15417fa79b10fb106c6946c2cb87",
+      "bytes": 4520
+    },
+    {
+      "path": "linux/verify_portable_proof_preservation.py",
+      "origin": "/private/tmp/unfold-s81-approved-linux/verify_portable_proof_preservation.py",
+      "sha256": "c1ba9a5ee9de3d12fee951e447c3b9b817eb42a4145077bc6e90e3ff1e1a0647",
+      "bytes": 3249
+    },
+    {
+      "path": "preservation/preservation.log",
+      "origin": "/private/tmp/unfold-s81-portable-proof-preservation/preservation.log",
+      "sha256": "cbd6c61289497fe79248fb2d23c40c24cd493151a0d8c0135517ba6f97109bce",
+      "bytes": 154
+    },
+    {
+      "path": "preservation/result.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-preservation/result.json",
+      "sha256": "e0cfbba0975eab9ebc605bf7e0a42c1cebc411d772110b3402b493e6eff43803",
+      "bytes": 4119
+    },
+    {
+      "path": "preservation/s5-example.log",
+      "origin": "/private/tmp/unfold-s81-portable-proof-preservation/s5-example.log",
+      "sha256": "e927453c079b9760e92a345138e3129498e9d437055178a7edf9cb6ced89ffe0",
+      "bytes": 99
+    },
+    {
+      "path": "preservation/static.log",
+      "origin": "/private/tmp/unfold-s81-portable-proof-preservation/static.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "proposal/matrix.json",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/proposal/matrix.json",
+      "sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+      "bytes": 201083
+    },
+    {
+      "path": "proposal/models/stable-diffusion-xl-base-1-0.json.gz",
+      "origin": "/private/tmp/unfold-s81-portable-proof-verification/sdxl/proposal/models/stable-diffusion-xl-base-1-0.json.gz",
+      "sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+      "bytes": 832493
+    },
+    {
+      "path": "status/S11-module-map.md",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S11-module-map.md",
+      "sha256": "c4cc67cf6130cf7b410281a6a76657550d2e3b2ed60995583b9c02dec1353122",
+      "bytes": 1410
+    },
+    {
+      "path": "status/S8.1-review.md",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.1-review.md",
+      "sha256": "10f475025e2004d5b1bbb3cbd50dc5f21f64ee38eb2acc2bbb2cda1fe8ae372d",
+      "bytes": 46248
+    },
+    {
+      "path": "status/S8.1.md",
+      "origin": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8.1.md",
+      "sha256": "b2d48269ef7839c0b95459951bfb677077fa2bee93636406066765ee7cbd3d23",
+      "bytes": 47879
+    }
+  ]
+}

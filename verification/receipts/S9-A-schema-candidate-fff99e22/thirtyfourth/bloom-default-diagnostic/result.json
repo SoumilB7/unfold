@@ -1,0 +1,11 @@
+{
+  "name": "bloom-default-diagnostic",
+  "returncode": 1,
+  "duration": 9.150684583000839,
+  "before": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "after": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyfourth/bloom-default-diagnostic/bloom-default-diagnostic.log",
+  "passed": false
+}

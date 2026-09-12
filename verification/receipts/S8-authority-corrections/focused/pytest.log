@@ -1,0 +1,36 @@
+........................................................................ [ 50%]
+..............................F......................................... [100%]
+=================================== FAILURES ===================================
+___________ test_shadow_denominator_and_artifact_hashes_are_current ____________
+
+    def test_shadow_denominator_and_artifact_hashes_are_current():
+>       check()
+
+tests/test_s7_artifacts.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = PosixPath('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/s7')
+
+    def check(output: Path = OUTPUT) -> None:
+        matrix_path = output / "matrix.json"
+        matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+        _require_schema_version(matrix, 1, "S7 matrix")
+        if matrix["denominator"] != {"corpus": 29, "to_serve": 10}:
+            raise ValueError("S7 matrix denominator is not 29 + 10")
+        target_rows = _targets()
+        expected_targets = {row["slug"] for row in target_rows}
+        expected_by_slug = {row["slug"]: dict(row) for row in target_rows}
+        targets_payload = json.loads(
+            (output / "targets.json").read_text(encoding="utf-8"))
+        _validate_target_metadata(matrix, targets_payload, target_rows)
+        if (len(matrix["models"]) != len(expected_targets)
+                or {row["slug"] for row in matrix["models"]} != expected_targets):
+            raise ValueError("S7 matrix target set drifted")
+        if matrix.get("sources") != _source_hashes(target_rows):
+>           raise ValueError("S7 matrix dependency surface is stale")
+E           ValueError: S7 matrix dependency surface is stale
+
+scripts/generate_s7_shadow.py:1011: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current
+1 failed, 143 passed, 28 deselected in 19.68s

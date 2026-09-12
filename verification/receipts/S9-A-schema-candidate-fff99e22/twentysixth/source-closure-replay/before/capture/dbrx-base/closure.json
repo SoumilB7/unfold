@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "44ae812a0559855a09050eddff2004286f1856ecf59caa9f599935ea59a3a7a5",
+  "baseline_output": {
+    "ir_after_sha256": "368e6dcdc4197ff8d00ecbf072b116c1d28f211c2f68216cdee9cae387e987a3",
+    "ir_before_sha256": "368e6dcdc4197ff8d00ecbf072b116c1d28f211c2f68216cdee9cae387e987a3",
+    "page_bytes": 71619,
+    "page_sha256": "9e2db8fff9ff9e9573155af036994de2a78a3e5d55a7ad769826d441fb0f951a",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "44ae812a0559855a09050eddff2004286f1856ecf59caa9f599935ea59a3a7a5",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "44ae812a0559855a09050eddff2004286f1856ecf59caa9f599935ea59a3a7a5",
+  "seconds": 0.3504334999997809,
+  "slug": "dbrx-base",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "b32e2c369bfdb1c5745478c6cb19340654d192f12e02b9f3cbe3311a84296b0a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_dbrx.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "6d70d97449fc80d3d61b98ea1d55059aa32178e486d0ad8fee791c7eb4237157",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_dbrx.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

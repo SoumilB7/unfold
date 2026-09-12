@@ -1,0 +1,52 @@
+{
+  "status": "SOURCE_ONLY_RUNTIME_PENDING",
+  "base": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-sixteenth",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py",
+      "sha256": "12441bc00e61589fbc2c51f387afc6fb8d635f6960a17324abbe7c794fb01b12",
+      "bytes": 48377,
+      "base_sha256": "834257317f37206307c569c66c8ae14c5f14cc71a06c326529b328c75047c32b"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_block.py",
+      "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4",
+      "bytes": 34497,
+      "base_sha256": "11ce8a5183153f9bbbcc662e0b14488e42bef8e802e7dfc8cebeeb471d4fe310"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_bookends.py",
+      "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8",
+      "bytes": 31978,
+      "base_sha256": "4937bbfc9ae6a372e53721ff994794768a2f0b8035d64158b4ace2d44f958848"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stream.py",
+      "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775",
+      "bytes": 74052,
+      "base_sha256": "40a8db41ad74ab46bc40c9cfcee1e6d3f67221f3105fce19d5c8034e821271d7"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/config_binding.py",
+      "sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da",
+      "bytes": 37192,
+      "base_sha256": "3dfc93e5f318b4fd1d41268fe4855e5a6e538071208eb6a067e12b06d042db0b"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/projection_ir.py",
+      "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494",
+      "bytes": 70498,
+      "base_sha256": "678c5a23c67202e0b82b6b13d3895785fced37baf35bb5014e3723e4ee52cdcf"
+    },
+    {
+      "path": "tests/test_s9_diffusion_defaults.py",
+      "sha256": "a569eb47aa0b3fcdfc335ed123fc1a60385cd8dcd768949e94d76e1d50a065e6",
+      "bytes": 10971,
+      "base_sha256": null
+    }
+  ],
+  "external_registry_sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615",
+  "focused_command": "python -m pytest -q tests/test_s9_diffusion_defaults.py tests/test_diffusion_config_binding.py tests/test_diffusion_reader_claims.py",
+  "supersedes_manifest_sha256": "c9a90ae767c72104fbb42d07e1070857c5b19585e69d79f3c94f16cd7432d1b0",
+  "correction": "Reject every constructor wrapper beyond the exact proved registration decorator; preserve both wrapper-order poisons."
+}

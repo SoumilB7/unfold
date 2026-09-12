@@ -1,0 +1,21 @@
+{
+  "status": "APPROVAL_HELD_OUTPUT_BASELINES; actual test remains FAIL",
+  "test": "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer",
+  "terminal_summary": "1 failed, 166 passed in1211.47s",
+  "batch_sha256": "1e23f8f0df6bace3d3a06d7c0b89e7d048a06868f7f7ca354ee1e2a7ce2b42f4",
+  "all_actual_diagnostics_exact_saved_checker_findings": true,
+  "actual_diagnostics": [
+    "manifest metadata or hero SVG-input seal is stale",
+    "deterministic HTML is stale: deepseek-v3.html",
+    "deterministic HTML is stale: granite-3-0-8b-instruct.html",
+    "deterministic HTML is stale: hunyuanvideo.html",
+    "deterministic HTML is stale: llama-7b.html",
+    "deterministic HTML is stale: musicgen-small.html",
+    "deterministic HTML is stale: stable-diffusion-xl-base-1-0.html"
+  ],
+  "rasterizer_invocation_failure": false,
+  "hero_input_saved_candidate_and_reviewed_byte_equal": true,
+  "reviewed_hero_input_sha256": "4458f17bf38a350fb1c3c7e4a4494ccbe9069154cb80a83a2bf7c7e7de2a9d56",
+  "new_broad_candidate_HTML_retained": false,
+  "limit": "Exact diagnostics match reviewed same-production eight-example campaign. The test temporary directory is deleted; do not claim independent full byte comparison to final broad transient HTML."
+}

@@ -1,0 +1,386 @@
+[
+  {
+    "slug": "bloom",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 14336,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "command-a-03-2025",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 12288,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "dbrx-base",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 6144,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "deepseek-coder-v2-lite",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2048,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "deepseek-v3",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 7168,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "deepseek-v4-flash",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "gemma-2-2b-it",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2304,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "gemma-3n-e2b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2048,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "glm-4-5",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 5120,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "gpt-oss-20b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2880,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "granite-3-0-8b-instruct",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "jamba-v0-1",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "lfm2-1-2b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2048,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "llama-7b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "musicgen-small",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 1024,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "nemotron-h-8b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "olmo-2-1124-7b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen2-vl-7b-instruct",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 3584,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen3-5-27b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 5120,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen3-5-27b-text",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 5120,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen3-8b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen3-omni-30b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2048,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "qwen3-vl-235b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 4096,
+      "status": "config_declared"
+    }
+  },
+  {
+    "slug": "stablelm-2-1-6b",
+    "key": "model.hidden_size",
+    "fields": [
+      "value",
+      "status"
+    ],
+    "old": {
+      "value": null,
+      "status": null
+    },
+    "new": {
+      "value": 2048,
+      "status": "config_declared"
+    }
+  }
+]

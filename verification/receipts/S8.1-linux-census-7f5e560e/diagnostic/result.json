@@ -1,0 +1,20 @@
+{
+  "status": "PASS_SCRATCH_PRODUCER",
+  "commit": "7f5e560e8ad29d7e51b7033393e35d1eeaa5a060",
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-linux-7f5e560e-census",
+  "lane": {
+    "name": "census-producer",
+    "returncode": 0,
+    "duration": 71.94146037474275,
+    "before": "545434913687b5f4cbe1eab41692d508b0148a2a6b92b44349fec660cdb47ac1",
+    "after": "545434913687b5f4cbe1eab41692d508b0148a2a6b92b44349fec660cdb47ac1",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "log_path": "/private/tmp/unfold-s81-linux-census-diagnostic/census-producer.log",
+    "passed": true
+  },
+  "producer_sha256": "ba17448da1adb78935eb148b7c2a27d288f5529d0e9698e1fb3d8b4ad1eda0c1",
+  "tool_sha256": "0617abb80f9dbccfe34d220a2eb66af89b8d517550486e63d1d7a3e3e025db6b",
+  "original_sha256": "ef82d19f51d895f80a07514f36081acd7ebea64852cb3febef7dc565f50640e8",
+  "candidate_sha256": "744e016f59246446b7c3802f000215a6ec7571e173a3ac723b86594f371781d5"
+}

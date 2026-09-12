@@ -1,0 +1,55 @@
+{
+  "caps": [
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0
+  ],
+  "case": "explicit_17",
+  "consumed_softcap_events": 1,
+  "layers": 32,
+  "native_softcap": {
+    "claim_kind": "applied_function",
+    "has_proof": true,
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 17.0
+  },
+  "native_softcap_present": true,
+  "page_bytes": 69944,
+  "page_sha256": "7ef64eb22b2d499b4416ee7d174df13e856f2a75c4f4d4db499bf3a79d01132b",
+  "reader_statuses": [
+    [
+      "('decoder.attention.logit_softcap', ())",
+      "resolved"
+    ]
+  ]
+}

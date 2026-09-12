@@ -1,0 +1,121 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:18:19.918014+00:00",
+  "model": "FLUX.2-dev",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "7aae638a87e842508ee10e0762b1cd3e"
+    },
+    {
+      "label": "architecture",
+      "hash": "915f743f155e2fffe09f215eac102e3f"
+    },
+    {
+      "label": "attn",
+      "hash": "920615e9b0555b9d140a982b5b2c93c7"
+    },
+    {
+      "label": "denoiser",
+      "hash": "2ddd715e8b65531f304b9153475225d7"
+    },
+    {
+      "label": "denoiser",
+      "hash": "7f603e777da042c858de0b3e5be83467"
+    },
+    {
+      "label": "encoder_0",
+      "hash": "0c4d54d74dbaf9faa10d2c86b62152ab"
+    },
+    {
+      "label": "encoder_0_op_ffn",
+      "hash": "2a2dd9aa80c5b81de5969cadfcb98e30"
+    },
+    {
+      "label": "encoder_0_op_selfattn",
+      "hash": "4da73671b5fe35135386c8e8f60a6643"
+    },
+    {
+      "label": "ffn",
+      "hash": "f9e174412a64197f5fc2fe2012f1762c"
+    },
+    {
+      "label": "scheduler",
+      "hash": "17c4013edb73ab284de6a7fe44a96ff1"
+    },
+    {
+      "label": "vae_decode",
+      "hash": "e60e4f00008fdd1f3e9bb1582c0ad6a5"
+    },
+    {
+      "label": "vae_decoder_block_1",
+      "hash": "1d4bfd5ea6a35d7a8d8b7cab02306d63"
+    },
+    {
+      "label": "vae_decoder_block_2",
+      "hash": "a759406e5f5eb86007274717b92c59a5"
+    },
+    {
+      "label": "vae_decoder_block_3",
+      "hash": "8c34ab04eded9602ef9bc1449606e686"
+    },
+    {
+      "label": "vae_decoder_block_4",
+      "hash": "09100bb2c03d93e81e3cfbb0adf9b8e5"
+    },
+    {
+      "label": "vae_mid_block",
+      "hash": "b28b57af7a35527bb97d9eae2fdf5ffb"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "e04d6a5b109f353463336309a1e09a070cd57025926a22d06004418123b3853e",
+  "gallery_manifest_sha256": "b93656a1056c40f924659fe62953097d6acc79503633e2c718870f098064aa90",
+  "pixel_review_sha256": "5bf18c26dc18e9d6f2c69a50e66be8a4958394b8c688706e5f22081f130a816c",
+  "her_eyes_review_sha256": "3feca11bdf58b1d1eb1cf3634aed7f9a9f0c3529170aedd24adb161093afff12",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "02__denoiser.png",
+      "inspected": true,
+      "label": "denoiser",
+      "png_sha256": "faeef4aa13b691f2e63b3faa3f65c24341b1f25d7ecb5087f59125c96bf77d57",
+      "source_svg_sha256": "0d57f4d120062fc90d02956d401dc7889e21739a7bd3dfb997148939a7c000f0",
+      "visual_hash": "2ddd715e8b65531f304b9153475225d7",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The tall denoiser spine repeats unresolved labels; tighter grouped spacing would make its two multipliers easier to distinguish."
+    },
+    {
+      "file": "03__denoiser__1.png",
+      "inspected": true,
+      "label": "denoiser",
+      "png_sha256": "84acd03ec061b30c9e23084e7205a553fc6b6973b921bb15b5fbc9ae51a5c456",
+      "source_svg_sha256": "1a88537f6de98a07a4616096ed54f282a91f6693da56361aa12fbf6958c6fe47",
+      "visual_hash": "7f603e777da042c858de0b3e5be83467",
+      "delight": "FINE",
+      "verdict": "SUGGEST",
+      "sentence": "The second repeated denoiser is legible but could use a more compact summary while preserving its unknown labels and drills."
+    },
+    {
+      "file": "15__architecture__1.png",
+      "inspected": true,
+      "label": "architecture",
+      "png_sha256": "87b237874c8f9740611f76d555ca825a621d865ec2a36e955470aa085526ca97",
+      "source_svg_sha256": "26a8e40873950357521278509cf086d0520bba40caf21ebdf2317a3721be9d2b",
+      "visual_hash": "7aae638a87e842508ee10e0762b1cd3e",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "Both long layer-type legend lines run beyond the right edge; wrap them within the legend frame."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

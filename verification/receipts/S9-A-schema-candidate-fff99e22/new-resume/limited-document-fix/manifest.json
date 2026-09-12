@@ -1,0 +1,43 @@
+{
+  "status": "source-only held correction; no tests/runtime/model imports performed",
+  "base": "frozen candidate26",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "8f312c68d47451df9b297bcb231743daee10662a649ce00e742f22ae04e19d98",
+      "frozen26_sha256": "4c9bdaf9e69ba39715ee8a068349170317768fd6abacb28a2525a46f6e4f112b"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "3a90fc4e55df5c666615e72ce020a751d7ca3de558e6f9e59e7379312e929387",
+      "frozen26_sha256": "aee930638b7b6287c9b1b0435096fcbda70de72f3d042c27f6e149ad85972db6"
+    },
+    {
+      "path": "tests/test_s9_limited_document.py",
+      "sha256": "229103e30b47a3dcfd91c08b499f58fc100393cd84d6f728a37038a6e6d125c7",
+      "frozen26_sha256": null
+    },
+    {
+      "path": "tests/test_diffusion.py",
+      "sha256": "7b2a1d451d03a9b61c0d7d38311caf96746870d0d15d461079ec0b121e671182",
+      "frozen26_sha256": "3e6088bb699861b7e20b7fc2416be3102a52d39a599c76823537b7c28b692500"
+    }
+  ],
+  "source_syntax": "ast.parse passed for all four files",
+  "causes_sha256": "3c6ace187c7ca39607b29d5c6bfad57627d245571838a96c07bab03224f917ca",
+  "runtime_required": [
+    "tests/test_s9_limited_document.py",
+    "tests/test_s9_reader_declarations.py",
+    "tests/test_reader_claims.py",
+    "tests/test_s9_class_default_value.py",
+    "tests/test_code_evidence.py::test_norm_placement_defaults_two_unknown_tiers",
+    "tests/test_diffusion.py::test_config_tokens_do_not_change_typed_grouping_or_period_detection",
+    "tests/test_diffusion.py::test_moe_dit_counts_do_not_manufacture_a_router",
+    "tests/test_identity_guard.py"
+  ],
+  "limitations": [
+    "Kind-only unbound reader declarations carry no document proof, occurrence citation or reader-exhaustion/class3 authority.",
+    "No output delta approved, baseline blessed or source/runtime result claimed.",
+    "New direct-parse tests and zero-single-stack fixture require root runtime verification."
+  ]
+}

@@ -1,0 +1,2312 @@
+[
+  {
+    "index": 3,
+    "obligation": {
+      "expected_value_status_hash": "a55dcd6a0b9401c4",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "index": 6,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "auraflow-v0-3"
+  },
+  {
+    "index": 4,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 7,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 13,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "d_kv",
+        "component": "root.text_encoder",
+        "path": "d_kv",
+        "spelling": "d_kv"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "cogvideox-5b"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "70d5d3a3d9409f7c",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "text_config.hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 7,
+    "obligation": {
+      "expected_value_status_hash": "b9c82d4207301835",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "text_config.hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 13,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 15,
+    "obligation": {
+      "expected_value_status_hash": "44efd27a4bb6678d",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "44efd27a4bb6678d",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "text_config.tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "flux-2-dev"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "63ed4117f4c89159",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 7,
+    "obligation": {
+      "expected_value_status_hash": "384a1a630b8298aa",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_2",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 19,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder_2",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.ffn.activation",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 22,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder_2",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.mechanism",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 23,
+    "obligation": {
+      "expected_value_status_hash": "926cf142ddc998df",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder_2",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "b9c82d4207301835",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 21,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 22,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 23,
+    "obligation": {
+      "expected_value_status_hash": "a5118e63f46052c7",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 24,
+    "obligation": {
+      "expected_value_status_hash": "a5118e63f46052c7",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 25,
+    "obligation": {
+      "expected_value_status_hash": "a5118e63f46052c7",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "head_dim",
+        "component": "root.text_encoder",
+        "path": "head_dim",
+        "spelling": "head_dim"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 29,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 32,
+    "obligation": {
+      "expected_value_status_hash": "63ed4117f4c89159",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_2",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 34,
+    "obligation": {
+      "expected_value_status_hash": "384a1a630b8298aa",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder_2",
+        "path": "hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.ffn.activation",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 39,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder_2",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.mechanism",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 40,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder_2",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 41,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_2",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 8,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 15,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "d_kv",
+        "component": "root.text_encoder",
+        "path": "d_kv",
+        "spelling": "d_kv"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "ltx-video"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "30e6f97e61542821",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 7,
+    "obligation": {
+      "expected_value_status_hash": "19636f04f1e0781b",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_activation",
+        "component": "root.text_encoder",
+        "path": "hidden_activation",
+        "spelling": "hidden_activation"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 19,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 20,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 21,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 22,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "head_dim",
+        "component": "root.text_encoder",
+        "path": "head_dim",
+        "spelling": "head_dim"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 27,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "lumina-image-2-0"
+  },
+  {
+    "index": 2,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "d_kv",
+        "component": "root.text_encoder",
+        "path": "d_kv",
+        "spelling": "d_kv"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "mochi-1-preview"
+  },
+  {
+    "index": 1,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 4,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "d_kv",
+        "component": "root.text_encoder",
+        "path": "d_kv",
+        "spelling": "d_kv"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "pixart-sigma-xl-2-1024-ms"
+  },
+  {
+    "index": 3,
+    "obligation": {
+      "expected_value_status_hash": "a55dcd6a0b9401c4",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 5,
+    "obligation": {
+      "expected_value_status_hash": "b9c82d4207301835",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 12,
+    "obligation": {
+      "expected_value_status_hash": "4ad1c134ce1e710b",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 13,
+    "obligation": {
+      "expected_value_status_hash": "4ad1c134ce1e710b",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "4ad1c134ce1e710b",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "head_dim",
+        "component": "root.text_encoder",
+        "path": "head_dim",
+        "spelling": "head_dim"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "prxpixel-t2i"
+  },
+  {
+    "index": 6,
+    "obligation": {
+      "expected_value_status_hash": "0317feefb5fa2fb2",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "text_config.hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 8,
+    "obligation": {
+      "expected_value_status_hash": "b9c82d4207301835",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "text_config.hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 13,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 15,
+    "obligation": {
+      "expected_value_status_hash": "45c289d0a98fd93c",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "45c289d0a98fd93c",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "text_config.num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 17,
+    "obligation": {
+      "expected_value_status_hash": "45c289d0a98fd93c",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "text_config.hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 19,
+    "obligation": {
+      "expected_value_status_hash": "a9cd6a1ddefafc47",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "qwen-image"
+  },
+  {
+    "index": 2,
+    "obligation": {
+      "expected_value_status_hash": "30e6f97e61542821",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 4,
+    "obligation": {
+      "expected_value_status_hash": "19636f04f1e0781b",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_activation",
+        "component": "root.text_encoder",
+        "path": "hidden_activation",
+        "spelling": "hidden_activation"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 15,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 16,
+    "obligation": {
+      "expected_value_status_hash": "5d420927d1e9f86a",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 17,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_key_value_heads",
+        "component": "root.text_encoder",
+        "path": "num_key_value_heads",
+        "spelling": "num_key_value_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 19,
+    "obligation": {
+      "expected_value_status_hash": "3c7ba0045c171f80",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "head_dim",
+        "component": "root.text_encoder",
+        "path": "head_dim",
+        "spelling": "head_dim"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 24,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "sana-1600m-1024px-diffusers"
+  },
+  {
+    "index": 1,
+    "obligation": {
+      "expected_value_status_hash": "63ed4117f4c89159",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 8,
+    "obligation": {
+      "expected_value_status_hash": "b259a70b49b9febe",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_2",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 15,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_3",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 18,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder_3",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.decoder.ffn.activation",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 24,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder_3",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.decoder.attention.mechanism",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 25,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_heads",
+        "component": "root.text_encoder_3",
+        "path": "num_heads",
+        "spelling": "num_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 26,
+    "obligation": {
+      "expected_value_status_hash": "9d9e06feeb3fc38a",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "d_kv",
+        "component": "root.text_encoder_3",
+        "path": "d_kv",
+        "spelling": "d_kv"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 28,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder_3",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder_3.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_3.model.tie_word_embeddings",
+    "slug": "stable-diffusion-3-5-large"
+  },
+  {
+    "index": 1,
+    "obligation": {
+      "expected_value_status_hash": "63ed4117f4c89159",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 3,
+    "obligation": {
+      "expected_value_status_hash": "384a1a630b8298aa",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_act",
+        "component": "root.text_encoder",
+        "path": "hidden_act",
+        "spelling": "hidden_act"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 8,
+    "obligation": {
+      "expected_value_status_hash": "a615d6a9effdcd21",
+      "mechanism": "attention_mechanism",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "mechanism",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 9,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "num_attention_heads",
+        "component": "root.text_encoder",
+        "path": "num_attention_heads",
+        "spelling": "num_attention_heads"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 10,
+    "obligation": {
+      "expected_value_status_hash": "605407ce9a6243a8",
+      "mechanism": "attention_head_geometry",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "head_geometry",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.attention"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 14,
+    "obligation": {
+      "expected_value_status_hash": "b259a70b49b9febe",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder_2",
+        "path": "hidden_size",
+        "spelling": "hidden_size"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder_2.model"
+      }
+    },
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "stable-diffusion-xl-base-1-0"
+  },
+  {
+    "index": 3,
+    "obligation": {
+      "expected_value_status_hash": "67951bb3d9db1731",
+      "mechanism": "model_hidden_size_value",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "hidden_size",
+        "component": "root.text_encoder",
+        "path": "d_model",
+        "spelling": "d_model"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "hidden_size",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "index": 6,
+    "obligation": {
+      "expected_value_status_hash": "23863c00c40b5f69",
+      "mechanism": "ffn_activation",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "dense_act_fn",
+        "component": "root.text_encoder",
+        "path": "dense_act_fn",
+        "spelling": "dense_act_fn"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "activation",
+        "kind": "fact",
+        "owner": "root.text_encoder.decoder.ffn"
+      }
+    },
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  },
+  {
+    "index": 11,
+    "obligation": {
+      "expected_value_status_hash": "34b451cd19670900",
+      "mechanism": "",
+      "reason": "no projection receipt exists yet",
+      "source": {
+        "canonical": "tie_word_embeddings",
+        "component": "root.text_encoder",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings"
+      },
+      "state": "unreceipted",
+      "target": {
+        "key": "tie_word_embeddings",
+        "kind": "fact",
+        "owner": "root.text_encoder.model"
+      }
+    },
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "wan2-2-t2v-a14b-diffusers"
+  }
+]

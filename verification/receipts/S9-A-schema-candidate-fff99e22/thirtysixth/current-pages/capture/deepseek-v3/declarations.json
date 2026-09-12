@@ -1,0 +1,4452 @@
+{
+  "decoder.attention.bias": {
+    "claim_kind": "existence",
+    "claim_proof": {
+      "claim_kind": "existence",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.bias:df40488d7e9f5dfc",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:317:4:317:36",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:403:22:407:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:8:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:479:22:479:46",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9"
+      ],
+      "fact_id": "decoder.attention.bias",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "attention_bias"
+    ],
+    "key": "bias",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 387,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 389,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 391,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 397,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 439,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 393,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 437,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 440,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 403,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 479,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": false
+  },
+  "decoder.attention.head_geometry": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.head_geometry:40c1771af56d9eb5",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9"
+      ],
+      "fact_id": "decoder.attention.head_geometry",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_attention_heads",
+      "kv_lora_rank",
+      "qk_rope_head_dim",
+      "qk_nope_head_dim",
+      "v_head_dim",
+      "q_lora_rank"
+    ],
+    "key": "head_geometry",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 387,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 389,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 391,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 397,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 439,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 393,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 437,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 440,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "head_dim": 192,
+      "kind": "mla",
+      "kv_lora_rank": 512,
+      "num_heads": 128,
+      "num_kv_heads": 128,
+      "q_lora_rank": 1536,
+      "qk_nope_head_dim": 128,
+      "qk_rope_head_dim": 64,
+      "v_head_dim": 128
+    }
+  },
+  "decoder.attention.mask": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask:d633e0971d5d5f6d",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:29:0:29:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:38:310:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:8:310:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:469:12:469:26",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:513:27:513:41",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:531:32:531:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:562:22:562:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:25:564:31",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:8:564:32",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:22:612:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:8:612:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:620:31:620:42"
+      ],
+      "fact_id": "decoder.attention.mask",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mask",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 606,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 618,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 620,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 513,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 469,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 310,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 564,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 531,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 562,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 570,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "causal"
+  },
+  "decoder.attention.mask_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask_schedule:c9ae4581a63a99b6",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:29:0:29:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:38:310:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:8:310:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:469:12:469:26",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:513:27:513:41",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:531:32:531:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:562:22:562:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:25:564:31",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:8:564:32",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:22:612:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:8:612:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:620:31:620:42"
+      ],
+      "fact_id": "decoder.attention.mask_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mask_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 606,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 618,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 620,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 513,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 469,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 310,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 564,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 531,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 562,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 570,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ]
+  },
+  "decoder.attention.mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mechanism:2d0bb81da2278b7b",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9"
+      ],
+      "fact_id": "decoder.attention.mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "num_attention_heads",
+      "kv_lora_rank",
+      "qk_rope_head_dim",
+      "qk_nope_head_dim",
+      "v_head_dim",
+      "q_lora_rank"
+    ],
+    "key": "mechanism",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 387,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 389,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 391,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 397,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 439,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 393,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 437,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 440,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "mla"
+  },
+  "decoder.attention.mixer_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:b9566eaf448f54ef",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:25:488:80",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102"
+      ],
+      "fact_id": "decoder.attention.mixer_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mixer_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 570,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 488,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.output_projection": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:317:4:317:36",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:403:22:407:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:8:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:479:22:479:46",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9"
+      ],
+      "fact_id": "decoder.attention.output_projection",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "output_projection",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 387,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 389,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 391,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 397,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 439,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 393,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 437,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 440,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 403,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 479,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.position_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.position_schedule:7725e941c9773abd",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:24:434:101",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:70:434:91",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:8:434:101",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:71:437:92",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:8:437:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:11:445:38",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:451:34:451:40",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:451:8:451:57",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:452:32:452:38",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:452:8:452:55",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:25:488:80",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:70:488:79",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86"
+      ],
+      "fact_id": "decoder.attention.position_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers",
+      "rope_interleave",
+      "qk_rope_head_dim"
+    ],
+    "key": "position_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 570,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 488,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 446,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 466,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 467,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 320,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 356,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 348,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 352,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 354,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 355,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 445,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 615,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 117,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 118,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 116,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 603,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 604,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 451,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 434,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 452,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 437,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": 64
+      }
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.rope_initialization": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_initialization:dc939dadd9cb30c9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:70:11:70:25",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:43:72:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:8:72:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:74:8:74:68",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:327:0:459:37",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:388:11:388:45",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:635:12:635:36"
+      ],
+      "fact_id": "decoder.attention.rope_initialization",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "rope_parameters.rope_type",
+      "rope_parameters.factor",
+      "rope_parameters.original_max_position_embeddings",
+      "rope_parameters.mscale",
+      "rope_parameters.mscale_all_dim",
+      "rope_parameters.beta_fast",
+      "rope_parameters.beta_slow"
+    ],
+    "key": "rope_initialization",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 446,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 466,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 467,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 320,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 356,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 348,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 352,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 354,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 355,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 445,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 615,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 117,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 118,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 116,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 603,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 604,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 74,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 72,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 327,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 388,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 70,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 635,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "callable": "_compute_yarn_parameters",
+      "kind": "imported_registry",
+      "parameters": {
+        "rope_parameters.beta_fast": 32,
+        "rope_parameters.beta_slow": 1,
+        "rope_parameters.factor": 40,
+        "rope_parameters.mscale": 1.0,
+        "rope_parameters.mscale_all_dim": 1.0,
+        "rope_parameters.original_max_position_embeddings": 4096,
+        "rope_parameters.rope_theta": 10000,
+        "rope_parameters.rope_type": "yarn"
+      },
+      "selector": "yarn"
+    }
+  },
+  "decoder.attention.rope_theta": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_theta:1e4d3f6a64bb7d05",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:70:11:70:25",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:43:72:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:8:72:76",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:74:8:74:68",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:327:0:459:37",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:388:11:388:45",
+        "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:635:12:635:36"
+      ],
+      "fact_id": "decoder.attention.rope_theta",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "rope_parameters.rope_theta"
+    ],
+    "key": "rope_theta",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 446,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 466,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 467,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 320,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 356,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 348,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 352,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 354,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 355,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 445,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 615,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 117,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 118,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 116,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 603,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 604,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 74,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 72,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 327,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 388,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 70,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "line": 635,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 10000
+  },
+  "decoder.attention.scores_scale": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "scores_scale",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 464,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 13,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 308,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 11,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 314,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 310,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "activation",
+    "owner": "decoder.ffn",
+    "source_spans": [],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "silu"
+  },
+  "decoder.ffn.expert.expert_activation_formula": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "hidden_act"
+    ],
+    "key": "expert_activation_formula",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "kind": "silu"
+    }
+  },
+  "decoder.ffn.expert.expert_intermediate_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.expert.expert_intermediate_size:9d8a9a9c663b34e7",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:162:32:162:60",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:163:8:163:115",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:164:8:164:108",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:22:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:8:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:12:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:23:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:12:186:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:36:186:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:187:12:187:107",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:202:23:202:49",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44"
+      ],
+      "fact_id": "decoder.ffn.expert.expert_intermediate_size",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.expert_width.decoder_expert_intermediate_width_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.expert_width.decoder_expert_intermediate_width_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "moe_intermediate_size"
+    ],
+    "key": "expert_intermediate_size",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 162,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 2048
+  },
+  "decoder.ffn.expert.expert_projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.expert.expert_projection_mode:ddd2b21557515ef4",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:163:8:163:115",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:164:8:164:108",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:22:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:8:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:12:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:23:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:12:186:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:36:186:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:187:12:187:107",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:202:23:202:49",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44"
+      ],
+      "fact_id": "decoder.ffn.expert.expert_projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "expert_projection_mode",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "fused_gate_up"
+  },
+  "decoder.ffn.expert.shared_expert_count": {
+    "claim_kind": "value",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.expert_width.decoder_shared_expert_count_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "moe_intermediate_size",
+      "n_shared_experts"
+    ],
+    "key": "shared_expert_count",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 162,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 128,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 204,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 205,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 1
+  },
+  "decoder.ffn.ffn_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.ffn_schedule:920eb5a71463c06a",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:163:8:163:115",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:164:8:164:108",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:22:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:8:165:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:12:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:23:185:106",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:12:186:58",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:36:186:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:187:12:187:107",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:202:23:202:49",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102"
+      ],
+      "fact_id": "decoder.ffn.ffn_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers",
+      "first_k_dense_replace"
+    ],
+    "key": "ffn_schedule",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 570,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 493,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe"
+    ]
+  },
+  "decoder.ffn.gated": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47"
+      ],
+      "fact_id": "decoder.ffn.gated",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "gated",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 493,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.ffn.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47"
+      ],
+      "fact_id": "decoder.ffn.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 493,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split"
+  },
+  "decoder.ffn.routing_policy": {
+    "claim_kind": "relation",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.router.decoder_router_selection_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "n_routed_experts",
+      "num_experts_per_tok",
+      "n_group",
+      "topk_group",
+      "norm_topk_prob",
+      "routed_scaling_factor"
+    ],
+    "key": "routing_policy",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 215,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 231,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 242,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 150,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 145,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 216,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 232,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 222,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 230,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 218,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 235,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 233,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 236,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 163,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 185,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 165,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "bias_correction": true,
+      "group_score_kind": "top2_sum",
+      "grouped": true,
+      "n_group": 8,
+      "normalization_kind": "sum",
+      "num_experts": 256,
+      "num_experts_per_tok": 8,
+      "routed_scaling_factor": 2.5,
+      "score_source_kind": "affine",
+      "scoring_before_topk": true,
+      "scoring_func": "sigmoid",
+      "selection_count": 8,
+      "selection_kind": "topk",
+      "topk_group": 4
+    }
+  },
+  "decoder.layer.norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:d23812867aded33c",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:495:31:495:93",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:496:40:496:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:509:24:509:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:524:24:524:68"
+      ],
+      "fact_id": "decoder.layer.norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "norm_kind",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 509,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 495,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 50,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 524,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 496,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "decoder.layer.norm_placement": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:495:31:495:93",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:496:40:496:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:509:24:509:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:520:24:520:48",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:524:24:524:68",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:526:24:526:48",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:527:8:527:28"
+      ],
+      "fact_id": "decoder.layer.norm_placement",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "norm_placement",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 493,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 520,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 509,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 495,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 50,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 526,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 524,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 496,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 527,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "pre"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "parallel_norm_count",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:495:31:495:93",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:496:40:496:102",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:509:24:509:59",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:520:24:520:48",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:524:24:524:68",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:526:24:526:48",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:527:8:527:28"
+      ],
+      "fact_id": "decoder.layer.residual_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "residual_topology",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 511,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 491,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 493,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 520,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 509,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 495,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 50,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 526,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 524,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 496,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 527,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sequential"
+  },
+  "model.final_norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "projection:model.final_norm_kind:d23812867aded33c",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:572:20:572:82",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:628:24:628:48",
+        "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:629:8:632:9"
+      ],
+      "fact_id": "model.final_norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "final_norm_kind",
+    "owner": "model",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 628,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 572,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 50,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 629,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py",
+        "line": 618,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "model.hidden_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|a5a4a8f9582e727b|a5a4a8f9582e727b"
+      ],
+      "fact_id": "model.hidden_size",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "hidden_size"
+    ],
+    "key": "hidden_size",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": 7168
+  },
+  "model.tie_word_embeddings": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+      ],
+      "evidence_refs": [
+        "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+      ],
+      "fact_id": "model.tie_word_embeddings",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "model_unfolder.adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "tie_word_embeddings"
+    ],
+    "key": "tie_word_embeddings",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": false
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "format": "lossless-appended-gzip-v1",
+  "entries": [
+    {
+      "logical_path": "executed/unfold-s8-ffn-diagnostic-preparation-c207550/run_diagnostic.py",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-preparation-c207550/run_diagnostic.py",
+      "stored_path": "streams/executed/unfold-s8-ffn-diagnostic-preparation-c207550/run_diagnostic.py.gzip",
+      "bytes": 6641,
+      "sha256": "43ae5d3ee7e2663617da0396bb4a9bd424650aa981d5f4dbcb3a986c14e2e86a",
+      "stored_bytes": 2232,
+      "stored_sha256": "c6f398fc67fa4870cfb2567b4ff5021fe4dd415f170e9b5b9d75bec5881b030f"
+    },
+    {
+      "logical_path": "executed/unfold-s8-physics-diagnostic-preparation-c207550/run_diagnostic.py",
+      "source_path": "/private/tmp/unfold-s8-physics-diagnostic-preparation-c207550/run_diagnostic.py",
+      "stored_path": "streams/executed/unfold-s8-physics-diagnostic-preparation-c207550/run_diagnostic.py.gzip",
+      "bytes": 8717,
+      "sha256": "34bff8e88e51ef58e0b491a613befe547837b51c01ddffe3447b726c4797e6a2",
+      "stored_bytes": 2852,
+      "stored_sha256": "b709a06012302abd7ab35d54107c3ecb71b3295b2007bf15f4a086da842e84e2"
+    },
+    {
+      "logical_path": "ffn/diagnostic.log",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550.log",
+      "stored_path": "streams/ffn/diagnostic.log.gzip",
+      "bytes": 110,
+      "sha256": "482c58b9752140219b2212231907ed431c512266da91f26f4ad7883f023b5a73",
+      "stored_bytes": 61,
+      "stored_sha256": "750414b673720563967998d00ec44d8b7198f44d869f87ad3e40210cbc5bd23f"
+    },
+    {
+      "logical_path": "ffn/run/actual-model-ir-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/actual-model-ir-0.json",
+      "stored_path": "streams/ffn/run/actual-model-ir-0.json.gzip",
+      "bytes": 38154052,
+      "sha256": "96423522dcd759096982aa824ecb5e0fbd481d7ea80eb8894e4c27085cc92109",
+      "stored_bytes": 1319774,
+      "stored_sha256": "ade020f58b12003e0c7fe85be20224ca331c7cdbdca585df34a30d169ff093b3"
+    },
+    {
+      "logical_path": "ffn/run/command.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/command.json",
+      "stored_path": "streams/ffn/run/command.json.gzip",
+      "bytes": 508,
+      "sha256": "77cae4174e622f6dc9c5dd42d9bf9cefe7fae04c722e4e8b1e3b16010c8c61d8",
+      "stored_bytes": 361,
+      "stored_sha256": "aabd8e0ba3b38fe23747b5c9de0e53884e06195c54eb787897f216db57f5b1d4"
+    },
+    {
+      "logical_path": "ffn/run/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/external-after-finally.json",
+      "stored_path": "streams/ffn/run/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "ffn/run/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/external-before.json",
+      "stored_path": "streams/ffn/run/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "ffn/run/inventory-request-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/inventory-request-0.json",
+      "stored_path": "streams/ffn/run/inventory-request-0.json.gzip",
+      "bytes": 8665,
+      "sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6",
+      "stored_bytes": 1938,
+      "stored_sha256": "a27c90813b14be5ad45f29ba3189ad4fe237026049e0f3a2f7a591f2a387740f"
+    },
+    {
+      "logical_path": "ffn/run/inventory-result-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/inventory-result-0.json",
+      "stored_path": "streams/ffn/run/inventory-result-0.json.gzip",
+      "bytes": 5030651,
+      "sha256": "ce8fd841e949c822caddd353cbe20835ddf445796e37e6155f767aee05bdb773",
+      "stored_bytes": 144513,
+      "stored_sha256": "d5ac60a14617eeae31cc4dacbeb54ea1c93a3a66915d3736b3980952f75e867c"
+    },
+    {
+      "logical_path": "ffn/run/nested-ffn-metadata-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/nested-ffn-metadata-0.json",
+      "stored_path": "streams/ffn/run/nested-ffn-metadata-0.json.gzip",
+      "bytes": 241869,
+      "sha256": "a70c5c9a698bffebd461c54914d8779aee2517f3b863f80698d792c5ad3c1cd5",
+      "stored_bytes": 3503,
+      "stored_sha256": "eb529b2cc6b22996dd132d07664a50dd03ee34640a70a506e1fb6b349eb58a14"
+    },
+    {
+      "logical_path": "ffn/run/observed-call-counts.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/observed-call-counts.json",
+      "stored_path": "streams/ffn/run/observed-call-counts.json.gzip",
+      "bytes": 58,
+      "sha256": "7e2f989aaf2ed1816b637fa3cb0720d4ab88345301e55a7f153951549fdbd124",
+      "stored_bytes": 62,
+      "stored_sha256": "843fcc350c79e5ab956d8b09211541531f6762cb8bab8bc6e1fc5b2b147d250b"
+    },
+    {
+      "logical_path": "ffn/run/reader-metadata-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/reader-metadata-0.json",
+      "stored_path": "streams/ffn/run/reader-metadata-0.json.gzip",
+      "bytes": 1166699,
+      "sha256": "2db017f56e6239917404a8c0a40fe832f398f49d6c0ba05380ec505453e9f48c",
+      "stored_bytes": 28928,
+      "stored_sha256": "35c3bb9eb9177e5eba69c670e49b809c2ed017989e73cda15f77c1afe7854105"
+    },
+    {
+      "logical_path": "ffn/run/result.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/result.json",
+      "stored_path": "streams/ffn/run/result.json.gzip",
+      "bytes": 137,
+      "sha256": "c6f3579cf4a391cb226020950cb542be1902ac37afea76d0d32a0dfc77fac078",
+      "stored_bytes": 122,
+      "stored_sha256": "2195ac36998cf876934edb94f48679e945e6a6b13bf63ab7e841b563ba15e926"
+    },
+    {
+      "logical_path": "ffn/run/source-input-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/source-input-after-finally.json",
+      "stored_path": "streams/ffn/run/source-input-after-finally.json.gzip",
+      "bytes": 147792,
+      "sha256": "ffa910c58ecd964f908e6e6c7bb4c85124dccfc47b910f525aa03d6787f6a90c",
+      "stored_bytes": 48179,
+      "stored_sha256": "62314f29b562606925038fc5e24c93bc686d3dee3c95760d974e0d7787f51c4d"
+    },
+    {
+      "logical_path": "ffn/run/source-input-before.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/source-input-before.json",
+      "stored_path": "streams/ffn/run/source-input-before.json.gzip",
+      "bytes": 147792,
+      "sha256": "ffa910c58ecd964f908e6e6c7bb4c85124dccfc47b910f525aa03d6787f6a90c",
+      "stored_bytes": 48179,
+      "stored_sha256": "62314f29b562606925038fc5e24c93bc686d3dee3c95760d974e0d7787f51c4d"
+    },
+    {
+      "logical_path": "ffn/run/unfold-input-0.json",
+      "source_path": "/private/tmp/unfold-s8-ffn-diagnostic-c207550/unfold-input-0.json",
+      "stored_path": "streams/ffn/run/unfold-input-0.json.gzip",
+      "bytes": 6779,
+      "sha256": "7e35b6848058052c825c18c7e634bc3fd8798ecf960d3bfa6031a6ba3ecf327a",
+      "stored_bytes": 1601,
+      "stored_sha256": "6662ad9b419658fadbc5ebcbeb6f7b36887c2ca2838b5d1bb07c08d5175452f0"
+    },
+    {
+      "logical_path": "memory/diagnostic.log",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550.log",
+      "stored_path": "streams/memory/diagnostic.log.gzip",
+      "bytes": 98,
+      "sha256": "d3650a990be8d7ba2157735838974ae654d6b778cb6d9abd2a50596a87d73138",
+      "stored_bytes": 49,
+      "stored_sha256": "818219bde7d048f138a999c0906c0624fcc1fc6bad8dee9afc6513b750019011"
+    },
+    {
+      "logical_path": "memory/run/command.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/command.json",
+      "stored_path": "streams/memory/run/command.json.gzip",
+      "bytes": 776,
+      "sha256": "d635928e4c0564796cf893a58f0496428977e979a1d98ec09b7f69606563de26",
+      "stored_bytes": 489,
+      "stored_sha256": "a1411ff2c48d8dbc226ffff8350f6bf8775d4f82fbb852d8e3ef85c16ca951f8"
+    },
+    {
+      "logical_path": "memory/run/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/external-after-finally.json",
+      "stored_path": "streams/memory/run/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "memory/run/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/external-before.json",
+      "stored_path": "streams/memory/run/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "memory/run/inventory-request.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/inventory-request.json",
+      "stored_path": "streams/memory/run/inventory-request.json.gzip",
+      "bytes": 422,
+      "sha256": "c3753a3b589f3a335d163458818836ba07dd37d5778dcfbd3da5755dc5f96100",
+      "stored_bytes": 239,
+      "stored_sha256": "a8cd2cf455b732af9d7277ca33b70c5e0ba35ce7f7e7d80d9994e27ae1f79e1d"
+    },
+    {
+      "logical_path": "memory/run/inventory-result.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/inventory-result.json",
+      "stored_path": "streams/memory/run/inventory-result.json.gzip",
+      "bytes": 229,
+      "sha256": "f5e45972221b56bdaa8833ae3cf5505f3c69b684799f87055095706f3ba245bc",
+      "stored_bytes": 177,
+      "stored_sha256": "c3664d9c3892edac32f94aa6f48115c4ccfca794debfa987aabba8eeeab4d8e9"
+    },
+    {
+      "logical_path": "memory/run/observation-sites.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/observation-sites.json",
+      "stored_path": "streams/memory/run/observation-sites.json.gzip",
+      "bytes": 402,
+      "sha256": "77be93e3ae9b55a3ac143356b95bc29c81323d6d33d12080711902a5d24bb3ad",
+      "stored_bytes": 304,
+      "stored_sha256": "fcf4d59d521b5fa8cc03cfc5d6b829aadc102ad945300be36e294de802e43cd4"
+    },
+    {
+      "logical_path": "memory/run/observed-call-counts.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/observed-call-counts.json",
+      "stored_path": "streams/memory/run/observed-call-counts.json.gzip",
+      "bytes": 21,
+      "sha256": "df52f6da6fd34e698ad6d938ab8333d696b0f75101eb199fe9309eb17f641c8d",
+      "stored_bytes": 41,
+      "stored_sha256": "b46e97fccd8d7899e97cdf21980507026102b3bc7d45e49665dac29480582545"
+    },
+    {
+      "logical_path": "memory/run/result.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/result.json",
+      "stored_path": "streams/memory/run/result.json.gzip",
+      "bytes": 135,
+      "sha256": "78167ba669fa99e5f21e89aa5b164d11ee013d0eed6f8408b3c23c0598216a50",
+      "stored_bytes": 120,
+      "stored_sha256": "74d2eef358e68b47fdd4a69c5ba6c484859d46728a7d0e82997546963cd6b696"
+    },
+    {
+      "logical_path": "memory/run/source-input-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/source-input-after-finally.json",
+      "stored_path": "streams/memory/run/source-input-after-finally.json.gzip",
+      "bytes": 147796,
+      "sha256": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+      "stored_bytes": 48180,
+      "stored_sha256": "a891e066a5d8f5847a41b6cf0107c1c526129afa0ac60add09f6ceaa6639ac2c"
+    },
+    {
+      "logical_path": "memory/run/source-input-before.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/source-input-before.json",
+      "stored_path": "streams/memory/run/source-input-before.json.gzip",
+      "bytes": 147796,
+      "sha256": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+      "stored_bytes": 48180,
+      "stored_sha256": "a891e066a5d8f5847a41b6cf0107c1c526129afa0ac60add09f6ceaa6639ac2c"
+    },
+    {
+      "logical_path": "memory/run/supervisor-observation.json",
+      "source_path": "/private/tmp/unfold-s8-memory-diagnostic-c207550/supervisor-observation.json",
+      "stored_path": "streams/memory/run/supervisor-observation.json.gzip",
+      "bytes": 39031,
+      "sha256": "fd9d60ba915c9393a4297177805854446b9971ccef3aa06e410bcee8be5707a4",
+      "stored_bytes": 2247,
+      "stored_sha256": "07d6ad346dbc5f8950d8b333f8f95ab031eeea5e197caefdba373fe09b51c1f0"
+    },
+    {
+      "logical_path": "noisy/diagnostic.log",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550.log",
+      "stored_path": "streams/noisy/diagnostic.log.gzip",
+      "bytes": 98,
+      "sha256": "55bdc56e24dc5eb7b2eb30d76a07873fed73932b162fc4df7a1f6eb0ff63604b",
+      "stored_bytes": 49,
+      "stored_sha256": "348d785fdd8872f522207ba37689df14d4bae556f1a9c1afc9de7e29c54c494f"
+    },
+    {
+      "logical_path": "noisy/run/command.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/command.json",
+      "stored_path": "streams/noisy/run/command.json.gzip",
+      "bytes": 814,
+      "sha256": "abdd945ada0a22c6a12d9732126fc978eed91c58af01b8c4fea6957c6bcc5242",
+      "stored_bytes": 510,
+      "stored_sha256": "796d148641cc58cef1396cf689ca6eba1f0d47dbada5f4046b9f6036cb34cb32"
+    },
+    {
+      "logical_path": "noisy/run/external-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/external-after-finally.json",
+      "stored_path": "streams/noisy/run/external-after-finally.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "noisy/run/external-before.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/external-before.json",
+      "stored_path": "streams/noisy/run/external-before.json.gzip",
+      "bytes": 11770,
+      "sha256": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+      "stored_bytes": 3234,
+      "stored_sha256": "f217534ca2174f69303d48017b7a2eed6edda3ff8a463999132262157a554f74"
+    },
+    {
+      "logical_path": "noisy/run/inventory-request.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/inventory-request.json",
+      "stored_path": "streams/noisy/run/inventory-request.json.gzip",
+      "bytes": 393,
+      "sha256": "e3b05fdc953afd15e470fd35976ca75a427a7bb2c2b93d66b89f4a401ff5427c",
+      "stored_bytes": 229,
+      "stored_sha256": "e7ae54348c0e57826b04cce56a7f7e88259ac30177cec2043f955e70c46d20c1"
+    },
+    {
+      "logical_path": "noisy/run/inventory-result.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/inventory-result.json",
+      "stored_path": "streams/noisy/run/inventory-result.json.gzip",
+      "bytes": 68407,
+      "sha256": "b780847ac8d5e6b1a92aaaf959d4987143c3d49fb2ae2c0bb262aff9eb2ac137",
+      "stored_bytes": 1088,
+      "stored_sha256": "ff184140b71c402b16a8b0219ac1b8dc6631b35ea86ab83b1a27c18b939cb13d"
+    },
+    {
+      "logical_path": "noisy/run/observation-sites.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/observation-sites.json",
+      "stored_path": "streams/noisy/run/observation-sites.json.gzip",
+      "bytes": 402,
+      "sha256": "77be93e3ae9b55a3ac143356b95bc29c81323d6d33d12080711902a5d24bb3ad",
+      "stored_bytes": 304,
+      "stored_sha256": "fcf4d59d521b5fa8cc03cfc5d6b829aadc102ad945300be36e294de802e43cd4"
+    },
+    {
+      "logical_path": "noisy/run/observed-call-counts.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/observed-call-counts.json",
+      "stored_path": "streams/noisy/run/observed-call-counts.json.gzip",
+      "bytes": 21,
+      "sha256": "df52f6da6fd34e698ad6d938ab8333d696b0f75101eb199fe9309eb17f641c8d",
+      "stored_bytes": 41,
+      "stored_sha256": "b46e97fccd8d7899e97cdf21980507026102b3bc7d45e49665dac29480582545"
+    },
+    {
+      "logical_path": "noisy/run/result.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/result.json",
+      "stored_path": "streams/noisy/run/result.json.gzip",
+      "bytes": 136,
+      "sha256": "264a0e53648f60c87d767e43c6f2042da6c6aee99f8dcb6f1360f1f7f26ba295",
+      "stored_bytes": 121,
+      "stored_sha256": "33998818fc65ca731f95ae221bd536f96b261f8ce6acfe4611a74f7e018052f5"
+    },
+    {
+      "logical_path": "noisy/run/source-input-after-finally.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/source-input-after-finally.json",
+      "stored_path": "streams/noisy/run/source-input-after-finally.json.gzip",
+      "bytes": 147796,
+      "sha256": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+      "stored_bytes": 48180,
+      "stored_sha256": "a891e066a5d8f5847a41b6cf0107c1c526129afa0ac60add09f6ceaa6639ac2c"
+    },
+    {
+      "logical_path": "noisy/run/source-input-before.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/source-input-before.json",
+      "stored_path": "streams/noisy/run/source-input-before.json.gzip",
+      "bytes": 147796,
+      "sha256": "483b15edf40b1c397a6de0b6b1aabcdcf9c49eceb08a005704a212bce3459edc",
+      "stored_bytes": 48180,
+      "stored_sha256": "a891e066a5d8f5847a41b6cf0107c1c526129afa0ac60add09f6ceaa6639ac2c"
+    },
+    {
+      "logical_path": "noisy/run/supervisor-observation.json",
+      "source_path": "/private/tmp/unfold-s8-noisy-diagnostic-c207550/supervisor-observation.json",
+      "stored_path": "streams/noisy/run/supervisor-observation.json.gzip",
+      "bytes": 66008,
+      "sha256": "12290aaf15d1606af8a8564fa83e50bbc7f72a1b60ccca2e2493a55fe3f313c0",
+      "stored_bytes": 3334,
+      "stored_sha256": "890b7f00132a418e67870acd4528bab43217f3fa95f0dfd9b2114442972bc3ab"
+    }
+  ]
+}

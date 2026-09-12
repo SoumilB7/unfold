@@ -1,0 +1,15 @@
+{
+  "verdict": "bounded38table-carryforward guards ACCEPT; SDXL actual replay reviewed separately",
+  "checked_targets": 38,
+  "checked_unchanged_sources": 5,
+  "checked_changed_production_files": 7,
+  "keyset_definition": "union of every occurrence projection.fact_keys and provenance.meaning.fact_keys; not projection alone",
+  "scope": "exact current/716 inputs, retained table bytes, resolved-class prior records and actual broader keysets; changed primitive emitter has no applicable fact key on these38",
+  "limits": [
+    "No38freshconstruction/execution/IR/HTMLidentity claim",
+    "Conditional capabilities and differential-only views are declaration-only; DTO reexport keeps class identity as separately reviewed",
+    "Shared graph geometry changes still require per-witness output review; Graph/fact emission contract unchanged",
+    "Final117payload comparison and generator --check required; no automatic source restamp"
+  ],
+  "review_correction": "Initial owner projection-only union did not match historical broader field name; checking the actual projection+meaning union matches all38 exactly. No input/product finding or waiver."
+}

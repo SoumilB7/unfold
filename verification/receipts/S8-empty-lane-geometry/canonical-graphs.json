@@ -1,0 +1,2129 @@
+[
+  {
+    "block_path": [
+      "attn"
+    ],
+    "empty_lane_edges": [
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "scaled_scores"
+      },
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "attn_apply_v"
+      }
+    ],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "qkv_proj",
+        "kv_cache",
+        "scaled_scores",
+        "score_bias_add",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "qkv_proj",
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "q_split",
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "k_split",
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "v_split",
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "scaled_scores",
+          "kind": "formula",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_softmax",
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_apply_v",
+          "kind": "dot_product",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "concat_heads",
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "o_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": 46,
+          "id": "alibi_offsets",
+          "kind": "embedding",
+          "label": "Relative positions",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": 250
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "alibi_bias",
+          "kind": "embedding",
+          "label": "ALiBi bias",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "score_bias_add",
+          "kind": "residual_add",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "kv_cache",
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [
+        {
+          "dst": "kv_cache",
+          "lanes": [
+            {
+              "dst": [
+                "scaled_scores"
+              ],
+              "ids": [
+                "q_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "k_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "v_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": [
+                "score_bias_add"
+              ],
+              "ids": [
+                "alibi_bias"
+              ],
+              "out_label": null,
+              "src": "alibi_offsets"
+            }
+          ],
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "scaled_scores",
+          "lanes": [
+            {
+              "dst": null,
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            },
+            {
+              "dst": [
+                "attn_apply_v"
+              ],
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            }
+          ],
+          "src": "kv_cache"
+        }
+      ],
+      "side_inputs": []
+    },
+    "phase": "actual_sable",
+    "region": {
+      "edges": [
+        {
+          "dst": "qkv_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "q_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "k_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "v_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "attn_softmax"
+        },
+        {
+          "dst": "concat_heads",
+          "src": "attn_apply_v"
+        },
+        {
+          "dst": "o_proj",
+          "src": "concat_heads"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "scaled_scores"
+        },
+        {
+          "dst": "alibi_bias",
+          "src": "alibi_offsets"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "alibi_bias"
+        },
+        {
+          "dst": "attn_softmax",
+          "src": "score_bias_add"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "q_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "k_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "v_split"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "kv_cache"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "kv_cache"
+        }
+      ],
+      "id": "attention",
+      "label": "mha",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "qkv_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "q_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "k_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "v_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": "scaled_dot_product",
+          "id": "scaled_scores",
+          "in_features": null,
+          "kind": "attention_core",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "out_features": null
+        },
+        {
+          "fn": "softmax",
+          "id": "attn_softmax",
+          "in_features": null,
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "matmul",
+          "id": "attn_apply_v",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "concat_heads",
+          "in_features": null,
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "o_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "alibi_offsets",
+          "in_features": null,
+          "kind": "input",
+          "label": "Relative positions",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "alibi_bias",
+          "in_features": null,
+          "kind": "position",
+          "label": "ALiBi bias",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "add",
+          "id": "score_bias_add",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "kv_cache",
+          "in_features": null,
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "out_features": null
+        }
+      ],
+      "resolved": true,
+      "role": "attention",
+      "source": "config",
+      "template": "mha"
+    },
+    "svg_sha256": "380f712230bc2db4524c0244fed77eefdc19c243bb9217f9f11e8c4593740df9",
+    "view": "attn",
+    "visual_hash": "f7b0e7979cbb81ad20d1e17f777f7a66"
+  },
+  {
+    "block_path": [
+      "ffn"
+    ],
+    "empty_lane_edges": [],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "up_proj",
+        "activation",
+        "down_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "up_proj",
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "activation",
+          "kind": "activation",
+          "label": "GELU",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "down_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [],
+      "side_inputs": []
+    },
+    "phase": "actual_sable",
+    "region": {
+      "edges": [
+        {
+          "dst": "up_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "activation",
+          "src": "up_proj"
+        },
+        {
+          "dst": "down_proj",
+          "src": "activation"
+        }
+      ],
+      "id": "ffn",
+      "label": "MLP",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "up_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "out_features": 57344
+        },
+        {
+          "fn": "gelu",
+          "id": "activation",
+          "in_features": null,
+          "kind": "activation",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "down_proj",
+          "in_features": 57344,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        }
+      ],
+      "resolved": true,
+      "role": "ffn",
+      "source": "config",
+      "template": "dense_mlp"
+    },
+    "svg_sha256": "a9d0899d28cf02545ce2f97b4ba95bacada44cc7084ad445f802a222c8dc39e4",
+    "view": "ffn",
+    "visual_hash": "9690073a99b038727d8ddfc9d75359d6"
+  },
+  {
+    "block_path": [
+      "attn"
+    ],
+    "empty_lane_edges": [
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "scaled_scores"
+      },
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "attn_apply_v"
+      }
+    ],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "qkv_proj",
+        "kv_cache",
+        "scaled_scores",
+        "score_bias_add",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "qkv_proj",
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "q_split",
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "k_split",
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "v_split",
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "scaled_scores",
+          "kind": "formula",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_softmax",
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_apply_v",
+          "kind": "dot_product",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "concat_heads",
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "o_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": 46,
+          "id": "alibi_offsets",
+          "kind": "embedding",
+          "label": "Relative positions",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": 250
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "alibi_bias",
+          "kind": "embedding",
+          "label": "ALiBi bias",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "score_bias_add",
+          "kind": "residual_add",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "kv_cache",
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [
+        {
+          "dst": "kv_cache",
+          "lanes": [
+            {
+              "dst": [
+                "scaled_scores"
+              ],
+              "ids": [
+                "q_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "k_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "v_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": [
+                "score_bias_add"
+              ],
+              "ids": [
+                "alibi_bias"
+              ],
+              "out_label": null,
+              "src": "alibi_offsets"
+            }
+          ],
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "scaled_scores",
+          "lanes": [
+            {
+              "dst": null,
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            },
+            {
+              "dst": [
+                "attn_apply_v"
+              ],
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            }
+          ],
+          "src": "kv_cache"
+        }
+      ],
+      "side_inputs": []
+    },
+    "phase": "actual_sable",
+    "region": {
+      "edges": [
+        {
+          "dst": "qkv_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "q_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "k_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "v_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "attn_softmax"
+        },
+        {
+          "dst": "concat_heads",
+          "src": "attn_apply_v"
+        },
+        {
+          "dst": "o_proj",
+          "src": "concat_heads"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "scaled_scores"
+        },
+        {
+          "dst": "alibi_bias",
+          "src": "alibi_offsets"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "alibi_bias"
+        },
+        {
+          "dst": "attn_softmax",
+          "src": "score_bias_add"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "q_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "k_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "v_split"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "kv_cache"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "kv_cache"
+        }
+      ],
+      "id": "attention",
+      "label": "mha",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "qkv_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "q_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "k_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "v_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": "scaled_dot_product",
+          "id": "scaled_scores",
+          "in_features": null,
+          "kind": "attention_core",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "out_features": null
+        },
+        {
+          "fn": "softmax",
+          "id": "attn_softmax",
+          "in_features": null,
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "matmul",
+          "id": "attn_apply_v",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "concat_heads",
+          "in_features": null,
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "o_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "alibi_offsets",
+          "in_features": null,
+          "kind": "input",
+          "label": "Relative positions",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "alibi_bias",
+          "in_features": null,
+          "kind": "position",
+          "label": "ALiBi bias",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "add",
+          "id": "score_bias_add",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "kv_cache",
+          "in_features": null,
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "out_features": null
+        }
+      ],
+      "resolved": true,
+      "role": "attention",
+      "source": "config",
+      "template": "mha"
+    },
+    "svg_sha256": "380f712230bc2db4524c0244fed77eefdc19c243bb9217f9f11e8c4593740df9",
+    "view": "attn",
+    "visual_hash": "f7b0e7979cbb81ad20d1e17f777f7a66"
+  },
+  {
+    "block_path": [
+      "ffn"
+    ],
+    "empty_lane_edges": [],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "up_proj",
+        "activation",
+        "down_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "up_proj",
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "activation",
+          "kind": "activation",
+          "label": "GELU",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "down_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [],
+      "side_inputs": []
+    },
+    "phase": "actual_sable",
+    "region": {
+      "edges": [
+        {
+          "dst": "up_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "activation",
+          "src": "up_proj"
+        },
+        {
+          "dst": "down_proj",
+          "src": "activation"
+        }
+      ],
+      "id": "ffn",
+      "label": "MLP",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "up_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "out_features": 57344
+        },
+        {
+          "fn": "gelu",
+          "id": "activation",
+          "in_features": null,
+          "kind": "activation",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "down_proj",
+          "in_features": 57344,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        }
+      ],
+      "resolved": true,
+      "role": "ffn",
+      "source": "config",
+      "template": "dense_mlp"
+    },
+    "svg_sha256": "a9d0899d28cf02545ce2f97b4ba95bacada44cc7084ad445f802a222c8dc39e4",
+    "view": "ffn",
+    "visual_hash": "9690073a99b038727d8ddfc9d75359d6"
+  },
+  {
+    "block_path": [
+      "attn"
+    ],
+    "empty_lane_edges": [
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "scaled_scores"
+      },
+      {
+        "canonical_region_edge": true,
+        "origin": "Region edge",
+        "source": "kv_cache",
+        "target": "attn_apply_v"
+      }
+    ],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "qkv_proj",
+        "kv_cache",
+        "scaled_scores",
+        "score_bias_add",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "qkv_proj",
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "q_split",
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "k_split",
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "v_split",
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "scaled_scores",
+          "kind": "formula",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_softmax",
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "attn_apply_v",
+          "kind": "dot_product",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "concat_heads",
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "o_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": 46,
+          "id": "alibi_offsets",
+          "kind": "embedding",
+          "label": "Relative positions",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": 250
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "alibi_bias",
+          "kind": "embedding",
+          "label": "ALiBi bias",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "score_bias_add",
+          "kind": "residual_add",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "kv_cache",
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [
+        {
+          "dst": "kv_cache",
+          "lanes": [
+            {
+              "dst": [
+                "scaled_scores"
+              ],
+              "ids": [
+                "q_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "k_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": null,
+              "ids": [
+                "v_split"
+              ],
+              "out_label": null,
+              "src": null
+            },
+            {
+              "dst": [
+                "score_bias_add"
+              ],
+              "ids": [
+                "alibi_bias"
+              ],
+              "out_label": null,
+              "src": "alibi_offsets"
+            }
+          ],
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "scaled_scores",
+          "lanes": [
+            {
+              "dst": null,
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            },
+            {
+              "dst": [
+                "attn_apply_v"
+              ],
+              "ids": [],
+              "out_label": null,
+              "src": "kv_cache"
+            }
+          ],
+          "src": "kv_cache"
+        }
+      ],
+      "side_inputs": []
+    },
+    "phase": "old_parallel_only",
+    "region": {
+      "edges": [
+        {
+          "dst": "qkv_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "q_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "k_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "v_split",
+          "src": "qkv_proj"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "attn_softmax"
+        },
+        {
+          "dst": "concat_heads",
+          "src": "attn_apply_v"
+        },
+        {
+          "dst": "o_proj",
+          "src": "concat_heads"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "scaled_scores"
+        },
+        {
+          "dst": "alibi_bias",
+          "src": "alibi_offsets"
+        },
+        {
+          "dst": "score_bias_add",
+          "src": "alibi_bias"
+        },
+        {
+          "dst": "attn_softmax",
+          "src": "score_bias_add"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "q_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "k_split"
+        },
+        {
+          "dst": "kv_cache",
+          "src": "v_split"
+        },
+        {
+          "dst": "scaled_scores",
+          "src": "kv_cache"
+        },
+        {
+          "dst": "attn_apply_v",
+          "src": "kv_cache"
+        }
+      ],
+      "id": "attention",
+      "label": "mha",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "qkv_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (QKV)",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "q_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split Q",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "k_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split K",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "v_split",
+          "in_features": null,
+          "kind": "slice",
+          "label": "Split V",
+          "meta": {
+            "cached": true
+          },
+          "out_features": 14336
+        },
+        {
+          "fn": "scaled_dot_product",
+          "id": "scaled_scores",
+          "in_features": null,
+          "kind": "attention_core",
+          "label": null,
+          "meta": {
+            "denominator": "sqrt(dim)",
+            "formula": "QK^T/sqrt(dim)",
+            "numerator": "Q K^T"
+          },
+          "out_features": null
+        },
+        {
+          "fn": "softmax",
+          "id": "attn_softmax",
+          "in_features": null,
+          "kind": "activation",
+          "label": "Softmax",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "matmul",
+          "id": "attn_apply_v",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "concat_heads",
+          "in_features": null,
+          "kind": "reshape",
+          "label": "Concat heads",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "o_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "alibi_offsets",
+          "in_features": null,
+          "kind": "input",
+          "label": "Relative positions",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "alibi_bias",
+          "in_features": null,
+          "kind": "position",
+          "label": "ALiBi bias",
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": "add",
+          "id": "score_bias_add",
+          "in_features": null,
+          "kind": "elementwise",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "kv_cache",
+          "in_features": null,
+          "kind": "cache",
+          "label": [
+            "K/V cache",
+            "update + read"
+          ],
+          "meta": {
+            "stores": [
+              "key",
+              "value"
+            ]
+          },
+          "out_features": null
+        }
+      ],
+      "resolved": true,
+      "role": "attention",
+      "source": "config",
+      "template": "mha"
+    },
+    "svg_sha256": "45dca57a885b4bf57479fdfdbd96aeee488442f364328068a97c83f9ebad86db",
+    "view": "attn",
+    "visual_hash": "bf0b533e1c953f2a11117824d0343219"
+  },
+  {
+    "block_path": [
+      "ffn"
+    ],
+    "empty_lane_edges": [],
+    "graph": {
+      "aside": null,
+      "edges": [],
+      "flow": [
+        "hidden",
+        "up_proj",
+        "activation",
+        "down_proj",
+        "region_out"
+      ],
+      "groups": [],
+      "nodes": [
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "hidden",
+          "kind": "port",
+          "label": "in (14,336)",
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "up_proj",
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "activation",
+          "kind": "activation",
+          "label": "GELU",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "down_proj",
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "resolved": true,
+          "static": false,
+          "sub": null,
+          "target": null,
+          "w": null
+        },
+        {
+          "cache_ports": false,
+          "font": null,
+          "h": null,
+          "id": "region_out",
+          "kind": "port",
+          "label": null,
+          "meta": {},
+          "resolved": true,
+          "static": true,
+          "sub": null,
+          "target": null,
+          "w": null
+        }
+      ],
+      "note": null,
+      "parallels": [],
+      "side_inputs": []
+    },
+    "phase": "old_parallel_only",
+    "region": {
+      "edges": [
+        {
+          "dst": "up_proj",
+          "src": "hidden"
+        },
+        {
+          "dst": "activation",
+          "src": "up_proj"
+        },
+        {
+          "dst": "down_proj",
+          "src": "activation"
+        }
+      ],
+      "id": "ffn",
+      "label": "MLP",
+      "ops": [
+        {
+          "fn": null,
+          "id": "hidden",
+          "in_features": null,
+          "kind": "input",
+          "label": null,
+          "meta": {},
+          "out_features": 14336
+        },
+        {
+          "fn": null,
+          "id": "up_proj",
+          "in_features": 14336,
+          "kind": "linear",
+          "label": "Linear (in)",
+          "meta": {},
+          "out_features": 57344
+        },
+        {
+          "fn": "gelu",
+          "id": "activation",
+          "in_features": null,
+          "kind": "activation",
+          "label": null,
+          "meta": {},
+          "out_features": null
+        },
+        {
+          "fn": null,
+          "id": "down_proj",
+          "in_features": 57344,
+          "kind": "linear",
+          "label": "Linear (out)",
+          "meta": {},
+          "out_features": 14336
+        }
+      ],
+      "resolved": true,
+      "role": "ffn",
+      "source": "config",
+      "template": "dense_mlp"
+    },
+    "svg_sha256": "a9d0899d28cf02545ce2f97b4ba95bacada44cc7084ad445f802a222c8dc39e4",
+    "view": "ffn",
+    "visual_hash": "9690073a99b038727d8ddfc9d75359d6"
+  }
+]

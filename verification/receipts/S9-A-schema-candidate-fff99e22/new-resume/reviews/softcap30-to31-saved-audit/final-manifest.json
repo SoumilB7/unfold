@@ -1,0 +1,389 @@
+{
+  "files": [
+    {
+      "path": "audit-source.py",
+      "sha256": "dc3ddd8b762e24af52997494ad1f6ec16fd47b275385d79437eab4af31163796",
+      "bytes": 9992
+    },
+    {
+      "path": "explicit_17/actual-softcap-readers.json.delta.json",
+      "sha256": "e8cfc6d820782841bd36d62612a1cda4f648db33d3034674840078ad40423bfc",
+      "bytes": 22262
+    },
+    {
+      "path": "explicit_17/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_17/events.json.delta.json",
+      "sha256": "1c58c067f1c5ace55da64280921d79323f0e2f68f08f1244a43ce9e53fb882ec",
+      "bytes": 1138
+    },
+    {
+      "path": "explicit_17/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_17/ir-after.json.delta.json",
+      "sha256": "78a80760542f90ae81aeff1685f554318bc6587513fc016e25c0ba0c504336de",
+      "bytes": 298
+    },
+    {
+      "path": "explicit_17/ir-before.json.delta.json",
+      "sha256": "78a80760542f90ae81aeff1685f554318bc6587513fc016e25c0ba0c504336de",
+      "bytes": 298
+    },
+    {
+      "path": "explicit_17/native-facts.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_17/page.mount-accounted-residual.diff.gz",
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "bytes": 20
+    },
+    {
+      "path": "explicit_17/page.raw.diff.gz",
+      "sha256": "c0e4df586238dbd1604695dbdd04b95f19cf93714704ec3f5fab8f1a7c4b8a82",
+      "bytes": 7654
+    },
+    {
+      "path": "explicit_17/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_17/render-contexts.json.delta.json",
+      "sha256": "5035388276bebf07fc67838acfbb1940e9bfa543a4cb8d268d6ccd06afceab9d",
+      "bytes": 359
+    },
+    {
+      "path": "explicit_17/result.json.delta.json",
+      "sha256": "be1f59f9e8d5907c67dd2856d078a52de5694180ec8d1d093bb74fafa12872bd",
+      "bytes": 225
+    },
+    {
+      "path": "explicit_none/actual-softcap-readers.json.delta.json",
+      "sha256": "938b521a130ccbac7b821ceaae29cd1d4f2b1f6cef52ec6359c8564d93b2fef2",
+      "bytes": 22558
+    },
+    {
+      "path": "explicit_none/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_none/events.json.delta.json",
+      "sha256": "2a34617ff4c9c4b24b3d4e0282732e15631e5bbe4631f9158b139e2f41a67ec4",
+      "bytes": 684
+    },
+    {
+      "path": "explicit_none/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_none/ir-after.json.delta.json",
+      "sha256": "05607ca1e516ce8dde640164d0199e9f198891fec88936192294503693539722",
+      "bytes": 302
+    },
+    {
+      "path": "explicit_none/ir-before.json.delta.json",
+      "sha256": "05607ca1e516ce8dde640164d0199e9f198891fec88936192294503693539722",
+      "bytes": 302
+    },
+    {
+      "path": "explicit_none/native-facts.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_none/page.mount-accounted-residual.diff.gz",
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "bytes": 20
+    },
+    {
+      "path": "explicit_none/page.raw.diff.gz",
+      "sha256": "07f5f97d827451e86c4cbbd622789a1f516cd3e5e8d00a411c5ce88b0c72bb85",
+      "bytes": 7856
+    },
+    {
+      "path": "explicit_none/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_none/render-contexts.json.delta.json",
+      "sha256": "c7a77df02f1c9d5b284a501587ebd986d3aa7e831cc4d8289a15839e08f1dec9",
+      "bytes": 181
+    },
+    {
+      "path": "explicit_none/result.json.delta.json",
+      "sha256": "85f6c92fe1df6459f19facdd716cfaee81e293b5dfef8ea4fdabd6fecd705282",
+      "bytes": 225
+    },
+    {
+      "path": "final-verdict.json",
+      "sha256": "90cb5d746868ed65da623bcf75d436de4fa1a7d8db038c80be668c3d63e6212b",
+      "bytes": 1544
+    },
+    {
+      "path": "gemma_default/actual-softcap-readers.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/events.json.delta.json",
+      "sha256": "cea160725abb627b6c23a2d428ee38eac0fcc26d0b759c90f19f660844303a24",
+      "bytes": 1365
+    },
+    {
+      "path": "gemma_default/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/ir-after.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/ir-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/native-facts.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/page.mount-accounted-residual.diff.gz",
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "bytes": 20
+    },
+    {
+      "path": "gemma_default/page.raw.diff.gz",
+      "sha256": "c03b606dbdca5f8c3569b55bf288f7189e0064680db3471ce30bc5894fbd26a7",
+      "bytes": 15423
+    },
+    {
+      "path": "gemma_default/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "gemma_default/render-contexts.json.delta.json",
+      "sha256": "2481adfe3db81cfd1de1484890ab2d80d6aa86f0e87e4ffd4e88fb487dff71e9",
+      "bytes": 2673
+    },
+    {
+      "path": "gemma_default/result.json.delta.json",
+      "sha256": "cebef5e932af8f69670240007a18bd24f38730cd458b90217642249fe985e00a",
+      "bytes": 225
+    },
+    {
+      "path": "injected_missing/actual-softcap-readers.json.delta.json",
+      "sha256": "1e55e2d0903e3766ae74933c34ce8e45fec635b88c7c3b82207540b3ba9f5254",
+      "bytes": 23002
+    },
+    {
+      "path": "injected_missing/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "injected_missing/events.json.delta.json",
+      "sha256": "61f84c288ac82d66a2faae6956169bc1abcf65953dc89564255a7b56ae57ee3d",
+      "bytes": 684
+    },
+    {
+      "path": "injected_missing/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "injected_missing/ir-after.json.delta.json",
+      "sha256": "d40ae02cfca4d7bb3eea6dcebcfc85a2e3308b249aa541eece723fcdc8dca2a6",
+      "bytes": 39936
+    },
+    {
+      "path": "injected_missing/ir-before.json.delta.json",
+      "sha256": "d40ae02cfca4d7bb3eea6dcebcfc85a2e3308b249aa541eece723fcdc8dca2a6",
+      "bytes": 39936
+    },
+    {
+      "path": "injected_missing/native-facts.json.delta.json",
+      "sha256": "5799c8f2e3ce72c28c92fdb5eb91f8f21b67f2669f3c2037684ab2b6720d94cb",
+      "bytes": 656
+    },
+    {
+      "path": "injected_missing/page.mount-accounted-residual.diff.gz",
+      "sha256": "d638f5031c6531ed20589a15d06b8b6857932e9624d55ae867f8fc5e41e3c88f",
+      "bytes": 4245
+    },
+    {
+      "path": "injected_missing/page.raw.diff.gz",
+      "sha256": "05dc78576b5f5803a1fb387e3b62cd264260bb1da4f077e47c471c72b7dcfb3f",
+      "bytes": 7744
+    },
+    {
+      "path": "injected_missing/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "injected_missing/render-contexts.json.delta.json",
+      "sha256": "ab135eea5d857f1f11c7e792aba84ab68bfd09b43ef10b99ea682d1cc9803429",
+      "bytes": 181
+    },
+    {
+      "path": "injected_missing/result.json.delta.json",
+      "sha256": "f92e6e38d8d78162acaf853486874c17f95d08cf196f14de306d9ff7b2a38f7c",
+      "bytes": 828
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "028dbbd20b20137a8b85055813de238917e570038b3a0aecd1b6a5248573bec0",
+      "bytes": 12990
+    },
+    {
+      "path": "no_mechanism/actual-softcap-readers.json.delta.json",
+      "sha256": "6c2273d371f94b7b2ff4cb94aee0b33cdee8f7ab771c2da420f939d32848f231",
+      "bytes": 2054
+    },
+    {
+      "path": "no_mechanism/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "no_mechanism/events.json.delta.json",
+      "sha256": "a9affe8e62d49e4ee2252a74914d618cd1806c1191188ac9cf3a076477743311",
+      "bytes": 684
+    },
+    {
+      "path": "no_mechanism/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "no_mechanism/ir-after.json.delta.json",
+      "sha256": "0945a1d30033fbc99b71bb2b0c481d48661a7ce0d08e1b6e308960060113bf33",
+      "bytes": 300
+    },
+    {
+      "path": "no_mechanism/ir-before.json.delta.json",
+      "sha256": "0945a1d30033fbc99b71bb2b0c481d48661a7ce0d08e1b6e308960060113bf33",
+      "bytes": 300
+    },
+    {
+      "path": "no_mechanism/native-facts.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "no_mechanism/page.mount-accounted-residual.diff.gz",
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "bytes": 20
+    },
+    {
+      "path": "no_mechanism/page.raw.diff.gz",
+      "sha256": "76ba494909d7ef2cf519ce9ef80aa9fd31186aed2e7d9b944ae47ae1f63e3479",
+      "bytes": 7653
+    },
+    {
+      "path": "no_mechanism/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "no_mechanism/render-contexts.json.delta.json",
+      "sha256": "1e313c0cd2a09cda8086f5f51d860691cc504e44610973c7aa9f9b4f4d049a05",
+      "bytes": 181
+    },
+    {
+      "path": "no_mechanism/result.json.delta.json",
+      "sha256": "08d9ec9376ab6db960ef3d86eeabb8d4ee8e4cc09b2ea96521fea01f69d02ea4",
+      "bytes": 225
+    },
+    {
+      "path": "plain_missing/actual-softcap-readers.json.delta.json",
+      "sha256": "b8f0a34ac1b494897ee0c19d9c4a9275c30da789b91d14909076813f43961271",
+      "bytes": 22558
+    },
+    {
+      "path": "plain_missing/context-defaults-before.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "plain_missing/events.json.delta.json",
+      "sha256": "b9cca589e33ec1e84fb8d1ab4e23bd74e2eb69d828e6851698eb9b5c168931a6",
+      "bytes": 684
+    },
+    {
+      "path": "plain_missing/input.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "plain_missing/ir-after.json.delta.json",
+      "sha256": "8963a3424991586bbdb632d377cca8e2dc8d918313254bfb73ae431c8caa66b9",
+      "bytes": 39930
+    },
+    {
+      "path": "plain_missing/ir-before.json.delta.json",
+      "sha256": "8963a3424991586bbdb632d377cca8e2dc8d918313254bfb73ae431c8caa66b9",
+      "bytes": 39930
+    },
+    {
+      "path": "plain_missing/native-facts.json.delta.json",
+      "sha256": "5799c8f2e3ce72c28c92fdb5eb91f8f21b67f2669f3c2037684ab2b6720d94cb",
+      "bytes": 656
+    },
+    {
+      "path": "plain_missing/page.mount-accounted-residual.diff.gz",
+      "sha256": "b7ad939eea4c8e6ce02d88da25caea4fd481a404af0db127f34667d71050eed7",
+      "bytes": 4245
+    },
+    {
+      "path": "plain_missing/page.raw.diff.gz",
+      "sha256": "b17d305db01a28709d81f3cc652d8e1c6af19bedc7ca76dbbf95fcb18018f267",
+      "bytes": 7741
+    },
+    {
+      "path": "plain_missing/prepared-document.json.delta.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "plain_missing/render-contexts.json.delta.json",
+      "sha256": "092ee124553245b24b22f506d7e1eba0e89a1d505509ce0bd2e1e21c1b87834f",
+      "bytes": 181
+    },
+    {
+      "path": "plain_missing/result.json.delta.json",
+      "sha256": "a32c3ad8709bd97f37dd442d1f59988d6b4b8d4919ff9009cac39893bc234072",
+      "bytes": 828
+    },
+    {
+      "path": "report.json",
+      "sha256": "e4fed8d644287ce859961d08a1abc5eed98cc477b1c82c4264100ad4b2dd2d4d",
+      "bytes": 66453
+    },
+    {
+      "path": "synthetic-explicit17-receipt-finding.json",
+      "sha256": "1d7d9ecf7783e2cdcbb8d178a3580dbd8a1c8f8003c8a8acca4a459f89435a80",
+      "bytes": 1666
+    }
+  ]
+}

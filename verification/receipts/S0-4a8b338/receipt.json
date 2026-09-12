@@ -1,0 +1,76 @@
+{
+  "step": "S0",
+  "verified_commit": "4a8b338",
+  "mode": "isolated committed worktree; serial lanes; never two pytest processes",
+  "result": "PASS",
+  "tree_fingerprint": "fc45eef2e22f1ed858dcb99c7ae17fa343994971416ad6e594711cf3962a6c41",
+  "blessed_artifact_fingerprint": "1b5e63c354bb6203079611a5ea14a2fd6e17be8495f43cc57d2d1d026048a7af",
+  "lanes": {
+    "static": {
+      "duration_seconds": 1,
+      "result": "PASS",
+      "fingerprint_identical": true
+    },
+    "focused": {
+      "duration_seconds": 3,
+      "result": "179 passed",
+      "fingerprint_identical": true
+    },
+    "u2_authority": {
+      "duration_seconds": 631,
+      "result": "44 passed",
+      "fingerprint_identical": true
+    },
+    "collect": {
+      "duration_seconds": 10,
+      "result": "3997 collected",
+      "fingerprint_identical": true
+    },
+    "preservation": {
+      "duration_seconds": 1082,
+      "result": "52 passed; 29 witnesses; zero structural or pixel drift",
+      "fingerprint_identical": true
+    },
+    "full": {
+      "duration_seconds": 10728,
+      "result": "3981 passed, 14 skipped, 2 xfailed, 0 failed",
+      "fingerprint_identical": true
+    }
+  },
+  "credential_hygiene": {
+    "notebook_occurrences": 2,
+    "notebook_unique_credentials": 1,
+    "notebook_locations": [
+      "../finalize.ipynb cell index 1",
+      "../done/tryrun.ipynb cell index 18"
+    ],
+    "notebook_credential_revocation_http": 202,
+    "notebook_credential_post_revocation_whoami_http": 401,
+    "additional_local_settings_occurrences": 1,
+    "additional_local_settings_revocation_http": 202,
+    "additional_local_settings_post_revocation_whoami_http": 401,
+    "raw_credential_values_recorded": false,
+    "offline_notebook_scan": "PASS",
+    "tracked_tree_git_grep": "PASS"
+  },
+  "repository_hygiene": {
+    "tracked_z_docs_files": 95,
+    "tracked_protocol_files": 1,
+    "archived_superseded_docs": 12,
+    "git_hooks_path": ".githooks",
+    "staged_notebook_scanner": "installed",
+    "commit_body_hook": "installed"
+  },
+  "poisons": {
+    "staged_notebook_with_token_literal": "RED as required; diagnostic redacted",
+    "token_literal_in_notebook_output": "RED as required",
+    "token_literal_in_notebook_metadata": "RED as required",
+    "subject_only_git_commit": "RED as required",
+    "subject_and_body_git_commit": "PASS control"
+  },
+  "notes": [
+    "The plan described two notebook tokens; inspection proved two occurrences of one duplicated credential.",
+    "The two notebooks and the rest of done/ remain offline and untracked.",
+    "Unrelated pre-existing working-tree changes were not staged or modified."
+  ]
+}

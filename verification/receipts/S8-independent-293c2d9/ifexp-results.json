@@ -1,0 +1,89 @@
+{
+  "checkpoint": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+  "results": {
+    "branch_walrus": {
+      "concrete_true_arm": [
+        23,
+        23
+      ],
+      "original_emb": 11,
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression-local assignment requires evaluation-order closure before routing sibling operands"
+      },
+      "source": "class Cell:\n def forward(self,emb,aug,enabled):\n  selected = ((emb := aug), emb) if enabled else (emb, emb)\n  consume(selected)\n"
+    },
+    "guard_walrus": {
+      "route": {
+        "kind": "unresolved",
+        "reason": "expression-local assignment requires evaluation-order closure before routing sibling operands"
+      },
+      "source": "class Cell:\n def forward(self,emb,aug,enabled):\n  selected = emb if (emb := aug) else aug\n  consume(selected)\n"
+    },
+    "opaque_branches": {
+      "route": {
+        "condition": "source expression guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "aug",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        },
+        "when_true": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "emb",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        }
+      },
+      "source": "class Cell:\n def forward(self,emb,aug,enabled):\n  selected = first(emb) if enabled else second(aug)\n  consume(selected)\n"
+    },
+    "ordinary_conditioning": {
+      "route": {
+        "condition": "source expression guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "formal": "emb",
+          "kind": "formal"
+        },
+        "when_true": {
+          "kind": "source_operation",
+          "operands": [
+            {
+              "formal": "emb",
+              "kind": "formal"
+            },
+            {
+              "formal": "aug",
+              "kind": "formal"
+            }
+          ],
+          "operator": "+",
+          "reason": "source operator ports; operand dispatch and result computation unresolved"
+        }
+      },
+      "source": "class Cell:\n def forward(self,emb,aug,enabled):\n  selected = emb + aug if enabled else emb\n  consume(selected)\n"
+    }
+  }
+}

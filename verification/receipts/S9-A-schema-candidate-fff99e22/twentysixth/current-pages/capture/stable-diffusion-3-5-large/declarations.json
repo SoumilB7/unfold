@@ -1,0 +1,44 @@
+{
+  "root.denoiser.diffusion_root_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "e8db275c1d09049f7c9b3c3481d8e371ede910884cac3330df17e4eeaa14ee7e"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_root_topology:f54c9aeda5f113e8",
+        "source:root:daf7c20b3a2455c1cfe81728ee05569cdc72a058e75b3c51fd4d85e1c9d100b0:301:8:324:115"
+      ],
+      "fact_id": "root.denoiser.diffusion_root_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "6ff63e947c9e51d1bcb92e8b3a078e393aa81e9c1bf74dc0148e072ce36970db"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_root_topology",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_sd3.py",
+        "line": 301,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "repeated_stack"
+  }
+}

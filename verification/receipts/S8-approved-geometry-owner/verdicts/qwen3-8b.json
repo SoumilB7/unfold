@@ -1,0 +1,39 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:28:19.520361+00:00",
+  "model": "Qwen3-8B",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "069fdfe1cc0759670a1717944c1c8071"
+    },
+    {
+      "label": "architecture",
+      "hash": "c8e5aa1a15542c375c24f3617591d104"
+    },
+    {
+      "label": "attn",
+      "hash": "3a3861a0086a7437aa44262b09b3eb19"
+    },
+    {
+      "label": "ffn",
+      "hash": "12b1bdce7140cb545f7989138979cbfe"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "d28c4523a1f01189e4bf7d22c0e13406631f7a93d309d146ea1ec7ef92508bfc",
+  "gallery_manifest_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+  "pixel_review_sha256": "5fbe128e732ea7b76a488d98e4c81503ef4c3dba5e06087f60744ddab58a0342",
+  "her_eyes_review_sha256": "d2c6af3d870360ec7f83dca2447e6ec9c3e69ad21fadac6b5dc35b0034672df6",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

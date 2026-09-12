@@ -1,0 +1,10 @@
+{
+  "files": {
+    "verification/receipts/S8-approved-full-verification-c207550/committed-input-supplement/verify_restore.py": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+    "verification/receipts/S8-approved-full-verification-c207550/verify_restore.py": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+    "verification/receipts/S8-approved-isolated-diagnostics-c207550/verify_restore.py": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361",
+    "verification/receipts/S8-approved-reduced-concurrency-preparation-c207550/run_broad.py": "fc8d48d363b4b3e5392751235c3acaa16f4b1ef368ebc32b3eaa496d893074b7",
+    "verification/receipts/S8-approved-workers2-full-verification-c207550/verify_restore.py": "a3ae32646c06f5480417cdc11c97ff2eafaa6806ff82cb7a2a2f980f26a7c361"
+  },
+  "returncode": 0
+}

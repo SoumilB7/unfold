@@ -1,0 +1,17 @@
+{
+  "after_dotted_arrow_count": 0,
+  "after_dotted_boundary_count": 0,
+  "all_render_events_identical": true,
+  "before_dotted_boundary_count": 4,
+  "blessed": false,
+  "changed_svg_labels": [
+    "denoiser"
+  ],
+  "html_sha256": "534f8a861f4f5640e74481d845184079649543db3a1c1613871db594028ca909",
+  "identity_links_have_no_arrowheads": true,
+  "identity_routes": [],
+  "only_exact_stroke_caption_delta": true,
+  "removed_dash_attributes": 4,
+  "render_event_count": 789,
+  "route_and_node_metadata_identical": true
+}

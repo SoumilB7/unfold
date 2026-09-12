@@ -1,0 +1,207 @@
+--- current34/census.py
++++ current35/census.py
+@@ -1,4 +1,4 @@
+-"""Capture actual frozen34 pages and current declarations; never bless outputs."""
++"""Capture actual frozen35 pages and current declarations; never bless outputs."""
+ from pathlib import Path
+ import argparse
+ import dataclasses
+@@ -60,8 +60,8 @@
+     from capture_contract import validate_execution_inputs
+     entry_pins = validate_execution_inputs(args.plan, args.source_manifest_sha256)
+     root = Path.cwd().resolve()
+-    if root.name != "verify-s9-a-thirtyfourth":
+-        raise ValueError("capture requires the immutable frozen34 worktree")
++    if root.name != "verify-s9-a-thirtyfifth":
++        raise ValueError("capture requires the immutable frozen35 worktree")
+     sys.path.insert(0, str(root))
+     from model_unfolder import config_to_ir
+     from model_unfolder.diagram import Diagram
+@@ -174,28 +174,28 @@
+             if not isinstance(family, str) or not re.fullmatch(r"[a-zA-Z0-9_-]+", family):
+                 raise ValueError("invalid actual render-family address")
+             parent = args.pages_root.resolve() / f"S9-{family}"
+-            page_dir = parent / "schema-thirtyfourth"
++            page_dir = parent / "schema-thirtyfifth"
+             page_dir.mkdir(parents=True, exist_ok=True)
+             actual_page = page_dir / f"{slug}.html"
+             if actual_page.exists():
+-                raise ValueError("actual frozen34 page already exists; never overwrite prior captured output")
++                raise ValueError("actual frozen35 page already exists; never overwrite prior captured output")
+             actual_page.write_bytes(page_bytes)
+             families.setdefault(family, []).append((slug, target["model"]))
+             listing = "".join(f'<li><a href="{html.escape(s)}.html">{html.escape(n)}</a></li>'
+                               for s, n in families[family])
+             index = (f'<!doctype html><html lang="en"><meta charset="utf-8"><title>S9-A {html.escape(family)}</title>'
+                      '<style>body{font:16px/1.6 system-ui;max-width:950px;margin:48px auto;padding:0 24px}</style>'
+-                     f'<h1>S9-A {html.escape(family)} actual frozen34 pages</h1>'
++                     f'<h1>S9-A {html.escape(family)} actual frozen35 pages</h1>'
+                      '<p>Current page and declaration capture. No output is blessed. Proof gaps remain explicit; '
+                      'this capture is not the S7 reconciliation exit. Browser review is pending. '
+                      'No design choice is proposed here; questions begin at Q9 when needed.</p>'
+                      f'<ul>{listing}</ul></html>')
+             (page_dir / "index.html").write_text(index)
+             entry = parent / "index.html"
+-            link = '<p><a href="schema-thirtyfourth/index.html">S9-A actual frozen34 pages (unblessed)</a></p>'
++            link = '<p><a href="schema-thirtyfifth/index.html">S9-A actual frozen35 pages (unblessed)</a></p>'
+             if not entry.exists():
+-                entry.write_text(index.replace('href="', 'href="schema-thirtyfourth/'))
+-            elif "schema-thirtyfourth/index.html" not in entry.read_text():
++                entry.write_text(index.replace('href="', 'href="schema-thirtyfifth/'))
++            elif "schema-thirtyfifth/index.html" not in entry.read_text():
+                 previous = entry.read_text()
+                 entry.write_text(previous.replace("</body>", link + "</body>") if "</body>" in previous else previous + link)
+             stage = "local_render_context_snapshot"
+@@ -220,7 +220,7 @@
+                 "source_node_count": len(index.source_nodes), "actual_portable_seal": actual_seal,
+                 "recomputed_from_rows": recomputed, "reference26_seal": expected["reference26_seal"],
+                 "equals_reference26": actual_seal == expected["reference26_seal"],
+-                "scope": "Actual34 source index;26 is a comparison reference, not a34 matrix."}
++                "scope": "Actual35 source index;26 is a comparison reference, not a35 matrix."}
+             write_json(dest / "source-closure.json", closure)
+             write_json(dest / "source-bundle-after-local.json", {"scope": "LOCAL_ONLY addresses, not portable identity", "bundle": dataclasses.asdict(context.source_bundle)})
+             row = {
+--- current34/run-census.py
++++ current35/run-census.py
+@@ -1,4 +1,4 @@
+-"""Root-owned exact34 capture; source, script and address-input brackets."""
++"""Root-owned exact35 capture; source, script and address-input brackets."""
+ from pathlib import Path
+ import argparse
+ import dataclasses
+@@ -21,8 +21,8 @@
+     plan_path = here / "plan.json"
+     plan = json.loads(plan_path.read_text())
+     tree = Path(plan["tree"])
+-    if tree.name != "verify-s9-a-thirtyfourth" or tree.resolve() != tree:
+-        raise ValueError("capture requires the reviewed immutable34 worktree")
++    if tree.name != "verify-s9-a-thirtyfifth" or tree.resolve() != tree:
++        raise ValueError("capture requires the reviewed immutable35 worktree")
+     from capture_contract import validate_execution_inputs
+ 
+     def pins():
+@@ -36,11 +36,11 @@
+     (out / "pins-before.json").write_text(json.dumps(before, indent=2) + "\n")
+     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
+                       TOKENIZERS_PARALLELISM="false", UNFOLD_EVIDENCE_CACHE_DIR=str(out / "cache"))
+-    spec = importlib.util.spec_from_file_location("current34_capture_verify", tree / "scripts/verify_commit.py")
++    spec = importlib.util.spec_from_file_location("current35_capture_verify", tree / "scripts/verify_commit.py")
+     module = importlib.util.module_from_spec(spec)
+     sys.modules[spec.name] = module
+     spec.loader.exec_module(module)
+-    result = module._run_lane(module.Lane("actual34-pages-presentation-closures", (
++    result = module._run_lane(module.Lane("actual35-pages-presentation-closures", (
+         sys.executable, str(here / "census.py"), "--plan", str(plan_path),
+         "--output", plan["capture_output"], "--pages-root", plan["pages_root"],
+         "--source-manifest-sha256", args.source_manifest_sha256)), tree, out)
+@@ -49,7 +49,7 @@
+     record = {**dataclasses.asdict(result), "log_path": str(result.log_path),
+               "source_manifest_sha256": args.source_manifest_sha256,
+               "pins_equal": before == after, "passed": result.passed and before == after,
+-              "scope": "Actual34 capture and presentation findings; no blessing, browser verdict or normalization."}
++              "scope": "Actual35 capture and presentation findings; no blessing, browser verdict or normalization."}
+     (out / "result.json").write_text(json.dumps(record, indent=2) + "\n")
+     print(json.dumps(record, indent=2), flush=True)
+     raise SystemExit(0 if record["passed"] else 1)
+--- current34/capture_contract.py
++++ current35/capture_contract.py
+@@ -16,7 +16,7 @@
+ 
+ 
+ def validate_execution_inputs(plan_path, source_manifest_sha256):
+-    source_pin = _digest(source_manifest_sha256, 'frozen34 source manifest')
++    source_pin = _digest(source_manifest_sha256, 'frozen35 source manifest')
+     here = Path(__file__).resolve().parent
+     if Path(plan_path).resolve() != here / 'plan.json':
+         raise ValueError('capture requires its own held plan')
+@@ -29,18 +29,18 @@
+         if sha(here / name) != _digest(expected, 'held script/plan'):
+             raise ValueError('capture differs from held source: ' + name)
+     plan = json.loads((here / 'plan.json').read_bytes())
+-    if plan.get('generation') != 'thirtyfourth' or plan.get('execution_status') != 'TEMPLATE_REQUIRES_EXPLICIT_FROZEN_MANIFEST_PIN':
++    if plan.get('generation') != 'thirtyfifth' or plan.get('execution_status') != 'TEMPLATE_REQUIRES_EXPLICIT_FROZEN_MANIFEST_PIN':
+         raise ValueError('capture generation differs from held template')
+     if 'source_manifest_sha256' in plan:
+         raise ValueError('source pin must be supplied explicitly, never inherited from the template')
+     tree = Path(plan['tree'])
+-    if tree.name != 'verify-s9-a-thirtyfourth' or tree.resolve() != tree or not tree.is_dir():
+-        raise ValueError('capture requires the actual immutable34 worktree')
++    if tree.name != 'verify-s9-a-thirtyfifth' or tree.resolve() != tree or not tree.is_dir():
++        raise ValueError('capture requires the actual immutable35 worktree')
+     source_manifest = Path(plan['source_manifest'])
+     if source_manifest.resolve() != source_manifest or not source_manifest.is_file():
+-        raise ValueError('exact frozen34 source manifest is absent')
++        raise ValueError('exact frozen35 source manifest is absent')
+     if sha(source_manifest) != source_pin:
+-        raise ValueError('explicit frozen34 source manifest SHA256 differs')
++        raise ValueError('explicit frozen35 source manifest SHA256 differs')
+     source_rows = json.loads(source_manifest.read_bytes())
+     if not isinstance(source_rows, list) or not source_rows:
+         raise ValueError('frozen source manifest must enumerate actual files')
+--- current34/plan.json
++++ current35/plan.json
+@@ -1,9 +1,9 @@
+ {
+-  "tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirtyfourth",
+-  "source_manifest": "/private/tmp/unfold-s9a-thirtyfourth/source-manifest.json",
++  "tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirtyfifth",
++  "source_manifest": "/private/tmp/unfold-s9a-thirtyfifth/source-manifest.json",
+   "active_matrix_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+-  "output_root": "/private/tmp/unfold-s9a-thirtyfourth/current-pages",
+-  "capture_output": "/private/tmp/unfold-s9a-thirtyfourth/current-pages/capture",
++  "output_root": "/private/tmp/unfold-s9a-thirtyfifth/current-pages",
++  "capture_output": "/private/tmp/unfold-s9a-thirtyfifth/current-pages/capture",
+   "pages_root": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design",
+   "targets": [
+     {
+@@ -476,5 +476,5 @@
+     }
+   ],
+   "execution_status": "TEMPLATE_REQUIRES_EXPLICIT_FROZEN_MANIFEST_PIN",
+-  "generation": "thirtyfourth"
++  "generation": "thirtyfifth"
+ }
+--- current34/contract.json
++++ current35/contract.json
+@@ -1,32 +1,32 @@
+ {
+   "status": "HELD_TEMPLATE_NOT_EXECUTED_NO_CURRENT_RESULTS",
+-  "source_pin": "Root must supply the exact immutable34 source-manifest SHA256 on the launcher command line; it is required again by the child. No default, placeholder, copied28 pin, or automatic discovery exists.",
+-  "command_template": "python3 <receipt>/run-census.py --source-manifest-sha256 <owner-reviewed exact34 manifest SHA256>",
++  "source_pin": "Root must supply the exact immutable35 source-manifest SHA256 on the launcher command line; it is required again by the child. No default, placeholder, copied28 pin, or automatic discovery exists.",
++  "command_template": "python3 <receipt>/run-census.py --source-manifest-sha256 <owner-reviewed exact35 manifest SHA256>",
+   "preserved_controls": [
+     "Exact 39 ordered active-S7 addresses, checkpoint hashes, inventory hashes and resolved-class equality.",
+     "Real ParseContext/config_to_ir and actual retained root DocumentBinding; no reconstructed fact/proof authority.",
+     "Validate every non-null original live fact proof. Missing proofs stay missing.",
+     "Diagram IR before/after actual standalone HTML, active RenderContext and presentation_census on the exact dictionary rendered with original typed facts.",
+     "Full portable source multiset and production seal equality, original parse failures retained. Reference26 differences remain explicit/nonzero; no source delta autoaccepted.",
+-    "Actual HTML bytes are published immediately after rendering under S9-family/schema-thirtyfourth; later census/closure failure leaves them visible with a failed capture row. Existing phase model pages refuse overwrite.",
++    "Actual HTML bytes are published immediately after rendering under S9-family/schema-thirtyfifth; later census/closure failure leaves them visible with a failed capture row. Existing phase model pages refuse overwrite.",
+     "Launcher and child verify explicit source-manifest pin, every source row, all production Python files, held script/plan hashes and all target inputs before/after. Standard verify_commit lane bracket retained.",
+     "Every target attempted; actual capture/proof/presentation/reference errors remain nonzero. No normalization, output blessing, counter rewriting or sheet mutation.",
+     "Explicit null source-manifest deletion rows require exact path absence, including no broken symlink, and remain null in both bracket maps; deletions are never skipped.",
+     "Full actual RenderContext dataclass fields are stored separately as LOCAL_ONLY, including individual events/receipts/chips/unknown annotations/fact rows and process-local tokens. Snapshot occurs after immediate page publication and before census; it is never replayed as proof or used as portable identity."
+   ],
+   "pipeline_coordination": [
+-    "Freeze34 only after banner/address/source reviews and source/test fixes. Record its exact source manifest and verify the immutable worktree matches it.",
++    "Freeze35 only after banner/address/source reviews and source/test fixes. Record its exact source manifest and verify the immutable worktree matches it.",
+     "Root runs the chosen verification lanes serially and records their exact source/artifact brackets. This template itself establishes no gate result.",
+-    "Generate the current34 all39 S7 matrix in a separate fresh scratch output using the same frozen tree and target inputs; never replace active S7 address artifacts during measurement. Retain per-target failures and source/recipe records.",
+-    "Run this page/declaration capture serially against that same frozen34 tree, with immediate family publication; its active-S7 inputs supply addresses only and are not the freshly reconciled matrix.",
+-    "After both complete, compare each captured source seal/multiset and claim/occurrence references to the corresponding new34 matrix payload. Require exact same target population; enumerate differences and reasons rather than substituting old26/28 counts.",
++    "Generate the current35 all39 S7 matrix in a separate fresh scratch output using the same frozen tree and target inputs; never replace active S7 address artifacts during measurement. Retain per-target failures and source/recipe records.",
++    "Run this page/declaration capture serially against that same frozen35 tree, with immediate family publication; its active-S7 inputs supply addresses only and are not the freshly reconciled matrix.",
++    "After both complete, compare each captured source seal/multiset and claim/occurrence references to the corresponding new35 matrix payload. Require exact same target population; enumerate differences and reasons rather than substituting old26/28 counts.",
+     "Enumerate raw before/after IR/HTML differences against the clean baseline and keep previous captures immutable. Source-cause attribution and independent browser review/owner output approval remain separate steps."
+   ],
+   "limits": [
+-    "No source34 manifest exists in this template and no34 result is claimed. A required pin argument is not a validation receipt; the exact manifest bytes and all rows are checked at runtime.",
++    "No source35 manifest exists in this template and no35 result is claimed. A required pin argument is not a validation receipt; the exact manifest bytes and all rows are checked at runtime.",
+     "Counts from presentation_census are in-process consistency evidence, not browser visibility/CSS/click proof or architecture completeness.",
+     "Old26 source seals are comparison references only. All39 current matrix reconciliation remains separate and must be joined after execution.",
+-    "Template hard-codes the intended thirtyfourth worktree/output/publish generation. If root chooses other locations, update and independently re-pin this source template before execution.",
++    "Template hard-codes the intended thirtyfifth worktree/output/publish generation. If root chooses other locations, update and independently re-pin this source template before execution.",
+     "Existing root proof binding/validation controls are preserved; none upgrades an absent proof or manufactures a child ledger.",
+     "The local render-context snapshot has process-local tokens and source addresses by design. It is diagnostic transport, never a normalized output or portable authority artifact."
+   ]

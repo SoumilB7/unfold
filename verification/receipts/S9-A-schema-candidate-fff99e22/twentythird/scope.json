@@ -1,0 +1,13 @@
+{
+  "base_manifest": "ccbbd6160a99be7a8102e2a70da3a6b3f54e334398104f5e7d4950bf141ffa51",
+  "handoffs": [
+    {
+      "path": "/private/tmp/unfold-s9a-twentieth-returns-handoff.json",
+      "sha256": "b5779054518c87a8b75d7d3f0425cde116dba499796ece96103c42bb71c34581"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-registered-default-accounting-preparation-v2/manifest.json",
+      "sha256": "e41f8755984e61020222491173564d89d820ffa224f2646b1942bfb10a1b44ee"
+    }
+  ]
+}

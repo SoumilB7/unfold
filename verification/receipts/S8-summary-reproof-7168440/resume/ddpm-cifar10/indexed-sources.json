@@ -1,0 +1,16 @@
+[
+  {
+    "archival_required": true,
+    "component": "root",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d.py",
+    "sha256": "ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733"
+  },
+  {
+    "archival_required": true,
+    "component": "root",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_blocks.py",
+    "sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+  }
+]

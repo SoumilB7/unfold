@@ -1,0 +1,11 @@
+{
+  "actual_summary": "1failed162passed494.58seconds",
+  "causal_limit": "all12missing compatiblewithwholecutoverNone; resource/cachecauseunproven",
+  "discarded_diagnostic": "stdout/stderr redirectedintoStringIO; nofailureIRorinventoryreceiptretained",
+  "minimum_next_observer": "installbeforepytestsetup/sessionfixtures; retainoriginalrequest/result+SDXLIRandreaders; do notreplaceoraddproofrows",
+  "producer": "session corpus_irs parses each actual corpus config; corpus_fact_rows enumerates actualir.extras.fact_provenance",
+  "reviewer_ran_models_tests": false,
+  "source_equal_29c": true,
+  "source_sha256": "3aec6964d6d7dcd0460dc4be0d4dcfd35914c815a8621c73ebf21cc5e5537098",
+  "status": "ACTUAL_ALL12_UNET_FACT_ABSENCE_CAUSE_UNRETAINED"
+}

@@ -1,0 +1,481 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "Flux2Transformer2DModel",
+    "_diffusers_version": "0.36.0.dev0",
+    "_name_or_path": "black-forest-labs/FLUX.2-dev",
+    "_pipeline_class_name": "Flux2Pipeline",
+    "_repo_id": "black-forest-labs/FLUX.2-dev",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.36.0.dev0",
+      "base_image_seq_len": 256,
+      "base_shift": 0.5,
+      "invert_sigmas": false,
+      "max_image_seq_len": 4096,
+      "max_shift": 1.15,
+      "num_train_timesteps": 1000,
+      "shift": 3.0,
+      "shift_terminal": null,
+      "stochastic_sampling": false,
+      "time_shift_type": "exponential",
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": true,
+      "use_exponential_sigmas": false,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "",
+        "architectures": [
+          "Mistral3ForConditionalGeneration"
+        ],
+        "chunk_size_feed_forward": 0,
+        "dtype": "bfloat16",
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "image_token_index": 10,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "model_type": "mistral3",
+        "multimodal_projector_bias": false,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "problem_type": null,
+        "projector_hidden_act": "gelu",
+        "return_dict": true,
+        "spatial_merge_size": 2,
+        "text_config": {
+          "_name_or_path": "",
+          "architectures": null,
+          "attention_dropout": 0.0,
+          "bos_token_id": 1,
+          "chunk_size_feed_forward": 0,
+          "dtype": "bfloat16",
+          "eos_token_id": 2,
+          "head_dim": 128,
+          "hidden_act": "silu",
+          "hidden_size": 5120,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1"
+          },
+          "initializer_range": 0.02,
+          "intermediate_size": 32768,
+          "is_encoder_decoder": false,
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1
+          },
+          "max_position_embeddings": 131072,
+          "model_type": "mistral",
+          "num_attention_heads": 32,
+          "num_hidden_layers": 40,
+          "num_key_value_heads": 8,
+          "output_attentions": false,
+          "output_hidden_states": false,
+          "pad_token_id": null,
+          "problem_type": null,
+          "return_dict": true,
+          "rms_norm_eps": 1e-05,
+          "rope_parameters": {
+            "rope_theta": 1000000000.0,
+            "rope_type": "default"
+          },
+          "sliding_window": null,
+          "tie_word_embeddings": false,
+          "use_cache": true,
+          "vocab_size": 131072
+        },
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
+        "vision_config": {
+          "_name_or_path": "",
+          "architectures": null,
+          "attention_dropout": 0.0,
+          "chunk_size_feed_forward": 0,
+          "dtype": "bfloat16",
+          "head_dim": 64,
+          "hidden_act": "silu",
+          "hidden_size": 1024,
+          "id2label": {
+            "0": "LABEL_0",
+            "1": "LABEL_1"
+          },
+          "image_size": 1540,
+          "initializer_range": 0.02,
+          "intermediate_size": 4096,
+          "is_encoder_decoder": false,
+          "label2id": {
+            "LABEL_0": 0,
+            "LABEL_1": 1
+          },
+          "model_type": "pixtral",
+          "num_attention_heads": 16,
+          "num_channels": 3,
+          "num_hidden_layers": 24,
+          "output_attentions": false,
+          "output_hidden_states": false,
+          "patch_size": 14,
+          "problem_type": null,
+          "return_dict": true,
+          "rope_parameters": {
+            "rope_theta": 10000.0,
+            "rope_type": "default"
+          }
+        },
+        "vision_feature_layer": -1
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLFlux2",
+      "_diffusers_version": "0.36.0.dev0",
+      "act_fn": "silu",
+      "batch_norm_eps": 0.0001,
+      "batch_norm_momentum": 0.1,
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 32,
+      "layers_per_block": 2,
+      "mid_block_add_attention": true,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "patch_size": [
+        2,
+        2
+      ],
+      "sample_size": 1024,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": true,
+      "use_quant_conv": true
+    },
+    "attention_head_dim": 128,
+    "axes_dims_rope": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "eps": 1e-06,
+    "in_channels": 128,
+    "joint_attention_dim": 15360,
+    "mlp_ratio": 3.0,
+    "num_attention_heads": 48,
+    "num_layers": 8,
+    "num_single_layers": 48,
+    "out_channels": null,
+    "patch_size": 1,
+    "rope_theta": 2000,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Mistral3ForConditionalGeneration"
+    ],
+    "timestep_guidance_channels": 256,
+    "tokenizer": [
+      "transformers",
+      "PixtralProcessor"
+    ],
+    "transformer": [
+      "diffusers",
+      "Flux2Transformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLFlux2"
+    ]
+  },
+  "hash_signature": [
+    "09100bb2c03d93e81e3cfbb0adf9b8e5",
+    "0c4d54d74dbaf9faa10d2c86b62152ab",
+    "17c4013edb73ab284de6a7fe44a96ff1",
+    "1d4bfd5ea6a35d7a8d8b7cab02306d63",
+    "2a2dd9aa80c5b81de5969cadfcb98e30",
+    "2ddd715e8b65531f304b9153475225d7",
+    "4da73671b5fe35135386c8e8f60a6643",
+    "7aae638a87e842508ee10e0762b1cd3e",
+    "7f603e777da042c858de0b3e5be83467",
+    "8c34ab04eded9602ef9bc1449606e686",
+    "915f743f155e2fffe09f215eac102e3f",
+    "920615e9b0555b9d140a982b5b2c93c7",
+    "a759406e5f5eb86007274717b92c59a5",
+    "b28b57af7a35527bb97d9eae2fdf5ffb",
+    "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+    "f9e174412a64197f5fc2fe2012f1762c"
+  ],
+  "model": "FLUX.2-dev",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+    "root.denoiser.stacks[1].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[1].diffusion_stack_depth"
+  ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "b93656a1056c40f924659fe62953097d6acc79503633e2c718870f098064aa90",
+    "her_eyes_review_sha256": "3feca11bdf58b1d1eb1cf3634aed7f9a9f0c3529170aedd24adb161093afff12",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "FLUX.2-dev",
+    "pixel_review_sha256": "5bf18c26dc18e9d6f2c69a50e66be8a4958394b8c688706e5f22081f130a816c",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "e04d6a5b109f353463336309a1e09a070cd57025926a22d06004418123b3853e",
+    "retained_visual_suggestions": [
+      {
+        "delight": "FINE",
+        "file": "02__denoiser.png",
+        "inspected": true,
+        "label": "denoiser",
+        "png_sha256": "faeef4aa13b691f2e63b3faa3f65c24341b1f25d7ecb5087f59125c96bf77d57",
+        "sentence": "The tall denoiser spine repeats unresolved labels; tighter grouped spacing would make its two multipliers easier to distinguish.",
+        "source_svg_sha256": "0d57f4d120062fc90d02956d401dc7889e21739a7bd3dfb997148939a7c000f0",
+        "verdict": "SUGGEST",
+        "visual_hash": "2ddd715e8b65531f304b9153475225d7"
+      },
+      {
+        "delight": "FINE",
+        "file": "03__denoiser__1.png",
+        "inspected": true,
+        "label": "denoiser",
+        "png_sha256": "84acd03ec061b30c9e23084e7205a553fc6b6973b921bb15b5fbc9ae51a5c456",
+        "sentence": "The second repeated denoiser is legible but could use a more compact summary while preserving its unknown labels and drills.",
+        "source_svg_sha256": "1a88537f6de98a07a4616096ed54f282a91f6693da56361aa12fbf6958c6fe47",
+        "verdict": "SUGGEST",
+        "visual_hash": "7f603e777da042c858de0b3e5be83467"
+      },
+      {
+        "delight": "DISLIKE",
+        "file": "15__architecture__1.png",
+        "inspected": true,
+        "label": "architecture",
+        "png_sha256": "87b237874c8f9740611f76d555ca825a621d865ec2a36e955470aa085526ca97",
+        "sentence": "Both long layer-type legend lines run beyond the right edge; wrap them within the legend frame.",
+        "source_svg_sha256": "26a8e40873950357521278509cf086d0520bba40caf21ebdf2317a3721be9d2b",
+        "verdict": "SUGGEST",
+        "visual_hash": "7aae638a87e842508ee10e0762b1cd3e"
+      }
+    ],
+    "reviewed_at": "2026-09-08T08:18:19.918014+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "7aae638a87e842508ee10e0762b1cd3e",
+        "label": "architecture"
+      },
+      {
+        "hash": "915f743f155e2fffe09f215eac102e3f",
+        "label": "architecture"
+      },
+      {
+        "hash": "920615e9b0555b9d140a982b5b2c93c7",
+        "label": "attn"
+      },
+      {
+        "hash": "2ddd715e8b65531f304b9153475225d7",
+        "label": "denoiser"
+      },
+      {
+        "hash": "7f603e777da042c858de0b3e5be83467",
+        "label": "denoiser"
+      },
+      {
+        "hash": "0c4d54d74dbaf9faa10d2c86b62152ab",
+        "label": "encoder_0"
+      },
+      {
+        "hash": "2a2dd9aa80c5b81de5969cadfcb98e30",
+        "label": "encoder_0_op_ffn"
+      },
+      {
+        "hash": "4da73671b5fe35135386c8e8f60a6643",
+        "label": "encoder_0_op_selfattn"
+      },
+      {
+        "hash": "f9e174412a64197f5fc2fe2012f1762c",
+        "label": "ffn"
+      },
+      {
+        "hash": "17c4013edb73ab284de6a7fe44a96ff1",
+        "label": "scheduler"
+      },
+      {
+        "hash": "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+        "label": "vae_decode"
+      },
+      {
+        "hash": "1d4bfd5ea6a35d7a8d8b7cab02306d63",
+        "label": "vae_decoder_block_1"
+      },
+      {
+        "hash": "a759406e5f5eb86007274717b92c59a5",
+        "label": "vae_decoder_block_2"
+      },
+      {
+        "hash": "8c34ab04eded9602ef9bc1449606e686",
+        "label": "vae_decoder_block_3"
+      },
+      {
+        "hash": "09100bb2c03d93e81e3cfbb0adf9b8e5",
+        "label": "vae_decoder_block_4"
+      },
+      {
+        "hash": "b28b57af7a35527bb97d9eae2fdf5ffb",
+        "label": "vae_mid_block"
+      }
+    ]
+  },
+  "source": "local",
+  "superseded_hash_signature": [
+    "09100bb2c03d93e81e3cfbb0adf9b8e5",
+    "0c4d54d74dbaf9faa10d2c86b62152ab",
+    "17c4013edb73ab284de6a7fe44a96ff1",
+    "1d4bfd5ea6a35d7a8d8b7cab02306d63",
+    "2a2dd9aa80c5b81de5969cadfcb98e30",
+    "2ddd715e8b65531f304b9153475225d7",
+    "7aae638a87e842508ee10e0762b1cd3e",
+    "7f603e777da042c858de0b3e5be83467",
+    "82f6890df2f04dbf9a21995ab1fe2599",
+    "8c34ab04eded9602ef9bc1449606e686",
+    "915f743f155e2fffe09f215eac102e3f",
+    "920615e9b0555b9d140a982b5b2c93c7",
+    "a759406e5f5eb86007274717b92c59a5",
+    "b28b57af7a35527bb97d9eae2fdf5ffb",
+    "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+    "f9e174412a64197f5fc2fe2012f1762c"
+  ],
+  "view_signature": [
+    {
+      "hash": "7aae638a87e842508ee10e0762b1cd3e",
+      "label": "architecture"
+    },
+    {
+      "hash": "915f743f155e2fffe09f215eac102e3f",
+      "label": "architecture"
+    },
+    {
+      "hash": "920615e9b0555b9d140a982b5b2c93c7",
+      "label": "attn"
+    },
+    {
+      "hash": "2ddd715e8b65531f304b9153475225d7",
+      "label": "denoiser"
+    },
+    {
+      "hash": "7f603e777da042c858de0b3e5be83467",
+      "label": "denoiser"
+    },
+    {
+      "hash": "0c4d54d74dbaf9faa10d2c86b62152ab",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "2a2dd9aa80c5b81de5969cadfcb98e30",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "4da73671b5fe35135386c8e8f60a6643",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "f9e174412a64197f5fc2fe2012f1762c",
+      "label": "ffn"
+    },
+    {
+      "hash": "17c4013edb73ab284de6a7fe44a96ff1",
+      "label": "scheduler"
+    },
+    {
+      "hash": "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "1d4bfd5ea6a35d7a8d8b7cab02306d63",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "a759406e5f5eb86007274717b92c59a5",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "8c34ab04eded9602ef9bc1449606e686",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "09100bb2c03d93e81e3cfbb0adf9b8e5",
+      "label": "vae_decoder_block_4"
+    },
+    {
+      "hash": "b28b57af7a35527bb97d9eae2fdf5ffb",
+      "label": "vae_mid_block"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/flux-2-dev",
+    "manifest": true,
+    "png_count": 16
+  }
+}

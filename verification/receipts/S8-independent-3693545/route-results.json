@@ -1,0 +1,499 @@
+{
+  "checkpoint": "36935453403ed792272f90cc84eda37972bb1165",
+  "reader_sha256": "61900048ad83f6ffe85a4a0261a6a66a315a6f96d86cc0a190940671c957c99d",
+  "results": {
+    "conditional": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "if"
+          ],
+          "line": 4
+        },
+        {
+          "guard_kinds": [
+            "else"
+          ],
+          "line": 6
+        }
+      ],
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "state",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        },
+        "when_true": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "state",
+                "kind": "formal"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        }
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  if enabled:\n   state = first(state)\n  else:\n   state = second(state)\n  consume(state)\n"
+    },
+    "loop_break": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        }
+      ],
+      "route": {
+        "initial_route": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "iteration_result": {
+          "kind": "unresolved",
+          "reason": "loop control transfer prevents one final body value"
+        },
+        "kind": "loop_result",
+        "local": "state",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n   if enabled:\n    break\n  consume(state)\n"
+    },
+    "loop_continue": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 6
+        }
+      ],
+      "route": {
+        "initial_route": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "iteration_result": {
+          "kind": "unresolved",
+          "reason": "loop control transfer prevents one final body value"
+        },
+        "kind": "loop_result",
+        "local": "state",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   if enabled:\n    continue\n   state = step(state)\n  consume(state)\n"
+    },
+    "loop_else": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        },
+        {
+          "guard_kinds": [],
+          "line": 6
+        }
+      ],
+      "route": {
+        "kind": "unresolved",
+        "reason": "optional assignment is not one exact if arm"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n  else:\n   state = finish(state)\n  consume(state)\n"
+    },
+    "loop_else_break": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        },
+        {
+          "guard_kinds": [],
+          "line": 8
+        }
+      ],
+      "concrete_break_value": 1,
+      "false_positive": false,
+      "finish_would_return": 101,
+      "route": {
+        "kind": "unresolved",
+        "reason": "optional assignment is not one exact if arm"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n   if enabled:\n    break\n  else:\n   state = finish(state)\n  consume(state)\n"
+    },
+    "loop_if_else": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for",
+            "if"
+          ],
+          "line": 5
+        },
+        {
+          "guard_kinds": [
+            "for",
+            "else"
+          ],
+          "line": 7
+        }
+      ],
+      "route": {
+        "initial_route": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "iteration_result": {
+          "condition": "source guard unresolved",
+          "kind": "conditional",
+          "when_false": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "formal": "state",
+                  "initial_route": {
+                    "formal": "state",
+                    "kind": "formal"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "when_true": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "formal": "state",
+                  "initial_route": {
+                    "formal": "state",
+                    "kind": "formal"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          }
+        },
+        "kind": "loop_result",
+        "local": "state",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   if enabled:\n    state = first(state)\n   else:\n    state = second(state)\n  consume(state)\n"
+    },
+    "loop_result": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        }
+      ],
+      "route": {
+        "initial_route": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "iteration_result": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "formal": "state",
+                "initial_route": {
+                  "formal": "state",
+                  "kind": "formal"
+                },
+                "kind": "loop_carried",
+                "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        },
+        "kind": "loop_result",
+        "local": "state",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n  consume(state)\n"
+    },
+    "loop_update": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        },
+        {
+          "guard_kinds": [
+            "for",
+            "if"
+          ],
+          "line": 6
+        }
+      ],
+      "route": {
+        "initial_route": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "iteration_result": {
+          "condition": "source guard unresolved",
+          "kind": "conditional",
+          "when_false": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "formal": "state",
+                  "initial_route": {
+                    "formal": "state",
+                    "kind": "formal"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "when_true": {
+            "kind": "inplace_operation",
+            "operands": [
+              {
+                "arguments": [
+                  {
+                    "port": "0",
+                    "route": {
+                      "formal": "state",
+                      "initial_route": {
+                        "formal": "state",
+                        "kind": "formal"
+                      },
+                      "kind": "loop_carried",
+                      "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                    }
+                  }
+                ],
+                "kind": "call_result",
+                "mechanism": "unresolved",
+                "reason": "call argument and result wiring proven; internal computation not established",
+                "receiver": null,
+                "result_slot": []
+              },
+              {
+                "formal": "extra",
+                "kind": "formal"
+              }
+            ],
+            "operator": "+",
+            "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"
+          }
+        },
+        "kind": "loop_result",
+        "local": "state",
+        "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n   if enabled:\n    state += extra\n  consume(state)\n"
+    },
+    "optional_after_loop": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "for"
+          ],
+          "line": 4
+        },
+        {
+          "guard_kinds": [
+            "if"
+          ],
+          "line": 6
+        }
+      ],
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "initial_route": {
+            "formal": "state",
+            "kind": "formal"
+          },
+          "iteration_result": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "formal": "state",
+                  "initial_route": {
+                    "formal": "state",
+                    "kind": "formal"
+                  },
+                  "kind": "loop_carried",
+                  "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "kind": "loop_result",
+          "local": "state",
+          "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+        },
+        "when_true": {
+          "arguments": [
+            {
+              "port": "0",
+              "route": {
+                "initial_route": {
+                  "formal": "state",
+                  "kind": "formal"
+                },
+                "iteration_result": {
+                  "arguments": [
+                    {
+                      "port": "0",
+                      "route": {
+                        "formal": "state",
+                        "initial_route": {
+                          "formal": "state",
+                          "kind": "formal"
+                        },
+                        "kind": "loop_carried",
+                        "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": null,
+                  "result_slot": []
+                },
+                "kind": "loop_result",
+                "local": "state",
+                "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+              }
+            }
+          ],
+          "kind": "call_result",
+          "mechanism": "unresolved",
+          "reason": "call argument and result wiring proven; internal computation not established",
+          "receiver": null,
+          "result_slot": []
+        }
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  for item in items:\n   state = step(state)\n  if enabled:\n   state = finish(state)\n  consume(state)\n"
+    },
+    "optional_update": {
+      "binding_guards": [
+        {
+          "guard_kinds": [
+            "if"
+          ],
+          "line": 4
+        }
+      ],
+      "route": {
+        "condition": "source guard unresolved",
+        "kind": "conditional",
+        "when_false": {
+          "formal": "state",
+          "kind": "formal"
+        },
+        "when_true": {
+          "kind": "inplace_operation",
+          "operands": [
+            {
+              "formal": "state",
+              "kind": "formal"
+            },
+            {
+              "formal": "extra",
+              "kind": "formal"
+            }
+          ],
+          "operator": "+",
+          "reason": "source augmented operator boundary; operand dispatch and mutation semantics remain unresolved"
+        }
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  if enabled:\n   state += extra\n  consume(state)\n"
+    },
+    "receiver": {
+      "binding_guards": [
+        {
+          "guard_kinds": [],
+          "line": 3
+        }
+      ],
+      "route": {
+        "arguments": [],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "receiver": {
+          "kind": "lookup_receiver",
+          "reason": "attribute lookup receiver; descriptor binding and computation unresolved",
+          "route": {
+            "formal": "state",
+            "kind": "formal"
+          }
+        },
+        "result_slot": []
+      },
+      "source": "class Cell:\n def forward(self, state, items, enabled, extra):\n  state = state.flatten()\n  consume(state)\n"
+    }
+  },
+  "unchanged": true
+}

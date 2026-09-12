@@ -1,0 +1,9 @@
+[
+  "manifest metadata or hero SVG-input seal is stale",
+  "deterministic HTML is stale: deepseek-v3.html",
+  "deterministic HTML is stale: granite-3-0-8b-instruct.html",
+  "deterministic HTML is stale: hunyuanvideo.html",
+  "deterministic HTML is stale: llama-7b.html",
+  "deterministic HTML is stale: musicgen-small.html",
+  "deterministic HTML is stale: stable-diffusion-xl-base-1-0.html"
+]

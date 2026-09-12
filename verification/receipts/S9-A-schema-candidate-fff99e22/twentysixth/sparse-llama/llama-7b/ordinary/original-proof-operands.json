@@ -1,0 +1,204 @@
+{
+  "model.hidden_size": [
+    {
+      "source_path": [
+        "hidden_size"
+      ],
+      "value": 4096,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "hidden_size"
+      ]
+    }
+  ],
+  "decoder.ffn.intermediate_size": [
+    {
+      "source_path": [
+        "intermediate_size"
+      ],
+      "value": 11008,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "intermediate_size"
+      ]
+    }
+  ],
+  "decoder.ffn.activation": [],
+  "decoder.attention.rope_theta": [
+    {
+      "source_path": [
+        "rope_parameters",
+        "rope_theta"
+      ],
+      "value": 10000.0,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "rope_parameters",
+        "rope_theta"
+      ]
+    }
+  ],
+  "decoder.attention.rope_initialization": [
+    {
+      "source_path": [
+        "rope_parameters",
+        "rope_type"
+      ],
+      "value": "default",
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "rope_parameters",
+        "rope_type"
+      ]
+    }
+  ],
+  "decoder.attention.position_schedule": [
+    {
+      "source_path": [
+        "num_hidden_layers"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_hidden_layers"
+      ]
+    }
+  ],
+  "decoder.attention.mixer_schedule": [
+    {
+      "source_path": [
+        "num_hidden_layers"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_hidden_layers"
+      ]
+    }
+  ],
+  "decoder.ffn.ffn_schedule": [
+    {
+      "source_path": [
+        "num_hidden_layers"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_hidden_layers"
+      ]
+    }
+  ],
+  "decoder.attention.mask_schedule": [
+    {
+      "source_path": [
+        "num_hidden_layers"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_hidden_layers"
+      ]
+    }
+  ],
+  "decoder.layer.norm_kind": [],
+  "decoder.ffn.gated": [],
+  "decoder.ffn.projection_mode": [],
+  "decoder.attention.projection_mode": [],
+  "decoder.attention.output_projection": [],
+  "decoder.layer.norm_placement": [],
+  "decoder.attention.mechanism": [
+    {
+      "source_path": [
+        "num_attention_heads"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_attention_heads"
+      ]
+    },
+    {
+      "source_path": [
+        "num_key_value_heads"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_key_value_heads"
+      ]
+    }
+  ],
+  "decoder.attention.head_geometry": [
+    {
+      "source_path": [
+        "num_attention_heads"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_attention_heads"
+      ]
+    },
+    {
+      "source_path": [
+        "num_key_value_heads"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_key_value_heads"
+      ]
+    },
+    {
+      "source_path": [
+        "head_dim"
+      ],
+      "value": 128,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "head_dim"
+      ]
+    }
+  ],
+  "decoder.attention.bias": [
+    {
+      "source_path": [
+        "attention_bias"
+      ],
+      "value": false,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "attention_bias"
+      ]
+    }
+  ],
+  "decoder.attention.scores_scale": [],
+  "decoder.attention.cached": [],
+  "decoder.attention.mask": [
+    {
+      "source_path": [
+        "num_hidden_layers"
+      ],
+      "value": 32,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "num_hidden_layers"
+      ]
+    }
+  ],
+  "decoder.layer.residual_topology": [],
+  "decoder.layer.parallel_norm_count": [],
+  "model.tie_word_embeddings": [
+    {
+      "source_path": [
+        "tie_word_embeddings"
+      ],
+      "value": false,
+      "source_kind": "config_declared",
+      "checkpoint_path": [
+        "tie_word_embeddings"
+      ]
+    }
+  ],
+  "model.final_norm_kind": []
+}

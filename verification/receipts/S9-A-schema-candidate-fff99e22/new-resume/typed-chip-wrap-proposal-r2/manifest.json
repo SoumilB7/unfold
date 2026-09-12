@@ -1,0 +1,10 @@
+{
+  "previous_manifest_sha256": "da92c41973cd615901b03f7ae431619d3b6eefc090be08b9107d529b39dee18c",
+  "files": {
+    "before/model_unfolder/renderers/html/styles.py": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+    "contract.json": "7d666e540bac939d13a4f9fb32bf64139d722c2aa2170c7c53ad5bbd2c670ec3",
+    "inserted-rule.txt": "d63c2b4c6b9548898fabeda92b7ba52e15a779d1b1b83784317bb57c67e75b17",
+    "proposed/model_unfolder/renderers/html/styles.py": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+    "source.diff": "d0f12982f250aea704a7a4c72cc8b66bc84da02818dbb7ce48a6f7876495286c"
+  }
+}

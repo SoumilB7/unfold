@@ -1,0 +1,92 @@
+{
+  "actual_portable_seal": "80ea44c28a12e864711d8a8bda58d8844803988bfb4b26e255076e48a2a26fc2",
+  "baseline_output": {
+    "ir_after_sha256": "b5ec0e680c9c7fb48bc19eabdf1971d90a8b1d533baf530fcad646b7b3146ad5",
+    "ir_before_sha256": "308c7773ba9b22e839a11d681424d0ab50550073dd8f3eb170c704cb2f5889d5",
+    "page_bytes": 158219,
+    "page_sha256": "17646b2242635b3b7bddc86f2c4ef9d73323d86a40571724b61ab5f92159f523",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "80ea44c28a12e864711d8a8bda58d8844803988bfb4b26e255076e48a2a26fc2",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "80ea44c28a12e864711d8a8bda58d8844803988bfb4b26e255076e48a2a26fc2",
+  "seconds": 3.134961875000954,
+  "slug": "stable-diffusion-3-5-large",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "daf7c20b3a2455c1cfe81728ee05569cdc72a058e75b3c51fd4d85e1c9d100b0",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_sd3.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    },
+    {
+      "component": "text_encoder_3",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder_3",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder_3",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 10,
+  "status": "REPRODUCED"
+}

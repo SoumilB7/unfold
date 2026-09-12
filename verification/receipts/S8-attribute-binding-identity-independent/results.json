@@ -1,0 +1,475 @@
+{
+  "after": {
+    "physics/attribute_bindings.py": "5bd7302f421e3c6786391dbdabd341bb0b93a3b6da26ba9e5b4ba5002feb0f04",
+    "physics/instance_inventory.py": "e7c8931be7b6cdf84c0e67d87b9f8b5434eb5a5ac3897ff2521464735baacb6f"
+  },
+  "before": {
+    "physics/attribute_bindings.py": "5bd7302f421e3c6786391dbdabd341bb0b93a3b6da26ba9e5b4ba5002feb0f04",
+    "physics/instance_inventory.py": "e7c8931be7b6cdf84c0e67d87b9f8b5434eb5a5ac3897ff2521464735baacb6f"
+  },
+  "failed_lookup_contamination": {
+    "actual_shapes": {
+      "first.bias": [
+        2
+      ],
+      "first.weight": [
+        2,
+        2
+      ],
+      "second.bias": [
+        3
+      ],
+      "second.weight": [
+        3,
+        3
+      ]
+    },
+    "constructed_shapes": {
+      "": [],
+      "first": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "second": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    "lookups": [
+      {
+        "attribute": "first",
+        "child_path": null,
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "",
+        "kind": "unresolved",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "7e675b3c1ead6537f5eccef9fa5366a5ebae7289c798b927816377d6f9f22035",
+          "first_line": 17,
+          "module": "original_independent_worker_probes",
+          "qualname": "ChangingFallback.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "second": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "second": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "custom_fallback_raised_RuntimeError",
+        "registered_slots_unchanged": false,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": null
+      },
+      {
+        "attribute": "second",
+        "child_path": null,
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "",
+        "kind": "unresolved",
+        "lookup_getattr": null,
+        "lookup_kind": "",
+        "lookup_state_after": null,
+        "lookup_state_before": null,
+        "observed_state_changed": null,
+        "owner_path": "",
+        "reason": "earlier_custom_lookup_contaminated_snapshot: custom_fallback_raised_RuntimeError",
+        "registered_slots_unchanged": null,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": null
+      }
+    ]
+  },
+  "nested_slot_contamination": {
+    "actual_shapes": {
+      "first.bias": [
+        2
+      ],
+      "first.weight": [
+        2,
+        2
+      ],
+      "stages.0.bias": [
+        3
+      ],
+      "stages.0.weight": [
+        3,
+        3
+      ]
+    },
+    "constructed_shapes": {
+      "": [],
+      "first": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "stages": [],
+      "stages.0": [
+        [
+          2,
+          2
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    "lookups": [
+      {
+        "attribute": "first",
+        "child_path": "first",
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "child_is_not_exact_modulelist",
+        "kind": "observed_registered_child",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "bdeb5b344587c463a9735e5134999121c18f04070eaa24303b23dc440fef57d2",
+          "first_line": 28,
+          "module": "original_independent_worker_probes",
+          "qualname": "ChangingSlots.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "",
+        "registered_slots_unchanged": true,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": {
+          "anchor_mro_index": 0,
+          "target": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+            "first_line": 1951,
+            "module": "torch.nn.modules.module",
+            "qualname": "Module.__getattr__",
+            "source_file": "module.py",
+            "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+          }
+        }
+      },
+      {
+        "attribute": "stages",
+        "child_path": "stages",
+        "function": null,
+        "instance_storage_names": [],
+        "iteration": null,
+        "iteration_reason": "modulelist_slots_differ_from_construction",
+        "kind": "observed_registered_child",
+        "lookup_getattr": {
+          "canonical_builtins": [
+            "enumerate",
+            "getattr",
+            "hasattr",
+            "len",
+            "super"
+          ],
+          "closure_names": [
+            "__class__"
+          ],
+          "closure_values": [
+            {
+              "function": null,
+              "kind": "unresolved",
+              "name": "__class__",
+              "reason": "unsupported_closure_value",
+              "scalar": null
+            }
+          ],
+          "code_matches_source": true,
+          "code_sha256": "bdeb5b344587c463a9735e5134999121c18f04070eaa24303b23dc440fef57d2",
+          "first_line": 28,
+          "module": "original_independent_worker_probes",
+          "qualname": "ChangingSlots.__getattr__",
+          "source_file": "replay.py",
+          "source_sha256": "bd8d31d2751cc8dfa1403654e444a8e274595fdd31efa18565ab87e44bf89517"
+        },
+        "lookup_kind": "observed_custom_fallback",
+        "lookup_state_after": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "lookup_state_before": {
+          "_backward_hooks": {},
+          "_backward_pre_hooks": {},
+          "_buffers": {},
+          "_forward_hooks": {},
+          "_forward_hooks_always_called": {},
+          "_forward_hooks_with_kwargs": {},
+          "_forward_pre_hooks": {},
+          "_forward_pre_hooks_with_kwargs": {},
+          "_is_full_backward_hook": null,
+          "_load_state_dict_post_hooks": {},
+          "_load_state_dict_pre_hooks": {},
+          "_modules": {
+            "first": {
+              "type": "torch.nn.modules.linear.Linear",
+              "value": null
+            },
+            "stages": {
+              "type": "torch.nn.modules.container.ModuleList",
+              "value": null
+            }
+          },
+          "_non_persistent_buffers_set": {
+            "type": "builtins.set",
+            "value": null
+          },
+          "_parameters": {},
+          "_state_dict_hooks": {},
+          "_state_dict_pre_hooks": {},
+          "training": true
+        },
+        "observed_state_changed": false,
+        "owner_path": "",
+        "reason": "",
+        "registered_slots_unchanged": true,
+        "scalar": null,
+        "super_reason": "",
+        "super_target": {
+          "anchor_mro_index": 0,
+          "target": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "1f8d047d7d2bb63fb40c0f1a5b6e129f8cbe9b60c4f2190b54eafc37bdea52c3",
+            "first_line": 1951,
+            "module": "torch.nn.modules.module",
+            "qualname": "Module.__getattr__",
+            "source_file": "module.py",
+            "source_sha256": "d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd"
+          }
+        }
+      }
+    ]
+  },
+  "verdict": "PASS within original correction scope"
+}

@@ -1,0 +1,51 @@
+{
+  "production_candidate": "f664467da90d7dae577d582131b379a38deb917d",
+  "status": "prepared_not_run",
+  "serial_order": [
+    "model_campaign_owned_by_visual_agent",
+    "family_verification_sdxl",
+    "family_verification_sd_v1_4",
+    "39_model_shadow_regeneration",
+    "shadow_artifact_check_and_named_delta_review",
+    "commit_verification_artifacts",
+    "isolated_broad_coordinator"
+  ],
+  "matrix_command": [
+    "python3",
+    "scripts/generate_s7_shadow.py"
+  ],
+  "matrix_check": [
+    "python3",
+    "scripts/generate_s7_shadow.py",
+    "--check"
+  ],
+  "broad_command": [
+    "python3",
+    "scripts/verify_commit.py",
+    "--commit",
+    "<commit_with_verified_s7_artifacts>",
+    "--focus",
+    "tests/test_s8_attribute_bindings.py",
+    "--focus",
+    "tests/test_s8_lookup_closure.py",
+    "--focus",
+    "tests/test_s8_wrapper_binding.py",
+    "--focus",
+    "tests/test_s8_iteration_binding.py",
+    "--focus",
+    "tests/test_s8_primary_ports.py",
+    "--focus",
+    "tests/test_s8_call_port_layout.py",
+    "--focus",
+    "tests/test_s8_component_scope.py",
+    "--focus",
+    "tests/test_s8_port_routes.py",
+    "--focus",
+    "tests/test_s8_cell_connections.py",
+    "--focus",
+    "tests/test_s8_runtime_source.py",
+    "--focus",
+    "tests/test_s7_artifacts.py"
+  ],
+  "scope": "S7 artifacts may regenerate; no product/preservation baseline blessing. Exact output deltas need Soumil approval. All lanes serial."
+}

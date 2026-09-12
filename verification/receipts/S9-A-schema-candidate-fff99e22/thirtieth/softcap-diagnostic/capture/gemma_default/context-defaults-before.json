@@ -1,0 +1,7 @@
+{
+  "attn_logit_softcapping": 50.0,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1"
+  }
+}

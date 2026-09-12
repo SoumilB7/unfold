@@ -1,0 +1,20 @@
+{
+  "after_bytes": 125034,
+  "after_sha256": "89796c2f5b067dc61dd5749cee3a8f7cd5e17d0cf990424c21fdeca7e350f19d",
+  "before_bytes": 125034,
+  "before_sha256": "1820bce45d042456c763d69097618e1f312512d19ee62cfc54e41a3a0e347ecc",
+  "exact_new_mount_occurrences": 310,
+  "exact_old_mount_occurrences": 310,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-263ccf25ca",
+  "mount_identity_before": "uf-b3019702bb",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 14,
+  "raw_ordered_svg_count_before": 14,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "pixart-sigma-xl-2-1024-ms",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "919e7fde0ba86a904020f9b063d52a60783c1d056454107badf73750f0856650",
+  "input": "tests/sable_test_corpus/deepseek-v3.json",
+  "input_sha256": "bccffdd0d542c963c1cf4246466067a1fa8ed49f1eef13f9ac775ce3deb3b577",
+  "resolved_class": {
+    "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+    "qualname": "DeepseekV3ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

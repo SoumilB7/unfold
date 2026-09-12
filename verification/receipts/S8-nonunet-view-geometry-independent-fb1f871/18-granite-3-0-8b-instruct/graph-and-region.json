@@ -1,0 +1,502 @@
+{
+  "graph": {
+    "aside": {
+      "footer": [
+        "KV cache 4x smaller",
+        "than full MHA"
+      ],
+      "rows": [
+        [
+          "Q0-Q3",
+          "use KV0"
+        ],
+        [
+          "Q4-Q7",
+          "use KV1"
+        ],
+        "...",
+        [
+          "Q28-Q31",
+          "use KV7"
+        ]
+      ],
+      "title": "KV sharing pattern"
+    },
+    "edges": [],
+    "flow": [
+      "hidden",
+      "kv_cache",
+      "scaled_scores",
+      "attn_softmax",
+      "attn_apply_v",
+      "concat_heads",
+      "o_proj",
+      "region_out"
+    ],
+    "groups": [],
+    "nodes": [
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "hidden",
+        "kind": "port",
+        "label": "in (4,096)",
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "q_proj",
+        "kind": "linear",
+        "label": "Linear (Q)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": true,
+        "font": null,
+        "h": null,
+        "id": "k_proj",
+        "kind": "linear",
+        "label": "Linear (K)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": true,
+        "font": null,
+        "h": null,
+        "id": "v_proj",
+        "kind": "linear",
+        "label": "Linear (V)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "scaled_scores",
+        "kind": "formula",
+        "label": null,
+        "meta": {
+          "denominator": "128",
+          "desc": "Dot-product scores scaled by the config-declared constant 0.0078125 (= 1/128) instead of the default 1/sqrt(head_dim) \u2014 the forward pass multiplies QK^T by this declared value.",
+          "formula": "QK^T/128",
+          "numerator": "Q K^T"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "attn_softmax",
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "attn_apply_v",
+        "kind": "dot_product",
+        "label": null,
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "concat_heads",
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "o_proj",
+        "kind": "linear",
+        "label": "Linear (out)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "q_rope",
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "Q",
+          "\u03b8 10000"
+        ],
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "k_rope",
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "K",
+          "\u03b8 10000"
+        ],
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "kv_cache",
+        "kind": "cache",
+        "label": [
+          "K/V cache",
+          "update + read"
+        ],
+        "meta": {
+          "stores": [
+            "key",
+            "value"
+          ]
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "region_out",
+        "kind": "port",
+        "label": null,
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      }
+    ],
+    "note": null,
+    "parallels": [
+      {
+        "dst": "kv_cache",
+        "lanes": [
+          {
+            "dst": [
+              "scaled_scores"
+            ],
+            "ids": [
+              "q_proj",
+              "q_rope"
+            ],
+            "out_label": null,
+            "src": null
+          },
+          {
+            "dst": null,
+            "ids": [
+              "k_proj",
+              "k_rope"
+            ],
+            "out_label": null,
+            "src": null
+          },
+          {
+            "dst": null,
+            "ids": [
+              "v_proj"
+            ],
+            "out_label": null,
+            "src": null
+          }
+        ],
+        "src": "hidden"
+      },
+      {
+        "dst": "scaled_scores",
+        "lanes": [
+          {
+            "dst": null,
+            "ids": [],
+            "out_label": null,
+            "src": "kv_cache"
+          },
+          {
+            "dst": [
+              "attn_apply_v"
+            ],
+            "ids": [],
+            "out_label": null,
+            "src": "kv_cache"
+          }
+        ],
+        "src": "kv_cache"
+      }
+    ],
+    "side_inputs": []
+  },
+  "region": {
+    "edges": [
+      {
+        "dst": "q_proj",
+        "src": "hidden"
+      },
+      {
+        "dst": "k_proj",
+        "src": "hidden"
+      },
+      {
+        "dst": "v_proj",
+        "src": "hidden"
+      },
+      {
+        "dst": "attn_softmax",
+        "src": "scaled_scores"
+      },
+      {
+        "dst": "attn_apply_v",
+        "src": "attn_softmax"
+      },
+      {
+        "dst": "concat_heads",
+        "src": "attn_apply_v"
+      },
+      {
+        "dst": "o_proj",
+        "src": "concat_heads"
+      },
+      {
+        "dst": "q_rope",
+        "src": "q_proj"
+      },
+      {
+        "dst": "scaled_scores",
+        "src": "q_rope"
+      },
+      {
+        "dst": "k_rope",
+        "src": "k_proj"
+      },
+      {
+        "dst": "kv_cache",
+        "src": "k_rope"
+      },
+      {
+        "dst": "kv_cache",
+        "src": "v_proj"
+      },
+      {
+        "dst": "scaled_scores",
+        "src": "kv_cache"
+      },
+      {
+        "dst": "attn_apply_v",
+        "src": "kv_cache"
+      }
+    ],
+    "id": "attention",
+    "label": "gqa",
+    "ops": [
+      {
+        "fn": null,
+        "id": "hidden",
+        "in_features": null,
+        "kind": "input",
+        "label": null,
+        "meta": {},
+        "out_features": 4096
+      },
+      {
+        "fn": null,
+        "id": "q_proj",
+        "in_features": 4096,
+        "kind": "linear",
+        "label": "Linear (Q)",
+        "meta": {},
+        "out_features": 4096
+      },
+      {
+        "fn": null,
+        "id": "k_proj",
+        "in_features": 4096,
+        "kind": "linear",
+        "label": "Linear (K)",
+        "meta": {
+          "cached": true
+        },
+        "out_features": 1024
+      },
+      {
+        "fn": null,
+        "id": "v_proj",
+        "in_features": 4096,
+        "kind": "linear",
+        "label": "Linear (V)",
+        "meta": {
+          "cached": true
+        },
+        "out_features": 1024
+      },
+      {
+        "fn": "scaled_dot_product",
+        "id": "scaled_scores",
+        "in_features": null,
+        "kind": "attention_core",
+        "label": null,
+        "meta": {
+          "denominator": "128",
+          "desc": "Dot-product scores scaled by the config-declared constant 0.0078125 (= 1/128) instead of the default 1/sqrt(head_dim) \u2014 the forward pass multiplies QK^T by this declared value.",
+          "formula": "QK^T/128",
+          "numerator": "Q K^T"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "softmax",
+        "id": "attn_softmax",
+        "in_features": null,
+        "kind": "activation",
+        "label": "Softmax",
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": "matmul",
+        "id": "attn_apply_v",
+        "in_features": null,
+        "kind": "elementwise",
+        "label": null,
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "concat_heads",
+        "in_features": null,
+        "kind": "reshape",
+        "label": "Concat heads",
+        "meta": {},
+        "out_features": 4096
+      },
+      {
+        "fn": null,
+        "id": "o_proj",
+        "in_features": 4096,
+        "kind": "linear",
+        "label": "Linear (out)",
+        "meta": {},
+        "out_features": 4096
+      },
+      {
+        "fn": null,
+        "id": "q_rope",
+        "in_features": null,
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "Q",
+          "\u03b8 10000"
+        ],
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "k_rope",
+        "in_features": null,
+        "kind": "rope",
+        "label": [
+          "apply RoPE",
+          "K",
+          "\u03b8 10000"
+        ],
+        "meta": {},
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "kv_cache",
+        "in_features": null,
+        "kind": "cache",
+        "label": [
+          "K/V cache",
+          "update + read"
+        ],
+        "meta": {
+          "stores": [
+            "key",
+            "value"
+          ]
+        },
+        "out_features": null
+      }
+    ],
+    "resolved": true,
+    "role": "attention",
+    "source": "config",
+    "template": "gqa"
+  }
+}

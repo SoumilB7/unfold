@@ -1,0 +1,9 @@
+#{mount_id} .uf-chip-unresolved,
+#{mount_id} .uf-chip-pending_design,
+#{mount_id} .uf-chip-class_default,
+#{mount_id} .uf-chip-symbolic {{
+  display:inline-block; box-sizing:border-box;
+  max-width:100%; min-width:0;
+  border-radius:4px;
+  white-space:normal; overflow-wrap:anywhere;
+}}

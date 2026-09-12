@@ -1,0 +1,28 @@
+{
+  "reviewer": "root",
+  "scope": "Independent exact decoded bytes against live originals, stored/raw digest and length, file membership and injective archived paths. Absent storage directories are explicit map-declared empty originals, recoverable during restoration. No model/test or archived script execution; original verdict scope unchanged.",
+  "audit_correction": "Initial audit required empty directories physically under streams; corrected to check explicit map entries against actual empty originals, since Git does not persist empty directories. No archive bytes or map changed.",
+  "reviews": [
+    {
+      "receipt": "S8.1-computation-preservation-3724cba",
+      "status": "PASS",
+      "artifact_map_sha256": "974dcbac97789c19eaa2191f51f824dfc2e514c7ced04b5de9ff03db1635b26d",
+      "streams": 4,
+      "directories": 3,
+      "empty_directories_reconstructed_from_map": [
+        "computation-preservation-3724cba/cache"
+      ]
+    },
+    {
+      "receipt": "S8.1-fd-diagnostic-v1",
+      "status": "PASS",
+      "artifact_map_sha256": "2d230018d6098eeb76b9bb573a3f9d6920b67c98958877d0a206fc69f130a24d",
+      "streams": 26,
+      "directories": 8,
+      "empty_directories_reconstructed_from_map": [
+        "fd-diagnostic-v1/cache",
+        "public-entries-v6"
+      ]
+    }
+  ]
+}

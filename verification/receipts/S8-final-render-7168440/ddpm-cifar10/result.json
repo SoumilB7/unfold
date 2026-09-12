@@ -1,0 +1,29 @@
+{
+  "base_case": "/private/tmp/unfold-s8-context-phase-5227e9c/ddpm-cifar10",
+  "blessed": false,
+  "canonical_facts_unchanged": true,
+  "case": "ddpm-cifar10",
+  "checkout": "/private/tmp/unfold-s8-final-verification-7168440",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "commit": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "elapsed_seconds": 5.705,
+  "event_deltas": "event-deltas.json",
+  "fact_case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/ddpm-cifar10/ordinary",
+  "historical_model_source_run_preserved": true,
+  "html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+  "ir_deltas": "ir-deltas.json",
+  "no_model_or_execution": true,
+  "prior_html_sha256": "534f8a861f4f5640e74481d845184079649543db3a1c1613871db594028ca909",
+  "quantities_exact": true,
+  "status": "PASS",
+  "summary_proof_dir": "/private/tmp/unfold-s8-summary-proofs-7168440-resume/ddpm-cifar10",
+  "svg_deltas": []
+}

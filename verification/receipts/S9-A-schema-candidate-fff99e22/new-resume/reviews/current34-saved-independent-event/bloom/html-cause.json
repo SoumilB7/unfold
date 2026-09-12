@@ -1,0 +1,19 @@
+{
+  "after_bytes": 63372,
+  "after_sha256": "e889491dd945f40ccc9f286b96ca6ce03c3df71d0665a2cb93f8baaf0a365fd0",
+  "before_bytes": 63372,
+  "before_sha256": "eeee63a6426fae6ec022ef1f029b4cb3de27abf59b16d8e2236d5244ad0dd057",
+  "exact_new_mount_occurrences": 182,
+  "exact_old_mount_occurrences": 182,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-901b7052c7",
+  "mount_identity_before": "uf-580ed758b3",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "bloom",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

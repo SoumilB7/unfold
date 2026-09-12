@@ -1,0 +1,19 @@
+{
+  "after_bytes": 176532,
+  "after_sha256": "21440320f9cef8ab06d595947230240a52dbc3bd380864ff2590a4879d1391ec",
+  "before_bytes": 176532,
+  "before_sha256": "eb21c2b5299cf441e5e2de6815744559098d8a55847a391d396baf9faf22c244",
+  "exact_new_mount_occurrences": 239,
+  "exact_old_mount_occurrences": 239,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-38ec7635b4",
+  "mount_identity_before": "uf-8f57d1ab48",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 13,
+  "raw_ordered_svg_count_before": 13,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "qwen3-vl-235b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

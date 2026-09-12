@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+  "baseline_output": {
+    "ir_after_sha256": "75fed63851052947730df1b92033aa27973502c499aa9ae963a1d23476d4e6f1",
+    "ir_before_sha256": "75fed63851052947730df1b92033aa27973502c499aa9ae963a1d23476d4e6f1",
+    "page_bytes": 46645,
+    "page_sha256": "3d301eb9c8d052426784c1cc236f33dc5a563b3d85a3c8645e5a66f5b863f3df",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+  "seconds": 0.8031687919992692,
+  "slug": "deepseek-v4-flash",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "b510849a189785e8467b8e415cbce5f051705025ee40b9a1c13b9add2695505f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_deepseek_v4.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_deepseek_v4.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

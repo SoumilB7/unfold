@@ -1,0 +1,43 @@
+[
+  {
+    "original_path": "verification/receipts/S8-final-coverage-7168440/unfold-s8-coverage-capture.py",
+    "original_executed_sha256": "e9a0c53c772bb18f96e28bcfb9174bfc4a66071eb50e5b5e55a9d9feac2525cb",
+    "historical_archive": "verification/receipts/S8-final-coverage-7168440/unfold-s8-coverage-capture.executed.py.txt",
+    "historical_archive_sha256": "e9a0c53c772bb18f96e28bcfb9174bfc4a66071eb50e5b5e55a9d9feac2525cb",
+    "cleaned_runnable_path": "verification/receipts/S8-final-coverage-7168440/unfold-s8-coverage-capture.py",
+    "cleaned_sha256": "d96593533975b0d0527eed664cc0201a004ec461d3b33d5dd1c6cafa564024a6",
+    "removed_unused_standard_library_imports": [
+      "hashlib"
+    ],
+    "ast_otherwise_equal": true,
+    "cleaned_copy_executed_in_historical_campaign": false
+  },
+  {
+    "original_path": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-delta-audit.py",
+    "original_executed_sha256": "49930624a6d9ae8f14d2261163a1c3d733feac87f251941af1ae9e0122af8ae2",
+    "historical_archive": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-delta-audit.executed.py.txt",
+    "historical_archive_sha256": "49930624a6d9ae8f14d2261163a1c3d733feac87f251941af1ae9e0122af8ae2",
+    "cleaned_runnable_path": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-delta-audit.py",
+    "cleaned_sha256": "4d22dd47ea9ba51b989b6525a004792822ad366b94c2aa9851ebc0e2b28eede4",
+    "removed_unused_standard_library_imports": [
+      "gzip",
+      "hashlib",
+      "re"
+    ],
+    "ast_otherwise_equal": true,
+    "cleaned_copy_executed_in_historical_campaign": false
+  },
+  {
+    "original_path": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-persist.py",
+    "original_executed_sha256": "fccf1afe754f85c6c7151925a823aa5d583ef0b967ac8d4f32ec888ea21e78d2",
+    "historical_archive": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-persist.executed.py.txt",
+    "historical_archive_sha256": "fccf1afe754f85c6c7151925a823aa5d583ef0b967ac8d4f32ec888ea21e78d2",
+    "cleaned_runnable_path": "verification/receipts/S8-final-render-7168440/unfold-s8-typed-persist.py",
+    "cleaned_sha256": "1b755458554dffdc89be0cf31fc26d4bde9e2abff9b0dfffcd03c3a21581217f",
+    "removed_unused_standard_library_imports": [
+      "html"
+    ],
+    "ast_otherwise_equal": true,
+    "cleaned_copy_executed_in_historical_campaign": false
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "format": "lossless-appended-gzip-v1",
+  "entries": [
+    {
+      "logical_path": "committed/verification/receipts/S8-final-lanes-fb1f871/run_broad.py",
+      "source_path": "git:c2075501e4b0cf7e97cc004c3d913011e64e3632:verification/receipts/S8-final-lanes-fb1f871/run_broad.py",
+      "stored_path": "streams/committed/verification/receipts/S8-final-lanes-fb1f871/run_broad.py.gzip",
+      "bytes": 2652,
+      "sha256": "cfabfc00ac5eb00fcffb91781eb88d1e67e8bb336ccbf7908c40fe85b79ba4a4",
+      "stored_bytes": 1132,
+      "stored_sha256": "184113beed062a99604b61216769d76e6cbe6ed1db5f169e0fe06a012ce87ae5"
+    },
+    {
+      "logical_path": "committed/verification/receipts/S8-final-lanes-fb1f871/manifest.json",
+      "source_path": "git:c2075501e4b0cf7e97cc004c3d913011e64e3632:verification/receipts/S8-final-lanes-fb1f871/manifest.json",
+      "stored_path": "streams/committed/verification/receipts/S8-final-lanes-fb1f871/manifest.json.gzip",
+      "bytes": 3339,
+      "sha256": "6a395f50cb9159276fb5728af3b3e89745fe0aeffbb70070657b879ebf0d7d26",
+      "stored_bytes": 1320,
+      "stored_sha256": "a47917681018ba6e4e42e61e719f12548e313f82282968434b23bf61d936b55e"
+    },
+    {
+      "logical_path": "committed/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json",
+      "source_path": "git:c2075501e4b0cf7e97cc004c3d913011e64e3632:verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json",
+      "stored_path": "streams/committed/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json.gzip",
+      "bytes": 12555,
+      "sha256": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe",
+      "stored_bytes": 3657,
+      "stored_sha256": "ea6e287abfe24d35db1eccd0835aadead0c344a5e53d4e7ec81ba015d2f76aa2"
+    }
+  ]
+}

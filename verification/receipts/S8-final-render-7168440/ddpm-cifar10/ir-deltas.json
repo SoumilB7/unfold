@@ -1,0 +1,107 @@
+{
+  "block_fields": [
+    {
+      "after": {
+        "root.denoiser.declared_constructor_defaults": [
+          "Declared class default \u00b7 add_attention: true (checkpoint omitted)",
+          "Declared class default \u00b7 attn_norm_num_groups: null (checkpoint omitted)",
+          "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+          "Declared class default \u00b7 downsample_type: \"conv\" (checkpoint omitted)",
+          "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+          "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2D\" (checkpoint omitted)",
+          "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+          "Declared class default \u00b7 num_train_timesteps: null (checkpoint omitted)",
+          "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+          "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+          "Declared class default \u00b7 upsample_type: \"conv\" (checkpoint omitted)"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "denoiser"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__0__downsamplers__0"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.Conv2d",
+          "Stride: 2"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_down_blocks__2__downsamplers__0"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__0__upsamplers__0"
+    },
+    {
+      "after": {
+        "root.denoiser.spatial_mechanisms": [
+          "Source-proven spatial primitive: torch.nn.functional.interpolate",
+          "Resize direction: investigation_missing"
+        ]
+      },
+      "before": null,
+      "cause": "receipt metadata for existing exact displayed fact lines",
+      "field": "detail.fact_display_lines",
+      "id": "instance_up_blocks__1__upsamplers__0"
+    }
+  ],
+  "block_occurrences_changed": [
+    "denoiser",
+    "instance_down_blocks__0__downsamplers__0",
+    "instance_down_blocks__2__downsamplers__0",
+    "instance_up_blocks__0__upsamplers__0",
+    "instance_up_blocks__1__upsamplers__0"
+  ],
+  "component_entry": {
+    "input_ids": [
+      "unet_root_input_0",
+      "unet_root_input_1",
+      "unet_root_input_2",
+      "unet_root_input_3"
+    ],
+    "root_id": "denoiser",
+    "subtitle": "Declared denoiser interface \u00b7 click to open its architecture",
+    "title": "DENOISER COMPONENT"
+  },
+  "construction_summary": {
+    "parameter_count": 35746307,
+    "parameterized_module_count": 164,
+    "population_fact_key": "root.denoiser.constructed_modules",
+    "scope": "denoiser",
+    "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+    "stage_count": 9,
+    "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+  },
+  "removed_legacy_component_input_ids": [
+    "unet_root_input_0",
+    "unet_root_input_1",
+    "unet_root_input_2",
+    "unet_root_input_3"
+  ],
+  "removed_legacy_component_scope": "denoiser"
+}

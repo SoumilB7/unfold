@@ -1,0 +1,35 @@
+{
+  "status": "ACCEPT receipt integrity; actual broad remains FAIL",
+  "commit": "29c6236e7cc2455bfa9262f306a072f6249eb246",
+  "archive43_stored_and_original_hashes_verified": true,
+  "six_required_lanes_complete_serial": true,
+  "all_perlane_global_selectedexternal_pins_equal": true,
+  "selected_external_count": 60,
+  "selected_scope": "59installedsource+1cachedconfig, nonexhaustive",
+  "collected": 4547,
+  "full_unique_scheduled": 4451,
+  "full_batches": 26,
+  "exact_complement_owned_authority_preservation": 96,
+  "full_actual_counts": {
+    "passed": 4432,
+    "failed": 3,
+    "skipped": 14,
+    "xfailed": 2
+  },
+  "full_failed_tests": [
+    "tests/test_diffusion.py::test_diffusion_recursive_depth_conforms[sdxl_unet]",
+    "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer",
+    "tests/test_sable.py::test_sable_regression_corpus"
+  ],
+  "preservation_actual_counts": {
+    "failed": 29,
+    "passed": 23
+  },
+  "focused_passed": 511,
+  "authority_passed": 44,
+  "static_passed": true,
+  "coordinator_exit_code": 1,
+  "correction_isolated_execution": "separate future receipt; never relabel this original broad green",
+  "per_preservation_surface_disposition": "root owned; not duplicated here",
+  "no_test_model_rerun": true
+}

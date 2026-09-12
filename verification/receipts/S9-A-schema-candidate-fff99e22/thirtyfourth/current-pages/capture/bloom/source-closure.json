@@ -1,0 +1,32 @@
+{
+  "actual_portable_seal": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "reference26_seal": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "scope": "Actual34 source index;26 is a comparison reference, not a34 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "2918d5414c0fb4287df93f309a3487e4aa4982dc908b11c2aa687573affb5efa",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_bloom.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_bloom.py"
+    }
+  ],
+  "source_node_count": 3
+}

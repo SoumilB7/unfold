@@ -1,0 +1,11 @@
+[
+  {
+    "after": "269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c",
+    "before": "a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04",
+    "path": [
+      "unet_instance",
+      "baseline_receipt",
+      "artifact_map_sha256"
+    ]
+  }
+]

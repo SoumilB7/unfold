@@ -1,0 +1,10 @@
+{
+  "files": {
+    "bloom-default-diagnostic.py": "24c05fc238c9ae6c22a6fa16eabf21d8a485a1ea9c657d8babc6e468acf50aff",
+    "contract.json": "f82696d7f316717a2f80bb0b38ce1e2bad69521982ab460b4c54d19b63bf46cb",
+    "layer-default-diagnostic.py": "af794897e9effb6b65ce56b78faeed76e5d2ee68135550765fd0d6889ed52085",
+    "run-bloom-default-diagnostic.py": "4558dee17e88de85b66ebab6e56f0ee1492a5efdae27b39e6ac155a1cf4dfe9c",
+    "run-layer-default-diagnostic.py": "217e992fca6b085b277b700112ac8765c4c5c6575ee98c6f91d5835a6b054562",
+    "source.diff": "c18e3dcce6d4caec3b7fc8f209fb5954dda651036c076f9ff13fd0b85760f564"
+  }
+}

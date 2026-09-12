@@ -1,0 +1,247 @@
+{
+  "graph": {
+    "aside": null,
+    "edges": [],
+    "flow": [
+      "expert_hidden",
+      "expert_gate_up_proj",
+      "expert_gate_up_split",
+      "expert_mul",
+      "expert_down_proj",
+      "region_out"
+    ],
+    "groups": [],
+    "nodes": [
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_hidden",
+        "kind": "port",
+        "label": "in (5,120)",
+        "meta": {
+          "canonical_id": "hidden"
+        },
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_gate_up_proj",
+        "kind": "linear",
+        "label": "Linear (gate + up)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_gate_up_split",
+        "kind": "slice",
+        "label": "Split gate / up",
+        "meta": {
+          "canonical_id": "gate_up_split"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_act",
+        "kind": "activation",
+        "label": "SiLU",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_mul",
+        "kind": "gate_mul",
+        "label": null,
+        "meta": {
+          "canonical_id": "multiply"
+        },
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "expert_down_proj",
+        "kind": "linear",
+        "label": "Linear (down)",
+        "meta": {},
+        "resolved": true,
+        "static": false,
+        "sub": null,
+        "target": null,
+        "w": null
+      },
+      {
+        "cache_ports": false,
+        "font": null,
+        "h": null,
+        "id": "region_out",
+        "kind": "port",
+        "label": "\u2192 weighted sum",
+        "meta": {},
+        "resolved": true,
+        "static": true,
+        "sub": null,
+        "target": null,
+        "w": null
+      }
+    ],
+    "note": null,
+    "parallels": [
+      {
+        "dst": "expert_mul",
+        "lanes": [
+          {
+            "dst": null,
+            "ids": [],
+            "out_label": null,
+            "src": "expert_gate_up_split"
+          },
+          {
+            "dst": null,
+            "ids": [
+              "expert_act"
+            ],
+            "out_label": null,
+            "src": null
+          }
+        ],
+        "src": "expert_gate_up_split"
+      }
+    ],
+    "side_inputs": []
+  },
+  "region": {
+    "edges": [
+      {
+        "dst": "expert_gate_up_proj",
+        "src": "expert_hidden"
+      },
+      {
+        "dst": "expert_gate_up_split",
+        "src": "expert_gate_up_proj"
+      },
+      {
+        "dst": "expert_act",
+        "src": "expert_gate_up_split"
+      },
+      {
+        "dst": "expert_mul",
+        "src": "expert_act"
+      },
+      {
+        "dst": "expert_mul",
+        "src": "expert_gate_up_split"
+      },
+      {
+        "dst": "expert_down_proj",
+        "src": "expert_mul"
+      }
+    ],
+    "id": "ffn",
+    "label": "Fused gated MLP",
+    "ops": [
+      {
+        "fn": null,
+        "id": "expert_hidden",
+        "in_features": null,
+        "kind": "input",
+        "label": null,
+        "meta": {
+          "canonical_id": "hidden"
+        },
+        "out_features": 5120
+      },
+      {
+        "fn": null,
+        "id": "expert_gate_up_proj",
+        "in_features": 5120,
+        "kind": "linear",
+        "label": "Linear (gate + up)",
+        "meta": {
+          "canonical_id": "gate_up_proj"
+        },
+        "out_features": 3072
+      },
+      {
+        "fn": null,
+        "id": "expert_gate_up_split",
+        "in_features": null,
+        "kind": "slice",
+        "label": "Split gate / up",
+        "meta": {
+          "canonical_id": "gate_up_split"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "silu",
+        "id": "expert_act",
+        "in_features": null,
+        "kind": "activation",
+        "label": null,
+        "meta": {
+          "canonical_id": "activation"
+        },
+        "out_features": null
+      },
+      {
+        "fn": "mul",
+        "id": "expert_mul",
+        "in_features": null,
+        "kind": "elementwise",
+        "label": null,
+        "meta": {
+          "canonical_id": "multiply"
+        },
+        "out_features": null
+      },
+      {
+        "fn": null,
+        "id": "expert_down_proj",
+        "in_features": 1536,
+        "kind": "linear",
+        "label": "Linear (down)",
+        "meta": {
+          "canonical_id": "down_proj"
+        },
+        "out_features": 5120
+      }
+    ],
+    "resolved": true,
+    "role": "ffn",
+    "source": "config",
+    "template": "fused_gated_mlp"
+  }
+}

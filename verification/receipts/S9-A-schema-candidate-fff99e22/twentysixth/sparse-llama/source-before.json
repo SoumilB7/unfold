@@ -1,0 +1,1632 @@
+{
+  "model_unfolder/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/__init__.py",
+    "bytes": 3040,
+    "sha256": "be8da971788e9832c119cd8adfeaaec8fced28c9eff29d8b5b5e0df71a8f9ef4"
+  },
+  "model_unfolder/adapters/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/__init__.py",
+    "bytes": 319,
+    "sha256": "85ab7fb1d6e3785418a2b2e2385cf35239f0704ffa7f4096a917e238bb22983b"
+  },
+  "model_unfolder/adapters/custom/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/custom/__init__.py",
+    "bytes": 209,
+    "sha256": "6faecdb48ba682fd87e26728522eef9655c01093e86c52dc73235ac77b7ffa03"
+  },
+  "model_unfolder/adapters/diffusor/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/__init__.py",
+    "bytes": 378,
+    "sha256": "cecadad55530e85ea0be0a534b23078f74c0bd3323f2f1f61cbfb52b42bc45a8"
+  },
+  "model_unfolder/adapters/diffusor/blocks.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/blocks.py",
+    "bytes": 69265,
+    "sha256": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8"
+  },
+  "model_unfolder/adapters/diffusor/compound.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/compound.py",
+    "bytes": 4253,
+    "sha256": "9400b89d451187ca0f6345d6e7c8cc8888f8e1e4684e882d9f80dac01da3b117"
+  },
+  "model_unfolder/adapters/diffusor/config_binding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/config_binding.py",
+    "bytes": 37449,
+    "sha256": "2b19cee8207e1f34b6d784c6e04fad8b8abc7dcbf18032cf6e37bb4b8fe6fb27"
+  },
+  "model_unfolder/adapters/diffusor/loader.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/loader.py",
+    "bytes": 7070,
+    "sha256": "2858735dd71cd8dbc18a167443ef3f2c37e5564a27e8f015a6a05dd24d228c54"
+  },
+  "model_unfolder/adapters/diffusor/parser.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/parser.py",
+    "bytes": 39883,
+    "sha256": "e92a41d4aa8092e1816fe2258257175a7c97a2752e3cf761b9c707ad5f504783"
+  },
+  "model_unfolder/adapters/diffusor/projection_ir.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/projection_ir.py",
+    "bytes": 70498,
+    "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494"
+  },
+  "model_unfolder/adapters/diffusor/schema.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/schema.py",
+    "bytes": 20983,
+    "sha256": "2e7ebfc4171edd8d57c7ace38b92fc4dbae2f6d2cf7c22f29426606f055d9580"
+  },
+  "model_unfolder/adapters/diffusor/unet_cutover.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/unet_cutover.py",
+    "bytes": 5078,
+    "sha256": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b"
+  },
+  "model_unfolder/adapters/diffusor/unet_projection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/diffusor/unet_projection.py",
+    "bytes": 33578,
+    "sha256": "cc0e699c184af562bc09136e1887bed6646b7dc3466077e360855a5d462430e6"
+  },
+  "model_unfolder/adapters/transformer/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/__init__.py",
+    "bytes": 200,
+    "sha256": "3fad224e5c89937c03ca7666b12177450046dca4feb963f67270620d4707be18"
+  },
+  "model_unfolder/adapters/transformer/assembly.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/assembly.py",
+    "bytes": 5222,
+    "sha256": "cfd4062206d2649dc88ba0d81a0e6e69cab4f1bf1f6e1e6ab0ade64c7351b872"
+  },
+  "model_unfolder/adapters/transformer/blocks/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/blocks/__init__.py",
+    "bytes": 2133,
+    "sha256": "80ef53d0eb5c76607535867de1ccbb52d451024d0ca4567964740152cce87dfd"
+  },
+  "model_unfolder/adapters/transformer/blocks/attention.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/blocks/attention.py",
+    "bytes": 48677,
+    "sha256": "9cc66206130627216a6dc3cd4e3e6e5f668904a58e1e079dffb3ad7657372643"
+  },
+  "model_unfolder/adapters/transformer/blocks/feed_forward.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/blocks/feed_forward.py",
+    "bytes": 28665,
+    "sha256": "bd596ffb43ea73400c64de8609e646eebb4940147538ca781701d657a09efc6a"
+  },
+  "model_unfolder/adapters/transformer/blocks/layers.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/blocks/layers.py",
+    "bytes": 22999,
+    "sha256": "97c87c00b2e33b238243d2400a252b42585cdcc91f82f6587de682bb647c84db"
+  },
+  "model_unfolder/adapters/transformer/blocks/model.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/blocks/model.py",
+    "bytes": 22310,
+    "sha256": "c7bc276fe8ad5a3d1b4eb8c9db89eef6ba84489e9714ae41475e08bcf02694c0"
+  },
+  "model_unfolder/adapters/transformer/common.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/common.py",
+    "bytes": 4245,
+    "sha256": "cd533ff7458d7ab7e45de7ce990398eb03fc1f6cedcc7743ef0298e9f4899570"
+  },
+  "model_unfolder/adapters/transformer/debug.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/debug.py",
+    "bytes": 15961,
+    "sha256": "874aff3c40f4ace051367a0e4760fce3ba733aa84a278649bc0ecd64ab0c0233"
+  },
+  "model_unfolder/adapters/transformer/parser.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/parser.py",
+    "bytes": 266060,
+    "sha256": "4c9bdaf9e69ba39715ee8a068349170317768fd6abacb28a2525a46f6e4f112b"
+  },
+  "model_unfolder/adapters/transformer/special_parts/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/__init__.py",
+    "bytes": 41,
+    "sha256": "530b1f21c2e2a4996b5d1026ceb045ea686c54341368c92cbd667fd1b0be6c45"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/__init__.py",
+    "bytes": 156,
+    "sha256": "c91a7485204b8672a40894c4ca71e40ecd776e81b528fb22e93787ba85c426be"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/accessors.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/accessors.py",
+    "bytes": 2026,
+    "sha256": "96f4e7a8b9e148915647a5a181c0fbf16fb3bfa7dfad53b08642da159d8ff166"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/audio.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/audio.py",
+    "bytes": 1121,
+    "sha256": "1c96eb7cdee13d15d0ed9304a8b14d514ac877d4b911028c0a2bc134576f112e"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/builder.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/builder.py",
+    "bytes": 6310,
+    "sha256": "d28a5b399dfbc7be59b37964a2c4ff8ccaa0c97362b4e4bb605718440ebe36b2"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/conditioning.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/conditioning.py",
+    "bytes": 1960,
+    "sha256": "38877db25dfa096b5e75165801a99e94f06f15e7d33c15a26e217fdc0dfaa580"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/detect.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/detect.py",
+    "bytes": 2460,
+    "sha256": "5a1884736e9c82dd9a931e8b92117fe5a65a7faa4da74020f071158e8cebc582"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py",
+    "bytes": 23188,
+    "sha256": "f3e86b3ddcdcb65853ee739565dff1daea789b32dec0138594e8552774a53377"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/fusion.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/fusion.py",
+    "bytes": 9134,
+    "sha256": "6accc82e4f336a36199d6849e2ce0da7fe2ab7d77da72a27f029c593a0aaeb85"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/registry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/registry.py",
+    "bytes": 4351,
+    "sha256": "9a6cbeece7075f768cfb23704dc96b8a533e9857d4bf95dafbaeba98b5c4b87f"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/schema.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/schema.py",
+    "bytes": 9520,
+    "sha256": "f4ff0dd7a60ffc0b2d603e1f566538ed91aad379e85257ef02f1bfea899ecdb8"
+  },
+  "model_unfolder/adapters/transformer/special_parts/modalities/vision.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+    "bytes": 17336,
+    "sha256": "69eaebbc64ed4bf40b47cde828144385ce860cc1f12cd284d3db4e4a5b1e9673"
+  },
+  "model_unfolder/adapters/transformer/special_parts/per_layer_embedding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/adapters/transformer/special_parts/per_layer_embedding.py",
+    "bytes": 6977,
+    "sha256": "ada882a205392cb7060e3eaf470e66e497c4ba86c4d75263be2c1f20cdda07c1"
+  },
+  "model_unfolder/block_schema.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/block_schema.py",
+    "bytes": 19486,
+    "sha256": "4f8c2e03f242569d192a33ddeeb6e3cc3072dc51aba30fc1cd09f4790e4a45fd"
+  },
+  "model_unfolder/diagram.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/diagram.py",
+    "bytes": 8885,
+    "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95"
+  },
+  "model_unfolder/encoder_panel.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/encoder_panel.py",
+    "bytes": 7161,
+    "sha256": "5b88b29de473938e7d9dbac58e36b0a8802ac93ae29cd4432f81c7622287435b"
+  },
+  "model_unfolder/errors.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/errors.py",
+    "bytes": 1944,
+    "sha256": "7b745706af9dce33120587d50e9e413d55b5f60ce8d0360c17bfcbb07a9190ce"
+  },
+  "model_unfolder/everchanging/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/__init__.py",
+    "bytes": 20188,
+    "sha256": "d1b52bf0c6a6f2f561ce7837c3410ea2e8babef71f361d50200b715f7d346b36"
+  },
+  "model_unfolder/everchanging/conformance/abstractions.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/abstractions.yaml",
+    "bytes": 3277,
+    "sha256": "c0b5293c43482f2a3eb3bf7cba271e4f14a1467349604e3426e47f1aac146b35"
+  },
+  "model_unfolder/everchanging/conformance/conformance_map.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/conformance_map.yaml",
+    "bytes": 998,
+    "sha256": "eb7b62b4f1c6ffa40cde557363328cdb37d6d81a4841aa9c77d1daa93268a0ec"
+  },
+  "model_unfolder/everchanging/conformance/fact_markers.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/fact_markers.yaml",
+    "bytes": 2507,
+    "sha256": "45a38f96e1ca64796d63d78911c951d51e7a9763c1e6b907597193d6b6b28470"
+  },
+  "model_unfolder/everchanging/conformance/op_tokens.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/op_tokens.yaml",
+    "bytes": 4239,
+    "sha256": "02d9058f78c3a5febf1bd395ae5ae1e8126bab02305e9095ea825c225872b562"
+  },
+  "model_unfolder/everchanging/conformance/transitive.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/transitive.yaml",
+    "bytes": 11427,
+    "sha256": "b0e82544acfa76c42abc54ccf1ea927ebef54e751e60dfca0928ca7945ec97ad"
+  },
+  "model_unfolder/everchanging/conformance/type_roles.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/type_roles.yaml",
+    "bytes": 1871,
+    "sha256": "8f67539224a79d65af71106d3a8cd54f0d7551ecb41a09e32d9a24d29360aec3"
+  },
+  "model_unfolder/everchanging/conformance/wiring_roles.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/conformance/wiring_roles.yaml",
+    "bytes": 1121,
+    "sha256": "ae4025b5fa4b5307ebd6f1ae1303284bab32a0baea856887f537965566eb650f"
+  },
+  "model_unfolder/everchanging/diffusor/aliases.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/diffusor/aliases.yaml",
+    "bytes": 5665,
+    "sha256": "2b5f64a7ceb3bb66caf1a8536089c9ac5a6072f223a0261417bd4eaa4fa6ee56"
+  },
+  "model_unfolder/everchanging/diffusor/text_encoders.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/diffusor/text_encoders.yaml",
+    "bytes": 514,
+    "sha256": "eed1b3b01a54ebdf7fac06561caf2a70d734c0678b101db3129e5bca9d292b43"
+  },
+  "model_unfolder/everchanging/diffusor/typing.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/diffusor/typing.yaml",
+    "bytes": 6408,
+    "sha256": "25949aeb181a9d241694ae9541b61b7da5c44d1722a17a6e0f0d7d1d2b92d36d"
+  },
+  "model_unfolder/everchanging/evidence/ledger_ignores.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/evidence/ledger_ignores.yaml",
+    "bytes": 5242,
+    "sha256": "7ab8bd6a6f490f53bd291608bbb2e1b04bf3bf5644f36d838318a66451d2f4a8"
+  },
+  "model_unfolder/everchanging/evidence/program_index_vocab.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/evidence/program_index_vocab.yaml",
+    "bytes": 1535,
+    "sha256": "aafd47211e62cfc7be331bc326c5571836035d0dc40d7261d33ba4a94ac300e0"
+  },
+  "model_unfolder/everchanging/transformer/aliases.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/transformer/aliases.yaml",
+    "bytes": 5733,
+    "sha256": "5eb1247fa16006470a9051af31c3ebfb6654a4f5e7276684427d377cd57bdb14"
+  },
+  "model_unfolder/everchanging/transformer/composite_slots.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/transformer/composite_slots.yaml",
+    "bytes": 4921,
+    "sha256": "2b68e61c94f23fffda5c38b8a1cf849de5adf0571907ebd82252ee98c7fd728c"
+  },
+  "model_unfolder/everchanging/transformer/decoderness.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/transformer/decoderness.yaml",
+    "bytes": 1288,
+    "sha256": "7d3e7ffabdc23aa20156bb64e5ddcdf5bc6c5028fb75bdf16e65d489ecfd9819"
+  },
+  "model_unfolder/everchanging/transformer/ignored_fields.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/transformer/ignored_fields.yaml",
+    "bytes": 8332,
+    "sha256": "7de29bd02238e33347582cfc399f8c0b5a6930945362f7b5d2383b450a8712d8"
+  },
+  "model_unfolder/everchanging/transformer/typing.yaml": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/everchanging/transformer/typing.yaml",
+    "bytes": 4126,
+    "sha256": "893e467bb0404d0224b85491703312f610ccabb53ffe1c3f58116e1545b5e771"
+  },
+  "model_unfolder/evidence/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/__init__.py",
+    "bytes": 1321,
+    "sha256": "400c707089c6497d6f542f4e570be321ffdf304818f4bd0eb297026a07388378"
+  },
+  "model_unfolder/evidence/activation_registry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/activation_registry.py",
+    "bytes": 35197,
+    "sha256": "eb523946a0262b4a610d72cd1fdf9e38be5a223428af93e88a872f79ac1ec636"
+  },
+  "model_unfolder/evidence/activation_semantics.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/activation_semantics.py",
+    "bytes": 802,
+    "sha256": "f16de418337671f1a80b72a917af73237b70038c64a30fe9b786f06020602fd1"
+  },
+  "model_unfolder/evidence/affine.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/affine.py",
+    "bytes": 7447,
+    "sha256": "65fac74157b0b230ad3474ab0ae2f0ec78f19c55204bc2102901778770d31bc9"
+  },
+  "model_unfolder/evidence/arbitration.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/arbitration.py",
+    "bytes": 12701,
+    "sha256": "945d6f86d5159cc527dc178f15a926089f44b52fa1af83806c3814e6f2457c18"
+  },
+  "model_unfolder/evidence/ast_scanner.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ast_scanner.py",
+    "bytes": 4425,
+    "sha256": "8ebb12d7c48d69bdb20c484538cbc5cd9948c5dbdefe4068aaf518b64f62e4e2"
+  },
+  "model_unfolder/evidence/attention.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention.py",
+    "bytes": 249522,
+    "sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2"
+  },
+  "model_unfolder/evidence/attention_child.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_child.py",
+    "bytes": 48916,
+    "sha256": "0c2a221886f927f1e7ae1f7ef912cd23eb90654a148dbfed13dd90f963403b06"
+  },
+  "model_unfolder/evidence/attention_container_interface.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_container_interface.py",
+    "bytes": 20575,
+    "sha256": "481140b045a3f5ec77ab2ac5473ff724daa95f50e384b813f7f8234b417170bf"
+  },
+  "model_unfolder/evidence/attention_geometry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_geometry.py",
+    "bytes": 41666,
+    "sha256": "f996c27fdcb0e9f452a976759d0850fff3064cb3b83166959d67eb1188e297db"
+  },
+  "model_unfolder/evidence/attention_input_interface.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_input_interface.py",
+    "bytes": 23122,
+    "sha256": "a9d6e902a95bb0e6f7c2f0bdf7902e57b56e4fb0f1866160d1207daf46ed74c0"
+  },
+  "model_unfolder/evidence/attention_invocation_role.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_invocation_role.py",
+    "bytes": 23704,
+    "sha256": "d1730ef7e2a6eafafecf32f1fc2c40112c630a3ecac48f538ddd85d5a226c131"
+  },
+  "model_unfolder/evidence/attention_lane.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_lane.py",
+    "bytes": 31799,
+    "sha256": "e7ce83fe931d424a23e1d39696028d7ca4bfb00ede2f7b83b1958f732ec7c9ca"
+  },
+  "model_unfolder/evidence/attention_mask.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_mask.py",
+    "bytes": 91950,
+    "sha256": "def73d25a995ff9fcfb8e672601c6aa3233471b5cfeca28c04a1b7e9f0c1d632"
+  },
+  "model_unfolder/evidence/attention_operands.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_operands.py",
+    "bytes": 12682,
+    "sha256": "da3109a0c589a9afd7bd03df212c834b7acf2d7cef8c03dfb91cbb16b96cbe8d"
+  },
+  "model_unfolder/evidence/attention_output.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_output.py",
+    "bytes": 24238,
+    "sha256": "91f42a26ecbe4f0099b26f10587ffc80b8ab996cb03af675f035a7e77519539f"
+  },
+  "model_unfolder/evidence/attention_score_additives.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_score_additives.py",
+    "bytes": 25680,
+    "sha256": "823d5e8c5abda499a6dec0d256986a96077e0a9e8ffa9b5ac36a00e2490fdeb5"
+  },
+  "model_unfolder/evidence/attention_sinks.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_sinks.py",
+    "bytes": 17092,
+    "sha256": "fc64515955d954f4c00150b28f11a3d942a3cfd33c4f96ba7bf5312500dc69db"
+  },
+  "model_unfolder/evidence/attention_storage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/attention_storage.py",
+    "bytes": 51950,
+    "sha256": "607d99ae15ce816573a4f6189b626f5543bbfe8a6eb6be36f6ebc60b8515cb09"
+  },
+  "model_unfolder/evidence/call_arguments.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/call_arguments.py",
+    "bytes": 12281,
+    "sha256": "fa012c3694a4f374b43d2e161150274a425a0a691d27d3ac75533e65a8db9ac4"
+  },
+  "model_unfolder/evidence/cell_topology.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/cell_topology.py",
+    "bytes": 91002,
+    "sha256": "564a5047956802f6c2b56b9948885f8bfdd7654540e9fbdd5ed82338d3887b8c"
+  },
+  "model_unfolder/evidence/checkpoint_metadata.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/checkpoint_metadata.py",
+    "bytes": 6996,
+    "sha256": "63d8cb7998cebb0ffd898170000b7952494acab929b166f3381608c3afef5bbb"
+  },
+  "model_unfolder/evidence/claim_evidence.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/claim_evidence.py",
+    "bytes": 20160,
+    "sha256": "5cda8903f32cf8084db611bf5e3f67b4522370b26c5f7ab3c6e5d47a5c9e49b8"
+  },
+  "model_unfolder/evidence/claims_audit.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/claims_audit.py",
+    "bytes": 8650,
+    "sha256": "b3b93d026a8d8dc818ce1494983a15566450e5dfe296b3e0c3e719bad1d3aa69"
+  },
+  "model_unfolder/evidence/class_default_value.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/class_default_value.py",
+    "bytes": 13691,
+    "sha256": "9b3311740467832884d440fc217e5b7cf5cded7132d29b8fe46ca35ba2fb95b2"
+  },
+  "model_unfolder/evidence/codebook_streams.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/codebook_streams.py",
+    "bytes": 18166,
+    "sha256": "f4775bb689b1afda003377cc8413d1d6d61bfbaeac3681802d5de7c44df71649"
+  },
+  "model_unfolder/evidence/component_inventory.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_inventory.py",
+    "bytes": 9515,
+    "sha256": "ff0e754d00c739b3dba79f0ab57226d2f1285f021aa947f51ba4adf06a83f6b5"
+  },
+  "model_unfolder/evidence/component_operations.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_operations.py",
+    "bytes": 27772,
+    "sha256": "08c9b969cf7f1ac200b37af09ebe95099a0bbf373c2af24319d47b4ec80d8d5b"
+  },
+  "model_unfolder/evidence/component_owner.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_owner.py",
+    "bytes": 103142,
+    "sha256": "1c6bc27735c9244e5220b19f79c55ae8bc02a44435448664deb59964dd0d39af"
+  },
+  "model_unfolder/evidence/component_position.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_position.py",
+    "bytes": 16401,
+    "sha256": "14fd6c8075431791500f47e623f0f9d1eb6ee692f73b7480ec8d61c58a38bbec"
+  },
+  "model_unfolder/evidence/component_stages.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_stages.py",
+    "bytes": 10432,
+    "sha256": "0af8c6ef6ab7d09de167b77046561fa3155a38483eb635065319df780184fd30"
+  },
+  "model_unfolder/evidence/component_tower.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/component_tower.py",
+    "bytes": 39889,
+    "sha256": "221d5104ceaca5d2158025e9ed5eeab51cde08d3b90043378fbfc12c7ad51e60"
+  },
+  "model_unfolder/evidence/config_access.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/config_access.py",
+    "bytes": 98010,
+    "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4"
+  },
+  "model_unfolder/evidence/config_guard.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/config_guard.py",
+    "bytes": 20298,
+    "sha256": "74847562163ec3f5e5dc3963ec66c5e647761f482f119b02a27745fa7ae6b785"
+  },
+  "model_unfolder/evidence/config_registration.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/config_registration.py",
+    "bytes": 18839,
+    "sha256": "cc99cfd8a62081685bd019629b0b13989eaae82b552d57cd0827f5e3704849c9"
+  },
+  "model_unfolder/evidence/config_scoped_owner.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/config_scoped_owner.py",
+    "bytes": 41956,
+    "sha256": "71ac669c3a5178df4e6dda511a3c73e40ef2d386efa7c52ddf4f99e10e3b47bc"
+  },
+  "model_unfolder/evidence/conformance.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/conformance.py",
+    "bytes": 104074,
+    "sha256": "7aa2003fa913eb5098f30700b28e046f45959fd81bbb8613497806e3804f6aa8"
+  },
+  "model_unfolder/evidence/construction_arguments.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/construction_arguments.py",
+    "bytes": 11983,
+    "sha256": "6bbc1e165089246ae2260b170ef2bcfc19b1af46d8ab4b7210692cd821a9b7c3"
+  },
+  "model_unfolder/evidence/construction_calls.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/construction_calls.py",
+    "bytes": 20348,
+    "sha256": "692fadfd39a8ddf47181b0c37649e72d66166253bb5289acc2266ac428ae097b"
+  },
+  "model_unfolder/evidence/construction_summary.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/construction_summary.py",
+    "bytes": 3732,
+    "sha256": "58a97eefd6079b239cb161cb85ae2a5d25d8c712008b6768ea6b03fbabfc7e1f"
+  },
+  "model_unfolder/evidence/constructor_condition.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/constructor_condition.py",
+    "bytes": 17600,
+    "sha256": "669a1e5f22dd078224cf1c7c3469cf0ca7c480e79573a0b4f21b05e7327130fe"
+  },
+  "model_unfolder/evidence/constructor_fields.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/constructor_fields.py",
+    "bytes": 19110,
+    "sha256": "3461cb40c88deb388140858f869b2675c13953604f84188fe3ec9e001635afed"
+  },
+  "model_unfolder/evidence/constructor_values.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/constructor_values.py",
+    "bytes": 22620,
+    "sha256": "18a0ced6e0bdf1d36d48ae93b35f416d5233d6ea4932eed8db837b03d59ea06a"
+  },
+  "model_unfolder/evidence/consumer_firewall.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/consumer_firewall.py",
+    "bytes": 37293,
+    "sha256": "519aeb9019b545a848f15e0370af1532824785946a3008a1f4bbb8ab3f021a64"
+  },
+  "model_unfolder/evidence/container_inventory.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/container_inventory.py",
+    "bytes": 19484,
+    "sha256": "c22349ca9ad0bbbae2b31235d6a096dcd439fc50e4511e9eee06054058f6458b"
+  },
+  "model_unfolder/evidence/context.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/context.py",
+    "bytes": 25732,
+    "sha256": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c"
+  },
+  "model_unfolder/evidence/coverage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/coverage.py",
+    "bytes": 3322,
+    "sha256": "255fa4ccf1ac1ebeb9d3926fab4e7c875dc321dad6678f949b4b5fc01bb55854"
+  },
+  "model_unfolder/evidence/cross_attention_replacement.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/cross_attention_replacement.py",
+    "bytes": 22401,
+    "sha256": "ccf9d6fff9490dfabcd4f5b0ecbf1340af2f40d15b0822432bab387f9516792c"
+  },
+  "model_unfolder/evidence/cross_attention_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/cross_attention_schedule.py",
+    "bytes": 15083,
+    "sha256": "8f4ac2858d6f096cf75606f451be1a649322376c0abe5182cece089c1f564c5b"
+  },
+  "model_unfolder/evidence/decoder_block.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/decoder_block.py",
+    "bytes": 26063,
+    "sha256": "8eca3033eab0666d6737e0357ee172e376a02850e2db559338d618dc9ff2f167"
+  },
+  "model_unfolder/evidence/decoder_norm.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/decoder_norm.py",
+    "bytes": 29733,
+    "sha256": "5631d108109806371684d8f66c8f3b9f644e159e619862a196e54803621fdef9"
+  },
+  "model_unfolder/evidence/decoder_stage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/decoder_stage.py",
+    "bytes": 5284,
+    "sha256": "b7deff454cb0d589687114a5afc6d099724aed2f130d4b4baaa416c72edc7a25"
+  },
+  "model_unfolder/evidence/decoderness.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/decoderness.py",
+    "bytes": 2594,
+    "sha256": "0bfa381ba130abd3a9d6af606615f74a41236868539d372ad8aa1aecc8e66d20"
+  },
+  "model_unfolder/evidence/delegated_stage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/delegated_stage.py",
+    "bytes": 6845,
+    "sha256": "67b5995784f6ee1c4512eaef0abb6bb28c74ffd4a455b80d9b861fb914bc6fd4"
+  },
+  "model_unfolder/evidence/denoiser.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/denoiser.py",
+    "bytes": 4550,
+    "sha256": "44f1d09c5da9846216a148ae6d7806d0a00f4a825699d3d047421a3c1de52217"
+  },
+  "model_unfolder/evidence/diffusion_block.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_block.py",
+    "bytes": 34497,
+    "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4"
+  },
+  "model_unfolder/evidence/diffusion_bookends.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_bookends.py",
+    "bytes": 31978,
+    "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8"
+  },
+  "model_unfolder/evidence/diffusion_companion.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_companion.py",
+    "bytes": 12257,
+    "sha256": "9b74ddc312f2889ebb34ef7410a2d29181ccf74d8286d48bca6f74304f52bfc5"
+  },
+  "model_unfolder/evidence/diffusion_conditioning.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_conditioning.py",
+    "bytes": 29011,
+    "sha256": "10e8886d802ab091355edefb04a6d944af5e836a8673173b324597c2ad1afd9b"
+  },
+  "model_unfolder/evidence/diffusion_root.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_root.py",
+    "bytes": 23638,
+    "sha256": "cf1d123b041c187e2f140327f01e29f4cdf98b6cb9294c5b950e79a2c6b481cd"
+  },
+  "model_unfolder/evidence/diffusion_stack.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_stack.py",
+    "bytes": 46791,
+    "sha256": "9420b3aa5f107826847129792b51901a9c3f9622329c7a16c5608066660b23c7"
+  },
+  "model_unfolder/evidence/diffusion_stream.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/diffusion_stream.py",
+    "bytes": 74052,
+    "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775"
+  },
+  "model_unfolder/evidence/dispatch_attention_mechanism.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/dispatch_attention_mechanism.py",
+    "bytes": 28959,
+    "sha256": "8934d38f7d95e2046f30df8b01bc4efbd950f7a9ab86e94e901879ebeec849fd"
+  },
+  "model_unfolder/evidence/dispatch_attention_storage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/dispatch_attention_storage.py",
+    "bytes": 17965,
+    "sha256": "9d8d73e807e3d5bd147609d58252d488b4e46c440e959871a3e6f0604e181617"
+  },
+  "model_unfolder/evidence/dispatch_selection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/dispatch_selection.py",
+    "bytes": 18533,
+    "sha256": "6a435d93cab7bc8aee2c675e470bac0604b79eeda761a74687b42e63c40ffbd6"
+  },
+  "model_unfolder/evidence/document.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/document.py",
+    "bytes": 18663,
+    "sha256": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7"
+  },
+  "model_unfolder/evidence/embedding_bookend.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/embedding_bookend.py",
+    "bytes": 13883,
+    "sha256": "e0bbef3a6430af8edcce8f34c7beb4f4203520b4f4a155642888a20032a909e8"
+  },
+  "model_unfolder/evidence/execution_flow.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/execution_flow.py",
+    "bytes": 59084,
+    "sha256": "1acfb475787fb1809656f24b91e0ed2175972ba0d971afeacf6caaf0c2928c1e"
+  },
+  "model_unfolder/evidence/execution_recipe.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/execution_recipe.py",
+    "bytes": 38812,
+    "sha256": "d0c51866ac8aa8005dff89b51457dcde7a89284ff2b5bdcc3e74fc3c4edc8324"
+  },
+  "model_unfolder/evidence/expert_storage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/expert_storage.py",
+    "bytes": 68446,
+    "sha256": "a9ae92a6fba6de6ca4176e468f64c121b0837f99f2a56ff5fa40f3b16d14515b"
+  },
+  "model_unfolder/evidence/expert_width.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/expert_width.py",
+    "bytes": 30377,
+    "sha256": "46d58570ff39e2037852bdff719f0c0089e5a80c2389d69a2713dec1a12ab40a"
+  },
+  "model_unfolder/evidence/expression_eval.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/expression_eval.py",
+    "bytes": 31961,
+    "sha256": "c30963242bfe5a4fbd313ff345c41873c9f9c3f7fa319ab2cf0c072196a8e49d"
+  },
+  "model_unfolder/evidence/expression_value.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/expression_value.py",
+    "bytes": 9571,
+    "sha256": "1a3541000fb480b6c701a8c2ec026812694d4df46a87d55726eb183d33a577a6"
+  },
+  "model_unfolder/evidence/facts.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/facts.py",
+    "bytes": 20633,
+    "sha256": "63c8d617efe3b2306fb2b5d749e2007eed78726b3ba82b0d5638e426c153b928"
+  },
+  "model_unfolder/evidence/ffn_input_transform.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ffn_input_transform.py",
+    "bytes": 20594,
+    "sha256": "464242873d07912436842fab4d3290e284790b459108f7ca91dae4d2d9c35774"
+  },
+  "model_unfolder/evidence/ffn_mechanism.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ffn_mechanism.py",
+    "bytes": 74713,
+    "sha256": "2834b3059cce9f553283906f227e01b57ee4f64bda49bb0c076a4fbc729be3a9"
+  },
+  "model_unfolder/evidence/ffn_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ffn_schedule.py",
+    "bytes": 37442,
+    "sha256": "4924834ba9d80477e71b771f771f34c1aa403783f0dc169bd2d7263d37dcc629"
+  },
+  "model_unfolder/evidence/ffn_width.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ffn_width.py",
+    "bytes": 12653,
+    "sha256": "47500734db30764b14474a87d2a10f37437fa2758b4490d270f1ef324c37e12a"
+  },
+  "model_unfolder/evidence/final_bookend.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/final_bookend.py",
+    "bytes": 19812,
+    "sha256": "89aade5f9a43fcbd8a73c2b2885dbd9d6f0afb3f9fbf413deb535eb90f3ee472"
+  },
+  "model_unfolder/evidence/forward_ops.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/forward_ops.py",
+    "bytes": 29095,
+    "sha256": "1d9888e363ba3e5888897168358cece12275d46f103518a9fad1c31a3b4b8d43"
+  },
+  "model_unfolder/evidence/framework_config.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/framework_config.py",
+    "bytes": 62121,
+    "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014"
+  },
+  "model_unfolder/evidence/framework_operations.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/framework_operations.py",
+    "bytes": 6178,
+    "sha256": "eb03cc3b21774349765e04872387c127d9358a9d4c5f909a932238a7c6c37621"
+  },
+  "model_unfolder/evidence/fusion.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/fusion.py",
+    "bytes": 27126,
+    "sha256": "1801a3eabf7959413db87c90fb6926b8111a679c277df39a6cd53cc8badf3f75"
+  },
+  "model_unfolder/evidence/identity_guard.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/identity_guard.py",
+    "bytes": 47074,
+    "sha256": "57f7a0bd3e941d55c5ee164c0539528046c66d20f792d24f855950487d495b74"
+  },
+  "model_unfolder/evidence/identity_roles.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/identity_roles.py",
+    "bytes": 2509,
+    "sha256": "f95567df79c3b34c4d7abd3c173a9540a0685067ed1be8a87704076d67446e7a"
+  },
+  "model_unfolder/evidence/import_source.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/import_source.py",
+    "bytes": 22054,
+    "sha256": "d2128a82390ef569e763e6219f605f9398451cedafa7095b715f8c85c127a59b"
+  },
+  "model_unfolder/evidence/inspector.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/inspector.py",
+    "bytes": 1172,
+    "sha256": "87130f4c9effbd275b4abe6cde1874860a5d0041f32d3703a4931b00d5033b7f"
+  },
+  "model_unfolder/evidence/instance_population_claim.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/instance_population_claim.py",
+    "bytes": 5736,
+    "sha256": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7"
+  },
+  "model_unfolder/evidence/instance_shape_claim.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/instance_shape_claim.py",
+    "bytes": 4176,
+    "sha256": "27b57c2b24444603f37ee5268742e008af74c49c442c5bb8b43faad154d3d94c"
+  },
+  "model_unfolder/evidence/invocation_source.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/invocation_source.py",
+    "bytes": 18640,
+    "sha256": "f5ba27bdb3ee5464157d43bc9380a95c97efa0c7ca9a180c92f1b1c35dcc830d"
+  },
+  "model_unfolder/evidence/kv_sharing_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/kv_sharing_schedule.py",
+    "bytes": 20458,
+    "sha256": "62249d52fd400132f8169fee807f8616ba90aa515a272f2d5e8aaad4b83016e8"
+  },
+  "model_unfolder/evidence/layer_selector.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/layer_selector.py",
+    "bytes": 50538,
+    "sha256": "787989fe4a7c8de7d34da24a89fa2390f059ddae117300c78131e098f091a1d8"
+  },
+  "model_unfolder/evidence/legacy_reader_quarantine.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/legacy_reader_quarantine.py",
+    "bytes": 22137,
+    "sha256": "118a826ee0e7c1cb9fdd4f11b134da09a1da68ac99eadb2b08d1d06611a56d30"
+  },
+  "model_unfolder/evidence/local_port_routes.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/local_port_routes.py",
+    "bytes": 21183,
+    "sha256": "2b756725a85791ea8f37a0b6d78b89fc38c5c187ef5bfde8a78268c776a50e10"
+  },
+  "model_unfolder/evidence/mixer_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/mixer_schedule.py",
+    "bytes": 29955,
+    "sha256": "d32ddf8adff52cab8ddc13e9c1bc83e3d2075d1df9cff118ab6ece229b07971e"
+  },
+  "model_unfolder/evidence/models.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/models.py",
+    "bytes": 16304,
+    "sha256": "25c6e91bbb6957c86bb4c1955f75e4075627560baea604d5ff45154cc0f38811"
+  },
+  "model_unfolder/evidence/mtp.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/mtp.py",
+    "bytes": 21450,
+    "sha256": "4ead081f967af7faba946013bda1f73866e36f653774d9437349458110ad9b11"
+  },
+  "model_unfolder/evidence/multiaxis_position.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/multiaxis_position.py",
+    "bytes": 13161,
+    "sha256": "aa2fae25bb60ae850b5de20512d0a796345708dac55028bf91514b828614ef27"
+  },
+  "model_unfolder/evidence/output_repeated_stage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/output_repeated_stage.py",
+    "bytes": 25184,
+    "sha256": "2c08283508b6ac1456c8fb8accae3cfee180c4bd3881078e17203df0efbf3c7e"
+  },
+  "model_unfolder/evidence/parallel_norm.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/parallel_norm.py",
+    "bytes": 18642,
+    "sha256": "78f4ea0e736c3b4065f279c0527946b10abc191643d1d6439cf4372b85d44f33"
+  },
+  "model_unfolder/evidence/patterns.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/patterns.py",
+    "bytes": 20613,
+    "sha256": "5d44b425e143ec74122d650e12a8988e9cae5737bc4d255a00f28bc090aebc05"
+  },
+  "model_unfolder/evidence/per_layer_side_input.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/per_layer_side_input.py",
+    "bytes": 18464,
+    "sha256": "622a8ceb6d15e9878c7a7a02708f23472bbae16bef4b322d71fc434287c12c76"
+  },
+  "model_unfolder/evidence/position_absolute.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_absolute.py",
+    "bytes": 15571,
+    "sha256": "d8db545a1729a347e2d6b83909f755fbba488483035b051660212699a4910313"
+  },
+  "model_unfolder/evidence/position_application.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_application.py",
+    "bytes": 57704,
+    "sha256": "ba52010c248c83c11495ee5c903c0d3d799e91a4fb77154c4e00c1a714772532"
+  },
+  "model_unfolder/evidence/position_coordinate.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_coordinate.py",
+    "bytes": 15726,
+    "sha256": "6eecdd512791ea40307480cb780bdb3147bcbc8ce26d1da22981fe4e95eab69d"
+  },
+  "model_unfolder/evidence/position_factors.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_factors.py",
+    "bytes": 36878,
+    "sha256": "48c50907c41eeabaca8b141afc492d4b757fef8c91daaedcf22ceb72cb0815bf"
+  },
+  "model_unfolder/evidence/position_fixed.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_fixed.py",
+    "bytes": 52221,
+    "sha256": "55fd0f0f489361c4435062a3a9fc378dbbe0fec8cfe724cd4a2ba5ce42bda1d2"
+  },
+  "model_unfolder/evidence/position_geometry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_geometry.py",
+    "bytes": 31941,
+    "sha256": "a20fc84a9bc5f66a33b048ce2aaeaad1e6a12b2dc29f09aa5916a79804f58332"
+  },
+  "model_unfolder/evidence/position_initialization.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_initialization.py",
+    "bytes": 46952,
+    "sha256": "1c0af1fe054b4bc4fb9ce28e632c698c985508cacc3b55ea3135557c387a19b6"
+  },
+  "model_unfolder/evidence/position_linear_bias.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_linear_bias.py",
+    "bytes": 32262,
+    "sha256": "3551597eb9d8ab66996bb44bef53e26553e6b00f84c72fc70ea1b601df12f96d"
+  },
+  "model_unfolder/evidence/position_relative_bias.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_relative_bias.py",
+    "bytes": 35121,
+    "sha256": "a36ed90f9b9f8d5382891fbcd025586ea726e0b91999ac599757f8f497e14e49"
+  },
+  "model_unfolder/evidence/position_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_schedule.py",
+    "bytes": 26091,
+    "sha256": "a9d0ef8678231a688d8b0dda04d4c4ef6901898dcb16a9686ec0925e7994c896"
+  },
+  "model_unfolder/evidence/position_table.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/position_table.py",
+    "bytes": 7789,
+    "sha256": "c761a6ed96cc43eca013f718582a468394bbbddd774ff9aac9a65f89af10bb4a"
+  },
+  "model_unfolder/evidence/presentation_census.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/presentation_census.py",
+    "bytes": 13426,
+    "sha256": "25c0ff92f392e6b000fc3def8e2c9e1abbbb45f6fbe50e60dbd8d9add13ddef7"
+  },
+  "model_unfolder/evidence/presentation_projection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/presentation_projection.py",
+    "bytes": 5520,
+    "sha256": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff"
+  },
+  "model_unfolder/evidence/primitive_semantics.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/primitive_semantics.py",
+    "bytes": 20826,
+    "sha256": "9766abde51d5255b16e2468c621b0274aad45413ef68269276cef23f74248d75"
+  },
+  "model_unfolder/evidence/program_index.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/program_index.py",
+    "bytes": 156229,
+    "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+  },
+  "model_unfolder/evidence/projection_bias.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/projection_bias.py",
+    "bytes": 22156,
+    "sha256": "3bd883833c3a7f1b7f514841acf658ca617b42c11308610308d57312e01b1b9d"
+  },
+  "model_unfolder/evidence/projector.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/projector.py",
+    "bytes": 22475,
+    "sha256": "706454d6d927cdf19b5dc58a356cf98addf150acb0477aee014d3b6b6ae195ca"
+  },
+  "model_unfolder/evidence/projector_chain.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/projector_chain.py",
+    "bytes": 32449,
+    "sha256": "3777d472e32d9f3562c0ea812a8754cfc4f5938bcf5439d7c36a7c7730685cf3"
+  },
+  "model_unfolder/evidence/projector_lineage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/projector_lineage.py",
+    "bytes": 47208,
+    "sha256": "9a113de627cb1c1edd9718a903eeb15d786aaab0a8505444340f67bf613ba721"
+  },
+  "model_unfolder/evidence/projector_width.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/projector_width.py",
+    "bytes": 17144,
+    "sha256": "93a6f315ed522f9ca2028ba2d76e79a948038ae039f66886d079f1b62cd6b1d3"
+  },
+  "model_unfolder/evidence/qk_norm.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/qk_norm.py",
+    "bytes": 34363,
+    "sha256": "bdca681dad855c489c2a6aed20cf1806b91e25041f455ff32b2089fddf38e2d1"
+  },
+  "model_unfolder/evidence/qk_norm_schedule.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/qk_norm_schedule.py",
+    "bytes": 14094,
+    "sha256": "c2e1bae3eb223a8440bc7ae32e4ca065db34ab7b74c5d516c3a9f592c224cd5b"
+  },
+  "model_unfolder/evidence/qualification.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/qualification.py",
+    "bytes": 17662,
+    "sha256": "9441909408e661b49cab399a7b625ea7a0288d8f081b0be9206bd8cff9b5d1ff"
+  },
+  "model_unfolder/evidence/reader_claims.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/reader_claims.py",
+    "bytes": 37356,
+    "sha256": "aee930638b7b6287c9b1b0435096fcbda70de72f3d042c27f6e149ad85972db6"
+  },
+  "model_unfolder/evidence/reader_placement.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/reader_placement.py",
+    "bytes": 7032,
+    "sha256": "8ba74fb63160f8b9591261e75262d5b2e2970e633e30a44f660441fc0655831e"
+  },
+  "model_unfolder/evidence/reader_result.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/reader_result.py",
+    "bytes": 12211,
+    "sha256": "18413ab772617e0e9d5fc60880d6bbc5aec51501f2473eac75b6bb002d0de30e"
+  },
+  "model_unfolder/evidence/receipts.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/receipts.py",
+    "bytes": 21627,
+    "sha256": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a"
+  },
+  "model_unfolder/evidence/reconciliation.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/reconciliation.py",
+    "bytes": 95692,
+    "sha256": "3790b963bd1f433dfa592d3adaef0eb52a43eb477c17c68c3770f437e3ab9d1d"
+  },
+  "model_unfolder/evidence/registry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/registry.py",
+    "bytes": 80756,
+    "sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615"
+  },
+  "model_unfolder/evidence/relation_probe.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/relation_probe.py",
+    "bytes": 23266,
+    "sha256": "7854aebdd8168240736d213cb20be34ad4ce657e4373e6367a2302e76854165a"
+  },
+  "model_unfolder/evidence/relation_source.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/relation_source.py",
+    "bytes": 7508,
+    "sha256": "8db5603b9bd6f1d9af471228d589a146ed8a362d40159e2de022d702f0419aa7"
+  },
+  "model_unfolder/evidence/repeated_child.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/repeated_child.py",
+    "bytes": 13106,
+    "sha256": "16ab327d082eb372356a82163c3a67183f545f101fd30fe63b3e0a9dab74d18f"
+  },
+  "model_unfolder/evidence/repeated_projector.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/repeated_projector.py",
+    "bytes": 30960,
+    "sha256": "9a3a810ae221e3bb767ef091409e85f0b9dff1e35f6e34327f8737d6e94d88c1"
+  },
+  "model_unfolder/evidence/repeated_stage.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/repeated_stage.py",
+    "bytes": 10036,
+    "sha256": "bf7c9db1e3ac3c36458edf0ed27ff1fce387189a4606597b084006f97e505c53"
+  },
+  "model_unfolder/evidence/rope_config_normalization.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/rope_config_normalization.py",
+    "bytes": 12284,
+    "sha256": "ca7237899adc9351cc0df3d7ed4f9ec7fed53080b71ce4a23f81e1df62bc1720"
+  },
+  "model_unfolder/evidence/router.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/router.py",
+    "bytes": 82166,
+    "sha256": "7e882b29d38fd98ce7c698dbbe4d2984ee9f2719ea2735162a410c83450880ce"
+  },
+  "model_unfolder/evidence/runtime_inventory.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/runtime_inventory.py",
+    "bytes": 2964,
+    "sha256": "dd7ae44433dce60fb5de85998f59b72da30a4758898d7424e9b96c6b70ea680e"
+  },
+  "model_unfolder/evidence/runtime_source.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/runtime_source.py",
+    "bytes": 9687,
+    "sha256": "6109cdfb1a2b1aec4472a9117924a3ab3800dbf50e277a128332f46198ae4a01"
+  },
+  "model_unfolder/evidence/selected_composite_ffn.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/selected_composite_ffn.py",
+    "bytes": 28549,
+    "sha256": "cb0cd40e4a30d7c9b52b89199774556546e758725c7e392c34ee1a45ef28ac17"
+  },
+  "model_unfolder/evidence/self_method_return.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/self_method_return.py",
+    "bytes": 13045,
+    "sha256": "592c5dc3ad4cc6db39554cf9629746a6f62348db9e8750706869b6e661404a8e"
+  },
+  "model_unfolder/evidence/separate_rotary.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/separate_rotary.py",
+    "bytes": 10331,
+    "sha256": "70d20949e9bd87cbf96bea4357a34843e6759735823774ca5a76ab0c79a51926"
+  },
+  "model_unfolder/evidence/ship_findings.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/ship_findings.py",
+    "bytes": 11931,
+    "sha256": "aec9e1796dc3da7ca662ba670c68522df956ee101606f49455a9daf287fbd17b"
+  },
+  "model_unfolder/evidence/sources.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/sources.py",
+    "bytes": 36854,
+    "sha256": "b41bc0ddf1dfa9f11b4ce77c2a4315d4514e77b577f4155d494be603c4c47744"
+  },
+  "model_unfolder/evidence/stage_operations.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/stage_operations.py",
+    "bytes": 11352,
+    "sha256": "13f38aa338f4d60993a39ead0ba5b2b657117790ffcd299ebc07e66d2f780683"
+  },
+  "model_unfolder/evidence/structural_debt.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/structural_debt.py",
+    "bytes": 74303,
+    "sha256": "41a7cc7264fd8cc1bead067dd8d57f61d8fcbfabeb690c130ccbf78460e65c48"
+  },
+  "model_unfolder/evidence/structural_writes.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/structural_writes.py",
+    "bytes": 69276,
+    "sha256": "20a723380a500c61ee2fa534f4c0c1ed118486297aa2f4c311a84351daa4b612"
+  },
+  "model_unfolder/evidence/transitive.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/transitive.py",
+    "bytes": 28604,
+    "sha256": "0ea5e8417285fe3e5d5311cb5acedbe832d22de36e09131a763787e5eaf0a4be"
+  },
+  "model_unfolder/evidence/unet_attention_source.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_attention_source.py",
+    "bytes": 37228,
+    "sha256": "f708c593ae2b295d8a2693468bc8c3dc4ac4c5b884c156677f736c53a238c185"
+  },
+  "model_unfolder/evidence/unet_call_binding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_call_binding.py",
+    "bytes": 13284,
+    "sha256": "c46b3203008c17fdac2e2835a9325ed2938997dffd97ef4aca78f6859a97b243"
+  },
+  "model_unfolder/evidence/unet_cell_connections.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_cell_connections.py",
+    "bytes": 19046,
+    "sha256": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074"
+  },
+  "model_unfolder/evidence/unet_cell_mechanism.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_cell_mechanism.py",
+    "bytes": 40703,
+    "sha256": "c57f6b5aa3d034526c8a95d8a623cc66a5c7936b2636edc152ae85f579d88e01"
+  },
+  "model_unfolder/evidence/unet_claims.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_claims.py",
+    "bytes": 30397,
+    "sha256": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169"
+  },
+  "model_unfolder/evidence/unet_iteration_binding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_iteration_binding.py",
+    "bytes": 10929,
+    "sha256": "f189e12531b06fc916703fb45882510e81aa1cba6406ee7428e36252e3266412"
+  },
+  "model_unfolder/evidence/unet_lookup_closure.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_lookup_closure.py",
+    "bytes": 25223,
+    "sha256": "465a09a10d0ed469a471a2d05705b8209210d0bae650c9a57b9b66897320acbd"
+  },
+  "model_unfolder/evidence/unet_nested_mechanism.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_nested_mechanism.py",
+    "bytes": 31031,
+    "sha256": "929c7438d424b6c28410b143627fcecd2589073aa45eab2c7e17ac2126d7d172"
+  },
+  "model_unfolder/evidence/unet_primary_ports.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_primary_ports.py",
+    "bytes": 11036,
+    "sha256": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc"
+  },
+  "model_unfolder/evidence/unet_root_preprocess.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_root_preprocess.py",
+    "bytes": 22230,
+    "sha256": "44b6a6bd1a3ac45a2801efdb5bc46f4ab2be77c365324edc23aab9ba15f7374c"
+  },
+  "model_unfolder/evidence/unet_runtime.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_runtime.py",
+    "bytes": 5389,
+    "sha256": "4f5037e152e834ac8529ef1eec3cbf90d1fb5be9a958d37622e9f6602361efe2"
+  },
+  "model_unfolder/evidence/unet_selected_child_execution.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_selected_child_execution.py",
+    "bytes": 22281,
+    "sha256": "d03afdaa195d612a24f63fb2ea175c93ea81a03369d0413861b0d3b41ff95335"
+  },
+  "model_unfolder/evidence/unet_selected_constructor.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_selected_constructor.py",
+    "bytes": 36773,
+    "sha256": "85c6b4456c04a5b223b73a0c37f2005477da40d031ae842595079ce66c7cbd82"
+  },
+  "model_unfolder/evidence/unet_selected_spatial.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_selected_spatial.py",
+    "bytes": 32958,
+    "sha256": "66448a545002365bc3a4bdca212ce70be902c8b07de54138eb5f503452d069bb"
+  },
+  "model_unfolder/evidence/unet_selected_stage_children.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_selected_stage_children.py",
+    "bytes": 25680,
+    "sha256": "0581d9229f9b5b41b88ae0864ffded5c0959dcd503f617bbe2407289e91f07ac"
+  },
+  "model_unfolder/evidence/unet_stage_cells.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_cells.py",
+    "bytes": 32071,
+    "sha256": "4acf172366ab13936483e84e17f84381a1f7321bee8a3f099914a455fff91b40"
+  },
+  "model_unfolder/evidence/unet_stage_construction.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_construction.py",
+    "bytes": 39677,
+    "sha256": "a3c1dbfdaa7991b2209335a11599430908d9b7b872f28788e985f697ce49f377"
+  },
+  "model_unfolder/evidence/unet_stage_constructor_operands.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_constructor_operands.py",
+    "bytes": 14297,
+    "sha256": "0ad3fded1468f747c39ab7616f974c5f16239c2ce098f43198e1b0a180c913f7"
+  },
+  "model_unfolder/evidence/unet_stage_execution.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_execution.py",
+    "bytes": 18353,
+    "sha256": "0214314a34611b601fe78bfc0bf5ba74b32c3d8a2bde727f963201d1b1217be8"
+  },
+  "model_unfolder/evidence/unet_stage_operands.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_operands.py",
+    "bytes": 21400,
+    "sha256": "94a89b4d64ad12be3d41a153fee073cf00c643abaa23142727a425bcf4a3a8ca"
+  },
+  "model_unfolder/evidence/unet_stage_selection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_stage_selection.py",
+    "bytes": 27199,
+    "sha256": "520b16a96796518149d549364a5f3eef0d141e477aa96d4b22c7ac41a72a918b"
+  },
+  "model_unfolder/evidence/unet_wrapper_binding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/unet_wrapper_binding.py",
+    "bytes": 7914,
+    "sha256": "4a0e43969738928db5ff1965616acb733a362fb195a3eb4e0b1a56b8fae482eb"
+  },
+  "model_unfolder/evidence/validate.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/validate.py",
+    "bytes": 3127,
+    "sha256": "24cc0e42eb029de9ccb19ebda07d6fa870015bec5c51debdaa07ca4fc887d782"
+  },
+  "model_unfolder/evidence/vision.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/vision.py",
+    "bytes": 42985,
+    "sha256": "df9e2a11d275d09ad380c7a4e97602824376473cad0395e902710c83250fc930"
+  },
+  "model_unfolder/evidence/weight_tying.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/weight_tying.py",
+    "bytes": 17463,
+    "sha256": "89c500d5f993609f8522601b6ddf90dbea8574448ac2f76e298a32830724b879"
+  },
+  "model_unfolder/evidence/wrapper_features.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/evidence/wrapper_features.py",
+    "bytes": 14074,
+    "sha256": "43badac8290b35d5dfc5641c6ca6ea4dfb95f71917a0a5f9e20fc53bef02f560"
+  },
+  "model_unfolder/expanded/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/__init__.py",
+    "bytes": 3340,
+    "sha256": "1328c4b463824befb432a2f42af2e4d565599aec118d67544307699c247346aa"
+  },
+  "model_unfolder/expanded/attention.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/attention.py",
+    "bytes": 8010,
+    "sha256": "809d6152a9198eef407ddfca5b79a08d9d93862481640acd440eb21ad4f8faf2"
+  },
+  "model_unfolder/expanded/block_graph.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/block_graph.py",
+    "bytes": 1287,
+    "sha256": "851ce33efe224ab297c9a26a6da3cab93a4e6348e769a667f5fbffe0991aa9d5"
+  },
+  "model_unfolder/expanded/code_evidence.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/code_evidence.py",
+    "bytes": 2383,
+    "sha256": "482226fb4a91875d3d9f32d5686a02dff8da80b48b1d730f08436684f97573ab"
+  },
+  "model_unfolder/expanded/ffn.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/ffn.py",
+    "bytes": 4248,
+    "sha256": "ca63808b90dec909676feb9a994cf29708d98be912ccff48e197b7855fb4aa59"
+  },
+  "model_unfolder/expanded/grouping.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/grouping.py",
+    "bytes": 2133,
+    "sha256": "c0e4bf0788d91948623fe2f577f8156e31ed60ece39423551ccd370323ff6612"
+  },
+  "model_unfolder/expanded/layer_group.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/layer_group.py",
+    "bytes": 1673,
+    "sha256": "7ad9ff5c09860ff43c229e7f4008d0a2b224e7ff4017091fb05ca72948c4ebeb"
+  },
+  "model_unfolder/expanded/loop.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/loop.py",
+    "bytes": 3167,
+    "sha256": "42af502e34ca4292bf74ad0605c0e1b07d5090c8f09575f0e18fe2b18bb4b662"
+  },
+  "model_unfolder/expanded/modalities.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/modalities.py",
+    "bytes": 2365,
+    "sha256": "1d10102ff6b1a0d0a4ad6767ec5eb7dda0b7d7419a4eb886c854d5b9e7078406"
+  },
+  "model_unfolder/expanded/norms.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/norms.py",
+    "bytes": 474,
+    "sha256": "3eda62ddca8616b51216bb3f31e2c89fd5e5be293c087c7825c630c64f152a3f"
+  },
+  "model_unfolder/expanded/ops.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/ops.py",
+    "bytes": 1536,
+    "sha256": "01df25be86a2b5587cc03ad98c0f312a6551b9d4769f8d71e6281e0e22712f3c"
+  },
+  "model_unfolder/expanded/pathways.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/pathways.py",
+    "bytes": 979,
+    "sha256": "20eb52fd4aad5736585c3a5fbdd1c6cc6c4d6ce53612b4e72ae55af5ceb2ea04"
+  },
+  "model_unfolder/expanded/region.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/region.py",
+    "bytes": 2922,
+    "sha256": "74ab5a1ca68cba0d76a06e99c41d8d1674b129b8de09cb76439a20c1480089fe"
+  },
+  "model_unfolder/expanded/residual.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/residual.py",
+    "bytes": 1214,
+    "sha256": "eab1f4ba74ccd7090207ba044ab1388fa6e40f88cf4086bbad31040a277320e3"
+  },
+  "model_unfolder/expanded/sections.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/sections.py",
+    "bytes": 11194,
+    "sha256": "2d7603140a682d64cab425c80d61873c3d1f0b3c87c7e26505845f1cc1eb12c2"
+  },
+  "model_unfolder/expanded/stack.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/stack.py",
+    "bytes": 1929,
+    "sha256": "28085962dbe4fcc53b1f30d9c18488574835d0a327930572e74a31d835ef29b0"
+  },
+  "model_unfolder/expanded/utils.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/expanded/utils.py",
+    "bytes": 1461,
+    "sha256": "d5561b71bd0660a8580b650301773c9e238b08117be7ba6e7dca906f4f78eb1c"
+  },
+  "model_unfolder/html_renderer.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/html_renderer.py",
+    "bytes": 175,
+    "sha256": "040a4cc0c86293c0d746cdf407e43acb13ecf706ae09946ae7edf8908a36add5"
+  },
+  "model_unfolder/input_formats.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/input_formats.py",
+    "bytes": 3906,
+    "sha256": "ddf4163e8c879859894684aaebe88683349f52e14ec49920c342d28faa82b832"
+  },
+  "model_unfolder/ir.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/ir.py",
+    "bytes": 38083,
+    "sha256": "7f4bd0beddfb73691eb54e2823c1481ca4ad2b6daa9005fe97b1d3259ae8b320"
+  },
+  "model_unfolder/labels.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/labels.py",
+    "bytes": 42238,
+    "sha256": "269eb422fee481f6cc03fe195a610050f9da8e43198ae9ceb35fcb9ee98f5847"
+  },
+  "model_unfolder/lint.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/lint.py",
+    "bytes": 8192,
+    "sha256": "6a835313f6979ecc7a5015a7f6c4d44614f293d17eb9884646e32079c8da60c8"
+  },
+  "model_unfolder/opgraph.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/opgraph.py",
+    "bytes": 55729,
+    "sha256": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3"
+  },
+  "model_unfolder/params.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/params.py",
+    "bytes": 13135,
+    "sha256": "d030e07e5142b9b0baf79e82a557e553e03b09d4417875f8d8fe64834295c121"
+  },
+  "model_unfolder/parser.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/parser.py",
+    "bytes": 46645,
+    "sha256": "671ab55689057a003f246bea148db022889055159969af55ed76e3aebc8e7344"
+  },
+  "model_unfolder/presentation.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/presentation.py",
+    "bytes": 19703,
+    "sha256": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4"
+  },
+  "model_unfolder/preview.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/preview.py",
+    "bytes": 9916,
+    "sha256": "0a7fbc4f610b03576549cf52e548662c0116ee1b180ad3d3193b8819603a297e"
+  },
+  "model_unfolder/renderers/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/__init__.py",
+    "bytes": 54,
+    "sha256": "d7292fcee9f1be087622c6fcadf6b156e2fb714e33e6e7edd312fbcbe31b4b67"
+  },
+  "model_unfolder/renderers/html/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/__init__.py",
+    "bytes": 140,
+    "sha256": "9b8d1fe39075bf085c86ee9822814f285fe9bade9b55e10cc6f868417b0ac0c4"
+  },
+  "model_unfolder/renderers/html/block_views/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/__init__.py",
+    "bytes": 1090,
+    "sha256": "c8f32bb68981b7c07a2b5b51c59f1d9e5a8352ebed075e5d7a4000433969c7d6"
+  },
+  "model_unfolder/renderers/html/block_views/attention.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/attention.py",
+    "bytes": 20269,
+    "sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1"
+  },
+  "model_unfolder/renderers/html/block_views/block_facts.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/block_facts.py",
+    "bytes": 1214,
+    "sha256": "576da9f63dadd93381889f14a1aa5ce3f2d17f58c37664197359573ac1c38789"
+  },
+  "model_unfolder/renderers/html/block_views/declared_ops.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/declared_ops.py",
+    "bytes": 2807,
+    "sha256": "99b44503115c268173fcc909253dff0e39f310e6c9cb3dfd33290590dd6885db"
+  },
+  "model_unfolder/renderers/html/block_views/dsa_indexer.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/dsa_indexer.py",
+    "bytes": 1760,
+    "sha256": "1c69e70abed8ffd3fa9764a6ecc1b6f58e021e8332845aefc506871be52c894f"
+  },
+  "model_unfolder/renderers/html/block_views/feed_forward.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/feed_forward.py",
+    "bytes": 2280,
+    "sha256": "15e8a59f84386fe711a8302fb479ff4d6859c2d7b12bf4b7d4c5739fa6adc149"
+  },
+  "model_unfolder/renderers/html/block_views/mixture_of_experts.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/mixture_of_experts.py",
+    "bytes": 5952,
+    "sha256": "3e83672df08aaa8174e505a72f43ea081350888d7c8491932aad51042802a8a5"
+  },
+  "model_unfolder/renderers/html/block_views/modalities.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modalities.py",
+    "bytes": 387,
+    "sha256": "87debea100c99c1e0d5a45592f7768c7f4f4c8856aeb4f381b1a7e6ffcbebab5"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/__init__.py",
+    "bytes": 401,
+    "sha256": "75a79904ae02f27304155a6d4b35837cc0ba33e4bc69969eee69da2646e142f7"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/audio.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/audio.py",
+    "bytes": 10043,
+    "sha256": "1704939ef639ccd939d43af8b3051f3a3ada66921d56c4b2eb5d9b11dbba7ce8"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/common.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/common.py",
+    "bytes": 2414,
+    "sha256": "6c79486cd538d2c18703464587fe6a95809b95e62884806bb7ba2b144fb05d0c"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/conditioning.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/conditioning.py",
+    "bytes": 1236,
+    "sha256": "d2c6ae2ef65d87e8c214cecae725e28a999509bbfb22061978f3ab253af8a51f"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py",
+    "bytes": 2315,
+    "sha256": "ee4d299c18d8d16b3a545d91991452c41382aaa8a7c98a0e6176571e31b2d3a0"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py",
+    "bytes": 7478,
+    "sha256": "a6e8142be9e19bcdd7b45f647ade407d428802b40f4923743752d25888a27ba8"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py",
+    "bytes": 11394,
+    "sha256": "75e32339a8713da3e4e1967f114b613777e60602aa70bd9aae95dab084261dfb"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/fusion_prefix.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/fusion_prefix.py",
+    "bytes": 864,
+    "sha256": "1328b6be371ac997e76e6d34f9c2e88875abe72e6047804cf4c56c62b0c9c7c4"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/video.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/video.py",
+    "bytes": 1716,
+    "sha256": "681cf4b4bee5d661be8df54d0ad88243db8080c1f479c2f9b15ab4bfa39b29f4"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/vision.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/vision.py",
+    "bytes": 2999,
+    "sha256": "ce9db61ebc0927e4f35c9e8509cd67f944976e42c4f3f9cf770edd12c49b2723"
+  },
+  "model_unfolder/renderers/html/block_views/modality_views/vision_details.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/modality_views/vision_details.py",
+    "bytes": 3746,
+    "sha256": "384bade099f3f97ded82fda1649272226d399ceaa691a913ba3a6608df14cf03"
+  },
+  "model_unfolder/renderers/html/block_views/moe_router.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/moe_router.py",
+    "bytes": 7813,
+    "sha256": "655d6392384cebf66bc0fba562ef59400a8493d77098e95a2e70532ba1a6e7cc"
+  },
+  "model_unfolder/renderers/html/block_views/mtp_head.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/mtp_head.py",
+    "bytes": 6714,
+    "sha256": "a89c8747758d7000ebdd7a99d58c6948390807f6519bdf0f633d45806c1bbbe9"
+  },
+  "model_unfolder/renderers/html/block_views/per_layer_embedding.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/per_layer_embedding.py",
+    "bytes": 6090,
+    "sha256": "35e814434a34c2c2819d657904557021c298b128df22de890b1ee0947d834359"
+  },
+  "model_unfolder/renderers/html/block_views/registry.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/registry.py",
+    "bytes": 10979,
+    "sha256": "21b4e0f150a2c1a63b4c3d910062435618e73afcf6f27a66c3f7e4d59e4cfdcb"
+  },
+  "model_unfolder/renderers/html/block_views/scheduler_step.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/scheduler_step.py",
+    "bytes": 2103,
+    "sha256": "465322e95d57f3ec40bce232940e9fc2f11992ce8afb50f1f406799f4d19d83b"
+  },
+  "model_unfolder/renderers/html/block_views/self_conditioning.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/self_conditioning.py",
+    "bytes": 2414,
+    "sha256": "667e196c21f82ec42e7b9563d1b443bc26c3ed06adc6c28c11b3b56493a203d3"
+  },
+  "model_unfolder/renderers/html/block_views/text_encoder.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/text_encoder.py",
+    "bytes": 8089,
+    "sha256": "334e85068ab3f08eefe2d2e14835f30726302136980c2804775de1bc4f66f0f8"
+  },
+  "model_unfolder/renderers/html/block_views/unet.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/unet.py",
+    "bytes": 28739,
+    "sha256": "d44603bf1a7bc377b2e1d8722f8297548e58ef0477b6b58b6467143594562d8c"
+  },
+  "model_unfolder/renderers/html/block_views/vae.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/block_views/vae.py",
+    "bytes": 5615,
+    "sha256": "8adaa3cd2127d4f07bf8bf05b954bdc6b36c301cb740c3014e8126cc18098bf7"
+  },
+  "model_unfolder/renderers/html/card_payload.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/card_payload.py",
+    "bytes": 16802,
+    "sha256": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e"
+  },
+  "model_unfolder/renderers/html/cards.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/cards.py",
+    "bytes": 11938,
+    "sha256": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80"
+  },
+  "model_unfolder/renderers/html/document.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/document.py",
+    "bytes": 10544,
+    "sha256": "37be1d113788b5ba31fd833af26759b5260667d8ab3cd334c00e83ab091482dd"
+  },
+  "model_unfolder/renderers/html/evidence.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/evidence.py",
+    "bytes": 4273,
+    "sha256": "04395fde4f49e335fcbcd9c833d2b5b60664d44ca7fa0763060fa4fcc083b7af"
+  },
+  "model_unfolder/renderers/html/fact_projection.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/fact_projection.py",
+    "bytes": 12126,
+    "sha256": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474"
+  },
+  "model_unfolder/renderers/html/graph.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/graph.py",
+    "bytes": 17106,
+    "sha256": "8b89d35ba2295a6cc8ce82ec3f09cc4018685cb90dbddc050d4dfa471a21d15f"
+  },
+  "model_unfolder/renderers/html/graph_engine.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/graph_engine.py",
+    "bytes": 37267,
+    "sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439"
+  },
+  "model_unfolder/renderers/html/interactions.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/interactions.py",
+    "bytes": 12398,
+    "sha256": "2b025b1ead179d51f78aabc8a8f3403ac29abdc92a221fd91d1134d8b11ba730"
+  },
+  "model_unfolder/renderers/html/metadata.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/metadata.py",
+    "bytes": 10277,
+    "sha256": "7604fb18b3b72c17ec22d1d1142271c36179e160bd0af31fe61da8cc6ac998d4"
+  },
+  "model_unfolder/renderers/html/metadata_modalities.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/metadata_modalities.py",
+    "bytes": 63940,
+    "sha256": "1c5c10d51562151fbab464f2a30c517bb7074899d6818ab67376c0c3f54b9122"
+  },
+  "model_unfolder/renderers/html/op_render.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/op_render.py",
+    "bytes": 13633,
+    "sha256": "6b85ef7800b9593ebb2eadc96a6d7d56a8e94151049a5e516cc8f1007cc91c1d"
+  },
+  "model_unfolder/renderers/html/patch_grid.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/patch_grid.py",
+    "bytes": 3273,
+    "sha256": "57e454fcbb93f5d148dad87d169f4835828a051a65862bc5419df4bf78fa17fb"
+  },
+  "model_unfolder/renderers/html/render_context.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/render_context.py",
+    "bytes": 8311,
+    "sha256": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+  },
+  "model_unfolder/renderers/html/sections.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/sections.py",
+    "bytes": 7347,
+    "sha256": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153"
+  },
+  "model_unfolder/renderers/html/stack_view.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/stack_view.py",
+    "bytes": 7781,
+    "sha256": "bd7c1f7eaad1e9b1724b9d0fc7b8ce00d16f1c61900beb743fda87511201230c"
+  },
+  "model_unfolder/renderers/html/styles.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/styles.py",
+    "bytes": 10703,
+    "sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3"
+  },
+  "model_unfolder/renderers/html/svg.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/svg.py",
+    "bytes": 21092,
+    "sha256": "89e76a6fc646086146a0d4eab14fea837f6010f013d7fdf93cbad3b2c8e6614b"
+  },
+  "model_unfolder/renderers/html/theme.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/theme.py",
+    "bytes": 3730,
+    "sha256": "fdce4c065fabb5fd03a36fb754aeaac77b1e74c9dc60f39a2668dea2302bfeb7"
+  },
+  "model_unfolder/renderers/html/tower.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/tower.py",
+    "bytes": 12258,
+    "sha256": "5e9c6cc325df8be1a3ab36fe96abb02f2e8e04ab99ed3a8fbf994709e5898c26"
+  },
+  "model_unfolder/renderers/html/utils.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/utils.py",
+    "bytes": 6416,
+    "sha256": "2cf96830d5a113587befd9c4b9db9636141f3b8420f6668565bbc59c9d4cd136"
+  },
+  "model_unfolder/renderers/html/views.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/views.py",
+    "bytes": 68312,
+    "sha256": "04232b0952d12e16111d13f29cf3e7e56894a626af2cb3cc74c9a54cc6e4db9d"
+  },
+  "model_unfolder/renderers/html/views_diffusion.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/views_diffusion.py",
+    "bytes": 43170,
+    "sha256": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07"
+  },
+  "model_unfolder/renderers/html/views_modalities.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/renderers/html/views_modalities.py",
+    "bytes": 5058,
+    "sha256": "2ae9e379e57fbcd4dfe202d701af47db673e35decb378de2d8ee661ae138b2e0"
+  },
+  "model_unfolder/sable.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/sable.py",
+    "bytes": 51114,
+    "sha256": "922d99334cd41194366d8cec2e89e494cb934ec5beb3cec69f4fd0c16ca9f340"
+  },
+  "model_unfolder/submodel.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/submodel.py",
+    "bytes": 27662,
+    "sha256": "d0456bd359730bc465c98010f1818a7d2972fb48b1bd46eed332ce42e5739ed3"
+  },
+  "model_unfolder/uncertainty.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/model_unfolder/uncertainty.py",
+    "bytes": 14172,
+    "sha256": "9618e67124068c24419e10393004bfb3ce3892e968ac408360b41e86b505bb16"
+  },
+  "physics/__init__.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/__init__.py",
+    "bytes": 221,
+    "sha256": "e391b5a0b56a34cc93135ca6a92f0eb69b83e4ab53d0021e1a627dbd12807845"
+  },
+  "physics/attribute_bindings.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/attribute_bindings.py",
+    "bytes": 33143,
+    "sha256": "58b8321ca39f9dbc3a34bd3c5e0dc1230072bca2ebce43e09ac5eaafaad8ab3e"
+  },
+  "physics/execution_observation.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/execution_observation.py",
+    "bytes": 25620,
+    "sha256": "223f360f7ac1979754d023829ab91d5039962e919537a7c1d51f56b48c10e6bd"
+  },
+  "physics/framework_primitives.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/framework_primitives.py",
+    "bytes": 1762,
+    "sha256": "76fb6aa2c643014084f85c01c8fb50695cad86002ebc3d4d50094c3b88574feb"
+  },
+  "physics/instance_inventory.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/instance_inventory.py",
+    "bytes": 48285,
+    "sha256": "bb63488d0b3923e4c61de66fbdb91e9d9bbadaa875c779139aaa5870b3d4d336"
+  },
+  "physics/relation_observation.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/relation_observation.py",
+    "bytes": 45196,
+    "sha256": "16e38f8c45da13f0b328b1c2abcf115f4b9ed32f2dffe512a35d253bb6d0752c"
+  },
+  "physics/result_cache.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/result_cache.py",
+    "bytes": 30083,
+    "sha256": "e7f56fdecc99410f71fba078929f2a875620936025c85bc8dcc30646df7f3cca"
+  },
+  "physics/source_bundle_codec.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/source_bundle_codec.py",
+    "bytes": 6363,
+    "sha256": "31279074467870d9d057d542e00f094156e50dd73482114bfd52a96d852cace3"
+  },
+  "physics/source_override.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/source_override.py",
+    "bytes": 3184,
+    "sha256": "2d52b13263f545a7a50cc519021baf5414d902d37d894c1db80094470e2cfddc"
+  },
+  "physics/worker_timing.py": {
+    "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth/physics/worker_timing.py",
+    "bytes": 5962,
+    "sha256": "7c939ed41b34cbc68e2996bafc6b8a2b83c89b023531ba757035208671831920"
+  }
+}

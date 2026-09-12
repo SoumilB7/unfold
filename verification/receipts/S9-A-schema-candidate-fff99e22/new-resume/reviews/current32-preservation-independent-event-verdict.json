@@ -1,0 +1,22 @@
+{
+  "verdict": "PASS_SOURCE_REVIEW_RUNTIME_PENDING",
+  "reviewer": "event_executor",
+  "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current32-preservation-capture/manifest.json",
+  "manifest_sha256": "1e889679f9a74cf6fec61abb8180aadfee2fc542a7bb546cd326725a433c243f",
+  "original31_manifest_sha256": "3c0e3d4a45ac4303c0f13369ca3a73a04c649f19712d1778ab16160120ea23cf",
+  "checks": [
+    "All held files hash-match; observer and runtime guards/launchers change only generation31\u219232.",
+    "Current32 source/input/expected-manifest validation remains complete; corpus, original52-test file and all203 historical artifact bytes unchanged. This does not make the118 stale canonical documents authoritative.",
+    "Baseline lane remains the exact original31 fff99e22 lane including output directory and frozen source/input/artifact pins; original records are never rewritten.",
+    "The finite saved comparison validates current32 with its actual32 contract, independently pins/imports the original31 stdlib contract and validates the baseline with its actual31 source-manifest pin.",
+    "Old harness path, manifest, contract SHA, complete old baseline lane equality, old full contract file membership and baseline source/input identity are all checked before saved packets join. Both original pin maps are retained independently.",
+    "Every recovered surface still must equal the exact committed expected hash before contributing any authoritative leaf diff. Expected manifests, input hashes,29 unique cases, original canonical artifact SHA checks and before/after brackets remain.",
+    "Optional baseline producer cannot overwrite the already used original output directory because exist_ok=False remains. Root should execute only current32 and the later saved-data comparison."
+  ],
+  "limitations": [
+    "Source-only verdict; no32 runtime or baseline recovery result inferred.",
+    "Historical203-file byte parity across frozen trees is separate from committed canonical expectation parity;118 known mismatches remain unresolved until exact recovery."
+  ],
+  "no_runtime": true,
+  "output_approval": false
+}

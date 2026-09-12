@@ -1,0 +1,36 @@
+[
+  {
+    "after": {
+      "claim_kind": "applied_function",
+      "has_proof": false,
+      "status": "unknown",
+      "unknown_reason": {
+        "concrete_reason": "softcap_operand_unavailable",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value": null
+    },
+    "before": null,
+    "kind": "replace_type",
+    "path": "/native_softcap"
+  },
+  {
+    "after": true,
+    "before": false,
+    "kind": "replace",
+    "path": "/native_softcap_present"
+  },
+  {
+    "after": 70227,
+    "before": 69944,
+    "kind": "replace",
+    "path": "/page_bytes"
+  },
+  {
+    "after": "56395c22c3746499aef56c3cebf74a69e4206652378b4323d994776bad94fd59",
+    "before": "bdff7a9f406c2abea7628bd51bd98096d91b80786ca8973c6e08fda69f7b0d2c",
+    "kind": "replace",
+    "path": "/page_sha256"
+  }
+]

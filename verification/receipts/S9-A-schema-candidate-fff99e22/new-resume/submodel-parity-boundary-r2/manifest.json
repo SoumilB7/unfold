@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "742629a54ca6005c4eda7d66430b97a6714412f119f944945fb8abab0d5fa3e3",
+      "bytes": 322
+    },
+    {
+      "path": "before/tests/test_submodel_parity.py",
+      "sha256": "bbe083e94f5bc89ab733c79632d97826ff2e648db8530379be0b95add92cfe9f",
+      "bytes": 16200
+    },
+    {
+      "path": "handoff.json",
+      "sha256": "620f1149cc20f95adc9efb4d24c649d63024976b0eb723e3fd3bb3a23ad03b76",
+      "bytes": 1442
+    },
+    {
+      "path": "held/tests/test_submodel_parity.py",
+      "sha256": "1f4aea881d5b35b9a3aae638421a4142a666fc4172ab61c976385601b241d1a1",
+      "bytes": 16277
+    },
+    {
+      "path": "source-references.json",
+      "sha256": "2cccddb9d235d9ea5916d917c93fd578426700fd3e397a850eeb7a05dcdd3bca",
+      "bytes": 3015
+    },
+    {
+      "path": "source.diff",
+      "sha256": "9c3d74c958a0b8fa960c3b68853c4f54bf86cbb950dfa9feb138aa52342fa093",
+      "bytes": 880
+    }
+  ]
+}

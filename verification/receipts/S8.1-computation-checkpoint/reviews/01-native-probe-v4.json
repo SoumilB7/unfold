@@ -1,0 +1,40 @@
+{
+  "decision": "ACCEPT_BOUNDED_STATIC_AND_V4_CONTROLS_PREUSE",
+  "pins": {
+    "physics/cache_dependencies.py": "e4aa8e759f166cbb1dfb7027e56ec1887a72277851f7c2e8a20a6111d65e3c76",
+    "physics/result_cache.py": "2b2cfc7e590df861d02f1beb87a4e1c4f892788c4bf7c340244e697293f98381",
+    "physics/cache_probes.py": "d68b46425b87fa80af139fcb851ed45c323bf3162484059e1fa602dbd437b292",
+    "physics/instance_inventory.py": "6eebad2f2042314f87aeb538f2cd6d5fc4b19249ce672430f1dff83b83618b54",
+    "physics/execution_observation.py": "67a25149d5f6883d4c685fa1e6c14f1c03ca4e68f3170fa0ea6b0f2b53a94922",
+    "physics/worker_timing.py": "7c939ed41b34cbc68e2996bafc6b8a2b83c89b023531ba757035208671831920",
+    "tests/test_s81_dependency_capture.py": "b060047b94cdd4a265324a51ee985bcb1b1f59906c5987ccb407d8b292f3c918",
+    "tests/test_s81_cache_probes.py": "07978a5ca1ec4874109b9a4f5cd0f48fbf3b165ea36ea7ddd7151d0650551ace"
+  },
+  "candidate_primary_equal": {
+    "physics/cache_dependencies.py": true,
+    "physics/result_cache.py": true,
+    "physics/cache_probes.py": true,
+    "physics/instance_inventory.py": true,
+    "physics/execution_observation.py": true,
+    "physics/worker_timing.py": true,
+    "tests/test_s81_dependency_capture.py": true,
+    "tests/test_s81_cache_probes.py": true
+  },
+  "candidate_manifest_count": 625,
+  "candidate_manifest_mismatches": [],
+  "accepted": [
+    "native exec observation preserves original result/exception and records exact installed object with native origins",
+    "concurrent native thread attribution declines; replacement object loses association",
+    "bootstrap maps normalization restricted to explicit pre-factory runtime phase; other pseudofile inputs refuse",
+    "finite pip-list grep grammar and actual original subprocess result preserved",
+    "unrecorded admitted original probe failure marks capture ineligible",
+    "OS-isolated lookup-only probe replay through original supervisor; full observable comparison",
+    "owned group cleanup after exited worker; unsupported pip import misses"
+  ],
+  "limits": [
+    "bounded runtime capability, not universal native/CLI purity",
+    "native interval installation is observation, not source-level creation proof",
+    "no actual eligible model cache capture/hit or latency medians yet",
+    "Linux execution not performed by reviewer"
+  ]
+}

@@ -1,0 +1,4774 @@
+{
+  "root.denoiser.constructed_modules": {
+    "summary": {
+      "claim_kind": "existence",
+      "document_fingerprints": [
+        "d78341597547c5be57bff86122c5c2eac969e6ac2eabbf281dcf8aaa9ea9966e"
+      ],
+      "evidence_refs": [
+        "checkpoint:d78341597547c5be57bff86122c5c2eac969e6ac2eabbf281dcf8aaa9ea9966e",
+        "population:74930ccd45067ef0",
+        "source:diffusers.configuration_utils:4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+        "source:diffusers.models.attention_processor:4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+        "source:diffusers.models.downsampling:2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+        "source:diffusers.models.embeddings:d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302",
+        "source:diffusers.models.modeling_utils:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+        "source:diffusers.models.resnet:b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84",
+        "source:diffusers.models.unets.unet_2d:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+        "source:diffusers.models.unets.unet_2d_blocks:8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+        "source:diffusers.models.upsampling:55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+        "source:diffusers.utils.hub_utils:051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd",
+        "source:torch.nn.modules.activation:ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961",
+        "source:torch.nn.modules.container:114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c",
+        "source:torch.nn.modules.conv:ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c",
+        "source:torch.nn.modules.dropout:f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7",
+        "source:torch.nn.modules.linear:63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247",
+        "source:torch.nn.modules.module:d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd",
+        "source:torch.nn.modules.normalization:40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+      ],
+      "fact_id": "root.denoiser.constructed_modules",
+      "fact_status": "",
+      "index_fingerprints": [],
+      "proof_kind": "constructed_module_population",
+      "reader_symbols": [
+        "evidence.instance_population_claim.read_instance_population"
+      ],
+      "recipe_ids": []
+    },
+    "value": {
+      "": {
+        "children": [
+          "conv_in",
+          "time_proj",
+          "time_embedding",
+          "down_blocks",
+          "up_blocks",
+          "mid_block",
+          "conv_norm_out",
+          "conv_act",
+          "conv_out"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d",
+        "class_name": "UNet2DModel"
+      },
+      "conv_act": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "conv_in": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "conv_norm_out": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "conv_out": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks": {
+        "children": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.0": {
+        "children": [
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "DownBlock2D"
+      },
+      "down_blocks.0.downsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.0.downsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.downsampling",
+        "class_name": "Downsample2D"
+      },
+      "down_blocks.0.downsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.0.resnets": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.0.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.0.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.0.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.0.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.0.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.0.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.0.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.0.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.0.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.0.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.0.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.0.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.0.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.0.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.0.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.0.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1": {
+        "children": [
+          "attentions",
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "AttnDownBlock2D"
+      },
+      "down_blocks.1.attentions": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.1.attentions.0": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "down_blocks.1.attentions.0.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.attentions.0.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.0.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.1.attentions.0.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.0.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.1.attentions.0.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.0.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.1": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "down_blocks.1.attentions.1.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.attentions.1.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.1.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.1.attentions.1.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.1.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.1.attentions.1.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.attentions.1.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.downsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.1.downsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.downsampling",
+        "class_name": "Downsample2D"
+      },
+      "down_blocks.1.downsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.1.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.1.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets.0.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.1.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.1.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.1.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.1.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.1.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.1.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.1.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.1.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.2": {
+        "children": [
+          "resnets",
+          "downsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "DownBlock2D"
+      },
+      "down_blocks.2.downsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.2.downsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.downsampling",
+        "class_name": "Downsample2D"
+      },
+      "down_blocks.2.downsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.2.resnets": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.2.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.2.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.2.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.2.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.2.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.2.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.2.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.2.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.2.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.2.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.2.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.2.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.2.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.2.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.2.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.2.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.3": {
+        "children": [
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "DownBlock2D"
+      },
+      "down_blocks.3.resnets": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "down_blocks.3.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.3.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.3.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.3.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.3.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.3.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.3.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.3.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "down_blocks.3.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "down_blocks.3.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.3.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "down_blocks.3.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "down_blocks.3.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "down_blocks.3.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.3.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "down_blocks.3.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block": {
+        "children": [
+          "attentions",
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "UNetMidBlock2D"
+      },
+      "mid_block.attentions": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "mid_block.attentions.0": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "mid_block.attentions.0.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "mid_block.attentions.0.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block.attentions.0.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "mid_block.attentions.0.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block.attentions.0.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "mid_block.attentions.0.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block.attentions.0.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block.resnets": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "mid_block.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "mid_block.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "mid_block.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "mid_block.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "mid_block.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "mid_block.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "mid_block.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "mid_block.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "mid_block.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "mid_block.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "mid_block.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "mid_block.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "mid_block.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "mid_block.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "mid_block.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "mid_block.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "time_embedding": {
+        "children": [
+          "linear_1",
+          "act",
+          "linear_2"
+        ],
+        "class_module": "diffusers.models.embeddings",
+        "class_name": "TimestepEmbedding"
+      },
+      "time_embedding.act": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "time_embedding.linear_1": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "time_embedding.linear_2": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "time_proj": {
+        "children": [],
+        "class_module": "diffusers.models.embeddings",
+        "class_name": "Timesteps"
+      },
+      "up_blocks": {
+        "children": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.0": {
+        "children": [
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "UpBlock2D"
+      },
+      "up_blocks.0.resnets": {
+        "children": [
+          "0",
+          "1",
+          "2"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.0.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.0.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.0.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.0.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.0.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.0.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.0.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.1.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.0.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.0.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.0.resnets.2": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.0.resnets.2.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.2.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.2.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.0.resnets.2.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.0.resnets.2.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.0.resnets.2.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.2.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.0.resnets.2.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.0.upsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.0.upsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.upsampling",
+        "class_name": "Upsample2D"
+      },
+      "up_blocks.0.upsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1": {
+        "children": [
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "UpBlock2D"
+      },
+      "up_blocks.1.resnets": {
+        "children": [
+          "0",
+          "1",
+          "2"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.1.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.1.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.0.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.1.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.1.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.1.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.1.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.1.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.1.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.1.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.1.resnets.2": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.1.resnets.2.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.2.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.2.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.1.resnets.2.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.1.resnets.2.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.1.resnets.2.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.2.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.1.resnets.2.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.1.upsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.1.upsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.upsampling",
+        "class_name": "Upsample2D"
+      },
+      "up_blocks.1.upsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2": {
+        "children": [
+          "attentions",
+          "resnets",
+          "upsamplers"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "AttnUpBlock2D"
+      },
+      "up_blocks.2.attentions": {
+        "children": [
+          "0",
+          "1",
+          "2"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.attentions.0": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "up_blocks.2.attentions.0.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.attentions.0.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.0.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.attentions.0.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.0.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.attentions.0.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.0.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.1": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "up_blocks.2.attentions.1.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.attentions.1.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.1.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.attentions.1.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.1.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.attentions.1.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.1.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.2": {
+        "children": [
+          "group_norm",
+          "to_q",
+          "to_k",
+          "to_v",
+          "to_out"
+        ],
+        "class_module": "diffusers.models.attention_processor",
+        "class_name": "Attention"
+      },
+      "up_blocks.2.attentions.2.group_norm": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.attentions.2.to_k": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.2.to_out": {
+        "children": [
+          "0",
+          "1"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.attentions.2.to_out.0": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.2.to_out.1": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.attentions.2.to_q": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.attentions.2.to_v": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.resnets": {
+        "children": [
+          "0",
+          "1",
+          "2"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.2.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.0.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.2.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.2.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.1.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.2.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.resnets.2": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.2.resnets.2.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.2.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.2.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.2.resnets.2.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.2.resnets.2.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.2.resnets.2.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.2.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.2.resnets.2.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.2.upsamplers": {
+        "children": [
+          "0"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.2.upsamplers.0": {
+        "children": [
+          "conv"
+        ],
+        "class_module": "diffusers.models.upsampling",
+        "class_name": "Upsample2D"
+      },
+      "up_blocks.2.upsamplers.0.conv": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3": {
+        "children": [
+          "resnets"
+        ],
+        "class_module": "diffusers.models.unets.unet_2d_blocks",
+        "class_name": "UpBlock2D"
+      },
+      "up_blocks.3.resnets": {
+        "children": [
+          "0",
+          "1",
+          "2"
+        ],
+        "class_module": "torch.nn.modules.container",
+        "class_name": "ModuleList"
+      },
+      "up_blocks.3.resnets.0": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.3.resnets.0.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.0.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.0.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.0.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.3.resnets.0.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.3.resnets.0.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.0.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.0.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.3.resnets.1": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.3.resnets.1.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.1.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.1.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.1.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.3.resnets.1.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.3.resnets.1.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.1.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.1.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      },
+      "up_blocks.3.resnets.2": {
+        "children": [
+          "norm1",
+          "conv1",
+          "time_emb_proj",
+          "norm2",
+          "dropout",
+          "conv2",
+          "nonlinearity",
+          "conv_shortcut"
+        ],
+        "class_module": "diffusers.models.resnet",
+        "class_name": "ResnetBlock2D"
+      },
+      "up_blocks.3.resnets.2.conv1": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.2.conv2": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.2.conv_shortcut": {
+        "children": [],
+        "class_module": "torch.nn.modules.conv",
+        "class_name": "Conv2d"
+      },
+      "up_blocks.3.resnets.2.dropout": {
+        "children": [],
+        "class_module": "torch.nn.modules.dropout",
+        "class_name": "Dropout"
+      },
+      "up_blocks.3.resnets.2.nonlinearity": {
+        "children": [],
+        "class_module": "torch.nn.modules.activation",
+        "class_name": "SiLU"
+      },
+      "up_blocks.3.resnets.2.norm1": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.2.norm2": {
+        "children": [],
+        "class_module": "torch.nn.modules.normalization",
+        "class_name": "GroupNorm"
+      },
+      "up_blocks.3.resnets.2.time_emb_proj": {
+        "children": [],
+        "class_module": "torch.nn.modules.linear",
+        "class_name": "Linear"
+      }
+    }
+  },
+  "root.denoiser.constructed_parameter_shapes": {
+    "summary": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "d78341597547c5be57bff86122c5c2eac969e6ac2eabbf281dcf8aaa9ea9966e"
+      ],
+      "evidence_refs": [
+        "checkpoint:d78341597547c5be57bff86122c5c2eac969e6ac2eabbf281dcf8aaa9ea9966e",
+        "shape-value:6acc5f225cde9710",
+        "source:diffusers.configuration_utils:4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+        "source:diffusers.models.attention_processor:4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+        "source:diffusers.models.downsampling:2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+        "source:diffusers.models.embeddings:d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302",
+        "source:diffusers.models.modeling_utils:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+        "source:diffusers.models.resnet:b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84",
+        "source:diffusers.models.unets.unet_2d:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+        "source:diffusers.models.unets.unet_2d_blocks:8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+        "source:diffusers.models.upsampling:55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+        "source:diffusers.utils.hub_utils:051c6a2cb2d92ef614c10e90557a41c861c3f31d19a68f6527d72f8bab670bcd",
+        "source:torch.nn.modules.activation:ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961",
+        "source:torch.nn.modules.container:114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c",
+        "source:torch.nn.modules.conv:ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c",
+        "source:torch.nn.modules.dropout:f1abdbdda095e9ee0bb96701e9afd70dbca20298bd3190aa68b79d0ec98c47f7",
+        "source:torch.nn.modules.linear:63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247",
+        "source:torch.nn.modules.module:d076e98c7037d342c82662c13a11dbb2584d080279a140431243475f27056dfd",
+        "source:torch.nn.modules.normalization:40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0"
+      ],
+      "fact_id": "root.denoiser.constructed_parameter_shapes",
+      "fact_status": "",
+      "index_fingerprints": [],
+      "proof_kind": "constructed_parameter_shapes",
+      "reader_symbols": [
+        "evidence.instance_shape_claim.read_instance_shapes"
+      ],
+      "recipe_ids": []
+    },
+    "value": {
+      "by_module": {
+        "": 35746307,
+        "conv_act": 0,
+        "conv_in": 3584,
+        "conv_norm_out": 256,
+        "conv_out": 3459,
+        "down_blocks": 10190720,
+        "down_blocks.0": 870272,
+        "down_blocks.0.downsamplers": 147584,
+        "down_blocks.0.downsamplers.0": 147584,
+        "down_blocks.0.downsamplers.0.conv": 147584,
+        "down_blocks.0.resnets": 722688,
+        "down_blocks.0.resnets.0": 361344,
+        "down_blocks.0.resnets.0.conv1": 147584,
+        "down_blocks.0.resnets.0.conv2": 147584,
+        "down_blocks.0.resnets.0.dropout": 0,
+        "down_blocks.0.resnets.0.nonlinearity": 0,
+        "down_blocks.0.resnets.0.norm1": 256,
+        "down_blocks.0.resnets.0.norm2": 256,
+        "down_blocks.0.resnets.0.time_emb_proj": 65664,
+        "down_blocks.0.resnets.1": 361344,
+        "down_blocks.0.resnets.1.conv1": 147584,
+        "down_blocks.0.resnets.1.conv2": 147584,
+        "down_blocks.0.resnets.1.dropout": 0,
+        "down_blocks.0.resnets.1.nonlinearity": 0,
+        "down_blocks.0.resnets.1.norm1": 256,
+        "down_blocks.0.resnets.1.norm2": 256,
+        "down_blocks.0.resnets.1.time_emb_proj": 65664,
+        "down_blocks.1": 3480320,
+        "down_blocks.1.attentions": 527360,
+        "down_blocks.1.attentions.0": 263680,
+        "down_blocks.1.attentions.0.group_norm": 512,
+        "down_blocks.1.attentions.0.to_k": 65792,
+        "down_blocks.1.attentions.0.to_out": 65792,
+        "down_blocks.1.attentions.0.to_out.0": 65792,
+        "down_blocks.1.attentions.0.to_out.1": 0,
+        "down_blocks.1.attentions.0.to_q": 65792,
+        "down_blocks.1.attentions.0.to_v": 65792,
+        "down_blocks.1.attentions.1": 263680,
+        "down_blocks.1.attentions.1.group_norm": 512,
+        "down_blocks.1.attentions.1.to_k": 65792,
+        "down_blocks.1.attentions.1.to_out": 65792,
+        "down_blocks.1.attentions.1.to_out.0": 65792,
+        "down_blocks.1.attentions.1.to_out.1": 0,
+        "down_blocks.1.attentions.1.to_q": 65792,
+        "down_blocks.1.attentions.1.to_v": 65792,
+        "down_blocks.1.downsamplers": 590080,
+        "down_blocks.1.downsamplers.0": 590080,
+        "down_blocks.1.downsamplers.0.conv": 590080,
+        "down_blocks.1.resnets": 2362880,
+        "down_blocks.1.resnets.0": 1050368,
+        "down_blocks.1.resnets.0.conv1": 295168,
+        "down_blocks.1.resnets.0.conv2": 590080,
+        "down_blocks.1.resnets.0.conv_shortcut": 33024,
+        "down_blocks.1.resnets.0.dropout": 0,
+        "down_blocks.1.resnets.0.nonlinearity": 0,
+        "down_blocks.1.resnets.0.norm1": 256,
+        "down_blocks.1.resnets.0.norm2": 512,
+        "down_blocks.1.resnets.0.time_emb_proj": 131328,
+        "down_blocks.1.resnets.1": 1312512,
+        "down_blocks.1.resnets.1.conv1": 590080,
+        "down_blocks.1.resnets.1.conv2": 590080,
+        "down_blocks.1.resnets.1.dropout": 0,
+        "down_blocks.1.resnets.1.nonlinearity": 0,
+        "down_blocks.1.resnets.1.norm1": 512,
+        "down_blocks.1.resnets.1.norm2": 512,
+        "down_blocks.1.resnets.1.time_emb_proj": 131328,
+        "down_blocks.2": 3215104,
+        "down_blocks.2.downsamplers": 590080,
+        "down_blocks.2.downsamplers.0": 590080,
+        "down_blocks.2.downsamplers.0.conv": 590080,
+        "down_blocks.2.resnets": 2625024,
+        "down_blocks.2.resnets.0": 1312512,
+        "down_blocks.2.resnets.0.conv1": 590080,
+        "down_blocks.2.resnets.0.conv2": 590080,
+        "down_blocks.2.resnets.0.dropout": 0,
+        "down_blocks.2.resnets.0.nonlinearity": 0,
+        "down_blocks.2.resnets.0.norm1": 512,
+        "down_blocks.2.resnets.0.norm2": 512,
+        "down_blocks.2.resnets.0.time_emb_proj": 131328,
+        "down_blocks.2.resnets.1": 1312512,
+        "down_blocks.2.resnets.1.conv1": 590080,
+        "down_blocks.2.resnets.1.conv2": 590080,
+        "down_blocks.2.resnets.1.dropout": 0,
+        "down_blocks.2.resnets.1.nonlinearity": 0,
+        "down_blocks.2.resnets.1.norm1": 512,
+        "down_blocks.2.resnets.1.norm2": 512,
+        "down_blocks.2.resnets.1.time_emb_proj": 131328,
+        "down_blocks.3": 2625024,
+        "down_blocks.3.resnets": 2625024,
+        "down_blocks.3.resnets.0": 1312512,
+        "down_blocks.3.resnets.0.conv1": 590080,
+        "down_blocks.3.resnets.0.conv2": 590080,
+        "down_blocks.3.resnets.0.dropout": 0,
+        "down_blocks.3.resnets.0.nonlinearity": 0,
+        "down_blocks.3.resnets.0.norm1": 512,
+        "down_blocks.3.resnets.0.norm2": 512,
+        "down_blocks.3.resnets.0.time_emb_proj": 131328,
+        "down_blocks.3.resnets.1": 1312512,
+        "down_blocks.3.resnets.1.conv1": 590080,
+        "down_blocks.3.resnets.1.conv2": 590080,
+        "down_blocks.3.resnets.1.dropout": 0,
+        "down_blocks.3.resnets.1.nonlinearity": 0,
+        "down_blocks.3.resnets.1.norm1": 512,
+        "down_blocks.3.resnets.1.norm2": 512,
+        "down_blocks.3.resnets.1.time_emb_proj": 131328,
+        "mid_block": 2888704,
+        "mid_block.attentions": 263680,
+        "mid_block.attentions.0": 263680,
+        "mid_block.attentions.0.group_norm": 512,
+        "mid_block.attentions.0.to_k": 65792,
+        "mid_block.attentions.0.to_out": 65792,
+        "mid_block.attentions.0.to_out.0": 65792,
+        "mid_block.attentions.0.to_out.1": 0,
+        "mid_block.attentions.0.to_q": 65792,
+        "mid_block.attentions.0.to_v": 65792,
+        "mid_block.resnets": 2625024,
+        "mid_block.resnets.0": 1312512,
+        "mid_block.resnets.0.conv1": 590080,
+        "mid_block.resnets.0.conv2": 590080,
+        "mid_block.resnets.0.dropout": 0,
+        "mid_block.resnets.0.nonlinearity": 0,
+        "mid_block.resnets.0.norm1": 512,
+        "mid_block.resnets.0.norm2": 512,
+        "mid_block.resnets.0.time_emb_proj": 131328,
+        "mid_block.resnets.1": 1312512,
+        "mid_block.resnets.1.conv1": 590080,
+        "mid_block.resnets.1.conv2": 590080,
+        "mid_block.resnets.1.dropout": 0,
+        "mid_block.resnets.1.nonlinearity": 0,
+        "mid_block.resnets.1.norm1": 512,
+        "mid_block.resnets.1.norm2": 512,
+        "mid_block.resnets.1.time_emb_proj": 131328,
+        "time_embedding": 328704,
+        "time_embedding.act": 0,
+        "time_embedding.linear_1": 66048,
+        "time_embedding.linear_2": 262656,
+        "time_proj": 0,
+        "up_blocks": 22330880,
+        "up_blocks.0": 6692608,
+        "up_blocks.0.resnets": 6102528,
+        "up_blocks.0.resnets.0": 2034176,
+        "up_blocks.0.resnets.0.conv1": 1179904,
+        "up_blocks.0.resnets.0.conv2": 590080,
+        "up_blocks.0.resnets.0.conv_shortcut": 131328,
+        "up_blocks.0.resnets.0.dropout": 0,
+        "up_blocks.0.resnets.0.nonlinearity": 0,
+        "up_blocks.0.resnets.0.norm1": 1024,
+        "up_blocks.0.resnets.0.norm2": 512,
+        "up_blocks.0.resnets.0.time_emb_proj": 131328,
+        "up_blocks.0.resnets.1": 2034176,
+        "up_blocks.0.resnets.1.conv1": 1179904,
+        "up_blocks.0.resnets.1.conv2": 590080,
+        "up_blocks.0.resnets.1.conv_shortcut": 131328,
+        "up_blocks.0.resnets.1.dropout": 0,
+        "up_blocks.0.resnets.1.nonlinearity": 0,
+        "up_blocks.0.resnets.1.norm1": 1024,
+        "up_blocks.0.resnets.1.norm2": 512,
+        "up_blocks.0.resnets.1.time_emb_proj": 131328,
+        "up_blocks.0.resnets.2": 2034176,
+        "up_blocks.0.resnets.2.conv1": 1179904,
+        "up_blocks.0.resnets.2.conv2": 590080,
+        "up_blocks.0.resnets.2.conv_shortcut": 131328,
+        "up_blocks.0.resnets.2.dropout": 0,
+        "up_blocks.0.resnets.2.nonlinearity": 0,
+        "up_blocks.0.resnets.2.norm1": 1024,
+        "up_blocks.0.resnets.2.norm2": 512,
+        "up_blocks.0.resnets.2.time_emb_proj": 131328,
+        "up_blocks.0.upsamplers": 590080,
+        "up_blocks.0.upsamplers.0": 590080,
+        "up_blocks.0.upsamplers.0.conv": 590080,
+        "up_blocks.1": 6692608,
+        "up_blocks.1.resnets": 6102528,
+        "up_blocks.1.resnets.0": 2034176,
+        "up_blocks.1.resnets.0.conv1": 1179904,
+        "up_blocks.1.resnets.0.conv2": 590080,
+        "up_blocks.1.resnets.0.conv_shortcut": 131328,
+        "up_blocks.1.resnets.0.dropout": 0,
+        "up_blocks.1.resnets.0.nonlinearity": 0,
+        "up_blocks.1.resnets.0.norm1": 1024,
+        "up_blocks.1.resnets.0.norm2": 512,
+        "up_blocks.1.resnets.0.time_emb_proj": 131328,
+        "up_blocks.1.resnets.1": 2034176,
+        "up_blocks.1.resnets.1.conv1": 1179904,
+        "up_blocks.1.resnets.1.conv2": 590080,
+        "up_blocks.1.resnets.1.conv_shortcut": 131328,
+        "up_blocks.1.resnets.1.dropout": 0,
+        "up_blocks.1.resnets.1.nonlinearity": 0,
+        "up_blocks.1.resnets.1.norm1": 1024,
+        "up_blocks.1.resnets.1.norm2": 512,
+        "up_blocks.1.resnets.1.time_emb_proj": 131328,
+        "up_blocks.1.resnets.2": 2034176,
+        "up_blocks.1.resnets.2.conv1": 1179904,
+        "up_blocks.1.resnets.2.conv2": 590080,
+        "up_blocks.1.resnets.2.conv_shortcut": 131328,
+        "up_blocks.1.resnets.2.dropout": 0,
+        "up_blocks.1.resnets.2.nonlinearity": 0,
+        "up_blocks.1.resnets.2.norm1": 1024,
+        "up_blocks.1.resnets.2.norm2": 512,
+        "up_blocks.1.resnets.2.time_emb_proj": 131328,
+        "up_blocks.1.upsamplers": 590080,
+        "up_blocks.1.upsamplers.0": 590080,
+        "up_blocks.1.upsamplers.0.conv": 590080,
+        "up_blocks.2": 7155712,
+        "up_blocks.2.attentions": 791040,
+        "up_blocks.2.attentions.0": 263680,
+        "up_blocks.2.attentions.0.group_norm": 512,
+        "up_blocks.2.attentions.0.to_k": 65792,
+        "up_blocks.2.attentions.0.to_out": 65792,
+        "up_blocks.2.attentions.0.to_out.0": 65792,
+        "up_blocks.2.attentions.0.to_out.1": 0,
+        "up_blocks.2.attentions.0.to_q": 65792,
+        "up_blocks.2.attentions.0.to_v": 65792,
+        "up_blocks.2.attentions.1": 263680,
+        "up_blocks.2.attentions.1.group_norm": 512,
+        "up_blocks.2.attentions.1.to_k": 65792,
+        "up_blocks.2.attentions.1.to_out": 65792,
+        "up_blocks.2.attentions.1.to_out.0": 65792,
+        "up_blocks.2.attentions.1.to_out.1": 0,
+        "up_blocks.2.attentions.1.to_q": 65792,
+        "up_blocks.2.attentions.1.to_v": 65792,
+        "up_blocks.2.attentions.2": 263680,
+        "up_blocks.2.attentions.2.group_norm": 512,
+        "up_blocks.2.attentions.2.to_k": 65792,
+        "up_blocks.2.attentions.2.to_out": 65792,
+        "up_blocks.2.attentions.2.to_out.0": 65792,
+        "up_blocks.2.attentions.2.to_out.1": 0,
+        "up_blocks.2.attentions.2.to_q": 65792,
+        "up_blocks.2.attentions.2.to_v": 65792,
+        "up_blocks.2.resnets": 5774592,
+        "up_blocks.2.resnets.0": 2034176,
+        "up_blocks.2.resnets.0.conv1": 1179904,
+        "up_blocks.2.resnets.0.conv2": 590080,
+        "up_blocks.2.resnets.0.conv_shortcut": 131328,
+        "up_blocks.2.resnets.0.dropout": 0,
+        "up_blocks.2.resnets.0.nonlinearity": 0,
+        "up_blocks.2.resnets.0.norm1": 1024,
+        "up_blocks.2.resnets.0.norm2": 512,
+        "up_blocks.2.resnets.0.time_emb_proj": 131328,
+        "up_blocks.2.resnets.1": 2034176,
+        "up_blocks.2.resnets.1.conv1": 1179904,
+        "up_blocks.2.resnets.1.conv2": 590080,
+        "up_blocks.2.resnets.1.conv_shortcut": 131328,
+        "up_blocks.2.resnets.1.dropout": 0,
+        "up_blocks.2.resnets.1.nonlinearity": 0,
+        "up_blocks.2.resnets.1.norm1": 1024,
+        "up_blocks.2.resnets.1.norm2": 512,
+        "up_blocks.2.resnets.1.time_emb_proj": 131328,
+        "up_blocks.2.resnets.2": 1706240,
+        "up_blocks.2.resnets.2.conv1": 884992,
+        "up_blocks.2.resnets.2.conv2": 590080,
+        "up_blocks.2.resnets.2.conv_shortcut": 98560,
+        "up_blocks.2.resnets.2.dropout": 0,
+        "up_blocks.2.resnets.2.nonlinearity": 0,
+        "up_blocks.2.resnets.2.norm1": 768,
+        "up_blocks.2.resnets.2.norm2": 512,
+        "up_blocks.2.resnets.2.time_emb_proj": 131328,
+        "up_blocks.2.upsamplers": 590080,
+        "up_blocks.2.upsamplers.0": 590080,
+        "up_blocks.2.upsamplers.0.conv": 590080,
+        "up_blocks.3": 1789952,
+        "up_blocks.3.resnets": 1789952,
+        "up_blocks.3.resnets.0": 706048,
+        "up_blocks.3.resnets.0.conv1": 442496,
+        "up_blocks.3.resnets.0.conv2": 147584,
+        "up_blocks.3.resnets.0.conv_shortcut": 49280,
+        "up_blocks.3.resnets.0.dropout": 0,
+        "up_blocks.3.resnets.0.nonlinearity": 0,
+        "up_blocks.3.resnets.0.norm1": 768,
+        "up_blocks.3.resnets.0.norm2": 256,
+        "up_blocks.3.resnets.0.time_emb_proj": 65664,
+        "up_blocks.3.resnets.1": 541952,
+        "up_blocks.3.resnets.1.conv1": 295040,
+        "up_blocks.3.resnets.1.conv2": 147584,
+        "up_blocks.3.resnets.1.conv_shortcut": 32896,
+        "up_blocks.3.resnets.1.dropout": 0,
+        "up_blocks.3.resnets.1.nonlinearity": 0,
+        "up_blocks.3.resnets.1.norm1": 512,
+        "up_blocks.3.resnets.1.norm2": 256,
+        "up_blocks.3.resnets.1.time_emb_proj": 65664,
+        "up_blocks.3.resnets.2": 541952,
+        "up_blocks.3.resnets.2.conv1": 295040,
+        "up_blocks.3.resnets.2.conv2": 147584,
+        "up_blocks.3.resnets.2.conv_shortcut": 32896,
+        "up_blocks.3.resnets.2.dropout": 0,
+        "up_blocks.3.resnets.2.nonlinearity": 0,
+        "up_blocks.3.resnets.2.norm1": 512,
+        "up_blocks.3.resnets.2.norm2": 256,
+        "up_blocks.3.resnets.2.time_emb_proj": 65664
+      },
+      "parameterized_modules": 164,
+      "parameters": {
+        "conv_in.bias": {
+          "dtype": "torch.float32",
+          "identity": "conv_in.bias",
+          "shape": [
+            128
+          ]
+        },
+        "conv_in.weight": {
+          "dtype": "torch.float32",
+          "identity": "conv_in.weight",
+          "shape": [
+            128,
+            3,
+            3,
+            3
+          ]
+        },
+        "conv_norm_out.bias": {
+          "dtype": "torch.float32",
+          "identity": "conv_norm_out.bias",
+          "shape": [
+            128
+          ]
+        },
+        "conv_norm_out.weight": {
+          "dtype": "torch.float32",
+          "identity": "conv_norm_out.weight",
+          "shape": [
+            128
+          ]
+        },
+        "conv_out.bias": {
+          "dtype": "torch.float32",
+          "identity": "conv_out.bias",
+          "shape": [
+            3
+          ]
+        },
+        "conv_out.weight": {
+          "dtype": "torch.float32",
+          "identity": "conv_out.weight",
+          "shape": [
+            3,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.downsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.downsamplers.0.conv.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.downsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.downsamplers.0.conv.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.conv1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.conv1.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.conv2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.conv2.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.norm1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.norm1.weight",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.norm2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.norm2.weight",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.time_emb_proj.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.0.time_emb_proj.weight",
+          "shape": [
+            128,
+            512
+          ]
+        },
+        "down_blocks.0.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.conv1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.conv1.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.conv2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.conv2.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.0.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.norm1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.norm1.weight",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.norm2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.norm2.weight",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.time_emb_proj.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.0.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.0.resnets.1.time_emb_proj.weight",
+          "shape": [
+            128,
+            512
+          ]
+        },
+        "down_blocks.1.attentions.0.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.0.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.0.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.attentions.1.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.attentions.1.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "down_blocks.1.downsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.downsamplers.0.conv.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.downsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.downsamplers.0.conv.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.1.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            128,
+            3,
+            3
+          ]
+        },
+        "down_blocks.1.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.1.resnets.0.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.conv_shortcut.weight",
+          "shape": [
+            256,
+            128,
+            1,
+            1
+          ]
+        },
+        "down_blocks.1.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.norm1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.1.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.norm1.weight",
+          "shape": [
+            128
+          ]
+        },
+        "down_blocks.1.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "down_blocks.1.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.1.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.1.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.1.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.1.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "down_blocks.2.downsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.downsamplers.0.conv.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.downsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.downsamplers.0.conv.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.2.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.2.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.2.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "down_blocks.2.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.2.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.2.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.2.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.2.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "down_blocks.3.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.3.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.3.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "down_blocks.3.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.3.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "down_blocks.3.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "down_blocks.3.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "down_blocks.3.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "mid_block.attentions.0.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.attentions.0.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.attentions.0.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "mid_block.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "mid_block.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "mid_block.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "mid_block.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "mid_block.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "mid_block.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "mid_block.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "mid_block.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "time_embedding.linear_1.bias": {
+          "dtype": "torch.float32",
+          "identity": "time_embedding.linear_1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "time_embedding.linear_1.weight": {
+          "dtype": "torch.float32",
+          "identity": "time_embedding.linear_1.weight",
+          "shape": [
+            512,
+            128
+          ]
+        },
+        "time_embedding.linear_2.bias": {
+          "dtype": "torch.float32",
+          "identity": "time_embedding.linear_2.bias",
+          "shape": [
+            512
+          ]
+        },
+        "time_embedding.linear_2.weight": {
+          "dtype": "torch.float32",
+          "identity": "time_embedding.linear_2.weight",
+          "shape": [
+            512,
+            512
+          ]
+        },
+        "up_blocks.0.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.0.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.0.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.0.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.1.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.0.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.0.resnets.2.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.2.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.0.resnets.2.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.0.resnets.2.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.2.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.0.resnets.2.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.resnets.2.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.resnets.2.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.0.upsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.upsamplers.0.conv.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.0.upsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.0.upsamplers.0.conv.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.0.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.1.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.1.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.1.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.1.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.1.resnets.2.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.2.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.1.resnets.2.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.1.resnets.2.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.2.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.1.resnets.2.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.resnets.2.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.resnets.2.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.1.upsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.upsamplers.0.conv.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.1.upsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.1.upsamplers.0.conv.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.attentions.0.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.0.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.0.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.1.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.1.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.group_norm.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.group_norm.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.group_norm.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.group_norm.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_k.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_k.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_k.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_k.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_out.0.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_out.0.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_out.0.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_out.0.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_q.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_q.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_q.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_q.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_v.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_v.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.attentions.2.to_v.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.attentions.2.to_v.weight",
+          "shape": [
+            256,
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.0.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.2.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.2.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.2.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.0.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.2.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv1.weight",
+          "shape": [
+            256,
+            512,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.1.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.conv_shortcut.weight",
+          "shape": [
+            256,
+            512,
+            1,
+            1
+          ]
+        },
+        "up_blocks.2.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.norm1.bias",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.2.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.norm1.weight",
+          "shape": [
+            512
+          ]
+        },
+        "up_blocks.2.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.1.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.2.resnets.2.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv1.weight",
+          "shape": [
+            256,
+            384,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.2.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv2.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.2.resnets.2.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv_shortcut.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.conv_shortcut.weight",
+          "shape": [
+            256,
+            384,
+            1,
+            1
+          ]
+        },
+        "up_blocks.2.resnets.2.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.norm1.bias",
+          "shape": [
+            384
+          ]
+        },
+        "up_blocks.2.resnets.2.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.norm1.weight",
+          "shape": [
+            384
+          ]
+        },
+        "up_blocks.2.resnets.2.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.norm2.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.norm2.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.time_emb_proj.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.resnets.2.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.resnets.2.time_emb_proj.weight",
+          "shape": [
+            256,
+            512
+          ]
+        },
+        "up_blocks.2.upsamplers.0.conv.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.upsamplers.0.conv.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.2.upsamplers.0.conv.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.2.upsamplers.0.conv.weight",
+          "shape": [
+            256,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.0.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv1.weight",
+          "shape": [
+            128,
+            384,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.0.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv2.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.0.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv_shortcut.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.conv_shortcut.weight",
+          "shape": [
+            128,
+            384,
+            1,
+            1
+          ]
+        },
+        "up_blocks.3.resnets.0.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.norm1.bias",
+          "shape": [
+            384
+          ]
+        },
+        "up_blocks.3.resnets.0.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.norm1.weight",
+          "shape": [
+            384
+          ]
+        },
+        "up_blocks.3.resnets.0.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.norm2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.norm2.weight",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.time_emb_proj.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.0.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.0.time_emb_proj.weight",
+          "shape": [
+            128,
+            512
+          ]
+        },
+        "up_blocks.3.resnets.1.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv1.weight",
+          "shape": [
+            128,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.1.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv2.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.1.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv_shortcut.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.conv_shortcut.weight",
+          "shape": [
+            128,
+            256,
+            1,
+            1
+          ]
+        },
+        "up_blocks.3.resnets.1.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.3.resnets.1.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.3.resnets.1.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.norm2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.norm2.weight",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.time_emb_proj.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.1.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.1.time_emb_proj.weight",
+          "shape": [
+            128,
+            512
+          ]
+        },
+        "up_blocks.3.resnets.2.conv1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv1.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.conv1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv1.weight",
+          "shape": [
+            128,
+            256,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.2.conv2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.conv2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv2.weight",
+          "shape": [
+            128,
+            128,
+            3,
+            3
+          ]
+        },
+        "up_blocks.3.resnets.2.conv_shortcut.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv_shortcut.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.conv_shortcut.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.conv_shortcut.weight",
+          "shape": [
+            128,
+            256,
+            1,
+            1
+          ]
+        },
+        "up_blocks.3.resnets.2.norm1.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.norm1.bias",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.3.resnets.2.norm1.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.norm1.weight",
+          "shape": [
+            256
+          ]
+        },
+        "up_blocks.3.resnets.2.norm2.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.norm2.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.norm2.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.norm2.weight",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.time_emb_proj.bias": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.time_emb_proj.bias",
+          "shape": [
+            128
+          ]
+        },
+        "up_blocks.3.resnets.2.time_emb_proj.weight": {
+          "dtype": "torch.float32",
+          "identity": "up_blocks.3.resnets.2.time_emb_proj.weight",
+          "shape": [
+            128,
+            512
+          ]
+        }
+      },
+      "scope": "denoiser",
+      "total": 35746307
+    }
+  },
+  "root.denoiser.constructed_stage_relations": {
+    "summary": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "d78341597547c5be57bff86122c5c2eac969e6ac2eabbf281dcf8aaa9ea9966e"
+      ],
+      "evidence_refs": [
+        "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:315:16:317:17",
+        "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:315:51:317:17",
+        "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:321:12:321:49",
+        "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:330:12:330:80",
+        "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:336:25:336:65"
+      ],
+      "fact_id": "root.denoiser.constructed_stage_relations",
+      "fact_status": "",
+      "index_fingerprints": [
+        "cb6a0bfe68fef24f13230ce9eb9bbb8a9a751c64fdb10f6e3a3d07f86fc39bcb"
+      ],
+      "proof_kind": "constructed_stages_and_skip_route",
+      "reader_symbols": [
+        "evidence.unet_claims.read_unet_stage_relations"
+      ],
+      "recipe_ids": []
+    },
+    "value": {
+      "consumer_field": "up_blocks",
+      "consumer_stages": [
+        "up_blocks.0",
+        "up_blocks.1",
+        "up_blocks.2",
+        "up_blocks.3"
+      ],
+      "intermediate_stages": [
+        "mid_block"
+      ],
+      "producer_field": "down_blocks",
+      "producer_stages": [
+        "down_blocks.0",
+        "down_blocks.1",
+        "down_blocks.2",
+        "down_blocks.3"
+      ],
+      "skip_route": {
+        "accumulation": "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:321:12:321:49",
+        "consumer": "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:336:25:336:65",
+        "producer": "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:315:51:317:17",
+        "selection": "sha256:ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733:330:12:330:80"
+      },
+      "unresolved_relations": [
+        {
+          "kind": "whole_callable_open",
+          "reason": "positive local stage evidence; whole-callable CFG coverage is open",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "kind": "direct_stage_order_open",
+          "reason": "inter-loop source position does not prove unconditional execution order",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/display-ir.json.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/display-ir.json.gz",
+    "outer_wrapper_sha256": "e84b44f747f04ec121cc8b4ea88a689f2e420bf08a52c901d040cd80d12e2d2f",
+    "original_capture_gzip_sha256": "1b611a9593b6f97365a6e72d59af9dba07dd80a7cc533bfbda9d088285cc2127",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  },
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/ir.json.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/ir.json.gz",
+    "outer_wrapper_sha256": "50f8511f7284ae09facd81612e0f35bc230abf9a2a2fe975621d05217f08c9b0",
+    "original_capture_gzip_sha256": "f2606ca99ed744558919b39a1c9f5c57b563f77aace94cbb330a23b8c7ced0d4",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  },
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/page.html.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/sd-v1-4/page.html.gz",
+    "outer_wrapper_sha256": "b02c516983c571f676deeddc53471bc577ac8e57ee8db480a541159a43e0a518",
+    "original_capture_gzip_sha256": "bd1a9bca223568c9781196e3ff2115e76dff22af4e319e9cb47b589b46f33ea4",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  },
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/display-ir.json.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/display-ir.json.gz",
+    "outer_wrapper_sha256": "be8366d5faaffd64622b4cfc543ba09c4965ad58e6c41255085dbe701f87b969",
+    "original_capture_gzip_sha256": "4a528f100b52fc267a1c5ed05a4b0093124e307e6efdfac25a8f4b45d6e3aa29",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  },
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/ir.json.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/ir.json.gz",
+    "outer_wrapper_sha256": "dccab49ce529c29cc8fc79256e35f9f3e9f8a652c122637fb512e032be660aec",
+    "original_capture_gzip_sha256": "47758ff06247a436d7fe22ee5e3c114762eb712fd15a45ebd7cb47fc415597da",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  },
+  {
+    "original_committed_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/page.html.gz.gz",
+    "current_path": "verification/receipts/S8-coverage-5227e9c-return/actual-generate/stable-diffusion-xl-base-1-0/page.html.gz",
+    "outer_wrapper_sha256": "106822e197b34752e5eb144c148ab659f22c67e4659ed7cf9618d66398e6e929",
+    "original_capture_gzip_sha256": "bd2ad21fe80bbdf9fac2fa1c1aecdc21c2d47dae998a37e43c7b57bc794c6305",
+    "original_capture_bytes_preserved_after_removing_redundant_gzip_wrapper": true
+  }
+]

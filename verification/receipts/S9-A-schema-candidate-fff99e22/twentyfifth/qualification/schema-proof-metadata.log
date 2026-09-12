@@ -1,0 +1,495 @@
+.....F.....F......FFFFF................................F................ [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 77%]
+...................................................FF..FF.....           [100%]
+=================================== FAILURES ===================================
+_ test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-0/test_external_norm_has_no_inte0')
+
+    def test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback(tmp_path):
+>       _bundle, index, root, _document, _result, fact = _fixture(
+            tmp_path, constructor='nn.LayerNorm(config.hidden)')
+
+tests/test_s9_reader_placement.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_reader_placement.py:46: in _fixture
+    fact = qualify_reader_fact(raw, result, index, document)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/reader_claims.py:634: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:20: in __init__
+    ???
+model_unfolder/evidence/facts.py:188: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:266: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='rmsnorm', status='code_proven', completeness='presence_onl...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:557: ValueError
+_ test_actual_geometry_and_mechanism_consumptions_bind_complete_fact_value[False] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-0/test_actual_geometry_and_mecha0')
+omitted = False
+
+    @pytest.mark.parametrize('omitted', [False, True])
+    def test_actual_geometry_and_mechanism_consumptions_bind_complete_fact_value(tmp_path, omitted):
+        context = _context(tmp_path)
+        config = _config()
+        if omitted:
+            del config['num_attention_heads']
+        ir, facts, events = _parse(context, config, {'num_attention_heads': 8})
+        assert (ir.layers[0].attention.kind, ir.layers[0].attention.head_dim) == ('gqa', 8)
+        for key, expected_count in [('mechanism', 2), ('head_geometry', 3)]:
+            fact = facts['decoder.attention.' + key]
+            assert fact.status == ('class_default' if omitted else 'code_and_config')
+            validate_fact_claim(fact, fact.claim_evidence)
+            decisions = _decisions(events, key)
+            assert len(decisions) == expected_count
+            assert len({event.config_path for event in decisions}) == expected_count
+            assert all(event.value_status_hash == value_status_hash(fact.value, fact.status)
+                       for event in decisions)
+            heads = next(event for event in decisions if event.config_path == 'num_attention_heads')
+            assert heads.present is (not omitted) and heads.path_exact
+>           assert heads.provenance == ('class_default' if omitted else 'checkpoint_declared')
+E           AssertionError: assert '' == 'checkpoint_declared'
+E             
+E             - checkpoint_declared
+
+tests/test_s9_attention_event_association.py:53: AssertionError
+_ test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary[mla] _
+
+branch = 'mla'
+
+    @pytest.mark.parametrize('branch', ['mla', 'partial'])
+    def test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary(branch):
+        from model_unfolder.parser import config_to_ir
+        if branch == 'mla':
+            config = json.loads((Path(__file__).parent / 'sable_test_corpus' / 'deepseek-v3.json').read_text())['config']
+        else:
+            # The source still proves equal head counts. Rival width spellings
+            # correctly leave the common head factor unresolved.
+            config = {
+                'model_type': 'gpt2', 'architectures': ['GPT2LMHeadModel'],
+                'hidden_size': 96, 'n_embd': 64, 'n_layer': 2, 'n_head': 4,
+                'n_inner': 256, 'vocab_size': 50257,
+            }
+        context = ParseContext.build(config)
+>       ir = config_to_ir(config, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_attention_event_association.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+_ test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary[partial] _
+
+branch = 'partial'
+
+    @pytest.mark.parametrize('branch', ['mla', 'partial'])
+    def test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary(branch):
+        from model_unfolder.parser import config_to_ir
+        if branch == 'mla':
+            config = json.loads((Path(__file__).parent / 'sable_test_corpus' / 'deepseek-v3.json').read_text())['config']
+        else:
+            # The source still proves equal head counts. Rival width spellings
+            # correctly leave the common head factor unresolved.
+            config = {
+                'model_type': 'gpt2', 'architectures': ['GPT2LMHeadModel'],
+                'hidden_size': 96, 'n_embd': 64, 'n_layer': 2, 'n_head': 4,
+                'n_inner': 256, 'vocab_size': 50257,
+            }
+        context = ParseContext.build(config)
+>       ir = config_to_ir(config, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_attention_event_association.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = False, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+____ test_actual_activation_dispatch_event_uses_final_existing_tier[False] _____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-0/test_actual_activation_dispatc0')
+omitted = False
+
+    @pytest.mark.parametrize('omitted', [False, True])
+    def test_actual_activation_dispatch_event_uses_final_existing_tier(tmp_path, omitted):
+        from test_ffn_mechanism import _reader
+        result = _reader(tmp_path, '''
+    class FeedForward:
+        def __init__(self, config):
+            self.up = nn.Linear(config.hidden, config.wide)
+            self.down = nn.Linear(config.wide, config.hidden)
+            self.act = ACT2FN[config.hidden_act]
+        def forward(self, x):
+            return self.down(self.act(self.up(x)))
+    ''')
+        assert result.status == 'resolved'
+        source = str(tmp_path/'model.py')
+        bundle = SourceBundle(source='local', files=(source,), architecture='Wrapper',
+                              component_files={'root': (source,)},
+                              component_architectures={'root': 'Wrapper'})
+        context = ParseContext(bundle)
+        config = _config(hidden=64, wide=128, intermediate_size=128, hidden_act='silu')
+        if omitted:
+            del config['hidden_act']
+>       _ir, facts, events = _parse(context, config, {'hidden_act': 'silu'})
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_attention_event_association.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_attention_event_association.py:25: in _parse
+    ir = parser.parse(prepared.document, context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = False, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+_____ test_actual_activation_dispatch_event_uses_final_existing_tier[True] _____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-0/test_actual_activation_dispatc1')
+omitted = True
+
+    @pytest.mark.parametrize('omitted', [False, True])
+    def test_actual_activation_dispatch_event_uses_final_existing_tier(tmp_path, omitted):
+        from test_ffn_mechanism import _reader
+        result = _reader(tmp_path, '''
+    class FeedForward:
+        def __init__(self, config):
+            self.up = nn.Linear(config.hidden, config.wide)
+            self.down = nn.Linear(config.wide, config.hidden)
+            self.act = ACT2FN[config.hidden_act]
+        def forward(self, x):
+            return self.down(self.act(self.up(x)))
+    ''')
+        assert result.status == 'resolved'
+        source = str(tmp_path/'model.py')
+        bundle = SourceBundle(source='local', files=(source,), architecture='Wrapper',
+                              component_files={'root': (source,)},
+                              component_architectures={'root': 'Wrapper'})
+        context = ParseContext(bundle)
+        config = _config(hidden=64, wide=128, intermediate_size=128, hidden_act='silu')
+        if omitted:
+            del config['hidden_act']
+>       _ir, facts, events = _parse(context, config, {'hidden_act': 'silu'})
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_attention_event_association.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_attention_event_association.py:25: in _parse
+    ir = parser.parse(prepared.document, context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = False, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+_ test_actual_migrated_product_facts_are_admitted_without_changing_their_proofs[llama-7b-required_keys0] _
+
+slug = 'llama-7b'
+required_keys = {'gated', 'hidden_size', 'norm_kind', 'projection_mode', 'tie_word_embeddings'}
+
+    @pytest.mark.parametrize("slug,required_keys", [
+        ("llama-7b", {"norm_kind", "gated", "projection_mode", "hidden_size", "tie_word_embeddings"}),
+        ("fluxtransformer2dmodel", {"diffusion_bookend_geometry", "diffusion_stream_relation", "diffusion_ffn_mechanism"}),
+        ("hunyuanvideo", {"diffusion_stack_variant", "diffusion_attention_head_protocol", "diffusion_attention_head_dim"}),
+    ])
+    def test_actual_migrated_product_facts_are_admitted_without_changing_their_proofs(slug, required_keys):
+        payload = json.loads((Path(__file__).parent / "sable_test_corpus" / f"{slug}.json").read_text())
+        config = payload["config"]
+        context = ParseContext.build(config)
+>       config_to_ir(config, parse_context=context)
+
+tests/test_s9_projection_claim_requirements.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+________ test_unresolved_reconciliation_is_wired_into_sable_as_blocking ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x14878fb00>
+
+    def test_unresolved_reconciliation_is_wired_into_sable_as_blocking(monkeypatch):
+        """The table is shadow-only, but publishing one must activate the gate."""
+        import json
+        from pathlib import Path
+    
+        from model_unfolder import parser
+        from model_unfolder.sable import sable
+    
+        table = reconcile(
+            model="fixture", inventory=_inventory(), observations=(),
+            config_document=_document())
+        original = parser.config_to_ir
+    
+        def with_reconciliation(*args, **kwargs):
+            ir = original(*args, **kwargs)
+            ir.extras["reconciliation"] = table.to_dict()
+            return ir
+    
+        monkeypatch.setattr(parser, "config_to_ir", with_reconciliation)
+        fixture = Path(__file__).parent / "sable_test_corpus" / "llama-7b.json"
+        config = json.loads(fixture.read_text(encoding="utf-8"))["config"]
+>       report = sable(config, render_images=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s7_reconciliation.py:769: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/sable.py:344: in sable
+    diagram = Diagram(config_to_ir(cfg, parse_context=context))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_s7_reconciliation.py:762: in with_reconciliation
+    ir = original(*args, **kwargs)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+____________ test_fused_bloom_parser_projects_the_divided_dimension ____________
+
+    def test_fused_bloom_parser_projects_the_divided_dimension():
+        config = AutoConfig.for_model("bloom")
+        context = ParseContext.build(config, source="local")
+>       ir = config_to_ir(config, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_geometry.py:241: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = False, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+____ test_mla_generic_head_declarations_cannot_compete_with_latent_geometry ____
+
+    def test_mla_generic_head_declarations_cannot_compete_with_latent_geometry():
+        """DeepSeek carries conventional-looking compatibility declarations, but
+        its exact source-proven MLA protocol names decoupled Q/K/V operands.  The
+        generic fields stay visible as scoped non-inputs and never become standing
+        debt or an alternate geometry authority."""
+        fixture = json.loads((
+            Path("tests/sable_test_corpus") / "deepseek-v3.json"
+        ).read_text(encoding="utf-8"))
+>       ir = config_to_ir(fixture["config"])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_geometry.py:257: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:56: in config_to_ir
+    return run_cached_parse(
+physics/result_cache.py:415: in run_cached_parse
+    result = producer()
+             ^^^^^^^^^^
+model_unfolder/parser.py:59: in <lambda>
+    lambda: config_to_ir(cfg_or_id, token=token, inspect_code=inspect_code,
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+_________ test_parser_projects_gemma3n_and_gemma4_occurrence_geometry __________
+
+    def test_parser_projects_gemma3n_and_gemma4_occurrence_geometry():
+        expected = {
+            "gemma3n_text": (("gqa", 8, 2, 256), ("gqa", 8, 2, 256)),
+            "gemma4_text": (("gqa", 8, 4, 256), ("gqa", 8, 4, 512)),
+        }
+        for model_type, (first, special) in expected.items():
+            document = AutoConfig.for_model(model_type).to_dict()
+            context = ParseContext.build(document)
+>           ir = config_to_ir(document, parse_context=context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_geometry.py:307: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+_____ test_familiar_global_fields_cannot_create_a_llama_schedule_override ______
+
+    def test_familiar_global_fields_cannot_create_a_llama_schedule_override():
+        document = AutoConfig.for_model("llama").to_dict()
+        document.update({
+            "global_head_dim": 512,
+            "num_global_key_value_heads": 1,
+            "attention_k_eq_v": True,
+        })
+        context = ParseContext.build(document)
+>       ir = config_to_ir(document, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_geometry.py:328: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2449: in parse
+    _note_ffn_mechanism_fact("gated", ffn_gated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'gated', value = True, status = 'code_proven'
+source = 'decoder_ffn_mechanism_for_path'
+
+    def _note_ffn_mechanism_fact(key, value, status, source):
+        from ...evidence.config_access import current_prepared_document
+        from ...evidence.reader_claims import ReaderClaimUnavailable
+>       status = _ffn_fact_status(value, status)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'str' object is not callable
+
+model_unfolder/adapters/transformer/parser.py:980: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_s9_reader_placement.py::test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback
+FAILED tests/test_s9_attention_event_association.py::test_actual_geometry_and_mechanism_consumptions_bind_complete_fact_value[False]
+FAILED tests/test_s9_attention_event_association.py::test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary[mla]
+FAILED tests/test_s9_attention_event_association.py::test_actual_auxiliary_geometry_branches_hash_their_existing_complete_dictionary[partial]
+FAILED tests/test_s9_attention_event_association.py::test_actual_activation_dispatch_event_uses_final_existing_tier[False]
+FAILED tests/test_s9_attention_event_association.py::test_actual_activation_dispatch_event_uses_final_existing_tier[True]
+FAILED tests/test_s9_projection_claim_requirements.py::test_actual_migrated_product_facts_are_admitted_without_changing_their_proofs[llama-7b-required_keys0]
+FAILED tests/test_s7_reconciliation.py::test_unresolved_reconciliation_is_wired_into_sable_as_blocking
+FAILED tests/test_attention_geometry.py::test_fused_bloom_parser_projects_the_divided_dimension
+FAILED tests/test_attention_geometry.py::test_mla_generic_head_declarations_cannot_compete_with_latent_geometry
+FAILED tests/test_attention_geometry.py::test_parser_projects_gemma3n_and_gemma4_occurrence_geometry
+FAILED tests/test_attention_geometry.py::test_familiar_global_fields_cannot_create_a_llama_schedule_override
+12 failed, 266 passed in 30.59s

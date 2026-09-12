@@ -1,0 +1,23 @@
+{
+  "scope": "Final independent-review handoff only",
+  "before": [
+    {
+      "path": "checkpoint-before.md",
+      "sha256": "997251c45e1cf7e9485237604463ad13316d8c6be84acb6d4577878235324464"
+    },
+    {
+      "path": "sheet-before.md",
+      "sha256": "65f57b6a1e1f80e6deb907505e79924c4cd7a5693c5d7b18ed31bb60cec3dc48"
+    }
+  ],
+  "after": [
+    {
+      "path": "z-docs/READ_AFTER_COMPACTION.md",
+      "sha256": "38728723c056ca1cfbb8c4863086a007708d994c9432ff7615be68594db76ec1"
+    },
+    {
+      "path": "z-docs/11-execution/S9-A.md",
+      "sha256": "b66226605620dc8408a141263f36137ce0aa3fc7a7f4167b85df54dafec33052"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "all_pass": true,
+  "cases": [
+    {
+      "added_receipts": {
+        "card_fact_lines": 5
+      },
+      "archived_sources_checked": 10,
+      "case": "ddpm-cifar10",
+      "component_entry": true,
+      "html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+      "parameter_count": 35746307,
+      "pass": true,
+      "result_sha256": "ffedbc9ffc2b97f07ceb52db6f2d7bb450207a78d8f78d0aefccfc2fb91aabfa",
+      "stage_count": 9
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 7,
+        "runtime_ffn_fact": 16
+      },
+      "archived_sources_checked": 17,
+      "case": "sd14-ordinary",
+      "component_entry": false,
+      "html_sha256": "c647b578c95d03ba2f268aa9624509411cbde790de5b8fb529844d3261936385",
+      "parameter_count": 859520964,
+      "pass": true,
+      "result_sha256": "a0a31454f9f7ba8577188b43ab1701cfe8acfbb7bd8a4b5c98a28432608a89ce",
+      "stage_count": 9
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 74
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-changed",
+      "component_entry": false,
+      "html_sha256": "d97fe77c7d694aa4412b996737cea080651be1c23d96dad5f15298f147d6e63c",
+      "parameter_count": 2656985604,
+      "pass": true,
+      "result_sha256": "2592be743163ecf275eb590cd76d946bd1a3ed0eb552aecbae6e52c801d6e049",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-inpainting",
+      "component_entry": true,
+      "html_sha256": "cea6daff923346ca9df3a2196acc391a513b8a1c11dca7070ca26fb6f505c951",
+      "parameter_count": 2567478084,
+      "pass": true,
+      "result_sha256": "8fdb4e93dc68a7c58e3b09253e61cc6b31829a4248c1a53a0ee489ab7234d6e6",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-misleading",
+      "component_entry": false,
+      "html_sha256": "3dfc7b490f6792cc19a1b12d3700eca053a23ff886422f0f9901a26ed1ec839f",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "5c54b0565881190d30a53453376fc315c143a83e4969a835e089c9985fb74bef",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5
+      },
+      "archived_sources_checked": 16,
+      "case": "sdxl-missing",
+      "component_entry": false,
+      "html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "d68401e00912d000a21b3ef873b5a1ac1857beccb401562c22974f79c24f864f",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-ordinary",
+      "component_entry": false,
+      "html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "928e4f2e20032f9615aca698578871b01153550413a01b5e55aa1a1e522ecec5",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 7,
+        "runtime_ffn_fact": 44
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-refiner",
+      "component_entry": true,
+      "html_sha256": "f34f5e5f253cda344ac7e39ee33f35ab3b102cb5dab63b790fdfe0487834ac7a",
+      "parameter_count": 2259526660,
+      "pass": true,
+      "result_sha256": "b8b4fbe84893f7fb0b152a1749a6619c00c4af9697c2d803665d1254fd5ef3d2",
+      "stage_count": 9
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-rewrite",
+      "component_entry": false,
+      "html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "ee74bc9ce665a48d224e6296b441754ffbad6f77196b3a5bfba87dc7a3459221",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-sparse",
+      "component_entry": false,
+      "html_sha256": "be5b87d341330dc591075cd69d3482680a2b02e86a02919b14f5f96ee7ddcdad",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "ef18b10f782b7744308c22d10314c5f2ffbe709878cf2fd277b8b4d7c93dc12e",
+      "stage_count": 7
+    },
+    {
+      "added_receipts": {
+        "card_fact_lines": 5,
+        "runtime_ffn_fact": 70
+      },
+      "archived_sources_checked": 17,
+      "case": "sdxl-unchanged",
+      "component_entry": false,
+      "html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "parameter_count": 2567463684,
+      "pass": true,
+      "result_sha256": "9acfbe0f86960f948764a7f11369f9da98c2aa1a398b7793eec18496a6feb519",
+      "stage_count": 7
+    }
+  ],
+  "no_model_or_pytest": true
+}

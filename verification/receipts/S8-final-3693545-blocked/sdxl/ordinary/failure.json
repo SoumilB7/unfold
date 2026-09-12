@@ -1,0 +1,6 @@
+{
+  "blessed": false,
+  "detail": "typed write violates the fact registry (H2): typed write of unregistered fact 'primary_state_ports' (owner 'root.denoiser')",
+  "exception_type": "ValueError",
+  "status": "failed"
+}

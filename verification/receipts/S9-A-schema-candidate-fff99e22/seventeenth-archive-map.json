@@ -1,0 +1,216 @@
+{
+  "directories": [
+    {
+      "archived": "seventeenth/qualification",
+      "original": "/private/tmp/unfold-s9a-seventeenth/qualification"
+    },
+    {
+      "archived": "seventeenth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters/transformer",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters/transformer"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters/transformer/special_parts",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters/transformer/special_parts"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters/transformer/special_parts/modalities",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters/transformer/special_parts/modalities"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "seventeenth/census.py",
+      "bytes": 5074,
+      "original": "/private/tmp/unfold-s9a-seventeenth/census.py",
+      "sha256": "29fbf62111396d186946f41d315424806a1797193232d8d896d2629ca8864e95"
+    },
+    {
+      "archived": "seventeenth/freeze-scope.json",
+      "bytes": 2800,
+      "original": "/private/tmp/unfold-s9a-seventeenth/freeze-scope.json",
+      "sha256": "1e3f30b36a0e2d23bb7431ee2a42393264c9912a95aaea7ce59413bd2bd444cf"
+    },
+    {
+      "archived": "seventeenth/generate-matrix.py",
+      "bytes": 546,
+      "original": "/private/tmp/unfold-s9a-seventeenth/generate-matrix.py",
+      "sha256": "40c9a48d66f418ecf936d4e2fbd5fa5c169bb8b097fc1d22d2f277c29c298a3f"
+    },
+    {
+      "archived": "seventeenth/qualification/result.json",
+      "bytes": 541,
+      "original": "/private/tmp/unfold-s9a-seventeenth/qualification/result.json",
+      "sha256": "5c51b6aeffde87dcf51df07afe9233daa87a4fe618618e0a78f7a6f802624cdc"
+    },
+    {
+      "archived": "seventeenth/qualification/schema-proof-metadata.log",
+      "bytes": 2177,
+      "original": "/private/tmp/unfold-s9a-seventeenth/qualification/schema-proof-metadata.log",
+      "sha256": "6df5ea7e6f90e53cd61dd3d893ea36363c5bf2f3728046ce664a61fcf967a18f"
+    },
+    {
+      "archived": "seventeenth/run-broader.py",
+      "bytes": 2628,
+      "original": "/private/tmp/unfold-s9a-seventeenth/run-broader.py",
+      "sha256": "9c39043d0d05948c87b6e31862aa320d578cc47b56541971ac3faf3ee48a4882"
+    },
+    {
+      "archived": "seventeenth/run-census.py",
+      "bytes": 994,
+      "original": "/private/tmp/unfold-s9a-seventeenth/run-census.py",
+      "sha256": "6c84550b011b396f36a9ad2e3e6d88ffceeb9f338f2c94b7d5ed6ed3eb82a7a6"
+    },
+    {
+      "archived": "seventeenth/run-matrix.py",
+      "bytes": 1011,
+      "original": "/private/tmp/unfold-s9a-seventeenth/run-matrix.py",
+      "sha256": "170f2611b51bb595e524b73959db63c2383f993c72f2782a5bb6105e022dbca2"
+    },
+    {
+      "archived": "seventeenth/run-sparse.py",
+      "bytes": 1620,
+      "original": "/private/tmp/unfold-s9a-seventeenth/run-sparse.py",
+      "sha256": "f1b9a28968199b75f347e9c09fa4327105f74f51478005eae0d3580f2b0a8ebb"
+    },
+    {
+      "archived": "seventeenth/run.py",
+      "bytes": 1299,
+      "original": "/private/tmp/unfold-s9a-seventeenth/run.py",
+      "sha256": "d789709d8cb4409b82128058c383ff79e731f8da3de4ba0c1784e188675cd4c6"
+    },
+    {
+      "archived": "seventeenth/source-manifest.json",
+      "bytes": 16311,
+      "original": "/private/tmp/unfold-s9a-seventeenth/source-manifest.json",
+      "sha256": "274d01f65bf2540efa8a1396ecf019a34a3190bd9c563f90e7401f9bb8cbf1d8"
+    },
+    {
+      "archived": "seventeenth/sparse-plan.json",
+      "bytes": 823,
+      "original": "/private/tmp/unfold-s9a-seventeenth/sparse-plan.json",
+      "sha256": "b9eedd19c05ccc6ed5ad920fdf23f7f012507dd6a27302e5e0708022df840101"
+    },
+    {
+      "archived": "seventeenth-independent-review/schema-proof-metadata.log",
+      "bytes": 2177,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/schema-proof-metadata.log",
+      "sha256": "6df5ea7e6f90e53cd61dd3d893ea36363c5bf2f3728046ce664a61fcf967a18f"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 262430,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters/transformer/parser.py",
+      "sha256": "a2ebe63c8fea4bcf746badcd9fded92673fe0b9d98b0f30ca5c0036b923dc329"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "bytes": 17336,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "sha256": "69eaebbc64ed4bf40b47cde828144385ce860cc1f12cd284d3db4e4a5b1e9673"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/attention_geometry.py",
+      "bytes": 41503,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/attention_geometry.py",
+      "sha256": "c648c39c851671d82e225d5b9fabc08d22619100e5f7534df797df1bc707ec47"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/cross_attention_replacement.py",
+      "bytes": 22313,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/cross_attention_replacement.py",
+      "sha256": "3e4552fedb536057efc20dbdf46211aee81b762bbfa7a1b0456fbd00d3cf5167"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/mtp.py",
+      "bytes": 21385,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/mtp.py",
+      "sha256": "12159063539e7eac85649f457fe0b3a319de328b8b83cafc0435e68def60a6ee"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/position_absolute.py",
+      "bytes": 15492,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/position_absolute.py",
+      "sha256": "0beb87644f12d29918929b6f1db4b9691f19453650a8865302a4d80a9bd8c18a"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/position_relative_bias.py",
+      "bytes": 35040,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/position_relative_bias.py",
+      "sha256": "ba62a182ce195541fd0d006f3f16c5b529c84e15ef745282f51bee5812cafb3b"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 33354,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/model_unfolder/evidence/reader_claims.py",
+      "sha256": "5cb6e30d22884f560bc652925fa6004fb04ae42818d69b3cd8148df4515ab87f"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/tests/test_s9_operand_channels.py",
+      "bytes": 8893,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/tests/test_s9_operand_channels.py",
+      "sha256": "e8dd3e1ac7df2d0c5d1a271c598c77960597365a9a54fb2b5c2c08575165bea0"
+    },
+    {
+      "archived": "seventeenth-independent-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 10511,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/source/tests/test_s9_reader_declarations.py",
+      "sha256": "0dfb9909dc0d5859912fc208635874d35f328428b0145dc731c56eb0df9d8b76"
+    },
+    {
+      "archived": "seventeenth-independent-review/verdict.json",
+      "bytes": 3993,
+      "original": "/private/tmp/unfold-s9a-independent-seventeenth-review/verdict.json",
+      "sha256": "b2fdab84cd5220ef6c1aabeed97174045c66197e37057e44d5b3de5eaef270ef"
+    }
+  ],
+  "scope": "Released seventeenth candidate and seventeenth independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "seventeenth/changed-sources.tar.gz",
+      "archive_sha256": "5adbb0fbf822ff510e0148304d04d83965554d3b6d41b3cf32d8e7e92c115897",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 111,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-seventeenth",
+      "manifest_sha256": "274d01f65bf2540efa8a1396ecf019a34a3190bd9c563f90e7401f9bb8cbf1d8",
+      "phase": "seventeenth",
+      "uncompressed_bytes": 3848395
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 510251,
+    "copied_files": 24,
+    "source_files": 111
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

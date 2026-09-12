@@ -1,0 +1,27 @@
+[
+  {
+    "path": "changed-sources.tar.gz",
+    "sha256": "c886b1f7006d700d0a911aeb5932527500a14d38573d8c70ecfc1ca05c2f47ab",
+    "bytes": 1041965
+  },
+  {
+    "path": "composition.json",
+    "sha256": "ff39d93680d90204ee7d5d762f0730099e00c4444336950e92b77022cd0234e0",
+    "bytes": 80112
+  },
+  {
+    "path": "freeze.py",
+    "sha256": "ea3a469b9916edd2db93fcba9722c3e1d16e5a98607ddc2bff83da3a6f0187b6",
+    "bytes": 3362
+  },
+  {
+    "path": "s10-receipt-inputs.json",
+    "sha256": "69ecc79834ee454d81c884dc4373d0c2cbde739bf84bd7421471e1394ed609f1",
+    "bytes": 105610
+  },
+  {
+    "path": "source-manifest.json",
+    "sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+    "bytes": 28453
+  }
+]

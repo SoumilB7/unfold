@@ -1,0 +1,62 @@
+{
+  "model_unfolder/adapters/diffusor/blocks.py": {
+    "after": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8",
+    "before": "2e5fe4bb9a6c139c98656076c5d460ce1620ff85331ac9d741bfe6e78e72239a"
+  },
+  "model_unfolder/adapters/diffusor/parser.py": {
+    "after": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+    "before": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b"
+  },
+  "model_unfolder/adapters/diffusor/unet_cutover.py": {
+    "after": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b",
+    "before": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e"
+  },
+  "model_unfolder/adapters/diffusor/unet_projection.py": {
+    "after": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6",
+    "before": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584"
+  },
+  "model_unfolder/evidence/construction_summary.py": {
+    "after": "58a97eefd6079b239cb161cb85ae2a5d25d8c712008b6768ea6b03fbabfc7e1f",
+    "before": null
+  },
+  "model_unfolder/evidence/reconciliation.py": {
+    "after": "e02796bb0121962a2b41d153a208977f900fb985b643d887622f6dbe48b5feb4",
+    "before": "0a9c925498801b713fbe287e9b9a4689393f58efd2ddea57e787ed5b25555d68"
+  },
+  "model_unfolder/evidence/structural_writes.py": {
+    "after": "cd7c443fd88510e00463305b97e0d912252d44a8955aebf6badf22d793ebd745",
+    "before": "f640dcaf2eb2aa2677caf61983f308e607de6ff47d2a6f15f846a56581323008"
+  },
+  "model_unfolder/expanded/__init__.py": {
+    "after": "1328c4b463824befb432a2f42af2e4d565599aec118d67544307699c247346aa",
+    "before": "85863e10459578a7c26cf50c15d6a98ab26762874da5866d350b184bc6afeafc"
+  },
+  "model_unfolder/expanded/loop.py": {
+    "after": "42af502e34ca4292bf74ad0605c0e1b07d5090c8f09575f0e18fe2b18bb4b662",
+    "before": "accf5e4d2756c70f35ec156c6bdbf749335c007a5bdcd3f298f82c0baa5c8075"
+  },
+  "model_unfolder/ir.py": {
+    "after": "7f4bd0beddfb73691eb54e2823c1481ca4ad2b6daa9005fe97b1d3259ae8b320",
+    "before": "99933df551ee6c621d65c7e82e488bd0fce336fea9d56ff1d021e81721ae2a31"
+  },
+  "model_unfolder/params.py": {
+    "after": "d030e07e5142b9b0baf79e82a557e553e03b09d4417875f8d8fe64834295c121",
+    "before": "3193bf7c58135b082a6b722768b48677ee3bf4f050c97f3ea8e80b12b335635a"
+  },
+  "model_unfolder/renderers/html/block_views/unet.py": {
+    "after": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+    "before": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa"
+  },
+  "model_unfolder/renderers/html/cards.py": {
+    "after": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+    "before": "eef4515c131f40e2f6d595e00f65f6de9259f5ee94d091c2181f28d0019067fb"
+  },
+  "model_unfolder/renderers/html/sections.py": {
+    "after": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+    "before": "6c263501d1b03d08168063019a7bf030dcfe3a5f5066fb135d50d416ce4c4d49"
+  },
+  "model_unfolder/renderers/html/views_diffusion.py": {
+    "after": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07",
+    "before": "51773a01f75c24db0d6518dcdeb4023dd4b7c8eda33729d531d6ddea509b6182"
+  }
+}

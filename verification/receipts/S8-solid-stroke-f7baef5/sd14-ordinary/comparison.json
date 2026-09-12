@@ -1,0 +1,135 @@
+{
+  "after_dotted_arrow_count": 0,
+  "after_dotted_boundary_count": 0,
+  "all_render_events_identical": true,
+  "before_dotted_boundary_count": 18,
+  "blessed": false,
+  "changed_svg_labels": [
+    "denoiser"
+  ],
+  "html_sha256": "6c2dcc6d057d207828a752ddf09a0c0701e036f4d3d3379d883c324b4c3e6474",
+  "identity_links_have_no_arrowheads": true,
+  "identity_routes": [
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 489.0 L 55.0 489.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_down_blocks__0",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 575.0 L 55.0 575.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_down_blocks__1",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 661.0 L 55.0 661.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_down_blocks__2",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 747.0 L 55.0 747.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_down_blocks__3",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 928.0 L 55.0 928.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_time_embedding",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 30.0 399.0 L -1 399.0 L -1 1014.0 L 55.0 1014.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_3",
+      "data-target": "instance_time_proj",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 179.0 L 649 179.0 L 649 274.0 L 705.0 274.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_7",
+      "data-target": "instance_conv_act",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 179.0 L 649 179.0 L 649 360.0 L 705.0 360.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_7",
+      "data-target": "instance_conv_norm_out",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 528.0 L 649 528.0 L 649 618.0 L 705.0 618.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_6",
+      "data-target": "instance_up_blocks__3",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 528.0 L 649 528.0 L 649 704.0 L 705.0 704.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_6",
+      "data-target": "instance_up_blocks__2",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 528.0 L 649 528.0 L 649 790.0 L 705.0 790.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_6",
+      "data-target": "instance_up_blocks__1",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 680.0 528.0 L 649 528.0 L 649 876.0 L 705.0 876.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_6",
+      "data-target": "instance_up_blocks__0",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    },
+    {
+      "d": "M 355.0 1217.0 L 324.0 1217.0 L 324.0 1307.0 L 380.0 1307.0",
+      "data-route-kind": "conditional_call_target",
+      "data-source": "unet_primary_region_4",
+      "data-target": "instance_mid_block",
+      "fill": "none",
+      "stroke": "#5F7C73",
+      "stroke-width": "1.5"
+    }
+  ],
+  "only_exact_stroke_caption_delta": true,
+  "removed_dash_attributes": 18,
+  "render_event_count": 2534,
+  "route_and_node_metadata_identical": true
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "S9-A exact consumption event association; source only; no runtime verdict",
+  "base": "fff99e22 + immutable twentyfourth source snapshot",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "efd17066cf2c941bc1e0e134253b648127f626d29bf8f7fa5a74aea2259bf435",
+      "base_sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d",
+      "bytes": 266009,
+      "base": "twentyfourth"
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "sha256": "62380443450f512f336dd3b024c61a6088118b6a385f3bb22138adaf821e45b3",
+      "base_sha256": null,
+      "bytes": 8377,
+      "base": "new file"
+    }
+  ],
+  "attention_reader_changed_from_twentyfourth": false,
+  "source_validation": "Both owned files parsed with stdlib ast only; no product modules imported. No tests or models run.",
+  "proposed_tests": [
+    "python3 -m pytest -q tests/test_s9_attention_event_association.py tests/test_s9_registered_default_events.py tests/test_s9_default_consumption.py tests/test_attention_geometry.py tests/test_ffn_mechanism.py"
+  ],
+  "required_followup": [
+    "Independent source review of exact handoff",
+    "Root-only focused execution in new frozen candidate",
+    "Actual sparse Llama fact/event/IR delta comparison; raw prior FAIL retained"
+  ]
+}

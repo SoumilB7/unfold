@@ -1,0 +1,376 @@
+{
+  "slug": "nemotron-h-8b",
+  "status": "data-only survival of active cited fact keys, no acceptance inferred",
+  "rows_changed": [
+    {
+      "instance_path": "model.layers.0.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.1.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.10.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.11.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.12.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.13.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.14.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.15.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.16.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.17.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.18.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.19.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.2.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.20.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.21.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.22.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.23.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.24.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.25.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.26.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.27.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.28.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.29.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.3.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.30.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.31.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.32.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.33.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.34.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.35.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.36.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.37.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.38.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.39.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.4.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.40.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.41.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.42.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.43.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.44.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.45.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.46.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.47.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.48.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.49.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.5.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.50.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.51.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.6.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.7.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.8.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    },
+    {
+      "instance_path": "model.layers.9.norm",
+      "removed": [],
+      "added": [
+        "decoder.layer.norm_kind"
+      ]
+    }
+  ],
+  "total_removed": 0,
+  "total_added": 52,
+  "removed_counts": {},
+  "added_counts": {
+    "decoder.layer.norm_kind": 52
+  }
+}

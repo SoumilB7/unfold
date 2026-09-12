@@ -1,0 +1,15 @@
+{
+  "added": [
+    ""
+  ],
+  "added_reason": "root is present in accepted S6 raw observation too; the old S7 join dropped its exact empty address",
+  "baseline": "83140f1 accepted S7 matrix",
+  "baseline_positive_paths": 1690,
+  "fresh_positive_paths": 1691,
+  "functional_observations": 889,
+  "lost": [],
+  "module_calls": 1725,
+  "ordinary_inventory_checkpoint": "d3a4d61",
+  "provenance_identical": true,
+  "scope": "family verification; not mandatory production probe; no baseline blessing"
+}

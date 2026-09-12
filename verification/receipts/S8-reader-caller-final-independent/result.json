@@ -1,0 +1,876 @@
+{
+  "checkpoint": "c38b008af8153302d85bbaf2a8e3593841d87e1a",
+  "legacy_enabling_callers": [
+    {
+      "line": 298,
+      "path": "scripts/demonstrate_s8_unet.py",
+      "source": "with legacy_unet_comparison() if args.condition == \"legacy\" else nullcontext():"
+    }
+  ],
+  "limits": "Static caller/deletion and controlled parser routing audit only. No models, pytest, classifications, broad gates, output blessings or source-mechanism audit.",
+  "new_live_modules": [
+    {
+      "entries": [
+        {
+          "name": "investigate_unet_runtime",
+          "production_references": [
+            {
+              "line": 42,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "evidence = investigate_unet_runtime("
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_runtime.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_unet_ffn_claims",
+          "production_references": [
+            {
+              "line": 61,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_unet_ffn_claims(evidence.value(\"nested_ffns\") or (), evidence.bindings),"
+            }
+          ]
+        },
+        {
+          "name": "read_unet_join_claims",
+          "production_references": [
+            {
+              "line": 62,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_unet_join_claims(evidence.value(\"stage_joins\") or (), evidence.bindings)]"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_claims.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_unet_cell_connections",
+          "production_references": [
+            {
+              "line": 57,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_unet_cell_connections(evidence.value(\"mechanisms\"), evidence.bindings,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_cell_connections.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_unet_primary_ports",
+          "production_references": [
+            {
+              "line": 60,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_unet_primary_ports(execution, evidence.bindings),"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_primary_ports.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "demanded_root_lookups",
+          "production_references": [
+            {
+              "line": 48,
+              "path": "model_unfolder/evidence/runtime_inventory.py",
+              "source": "attribute_lookups=(() if index is None else demanded_root_lookups(index, symbol)))"
+            }
+          ]
+        },
+        {
+          "name": "extend_lookup_sources",
+          "production_references": [
+            {
+              "line": 99,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "bindings = replace(bindings, index=extend_lookup_sources(bindings.index, bundle, inventory))"
+            }
+          ]
+        },
+        {
+          "name": "read_root_invocations",
+          "production_references": [
+            {
+              "line": 153,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "targets, binding_spans, _ = read_root_invocations(self.bindings, forward, invocation)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_call_binding.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_lookup_closure",
+          "production_references": [
+            {
+              "line": 149,
+              "path": "model_unfolder/evidence/unet_call_binding.py",
+              "source": "lookups = tuple(read_lookup_closure(bindings, witness)"
+            }
+          ]
+        },
+        {
+          "name": "close_parent_helpers",
+          "production_references": [
+            {
+              "line": 160,
+              "path": "model_unfolder/evidence/unet_call_binding.py",
+              "source": "parent = close_parent_helpers(bindings, method, lookups, function_witness=function)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_lookup_closure.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_wrapper_binding",
+          "production_references": [
+            {
+              "line": 151,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "invocation = read_wrapper_binding(self.bindings.index, observed, forward.symbol)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_wrapper_binding.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_iteration_binding",
+          "production_references": [
+            {
+              "line": 229,
+              "path": "model_unfolder/evidence/unet_call_binding.py",
+              "source": "iteration = read_iteration_binding(index, method, loop, lookup, function,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_iteration_binding.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_local_port_route",
+          "production_references": [
+            {
+              "line": 261,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "connection[\"operand_routes\"] = [read_local_port_route("
+            },
+            {
+              "line": 282,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "read_local_port_route(self.bindings.index, forward, operand,"
+            },
+            {
+              "line": 456,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "spans.update(read_local_port_route(self.bindings.index, forward,"
+            },
+            {
+              "line": 423,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "\"operand_routes\": [read_local_port_route("
+            },
+            {
+              "line": 97,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "output = read_local_port_route(index, method, returns[0].value, returns[0].span)"
+            },
+            {
+              "line": 49,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "route = read_local_port_route(index, forward, expression, end,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/local_port_routes.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "build_resolved_instance",
+          "production_references": [
+            {
+              "line": 38,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "result = build_resolved_instance(binding.prepared, context.source_bundle, root,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/runtime_inventory.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "RuntimeSourceBindings",
+          "production_references": [
+            {
+              "line": 28,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 105,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 203,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 305,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 379,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 488,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 212,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 37,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.graph, UNetStageExecutionGraph) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 114,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.bindings, RuntimeSourceBindings) or not self.attempts:"
+            },
+            {
+              "line": 314,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.sources, UNetRuntimeAttentionSources) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 389,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.mechanisms, UNetCellMechanismInventory) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 497,
+              "path": "model_unfolder/evidence/unet_claims.py",
+              "source": "if not isinstance(self.spatial, UNetSelectedSpatialOperations) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 411,
+              "path": "model_unfolder/evidence/unet_stage_cells.py",
+              "source": "runtime_bindings: RuntimeSourceBindings | None = None"
+            },
+            {
+              "line": 543,
+              "path": "model_unfolder/evidence/unet_stage_cells.py",
+              "source": "runtime_bindings: RuntimeSourceBindings | None = None) \\"
+            },
+            {
+              "line": 415,
+              "path": "model_unfolder/evidence/unet_stage_cells.py",
+              "source": "self.runtime_bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 287,
+              "path": "model_unfolder/evidence/unet_cell_connections.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 297,
+              "path": "model_unfolder/evidence/unet_cell_connections.py",
+              "source": "if not isinstance(self.mechanisms, UNetCellMechanismInventory) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 612,
+              "path": "model_unfolder/evidence/unet_nested_mechanism.py",
+              "source": "if not isinstance(nested, UNetNestedMechanismInventory) or not isinstance(bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 12,
+              "path": "model_unfolder/evidence/instance_population_claim.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 57,
+              "path": "model_unfolder/evidence/instance_population_claim.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 21,
+              "path": "model_unfolder/evidence/instance_population_claim.py",
+              "source": "if not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 69,
+              "path": "model_unfolder/evidence/instance_population_claim.py",
+              "source": "if not isinstance(self.bindings, RuntimeSourceBindings) or not isinstance(self.document, PreparedDocument):"
+            },
+            {
+              "line": 17,
+              "path": "model_unfolder/evidence/instance_shape_claim.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 26,
+              "path": "model_unfolder/evidence/instance_shape_claim.py",
+              "source": "if not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 118,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "bindings: RuntimeSourceBindings = field(repr=False, compare=False)"
+            },
+            {
+              "line": 126,
+              "path": "model_unfolder/evidence/unet_primary_ports.py",
+              "source": "if not isinstance(self.graph, UNetStageExecutionGraph) or not isinstance(self.bindings, RuntimeSourceBindings):"
+            },
+            {
+              "line": 34,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "bindings: RuntimeSourceBindings"
+            },
+            {
+              "line": 65,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "bindings = RuntimeSourceBindings(table, inventory, source_index)"
+            }
+          ]
+        },
+        {
+          "name": "RuntimePrimitiveClaimProof",
+          "production_references": [
+            {
+              "line": 79,
+              "path": "model_unfolder/evidence/primitive_semantics.py",
+              "source": "proof = RuntimePrimitiveClaimProof(\"root.denoiser.runtime_primitives\", bindings)"
+            },
+            {
+              "line": 265,
+              "path": "model_unfolder/evidence/claim_evidence.py",
+              "source": "if isinstance(proof, (InstanceShapeClaimProof, InstancePopulationClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof, UNetPrimaryPortProof)):"
+            },
+            {
+              "line": 255,
+              "path": "model_unfolder/evidence/claim_evidence.py",
+              "source": "InstanceShapeClaimProof, InstancePopulationClaimProof, ConstructorDefaultsClaimProof, UNetStageRelationClaimProof, UNetFFNClaimProof, UNetJoinClaimProof, RuntimePrimitiveClaimProof, UNetCellConnectionClaimProof, UNetContextConnectionClaimProof, UNetCellArithmeticClaimProof, UNetSpatialClaimProof, UNetPrimaryPortProof)):"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/runtime_source.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_instance_population",
+          "production_references": [
+            {
+              "line": 49,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "facts = [read_instance_population(evidence.bindings),"
+            }
+          ]
+        },
+        {
+          "name": "read_constructor_defaults",
+          "production_references": [
+            {
+              "line": 50,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_constructor_defaults(evidence.bindings, binding.prepared),"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/instance_population_claim.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "read_instance_shapes",
+          "production_references": [
+            {
+              "line": 52,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "read_instance_shapes(evidence.bindings),"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/instance_shape_claim.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "witness_attribute_bindings",
+          "production_references": [
+            {
+              "line": 661,
+              "path": "physics/instance_inventory.py",
+              "source": "modules = [dataclasses.replace(row, attribute_bindings=witness_attribute_bindings("
+            }
+          ]
+        },
+        {
+          "name": "snapshot_instance_storage",
+          "production_references": [
+            {
+              "line": 615,
+              "path": "physics/instance_inventory.py",
+              "source": "instance_storage_snapshots[path] = snapshot_instance_storage(module, requested_attributes)"
+            }
+          ]
+        },
+        {
+          "name": "capture_attribute_lookup_types",
+          "production_references": [
+            {
+              "line": 689,
+              "path": "physics/instance_inventory.py",
+              "source": "lookups = capture_attribute_lookup_types() if request.attribute_lookups else None"
+            }
+          ]
+        }
+      ],
+      "module": "physics/attribute_bindings.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "witness_framework_type",
+          "production_references": [
+            {
+              "line": 630,
+              "path": "physics/instance_inventory.py",
+              "source": "framework_primitive=(witness_framework_type(module, framework_types)"
+            }
+          ]
+        },
+        {
+          "name": "capture_framework_types",
+          "production_references": [
+            {
+              "line": 688,
+              "path": "physics/instance_inventory.py",
+              "source": "captured = capture_framework_types() if request.capture_framework_primitives else None"
+            }
+          ]
+        }
+      ],
+      "module": "physics/framework_primitives.py"
+    },
+    {
+      "entries": [
+        {
+          "name": "source_overrides",
+          "production_references": [
+            {
+              "line": 22,
+              "path": "model_unfolder/evidence/runtime_inventory.py",
+              "source": "for override in source_overrides:"
+            },
+            {
+              "line": 40,
+              "path": "model_unfolder/evidence/runtime_inventory.py",
+              "source": "for override in source_overrides:"
+            },
+            {
+              "line": 46,
+              "path": "model_unfolder/evidence/runtime_inventory.py",
+              "source": "factory_method=\"from_config\", source_overrides=source_overrides,"
+            },
+            {
+              "line": 56,
+              "path": "model_unfolder/evidence/runtime_inventory.py",
+              "source": "source_overrides=source_overrides, index=index)"
+            },
+            {
+              "line": 39,
+              "path": "model_unfolder/adapters/diffusor/unet_cutover.py",
+              "source": "source_overrides=source_overrides, index=context.program_index())"
+            },
+            {
+              "line": 445,
+              "path": "physics/instance_inventory.py",
+              "source": "with source_overrides(request.source_overrides):"
+            }
+          ]
+        }
+      ],
+      "module": "physics/source_override.py"
+    }
+  ],
+  "original_commit": "83140f1",
+  "original_readers": [
+    {
+      "entries": [
+        {
+          "definition_line": 728,
+          "name": "read_unet_runtime_attention_sources",
+          "production_references": [
+            {
+              "line": 91,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "run(\"attention_sources\", read_unet_runtime_attention_sources,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_attention_source.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 884,
+          "name": "read_unet_cell_mechanisms",
+          "production_references": [
+            {
+              "line": 79,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "mechanisms = (run(\"mechanisms\", read_unet_cell_mechanisms, cells)"
+            }
+          ]
+        },
+        {
+          "definition_line": 100,
+          "name": "read_unet_stage_join_connections",
+          "production_references": [
+            {
+              "line": 70,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "run(\"stage_joins\", read_unet_stage_join_connections, cells)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_cell_mechanism.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 510,
+          "name": "read_unet_nested_mechanisms",
+          "production_references": [
+            {
+              "line": 81,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "nested = (run(\"nested\", read_unet_nested_mechanisms, mechanisms)"
+            }
+          ]
+        },
+        {
+          "definition_line": 601,
+          "name": "read_unet_runtime_nested_ffns",
+          "production_references": [
+            {
+              "line": 97,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "run(\"nested_ffns\", read_unet_runtime_nested_ffns, nested, bindings)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_nested_mechanism.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 475,
+          "name": "read_unet_root_preprocessing",
+          "production_references": [
+            {
+              "line": 87,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "preprocessing = (run(\"preprocessing\", read_unet_root_preprocessing, selection, root)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_root_preprocess.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 486,
+          "name": "read_unet_selected_child_execution",
+          "production_references": [
+            {
+              "line": 83,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "child_execution = (run(\"child_execution\", read_unet_selected_child_execution, children)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_selected_child_execution.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 710,
+          "name": "constructor_environments",
+          "production_references": [
+            {
+              "line": 145,
+              "path": "model_unfolder/evidence/unet_root_preprocess.py",
+              "source": "environments = constructor_environments(index, seed)"
+            }
+          ]
+        },
+        {
+          "definition_line": 825,
+          "name": "selected_constructor_environment",
+          "production_references": [
+            {
+              "line": 221,
+              "path": "model_unfolder/evidence/unet_selected_spatial.py",
+              "source": "return selected_constructor_environment(index, operands)"
+            }
+          ]
+        },
+        {
+          "definition_line": 692,
+          "name": "selected_constructor_environments",
+          "production_references": [
+            {
+              "line": 189,
+              "path": "model_unfolder/evidence/unet_cell_connections.py",
+              "source": "environment = selected_constructor_environments(execution.index, tuple(operands))"
+            },
+            {
+              "line": 696,
+              "path": "model_unfolder/evidence/unet_attention_source.py",
+              "source": "selected_constructor_environments("
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_selected_constructor.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 740,
+          "name": "read_unet_selected_spatial_operations",
+          "production_references": [
+            {
+              "line": 86,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "run(\"spatial\", read_unet_selected_spatial_operations, child_execution, mechanisms)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_selected_spatial.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 522,
+          "name": "read_unet_selected_stage_children",
+          "production_references": [
+            {
+              "line": 77,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "children = (run(\"children\", read_unet_selected_stage_children, operands, cells)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_selected_stage_children.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 541,
+          "name": "read_unet_stage_cells",
+          "production_references": [
+            {
+              "line": 68,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "cells = run(\"cells\", read_unet_stage_cells, execution, bundle, runtime_bindings=bindings)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_cells.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 660,
+          "name": "read_unet_stage_construction",
+          "production_references": [
+            {
+              "line": 57,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "construction = (run(\"construction\", read_unet_stage_construction,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_construction.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 270,
+          "name": "read_unet_selected_stage_constructor_operands",
+          "production_references": [
+            {
+              "line": 75,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "operands = (run(\"constructor_operands\", read_unet_selected_stage_constructor_operands, factory)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_constructor_operands.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 261,
+          "name": "read_unet_stage_execution",
+          "production_references": [
+            {
+              "line": 60,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "execution = (run(\"execution\", read_unet_stage_execution, construction, bundle, root)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_execution.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 428,
+          "name": "read_unet_selected_stage_operands",
+          "production_references": [
+            {
+              "line": 73,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "factory = (run(\"factory_operands\", read_unet_selected_stage_operands, selection)"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_operands.py",
+      "status": "retained with production caller"
+    },
+    {
+      "entries": [
+        {
+          "definition_line": 500,
+          "name": "read_unet_stage_selection",
+          "production_references": [
+            {
+              "line": 71,
+              "path": "model_unfolder/evidence/unet_runtime.py",
+              "source": "selection = run(\"selection\", read_unet_stage_selection, construction, root,"
+            }
+          ]
+        }
+      ],
+      "module": "model_unfolder/evidence/unet_stage_selection.py",
+      "status": "retained with production caller"
+    }
+  ],
+  "routing_probes": {
+    "inventory_failure_typed_limited_without_legacy": true,
+    "misleading_config_uses_new_path": true,
+    "nested_comparison_failure_resets": true,
+    "old_direct_guard": true,
+    "source_closure_failure_typed_limited_without_legacy": true
+  },
+  "source_sha256": {
+    "model_unfolder/adapters/diffusor/parser.py": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758",
+    "model_unfolder/adapters/diffusor/unet_cutover.py": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9",
+    "model_unfolder/adapters/diffusor/unet_differential.py": "cae9dc7e1f20123924119f3c3b01f974ae933b069ddd7793a76ac69be02fe680",
+    "model_unfolder/adapters/diffusor/unet_projection.py": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c",
+    "model_unfolder/evidence/execution_recipe.py": "d0c51866ac8aa8005dff89b51457dcde7a89284ff2b5bdcc3e74fc3c4edc8324",
+    "model_unfolder/evidence/instance_population_claim.py": "23d3fa2ad281172119d9221624fb509e5fb699414ff5932716c0254f780e8cd4",
+    "model_unfolder/evidence/instance_shape_claim.py": "27b57c2b24444603f37ee5268742e008af74c49c442c5bb8b43faad154d3d94c",
+    "model_unfolder/evidence/local_port_routes.py": "2b756725a85791ea8f37a0b6d78b89fc38c5c187ef5bfde8a78268c776a50e10",
+    "model_unfolder/evidence/program_index.py": "54379ba1c4187f65654e4153f25794cee0e1a17121ab4fad819a0ef37b5b5a11",
+    "model_unfolder/evidence/runtime_inventory.py": "dd7ae44433dce60fb5de85998f59b72da30a4758898d7424e9b96c6b70ea680e",
+    "model_unfolder/evidence/runtime_source.py": "6109cdfb1a2b1aec4472a9117924a3ab3800dbf50e277a128332f46198ae4a01",
+    "model_unfolder/evidence/unet_attention_source.py": "234d438b530ece02ddd2dc3378676b35f2b202b8e8e7d684142d7762b1e04117",
+    "model_unfolder/evidence/unet_call_binding.py": "f6a1d4c1b179eb81de2f4315f7c885be5a03be648bf845b846d19648dc882bad",
+    "model_unfolder/evidence/unet_cell_connections.py": "2ac9cbe708cefb91091e509172d163dd65cd60a96b5cbc47c1765feefd544682",
+    "model_unfolder/evidence/unet_cell_mechanism.py": "c57f6b5aa3d034526c8a95d8a623cc66a5c7936b2636edc152ae85f579d88e01",
+    "model_unfolder/evidence/unet_claims.py": "70afe7bb3b77f33581dd508dc6a32b85fb36f9e9b42e1adeee155c00124c6395",
+    "model_unfolder/evidence/unet_iteration_binding.py": "f189e12531b06fc916703fb45882510e81aa1cba6406ee7428e36252e3266412",
+    "model_unfolder/evidence/unet_lookup_closure.py": "a43f6f5403c3f3701608a65d88c173006e00f20ea46ca1e78eebe977e308d39d",
+    "model_unfolder/evidence/unet_nested_mechanism.py": "929c7438d424b6c28410b143627fcecd2589073aa45eab2c7e17ac2126d7d172",
+    "model_unfolder/evidence/unet_primary_ports.py": "b5d5c5ca183173290f807b09d70403b2f801fe457caff969f3055e8e5af59d54",
+    "model_unfolder/evidence/unet_root_preprocess.py": "44b6a6bd1a3ac45a2801efdb5bc46f4ab2be77c365324edc23aab9ba15f7374c",
+    "model_unfolder/evidence/unet_runtime.py": "4f5037e152e834ac8529ef1eec3cbf90d1fb5be9a958d37622e9f6602361efe2",
+    "model_unfolder/evidence/unet_selected_child_execution.py": "d03afdaa195d612a24f63fb2ea175c93ea81a03369d0413861b0d3b41ff95335",
+    "model_unfolder/evidence/unet_selected_constructor.py": "d642329861ab0746d4730efef5a2001e504a8159d306f8764e483285b3003996",
+    "model_unfolder/evidence/unet_selected_spatial.py": "bfa42dae34002c755a7720698ab1b94f9322257f92fabb791c7e33aeee85d457",
+    "model_unfolder/evidence/unet_selected_stage_children.py": "0581d9229f9b5b41b88ae0864ffded5c0959dcd503f617bbe2407289e91f07ac",
+    "model_unfolder/evidence/unet_stage_cells.py": "4acf172366ab13936483e84e17f84381a1f7321bee8a3f099914a455fff91b40",
+    "model_unfolder/evidence/unet_stage_construction.py": "a3c1dbfdaa7991b2209335a11599430908d9b7b872f28788e985f697ce49f377",
+    "model_unfolder/evidence/unet_stage_constructor_operands.py": "0ad3fded1468f747c39ab7616f974c5f16239c2ce098f43198e1b0a180c913f7",
+    "model_unfolder/evidence/unet_stage_execution.py": "0214314a34611b601fe78bfc0bf5ba74b32c3d8a2bde727f963201d1b1217be8",
+    "model_unfolder/evidence/unet_stage_operands.py": "5ee53fdc4ab8de8bba283a067a6d324732bb91f33d97faa537fb3435be55aee0",
+    "model_unfolder/evidence/unet_stage_selection.py": "520b16a96796518149d549364a5f3eef0d141e477aa96d4b22c7ac41a72a918b",
+    "model_unfolder/evidence/unet_wrapper_binding.py": "4a0e43969738928db5ff1965616acb733a362fb195a3eb4e0b1a56b8fae482eb",
+    "physics/attribute_bindings.py": "58b8321ca39f9dbc3a34bd3c5e0dc1230072bca2ebce43e09ac5eaafaad8ab3e",
+    "physics/framework_primitives.py": "76fb6aa2c643014084f85c01c8fb50695cad86002ebc3d4d50094c3b88574feb",
+    "physics/instance_inventory.py": "f28e18e35ebf25890d928ef2e9809eb7bc2947bb9494190c6c8f122be23c2444",
+    "physics/source_override.py": "2d52b13263f545a7a50cc519021baf5414d902d37d894c1db80094470e2cfddc",
+    "scripts/demonstrate_s8_unet.py": "9108f30e00702138c4e47e4e2d7478820769a9d7e6fd3b712315d99821f22440",
+    "scripts/verify_s8_unet_family.py": "e6989ab879e7ee382ea15f84dab2f1618fd4ace860f6c816c3b2cd8c5e11d8f5"
+  }
+}

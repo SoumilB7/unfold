@@ -1,0 +1,15 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN37_PIN",
+  "base": "Reviewed executed36 page harness. Coordinate-only37 successor. Immediate actual fleet36; latest completed matrix32; aborted36 matrix never a baseline.",
+  "base_manifest_sha256": "c2f173622ccfb3ebeeb5e5c15b1a9b8a904c417fd013d69172f7c9eb4cb10d56",
+  "files": {
+    "census.py": "22e3675acf3f4f7563776441b3171a568b5e8a353bf67be25b8383ac20e4bd61",
+    "run-census.py": "cc5809e8d66ad37099069311bd69a8e1ff4836b48ca985e962beb579ab3a68f5",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "54f5eb8314a868f87fec68280f63a66bb948554f33f20a01ddd8630b463c6716",
+    "plan.json": "5e954db444496ca10873319a04576641f0d1f29d6bb80239d8a4069c19b30586",
+    "contract.json": "16b91fa8511912d713915de33af07f58c7388343ad038702c2dede43c41bf9ee"
+  },
+  "feature_changes": 0,
+  "no_execution": "Source preparation only; root owns actual37 runtime."
+}

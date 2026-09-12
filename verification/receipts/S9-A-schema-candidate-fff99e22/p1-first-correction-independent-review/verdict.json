@@ -1,0 +1,18 @@
+{
+  "decision": "RETURN",
+  "scope": "P1 first correction source 200febb0",
+  "reviewer": "/root/independent_review",
+  "source_pins": {
+    "model_unfolder/evidence/position_fixed.py": "200febb0c3906e0a78eb7d5b74cc6d412dec6355756d3e51dcb8e6076f7124c8",
+    "tests/test_s9_input_position_claims.py": "0ec7d47a6f78ab552c4dfb249db8c3558d412e1e41edf07013989d3995e7b87b",
+    "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+  },
+  "program_index_unchanged_from_ninth": true,
+  "blockers": [
+    "forward bare-self alias or namespace-reflected buffer mutation",
+    "constructor mutation after admitted installation"
+  ],
+  "review_sha256": "6a1e68d51fdd62446286b5b74b127f29c7387d82bf111bf15f28559bdb37d6f3",
+  "runtime_performed": false,
+  "output_approval": false
+}

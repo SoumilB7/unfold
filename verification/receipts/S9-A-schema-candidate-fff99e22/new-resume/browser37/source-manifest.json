@@ -1,0 +1,7 @@
+{
+  "base_script_sha256": "14d12f9bd3bc621637ddf6f2c44441d6b97c5da5cc56d332f1e8372f2cf50bae",
+  "files": {
+    "contract.json": "6e5df924d0f62d36e180d93be039d40aea7d08edee0f7027611cede9f564e760",
+    "qa.py": "b36d675ed85ea9f6ea07a6dbb228e65648d7fd13ad7891acfbb9e986d3205e2d"
+  }
+}

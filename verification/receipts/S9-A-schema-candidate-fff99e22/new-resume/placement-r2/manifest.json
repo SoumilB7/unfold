@@ -1,0 +1,16 @@
+{
+  "status": "source-only test-fixture correction, held for independent review and root runtime",
+  "base_manifest_sha256": "8c40467f25ee201159f4ac978f3d4db12123770dcde3f7b6b762705a976a8eb6",
+  "files": [
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "sha256": "cac0f49723d26483a888cb4cc7efe264f6a7c799a327e469be51c147c0e77029",
+      "previous_sha256": "49c5d6c4578e867bd0c1edde459ecfeb65e77b92347e984102142fde38827b77"
+    }
+  ],
+  "cause": "External LayerNorm control reused _native_fact default rmsnorm, and the production proof guard correctly refused the mismatched value. The fixture now retains result.value and the external control explicitly expects layernorm. No proof guard or production file changed.",
+  "checks": "ast.parse only; no test, model import or runtime executed",
+  "required_runtime": [
+    "tests/test_s9_reader_placement.py"
+  ]
+}

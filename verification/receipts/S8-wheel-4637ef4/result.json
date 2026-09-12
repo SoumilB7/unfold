@@ -1,0 +1,28 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "wheel_sha256": "3e76fe66b40b9bb222c6a38e75e12821d538c0bb8ca840c7e84f4786896b25cc",
+  "wheel_physics_members": [
+    "physics/__init__.py",
+    "physics/execution_observation.py",
+    "physics/framework_primitives.py",
+    "physics/instance_inventory.py",
+    "physics/relation_observation.py",
+    "physics/source_override.py"
+  ],
+  "install_exit": 0,
+  "import_exit": 0,
+  "import_output": "{\"package\": \"/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-wheel-p6ypp_79/installed/model_unfolder/__init__.py\", \"physics\": \"/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-wheel-p6ypp_79/installed/physics/instance_inventory.py\"}\n",
+  "import_error": "",
+  "dependencies": [
+    "Requires-Dist: transformers<6,>=5.12.1",
+    "Requires-Dist: diffusers<1,>=0.38",
+    "Requires-Dist: huggingface-hub<2,>=1.10.1",
+    "Requires-Dist: torch<3,>=2.9.1",
+    "Requires-Dist: psutil<8,>=5",
+    "Requires-Dist: pytest>=7; extra == \"dev\"",
+    "Requires-Dist: pytest-xdist<4,>=3; extra == \"dev\"",
+    "Requires-Dist: transformers>=4.40; extra == \"dev\"",
+    "Requires-Dist: timm<2,>=1; extra == \"dev\""
+  ],
+  "scope": "Offline no-dependency wheel install and import smoke; host dependency environment reused; not a clean dependency resolution or model execution check."
+}

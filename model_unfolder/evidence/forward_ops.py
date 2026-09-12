@@ -202,6 +202,16 @@ def _forward_op_occurrences(forward: ast.FunctionDef, field_types: dict[str, str
                 kind = _call_op_kind(child, field_types)
                 if kind:
                     occ.append((kind, gates))
+                    # BLOOM/Falcon dialect: a sublayer call that THREADS the
+                    # residual (``self.mlp(x, residual)``) merges it INSIDE the
+                    # callee (dropout_add in its forward) — the block-altitude
+                    # twin of the linearizer's residual_fields rule.  The
+                    # block's drawn ⊕ is real; it just lives one call down.
+                    if kind in ("attention", "ffn") and (
+                            any(isinstance(a, ast.Name) and a.id == "residual"
+                                for a in child.args)
+                            or any(kw.arg == "residual" for kw in child.keywords)):
+                        occ.append(("residual_add", gates))
             elif isinstance(child, ast.BinOp):
                 kind = _binop_op_kind(child)
                 if kind:
@@ -433,6 +443,19 @@ def _field_types(init: ast.FunctionDef | None) -> dict[str, str]:
     types: dict[str, str] = {}
     if init is None:
         return types
+    # Local-variable construction idiom (composite wrappers — Musicgen's
+    # ``decoder = MusicgenForCausalLM._from_config(config.decoder)`` inside an
+    # ``if decoder is None:`` guard, then ``self.decoder = decoder``): collect
+    # ALL simple ``var = Class(...)`` locals FIRST (ast.walk is not statement-
+    # ordered), so the ``self.field = var`` hop yields the constructed class.
+    local_ctors: dict[str, str] = {}
+    for child in ast.walk(init):
+        if (isinstance(child, ast.Assign) and isinstance(child.value, ast.Call)):
+            ctor = _call_name(child.value.func)
+            if ctor:
+                for target in child.targets:
+                    if isinstance(target, ast.Name):
+                        local_ctors.setdefault(target.id, ctor)
     for child in ast.walk(init):
         if not isinstance(child, ast.Assign):
             continue
@@ -450,6 +473,8 @@ def _field_types(init: ast.FunctionDef | None) -> dict[str, str]:
                         break
         elif isinstance(child.value, ast.Subscript) and isinstance(child.value.value, ast.Name):
             cls = child.value.value.id          # ACT2FN[...] / ACT2CLS[...]
+        elif isinstance(child.value, ast.Name):
+            cls = local_ctors.get(child.value.id)   # self.field = <local ctor var>
         if not cls:
             continue
         for target in child.targets:

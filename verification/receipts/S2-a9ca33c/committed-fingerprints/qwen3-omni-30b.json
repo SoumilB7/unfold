@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "6ad29a22d43c1d5e8f657861c952a28148a15770b3922ef7f83f7bd95822137d",
+  "config": "z-docs/11-execution/baseline-2026-09-02/_cfg/qwen3-omni-30b/config.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.3929239166900516,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.9993055001832545,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.3030982501804829,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.24169921875,
+    3.9794921875,
+    4.19189453125
+  ],
+  "mode": "fingerprint",
+  "name": "qwen3-omni-30b",
+  "parse_seconds": 7.063458874821663,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "a9ca33cf2a3f3d4f514cd2edabed8ee082b4bb76",
+  "surface_hashes": {
+    "expanded": "0cddc5a79003d20a27c373dc0d9a04890579daecd9e3c2790f00a16769d06bdf",
+    "html_meta": "54621efdb9e87f3a4f18ac5f9fd6cc6e818fd5283d6932a258f92148aa764086",
+    "ir": "7598384ab15cc6815e161d5f25ddf4fd70605fac3d089b3a78f267fcfb0bc011",
+    "ledgers": "8379ceac5ec22f7e4931069a6673b408f23931b5c4c33cb5148f7d1d31af4dbc",
+    "params": "d311d51f5eeba474ab95fb851f46fb0d8bccd264da50b4a1acd601c538b0a2c5"
+  }
+}

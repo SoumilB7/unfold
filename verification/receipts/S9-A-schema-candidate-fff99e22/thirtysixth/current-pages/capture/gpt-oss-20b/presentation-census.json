@@ -1,0 +1,7942 @@
+{
+  "drawn_fact_keys": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.attention.sinks",
+    "decoder.ffn.activation",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_intermediate_size",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.parallel_norm_count",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.hidden_size",
+    "model.tie_word_embeddings"
+  ],
+  "findings": [],
+  "not_drawn": [],
+  "pending_design": [],
+  "qualified_complete_pending_fact_keys": [],
+  "rendered_unknown_values": [
+    {
+      "path": [
+        "layers",
+        0,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "activation"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "gated"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    },
+    {
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "projection_mode"
+      ],
+      "unknown_reason": {
+        "concrete_reason": "unknown_reason_unrecorded",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value_state": "null_unknown"
+    }
+  ],
+  "shared_chip_aliases": [],
+  "unknown_reason_counts": {
+    "investigation_missing": 2,
+    "mechanism_unresolved": 0,
+    "structure_unaccounted": 0
+  },
+  "unrendered_unknown_values": [],
+  "unresolved_ir_envelopes": [
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        1,
+        "detail",
+        "attention",
+        "qk_norm"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "activation"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "gated"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    },
+    {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        4,
+        "children",
+        0,
+        "detail",
+        "ffn",
+        "projection_mode"
+      ],
+      "reason_class": "investigation_missing",
+      "value_state": "null_unknown"
+    }
+  ]
+}

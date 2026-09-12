@@ -1,0 +1,30 @@
+{
+  "actual_shape": [
+    3,
+    3
+  ],
+  "conditions": [
+    {
+      "guards": [
+        {
+          "kind": "if",
+          "predicate": "is_in_config and not is_attribute"
+        }
+      ],
+      "return_line": 19
+    }
+  ],
+  "earlier_config_return_taken": false,
+  "frozen_shape": [
+    2,
+    2
+  ],
+  "observed_state_changed": false,
+  "reader_kind": "conditional_registered_child",
+  "reason": "",
+  "registered_slots_unchanged": true,
+  "selected_is_original": false,
+  "source": "import torch.nn as nn\nSWITCH = False\nclass ConfigProbe:\n    def __init__(self, owner):\n        self.owner = owner\n    def __getattr__(self, name):\n        if SWITCH:\n            self.owner.child = nn.Linear(3, 3)\n        raise AttributeError(name)\nclass Cell(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.child = nn.Linear(2, 2)\n        self._storage = ConfigProbe(self)\n    def __getattr__(self, name):\n        is_in_config = \"_storage\" in self.__dict__ and hasattr(self.__dict__[\"_storage\"], name)\n        is_attribute = name in self.__dict__\n        if is_in_config and not is_attribute:\n            return self._storage[name]\n        return super().__getattr__(name)\n",
+  "source_sha256": "2a404eea083cf15263b4c247d34e50c14f1d649315d4d0de71b432563a4908a2",
+  "worker_kind": "observed_registered_child"
+}

@@ -1,0 +1,65 @@
+{
+  "verdict": "RETURN_ONE_BOUNDED_SOURCE_AVAILABILITY_ITEM",
+  "reviewer": "placement_executor",
+  "reviewed_manifest_sha256": "2cc25ae214c34631407e133c4a4b77fdb2878d81b442c6fb8e77148b9257a860",
+  "hash_checks": [
+    {
+      "path": "model_unfolder/evidence/document.py",
+      "expected": "9867e79e886297beabc89c35e8cbef65f2116b10c37c2c1d5ade0905ab0b5be2",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "expected": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "expected": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "physics/result_cache.py",
+      "expected": "f1fcfc928803de2fc7985014f813a7a1688cb417c2fcb392f332ecd29baf2111",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "tests/test_s9_slot_config_class_address.py",
+      "expected": "7cf4edb3d28e6c45344546ac63f1e92cb0aa087cdb642145ee0f8bbdd43d9d50",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "tests/test_config_access.py",
+      "expected": "8ed838b6cf07fa0a2b700294ab0ed27381e1e7b876b2ff0072a77da172fb49d2",
+      "held_matches": true,
+      "live_matches": true
+    }
+  ],
+  "accepted_source_findings": [
+    "Preparation snapshots current raw values and invokes the retained registry class on a fresh clone; original class-default overlay is not transplanted.",
+    "Current parent path reaches exact child identity; original path key must agree with source-bundle slot model type, architecture and files.",
+    "Address descriptor is joined to raw/config/loader/merge cache key; changes cannot hit an unaddressed or differently addressed entry.",
+    "Replay validates address before returning bytes, binds recorded checkpoint to current raw, and requires package dependencies; no torch/transformers/diffusers import in descriptor or replay.",
+    "Slot context now consumes the current preparation overlay and keeps failure limited.",
+    "Tests cover current dependent-default recalculation, explicit null rejection, config-key rename without borrowed values, foreign descriptors, replay without heavy imports, and changed input/support-source misses."
+  ],
+  "blocking_findings": [
+    {
+      "id": "R1",
+      "source": "physics/result_cache.py::cache_prepared_document / evidence.document.ConfigClassAddress.cache_identity",
+      "problem": "Direct Path.read_bytes on every retained source is outside cache-miss and typed preparation handling, before even checking if a cache transaction exists. An unavailable source file can cause uncaught OSError during lawful missing-evidence preparation.",
+      "required": "Handle source availability through bounded typed failure/cache miss while preserving foreign descriptor rejection; poison unavailable modeling/supporting source both with caching disabled and historical replay."
+    }
+  ],
+  "scope_limits": [
+    "Source inspection and exact hash verification only; no runtime or browser.",
+    "Synthetic test source is reviewed, not reported passing.",
+    "Same-process third-party registry mutation without source/version changes remains the declared cache blind spot."
+  ],
+  "output_approval": false
+}

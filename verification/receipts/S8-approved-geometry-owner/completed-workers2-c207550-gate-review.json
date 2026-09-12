@@ -1,0 +1,163 @@
+{
+  "status": "ACCEPT_ACTUAL_COMPLETE_WORKERS2_GATE",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "outer_exit_code": 0,
+  "outer_seconds": 5899.554675665684,
+  "inner_seconds": 5899.203,
+  "all_six_lanes_passed": true,
+  "all_lane_and_global_fingerprints_equal": true,
+  "selected_installed_source_count": 59,
+  "selected_cached_config_count": 1,
+  "selected_before_after_and_current_file_hashes_equal": true,
+  "external_scope_limit": "Selected files only; not an exhaustive transitive import or cache census.",
+  "schedule_byte_identical_to_original": true,
+  "schedule_sha256": "ca3e24d815be65425f0a74f4776fb86ca0e4c455cb7a1ea88cd54896eabeac90",
+  "full_counts": {
+    "passed": 4445,
+    "failed": 0,
+    "skipped": 14,
+    "xfailed": 2
+  },
+  "preservation_passed": 52,
+  "preservation_pytest_seconds": 558.62,
+  "full_batches": [
+    {
+      "batch": "batch-000",
+      "summary": "344 passed in 7.91s",
+      "sha256": "5e41d3a79c34f2b012662c4e9f15ea0ea95ac7cd4fe48940d9736f1bb5511d74"
+    },
+    {
+      "batch": "batch-001",
+      "summary": "170 passed in 1659.06s (0:27:39)",
+      "sha256": "f0ac77d4be3e972a8efd0032ddd24ed237cde7fc39f4acfe1fb162d95de24b97"
+    },
+    {
+      "batch": "batch-002",
+      "summary": "157 passed, 14 skipped in 1066.74s (0:17:46)",
+      "sha256": "410b48bfa63df449f69bfb55d75d8a4fc3173209a074c30aada3057fd9ef3ed6"
+    },
+    {
+      "batch": "batch-003",
+      "summary": "170 passed in 37.32s",
+      "sha256": "4ae267406feb880a994561164718b3cf0ea6f924fe35454d9e77605c678a3a31"
+    },
+    {
+      "batch": "batch-004",
+      "summary": "167 passed in 295.89s (0:04:55)",
+      "sha256": "1221810592d942ea5d1c7db41a01225e42c35f8cf7ada605edeb30839d0d871b"
+    },
+    {
+      "batch": "batch-005",
+      "summary": "167 passed in 435.91s (0:07:15)",
+      "sha256": "bdc57c857183fdb8113d2682860c0d0c174c1013a3d2a52bd31ffba2dd02d6dc"
+    },
+    {
+      "batch": "batch-006",
+      "summary": "167 passed in 24.32s",
+      "sha256": "1b99b16428ff30aa291a83b681655aec06255340ce8097e738f5d969f80ebec1"
+    },
+    {
+      "batch": "batch-007",
+      "summary": "163 passed in 195.58s (0:03:15)",
+      "sha256": "2ec2e45047c28c3c8b3015c4780412bd4551b0135bfbafeec07fd020cd536344"
+    },
+    {
+      "batch": "batch-008",
+      "summary": "164 passed in 33.93s",
+      "sha256": "b2feef38d88473bb117ab1d48e939cc80f95277067b5d8071d4be6b2d3d9e406"
+    },
+    {
+      "batch": "batch-009",
+      "summary": "164 passed in 105.17s (0:01:45)",
+      "sha256": "5f17e139fb2cc9abb9e363be18dd1a524bdda81b5fc7024f483ef1e8fbf14cf1"
+    },
+    {
+      "batch": "batch-010",
+      "summary": "164 passed in 70.40s (0:01:10)",
+      "sha256": "5e84ec43bebb3715ea45cbb5d29c7fe89fac2a5e79cec7cd8e8d3e2cb9a29d2f"
+    },
+    {
+      "batch": "batch-011",
+      "summary": "163 passed in 59.11s",
+      "sha256": "3320a31fa2b45ab48f1e759e1ed7f30ae3916a1664feeebf6976743c32d25269"
+    },
+    {
+      "batch": "batch-012",
+      "summary": "163 passed in 267.16s (0:04:27)",
+      "sha256": "899cf7b129b353a853e987e63373e65ed38a319d22c3c2f5eaeb7d400eecad31"
+    },
+    {
+      "batch": "batch-013",
+      "summary": "164 passed in 104.52s (0:01:44)",
+      "sha256": "b90bca9cb1608ed0ade0d59efb88378d7622eb97b4734c2da9d0d7edf708ad44"
+    },
+    {
+      "batch": "batch-014",
+      "summary": "164 passed in 63.36s (0:01:03)",
+      "sha256": "c0135b0445be250c23f171599cc53dc7a6439c78c571c12425eb7973bdbeb75e"
+    },
+    {
+      "batch": "batch-015",
+      "summary": "162 passed, 2 xfailed in 185.28s (0:03:05)",
+      "sha256": "54c6e3ef3bed156df33ff76b069fa4bb96b42b3bafbee281673bfcce268c21a0"
+    },
+    {
+      "batch": "batch-016",
+      "summary": "164 passed in 334.24s (0:05:34)",
+      "sha256": "ed6e11da6871756d182fc31008745778233ab2ffcbd6a9bba3be5c6a1175ef49"
+    },
+    {
+      "batch": "batch-017",
+      "summary": "164 passed in 99.54s (0:01:39)",
+      "sha256": "c3cacdeaae30c5d8ec8a7ee710fc971e6f9c1716549cae92b5bc8673682bb978"
+    },
+    {
+      "batch": "batch-018",
+      "summary": "163 passed in 99.31s (0:01:39)",
+      "sha256": "ff67c1c2952bbaf72034bda87b19e4a24c177024a9544fe0ae5145dea2dab051"
+    },
+    {
+      "batch": "batch-019",
+      "summary": "163 passed in 1553.18s (0:25:53)",
+      "sha256": "b960c9ba614e0e07192ba8ec39a93b639ca2c56035caabcfb2c50bc37e500259"
+    },
+    {
+      "batch": "batch-020",
+      "summary": "163 passed in 54.48s",
+      "sha256": "3c6e43b454affb1043aa274ebeac9836af093f3963305c2d712718ab1b9916d7"
+    },
+    {
+      "batch": "batch-021",
+      "summary": "163 passed in 57.84s",
+      "sha256": "32ac4e425411ba18f8ac1f558f8073883a16a2f1db8211c9373f0f99f5cb9ae2"
+    },
+    {
+      "batch": "batch-022",
+      "summary": "163 passed in 38.93s",
+      "sha256": "b7a775f935205fce4c70592027c1351ed82e795900142bf4c68b914507b5c353"
+    },
+    {
+      "batch": "batch-023",
+      "summary": "163 passed in 1197.32s (0:19:57)",
+      "sha256": "aa59a468351fb3f2fba57f54c9b6fcaa89bda76b105156c0f75aa42c77e0a229"
+    },
+    {
+      "batch": "batch-024",
+      "summary": "163 passed in 40.67s",
+      "sha256": "31acd33de018032265162b5ea6966b1f94c633fead480a7bfe7d5f6738c0ec5b"
+    },
+    {
+      "batch": "batch-025",
+      "summary": "163 passed in 229.57s (0:03:49)",
+      "sha256": "c4438ec580860f1aae834bf0aa1c01964803357972c0201e01d218cec8063ddd"
+    }
+  ],
+  "raw_receipts": {
+    "/private/tmp/unfold-s8-approved-broad-c207550-workers2/receipt.json": "643cb703bc7f976102a1909a89470378786187c8239dea089ce39d6527dd6a74",
+    "/private/tmp/model-unfolder-verification/cde612bce0/receipt.json": "109ea67b8aaac05640e53a4fa5393acd2abbcff0a2c171a53b5d79df0ccaef3d",
+    "/private/tmp/unfold-s8-approved-broad-c207550-workers2/selected-external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "/private/tmp/unfold-s8-approved-broad-c207550-workers2/selected-external-after.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "/private/tmp/model-unfolder-file-bracket/206ad20d8a/schedule.json": "ca3e24d815be65425f0a74f4776fb86ca0e4c455cb7a1ea88cd54896eabeac90"
+  },
+  "historical_limit": "The earlier ten-worker run remains RED. Current passes do not recover missing historical diagnostics; no isolated passes were added to this run."
+}

@@ -1,0 +1,21 @@
+{
+  "author": "independent_review",
+  "decision": "ACCEPT",
+  "limits": [
+    "Observer tracing/timestamps add scheduling overhead.",
+    "RSS entries are sampled values, not true peaks or a strict kernel cap.",
+    "New isolated diagnostics cannot establish the unrecorded original broad-run cause.",
+    "Acceptance is not a passing test or a fix for the memory-cap miss."
+  ],
+  "reviewer": "root",
+  "scope": "Static pre-use review only. Exact original noisy-output and memory-limit tests; execute serially after current coordinator closes.",
+  "script": "/private/tmp/unfold-s8-physics-diagnostic-preparation-c207550/run_diagnostic.py",
+  "script_sha256": "34bff8e88e51ef58e0b491a613befe547837b51c01ddffe3447b726c4797e6a2",
+  "verified": [
+    "Original request, caps, timeouts, test assertions and returned objects preserved.",
+    "Observes only existing supervisor code-line events and local values; no extra process poll or RSS query.",
+    "Collected test alias and original module binding both restored in finally.",
+    "Tracer only installed when absent and removed in finally; no subprocess tracer injection.",
+    "Actual request/result, supervisor events and source/input before/finally pins retained."
+  ]
+}

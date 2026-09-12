@@ -7,11 +7,19 @@ from .metadata import _block_lookup, _group_label, _make_info, _meta_for
 from .sections import _details_section, _header, _stats_banner
 from .styles import _style
 from .theme import C, FONT_IMPORT, FONT_LINK, use_theme
-from .utils import _attr, _html
+from .utils import _attr, _html, append_unknown_value_report
 from .views import _build_architecture_view, _build_layer_map
 
 
 def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -> str:
+    """Render canonical views, then losslessly pack substantial drill payloads."""
+    from .card_payload import pack_card_payloads
+
+    canonical = _render_canonical_fragment(ir, mount_id, include_font_import)
+    return pack_card_payloads(canonical, mount_id)
+
+
+def _render_canonical_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -> str:
     """Render a complete HTML fragment.
 
     For heterogeneous models (multiple layer-type groups, e.g. DeepSeek-V3's
@@ -31,11 +39,13 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
         # transformer layer stack, so it has its own fragment builder.
         if render.get("family") == "diffusion":
             from .views_diffusion import render_diffusion_fragment
-            return render_diffusion_fragment(ir, mount_id, include_font_import)
-        if render.get("layout") == "block_diffusion":
+            fragment = render_diffusion_fragment(ir, mount_id, include_font_import)
+        elif render.get("layout") == "block_diffusion":
             from .views_diffusion import render_block_diffusion_fragment
-            return render_block_diffusion_fragment(ir, mount_id, include_font_import)
-        return _render_fragment_body(ir, mount_id, include_font_import)
+            fragment = render_block_diffusion_fragment(ir, mount_id, include_font_import)
+        else:
+            fragment = _render_fragment_body(ir, mount_id, include_font_import)
+        return append_unknown_value_report(fragment, ir)
 
 
 def _render_fragment_body(ir: dict, mount_id: str, include_font_import: bool) -> str:
@@ -139,39 +149,59 @@ def _render_fragment_body(ir: dict, mount_id: str, include_font_import: bool) ->
         if variant_idx > 1 else ""
     )
 
+    empty_stack = not groups
+    arch_body = (
+        '<div>'
+        '<div class="uf-card-title">Repeated layer structure unavailable</div>'
+        '<div class="uf-card-desc">'
+        'No canonical repeated-layer block was produced. '
+        'Attention, feed-forward and residual wiring are not inferred here.'
+        '</div>'
+        '</div>'
+        if empty_stack
+        else f'{toggle_html}{"".join(arch_variants)}'
+    )
+    arch_sub = (
+        "No repeated-layer structure available"
+        if empty_stack
+        else f'Per-layer block · repeats × {len(ir.get("layers", []))}'
+    )
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
         '<summary class="uf-section-head">'
         '<span class="uf-section-label">ARCHITECTURE</span>'
-        f'<span class="uf-section-sub">Per-layer block · repeats × {len(ir.get("layers", []))}</span>'
+        f'<span class="uf-section-sub">{arch_sub}</span>'
         '<span class="uf-chevron" aria-hidden="true">›</span>'
         '</summary>'
-        f'<div class="uf-section-body">{toggle_html}{"".join(arch_variants)}</div>'
+        f'<div class="uf-section-body">{arch_body}</div>'
         '</details>'
     )
-    inspect_panel = (
+    inspect_panel = "" if empty_stack else (
         f'<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2">'
         f'{"".join(l2_variants)}</div>'
     )
-    nested_inspect_panels = "".join(
+    nested_inspect_panels = "" if empty_stack else "".join(
         f'<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" '
         f'data-depth="{depth_idx + 3}">{"".join(variants)}</div>'
         for depth_idx, variants in enumerate(nested_variants_by_depth)
     )
 
-    map_svg = _build_layer_map(ir, info, mount_id)
-    n_groups = len(groups)
-    n_layers = len(ir.get("layers", []))
-    if n_groups <= 1:
-        map_sub = "All layers structurally identical"
-    elif info.get("period") and info["period"] < n_layers:
-        cycles = n_layers // info["period"]
-        map_sub = (
-            f"{n_groups} layer types  ·  {info['period']}-layer cycle ×{cycles}"
-        )
+    if empty_stack:
+        layer_map_section = ""
     else:
-        map_sub = f"{n_groups} layer types across {n_layers} layers"
-    layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
+        map_svg = _build_layer_map(ir, info, mount_id)
+        n_groups = len(groups)
+        n_layers = len(ir.get("layers", []))
+        if n_groups <= 1:
+            map_sub = "All layers structurally identical"
+        elif info.get("period") and info["period"] < n_layers:
+            cycles = n_layers // info["period"]
+            map_sub = (
+                f"{n_groups} layer types  ·  {info['period']}-layer cycle ×{cycles}"
+            )
+        else:
+            map_sub = f"{n_groups} layer types across {n_layers} layers"
+        layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
     evidence_section = _code_evidence_section(ir)
 
     return f"""

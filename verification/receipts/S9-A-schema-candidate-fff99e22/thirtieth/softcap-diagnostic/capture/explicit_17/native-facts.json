@@ -1,0 +1,312 @@
+{
+  "decoder.attention.bias": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.logit_softcap": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "bc8de8e204911d43481ce7306c6f10ef204a78bdffdaf133232ebce1f6c7e70c"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.logit_softcap:0a43e6f78db3cb40",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:10:18:10:37",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:11:8:11:31",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:12:14:12:40",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:13:11:13:39",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:26:15:26:61",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:26:50:26:60",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:2:0:2:12",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:4:0:4:36",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:7:14:7:56",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:8:4:11:31",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:9:8:9:31"
+        ],
+        "fact_id": "decoder.attention.logit_softcap",
+        "fact_status": "",
+        "index_fingerprints": [
+          "3a7f7a4abf0504f0c2fabcac0bced790cca310c44eb35a8c17afa823d40246c3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_logit_softcap_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.logit_softcap",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "0a43e6f78db3cb40"
+    },
+    "source": "decoder_attention_logit_softcap_for_path",
+    "status": "code_and_config",
+    "value": 17.0
+  },
+  "decoder.attention.mask": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.projection_mode": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "bc8de8e204911d43481ce7306c6f10ef204a78bdffdaf133232ebce1f6c7e70c"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:12:14:12:40",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:13:11:13:39",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:19:17:19:56",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:20:17:20:56",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:21:17:21:56",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:23:16:23:25",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:24:14:24:23",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:25:16:25:25",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:26:15:26:61",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:2:0:2:12",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:4:0:4:36",
+          "source:root:e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1:7:14:7:56"
+        ],
+        "fact_id": "decoder.attention.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "3a7f7a4abf0504f0c2fabcac0bced790cca310c44eb35a8c17afa823d40246c3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "21761fea3f037ea3"
+    },
+    "source": "decoder_attention_projection_storage_for_path",
+    "status": "code_proven",
+    "value": "split_qkv"
+  },
+  "decoder.attention.scores_scale": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "20496603e5af0c6f"
+    },
+    "source": "decoder_attention_score_scaling_for_path",
+    "status": "code_proven",
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.norm_kind": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "source": "decoder_norm_kind_for_path:failed",
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.norm_placement": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "model.final_norm_kind": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "bc8de8e204911d43481ce7306c6f10ef204a78bdffdaf133232ebce1f6c7e70c"
+        ],
+        "evidence_refs": [
+          "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731"
+        ],
+        "fact_id": "model.hidden_size",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.hidden_size",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "source": "adapters.transformer.parser.parse",
+    "status": "config_declared",
+    "value": 4096
+  },
+  "model.tie_word_embeddings": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "bc8de8e204911d43481ce7306c6f10ef204a78bdffdaf133232ebce1f6c7e70c"
+        ],
+        "evidence_refs": [
+          "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+        ],
+        "fact_id": "model.tie_word_embeddings",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "model_unfolder.adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "source": "tie_word_embeddings",
+    "status": "config_declared",
+    "value": false
+  }
+}

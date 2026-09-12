@@ -1,0 +1,394 @@
+{
+  "results": {
+    "auxiliary_reads_historical_primary": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:5b04e5dc080fed595cfe5315a19768a86f466665fa31662954006a2f7ad58fa5:4:2:4:22",
+          "writes": [
+            "sha256:5b04e5dc080fed595cfe5315a19768a86f466665fa31662954006a2f7ad58fa5:4:2:4:22"
+          ]
+        },
+        {
+          "kind": "assignment",
+          "position": 1,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              },
+              {
+                "port": "1",
+                "route": {
+                  "arguments": [
+                    {
+                      "port": "0",
+                      "route": {
+                        "kind": "region_input"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": null,
+                  "result_slot": []
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:5b04e5dc080fed595cfe5315a19768a86f466665fa31662954006a2f7ad58fa5:5:2:5:36",
+          "writes": [
+            "sha256:5b04e5dc080fed595cfe5315a19768a86f466665fa31662954006a2f7ad58fa5:5:2:5:36"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state):\n  conditioning = normalize(state)\n  state = first(state)\n  state = block(state, conditioning)\n  return state\n"
+    },
+    "formal_rebound_before_region": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              },
+              {
+                "port": "1",
+                "route": {
+                  "arguments": [
+                    {
+                      "port": "0",
+                      "route": {
+                        "formal": "conditioning",
+                        "kind": "formal"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": null,
+                  "result_slot": []
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:7c0477d7c6556b4532c7ee3aefbba3df0a8195d54cf751ac7aa98bba50307ea9:4:2:4:36",
+          "writes": [
+            "sha256:7c0477d7c6556b4532c7ee3aefbba3df0a8195d54cf751ac7aa98bba50307ea9:4:2:4:36"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state,conditioning):\n  conditioning = normalize(conditioning)\n  state = block(state, conditioning)\n  return state\n"
+    },
+    "formal_rebound_between_regions": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:5415dbc313d8937bec1fe0471bf573d86ceada0da479b0f319ca9f4c471be942:3:2:3:22",
+          "writes": [
+            "sha256:5415dbc313d8937bec1fe0471bf573d86ceada0da479b0f319ca9f4c471be942:3:2:3:22"
+          ]
+        },
+        {
+          "kind": "assignment",
+          "position": 1,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              },
+              {
+                "port": "1",
+                "route": {
+                  "arguments": [
+                    {
+                      "port": "0",
+                      "route": {
+                        "formal": "conditioning",
+                        "kind": "formal"
+                      }
+                    }
+                  ],
+                  "kind": "call_result",
+                  "mechanism": "unresolved",
+                  "reason": "call argument and result wiring proven; internal computation not established",
+                  "receiver": null,
+                  "result_slot": []
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:5415dbc313d8937bec1fe0471bf573d86ceada0da479b0f319ca9f4c471be942:5:2:5:36",
+          "writes": [
+            "sha256:5415dbc313d8937bec1fe0471bf573d86ceada0da479b0f319ca9f4c471be942:5:2:5:36"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state,conditioning):\n  state = first(state)\n  conditioning = normalize(conditioning)\n  state = block(state, conditioning)\n  return state\n"
+    },
+    "loop_seed": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:9d0d7ff32feb4ecddb3f67c7e210356829af97c1139905486504964ebfb3f75d:3:2:3:22",
+          "writes": [
+            "sha256:9d0d7ff32feb4ecddb3f67c7e210356829af97c1139905486504964ebfb3f75d:3:2:3:22"
+          ]
+        },
+        {
+          "kind": "for",
+          "position": 1,
+          "receives_previous_state": true,
+          "route": {
+            "initial_route": {
+              "kind": "region_input"
+            },
+            "iteration_result": {
+              "arguments": [
+                {
+                  "port": "0",
+                  "route": {
+                    "formal": "state",
+                    "initial_route": {
+                      "kind": "region_input"
+                    },
+                    "kind": "loop_carried",
+                    "reason": "initial value seeds the loop; subsequent iterations use the carried value"
+                  }
+                }
+              ],
+              "kind": "call_result",
+              "mechanism": "unresolved",
+              "reason": "call argument and result wiring proven; internal computation not established",
+              "receiver": null,
+              "result_slot": []
+            },
+            "kind": "loop_result",
+            "local": "state",
+            "reason": "loop result retains the zero-iteration input and end-of-body value; iteration count and guarded selection remain unresolved"
+          },
+          "source": "sha256:9d0d7ff32feb4ecddb3f67c7e210356829af97c1139905486504964ebfb3f75d:4:2:5:23",
+          "writes": [
+            "sha256:9d0d7ff32feb4ecddb3f67c7e210356829af97c1139905486504964ebfb3f75d:5:3:5:23"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state,items):\n  state = first(state)\n  for item in items:\n   state = block(state)\n  return state\n"
+    },
+    "loop_target_between_regions": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:f2bf5967b50b1ba721139c025d959536cc97f69c957f51dd6126030765b0336c:3:2:3:22",
+          "writes": [
+            "sha256:f2bf5967b50b1ba721139c025d959536cc97f69c957f51dd6126030765b0336c:3:2:3:22"
+          ]
+        },
+        {
+          "kind": "unresolved",
+          "position": 1,
+          "receives_previous_state": false,
+          "route": {
+            "kind": "unresolved",
+            "reason": "completed loop may have rebound this local; original formal identity is not established"
+          },
+          "source": "sha256:f2bf5967b50b1ba721139c025d959536cc97f69c957f51dd6126030765b0336c:4:2:5:7",
+          "writes": []
+        },
+        {
+          "kind": "assignment",
+          "position": 2,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:f2bf5967b50b1ba721139c025d959536cc97f69c957f51dd6126030765b0336c:6:2:6:22",
+          "writes": [
+            "sha256:f2bf5967b50b1ba721139c025d959536cc97f69c957f51dd6126030765b0336c:6:2:6:22"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state,items):\n  state = first(state)\n  for state in items:\n   pass\n  state = block(state)\n  return state\n"
+    },
+    "unsupported_rebind_between_regions": {
+      "regions": [
+        {
+          "kind": "assignment",
+          "position": 0,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:8cee30efa11de97d303cd68fea79847e2326a6ddd233f6c2f340d7c6742f2acd:3:2:3:22",
+          "writes": [
+            "sha256:8cee30efa11de97d303cd68fea79847e2326a6ddd233f6c2f340d7c6742f2acd:3:2:3:22"
+          ]
+        },
+        {
+          "kind": "unresolved",
+          "position": 1,
+          "receives_previous_state": false,
+          "route": {
+            "kind": "unresolved",
+            "reason": "prior unsupported execution may have rebound this local; no later guaranteed assignment closes it"
+          },
+          "source": "sha256:8cee30efa11de97d303cd68fea79847e2326a6ddd233f6c2f340d7c6742f2acd:4:2:5:7",
+          "writes": []
+        },
+        {
+          "kind": "assignment",
+          "position": 2,
+          "receives_previous_state": true,
+          "route": {
+            "arguments": [
+              {
+                "port": "0",
+                "route": {
+                  "kind": "region_input"
+                }
+              }
+            ],
+            "kind": "call_result",
+            "mechanism": "unresolved",
+            "reason": "call argument and result wiring proven; internal computation not established",
+            "receiver": null,
+            "result_slot": []
+          },
+          "source": "sha256:8cee30efa11de97d303cd68fea79847e2326a6ddd233f6c2f340d7c6742f2acd:6:2:6:22",
+          "writes": [
+            "sha256:8cee30efa11de97d303cd68fea79847e2326a6ddd233f6c2f340d7c6742f2acd:6:2:6:22"
+          ]
+        }
+      ],
+      "source": "class Cell:\n def forward(self,state,manager):\n  state = first(state)\n  with manager() as state:\n   pass\n  state = block(state)\n  return state\n"
+    }
+  },
+  "source_sha256": {
+    "model_unfolder/evidence/local_port_routes.py": "5af8f49c0d22604a5941b3e6db223213aa25881e05102e77ac2e0cf1e8676e32",
+    "model_unfolder/evidence/unet_primary_ports.py": "626e861e1d51a3df06c9363e7bd22c08b10a65ce3484f0fa2ec13535180e7e42"
+  },
+  "source_unchanged_during_probe": true
+}

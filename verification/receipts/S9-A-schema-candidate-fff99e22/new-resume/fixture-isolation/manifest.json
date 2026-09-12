@@ -1,0 +1,657 @@
+{
+  "scope": "Move only shared fixture definitions into lawful test_support package. No test functions/assertions changed; AST identity checked modulo test-import paths. No dynamic test imports or isolation exemptions. Four corpus constants retain exact repository test-data directory.",
+  "files": [
+    {
+      "path": "test_support/s9_fixtures/__init__.py",
+      "before_sha256": null,
+      "sha256": "aa11e2b4b14ff9cfa818419c1112a5ed6b32009bb463f0636e7b1afd8651b79b"
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_clip.py",
+      "before_sha256": null,
+      "sha256": "cd4084140f6d17ff58fa533581c33bf379e886838126103f10b0938c83b46868"
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_geometry.py",
+      "before_sha256": null,
+      "sha256": "ed9d0ca447a59cd70fc156d077270c817a283ea0a8b4528fa3ddf1e4d89602e4"
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_mechanism.py",
+      "before_sha256": null,
+      "sha256": "82c4ca687922856298c1d07a94d1f27ccf7c570c706d7b3009950f96c03c9a9d"
+    },
+    {
+      "path": "test_support/s9_fixtures/attention_sinks.py",
+      "before_sha256": null,
+      "sha256": "8d4deaf7c26926eafe7b6c219b2db827148fb949c53ee27d717c9e6cfcf55d42"
+    },
+    {
+      "path": "test_support/s9_fixtures/cell_topology.py",
+      "before_sha256": null,
+      "sha256": "5ace5819e1d91b7f5504b1464e1767581380197846e8fd6837be6441c28956d6"
+    },
+    {
+      "path": "test_support/s9_fixtures/cross_attention_replacement.py",
+      "before_sha256": null,
+      "sha256": "9a35942c2c83dffff56e92420b625f485c978f29c4cb17c05d65f464e11704c1"
+    },
+    {
+      "path": "test_support/s9_fixtures/cross_attention_schedule.py",
+      "before_sha256": null,
+      "sha256": "a37ab783e11a1f95b1d4cb741478b5c1282b5f656abe4c26c9c54ce3fd3af98c"
+    },
+    {
+      "path": "test_support/s9_fixtures/decoder_norm.py",
+      "before_sha256": null,
+      "sha256": "165ba08f62061d2a869ac864929266d44273f45a85aea1f8822ceeebb6c45db4"
+    },
+    {
+      "path": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "before_sha256": null,
+      "sha256": "6626e2ebc2131c0199691109fe32d8c72f7db2a72d847ffaafec682235386689"
+    },
+    {
+      "path": "test_support/s9_fixtures/diffusion_reader_claims.py",
+      "before_sha256": null,
+      "sha256": "7194fe2b7849c4e887e9ac573763e395aa802b774594238f89d0aa3a75a162fc"
+    },
+    {
+      "path": "test_support/s9_fixtures/embedding_bookend.py",
+      "before_sha256": null,
+      "sha256": "aa92922aacf7aa4062d2478219039a5b69fe34a5847232ea027936eda34a8323"
+    },
+    {
+      "path": "test_support/s9_fixtures/ffn_mechanism.py",
+      "before_sha256": null,
+      "sha256": "f9bbdc53f56e9a5b78b90df3fe35a40bae01a2bf97a1a2979f5da8c36da44634"
+    },
+    {
+      "path": "test_support/s9_fixtures/ffn_schedule.py",
+      "before_sha256": null,
+      "sha256": "6b43ec71162a0466ee52b2fe68d14f1707df47711e3b1e461b273314350ec03c"
+    },
+    {
+      "path": "test_support/s9_fixtures/mixer_schedule.py",
+      "before_sha256": null,
+      "sha256": "d37feadc6d7fe8bcac1b39e97e72ee8f909744e09b2fcb110abf400d9268d798"
+    },
+    {
+      "path": "test_support/s9_fixtures/mtp.py",
+      "before_sha256": null,
+      "sha256": "dcba7ad4b1b705139b69fec46762404421c8cb9ef11d1e5eba96fc86b079c4ce"
+    },
+    {
+      "path": "test_support/s9_fixtures/portable_claim_summary.py",
+      "before_sha256": null,
+      "sha256": "0d022c9b0192b9467f9565139de2b6124461b22e9e2b3618b003b6dbf752ac1a"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_absolute.py",
+      "before_sha256": null,
+      "sha256": "07c51ecb531250615bcf038e7c3d9631df2e9009f1928fc7dddfa2f729c50451"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_fixed.py",
+      "before_sha256": null,
+      "sha256": "25fc56315ddebeee7a333ecf4e0f117c8fc63946b09a6340765ddf3c3d630432"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_initialization.py",
+      "before_sha256": null,
+      "sha256": "ae1a4299e14d5fc8a86d17f9800623a4e90af0f443cdc622800d53ebc42e95f9"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_linear_bias.py",
+      "before_sha256": null,
+      "sha256": "fb81b831a79dcee9a25c7f97240043c906fd0049cece74ce259b0ab4328e6978"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_relative_bias.py",
+      "before_sha256": null,
+      "sha256": "ef5432b6bd5357f61fe6a85ac380f086151f5171099a8b062feff3d59e861128"
+    },
+    {
+      "path": "test_support/s9_fixtures/position_schedule.py",
+      "before_sha256": null,
+      "sha256": "ace1d728485891a5e2070059861cfe875a6729fd4d556c13f53b06ea1547aeac"
+    },
+    {
+      "path": "test_support/s9_fixtures/program_index.py",
+      "before_sha256": null,
+      "sha256": "39a9beb90dd08cfdb7b541d3981f9da3f1a6cd5696b6c2c40a691d2f5fc47451"
+    },
+    {
+      "path": "test_support/s9_fixtures/reader_claims.py",
+      "before_sha256": null,
+      "sha256": "6f44a4f16aecb3ccec2c694a8d6643c277b2bbf5d6e0c9d4f419f73abbe9c016"
+    },
+    {
+      "path": "test_support/s9_fixtures/s7_reconciliation.py",
+      "before_sha256": null,
+      "sha256": "018c2a8ff231858c90117e14ad58ff16c4c9b692d9311fe7a62cc32c5c0ef8ac"
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_class_default_value.py",
+      "before_sha256": null,
+      "sha256": "29cc0fa0c5b594c8631e695f0ac46071737864bea4a18f58fdcec0d4d963fa51"
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_fact_unknowns.py",
+      "before_sha256": null,
+      "sha256": "dbbfc20995c4788f930b301e441f334a340a6c5de38fd1370518c1d2d8b312ec"
+    },
+    {
+      "path": "test_support/s9_fixtures/s9_scalar_decisions.py",
+      "before_sha256": null,
+      "sha256": "65a15b336dd94461636c2c4a6f83edbe2ae045ae2e5ebcc84148bea00bafde57"
+    },
+    {
+      "path": "test_support/s9_fixtures/weight_tying.py",
+      "before_sha256": null,
+      "sha256": "ee40e034388b7be2a49b880f59332a194164528483f253458818ec37fc9b9a48"
+    },
+    {
+      "path": "tests/test_attention_clip.py",
+      "before_sha256": "db5dcaae16511d221b66b7a21a1402459b0a89d9b2569e3ccee96f99eea0eca7",
+      "sha256": "4dd65584bcabbaa80d9b3c90a03f46419182215f6aec8b1041eb061bc4c33f72"
+    },
+    {
+      "path": "tests/test_attention_geometry.py",
+      "before_sha256": "3f35424733c58ec5adc405bacaa6f4364bcbfdc8551f7c7cef0c5120a8056f53",
+      "sha256": "d9d716615a80803e29c9eb5d6cff9f9268c5e4b83a56e09bb76013bbcf8dea5f"
+    },
+    {
+      "path": "tests/test_attention_mechanism.py",
+      "before_sha256": "96117769dede6c0ca93c9892c019df69ca1503810d84c3f3fd72270303e96f5d",
+      "sha256": "7cc85edd59d580b2e9627a77373a14ba30bf156bebac25dbe4a780091e389e06"
+    },
+    {
+      "path": "tests/test_attention_sinks.py",
+      "before_sha256": "f49adfa32ba391f54c4c00eca9591f9b76cabcfd45114886c03894b756922571",
+      "sha256": "f0c1966683cbbafd20efc790c313f11e16c6e5986f6f8b5debdf63e1258ccfda"
+    },
+    {
+      "path": "tests/test_cell_topology.py",
+      "before_sha256": "88428fc1d58d0b05465ee7f1d10515070da2e5dec6871ee8cad828f6a2e59f9d",
+      "sha256": "f21454b1f13d37f7f121436dc0614fbb6c6eddcbcb06a9976b300183c4b18815"
+    },
+    {
+      "path": "tests/test_cross_attention_replacement.py",
+      "before_sha256": "51de6bf821a27aa8cec8139f007a8c7df0da43fa98e326c393c5f032603ed607",
+      "sha256": "e455f12bdedc61605bf2e456122b739c95b942c4786e6d995678ce969881c242"
+    },
+    {
+      "path": "tests/test_cross_attention_schedule.py",
+      "before_sha256": "4f09cf695f25a950f78a2213770ddd034139df07ab028bf2588ac00399d268be",
+      "sha256": "8f330652e0597fa7d2291dc51453c608968738a78d7598a8d5c9a7b784a8f7de"
+    },
+    {
+      "path": "tests/test_decoder_norm.py",
+      "before_sha256": "d4e58e49b70f93dc53502ec62dab0ecb9878f55c9c3b65a91d031eccf66be79d",
+      "sha256": "70e673deb9700504f97a1d2616b61f947658e9dd9778bb560cd757e12407c2e4"
+    },
+    {
+      "path": "tests/test_diffusion_config_binding.py",
+      "before_sha256": "115e657bb196db5829e2366b6524c4033b2dc2b578e80d6be8a70dcc85640ce8",
+      "sha256": "265893c54a1c729544cfe1e117fb99f3921d0cfdd42d55a98f808c75280e8045"
+    },
+    {
+      "path": "tests/test_diffusion_reader_claims.py",
+      "before_sha256": "d7fc82bb3bb78792b8bb46ee942c3bf69a3d7a92be9bbe2805dd239a8201ef14",
+      "sha256": "4e0a6e708bcebf1fc31ea58a5dbef9203c98fac30a893b3de0f8de719e621627"
+    },
+    {
+      "path": "tests/test_embedding_bookend.py",
+      "before_sha256": "aee044d85b6ac1b2e82fdac7802a5d6a9349622480542b042eb8dcc859d172e9",
+      "sha256": "d9849c30747cad8ccd61eed8d2a00e20dc3b7d7b47c5359b71be3f91edc45cf8"
+    },
+    {
+      "path": "tests/test_ffn_mechanism.py",
+      "before_sha256": "653bb76aea7c68b013d30ad7194fdc75cc3d0ea48b9c331918b313f65bb4a1ac",
+      "sha256": "6fe8782e9af34fa3c4bdd31771013cac9c39979e5779bb446ffdef5fa8680623"
+    },
+    {
+      "path": "tests/test_ffn_schedule.py",
+      "before_sha256": "2b0a720c17621a806bad0587a9b9519e6a67782e38f5431e76b70c1ead665454",
+      "sha256": "828e948abe703e265345fb25d4245cc479242de5c58d0b581733a3ff3319dea7"
+    },
+    {
+      "path": "tests/test_mixer_schedule.py",
+      "before_sha256": "e2db2c2fab8aef8c0c78b279f7e776889d6e1669fc892045d01bc4f021350356",
+      "sha256": "d318628efc388ab973a2aaca1b77f5351873ae8b39047679694dcf5a987561fb"
+    },
+    {
+      "path": "tests/test_mtp.py",
+      "before_sha256": "544d315aa469a49f3a7b1de0cbf0dfd0ab768ed6a4167460cdfc02b4c1c42ddd",
+      "sha256": "dc0fa75cbda51b5600ea64313d1169568e6fed0db7c1b5216bf57c8615df6cf4"
+    },
+    {
+      "path": "tests/test_portable_claim_summary.py",
+      "before_sha256": "654cf999d9530c40a04a1c79cb9f6a20528af4954a106eea53d3e162346e4c79",
+      "sha256": "7e0a20aae8b329fb76829294f8633a954dc1b8625b299ff177344c7c4f33f413"
+    },
+    {
+      "path": "tests/test_position_absolute.py",
+      "before_sha256": "4c9159b18e59d8fc646b0c6ccde8152a55f2312994b22dc6931a208bf5443946",
+      "sha256": "1de46644f6164018a2e93b0196e8ca5514668db614566c520ab0f46e59bbe350"
+    },
+    {
+      "path": "tests/test_position_fixed.py",
+      "before_sha256": "df22ecbdbeae0e2cf5199eda1a898e1a101d30a6d01879aebe5531614c308949",
+      "sha256": "d4de2eeb3d3cfc210d93d73dd64c68e742a65948a4ea7850906c85114c15d2a0"
+    },
+    {
+      "path": "tests/test_position_initialization.py",
+      "before_sha256": "b3a34ebf3d46e54f27c0d7145f91a040e376d4ac057202514d264b5374c400db",
+      "sha256": "5e7620cff003a856cf14e0f3d4d90c2a1c0f9f57121c8e4378a608eaec970b52"
+    },
+    {
+      "path": "tests/test_position_linear_bias.py",
+      "before_sha256": "c0207fbc98c840e6cba24b5b6a93cb3e8ad3169ff84eea570c5bf8a6ebc30fb6",
+      "sha256": "41a8c0960eb95905ba6997e57f77e3615808c908836dd27eec7c09c55ea677b6"
+    },
+    {
+      "path": "tests/test_position_relative_bias.py",
+      "before_sha256": "4876c3143d043bfc9746b00f77bcc63299514ed2e4ce21184b07ec8f89b991e2",
+      "sha256": "7fa2b5c8b62b00d0bdf355138d7c57a4a297238290fc91cadb0544f7dcd15514"
+    },
+    {
+      "path": "tests/test_position_schedule.py",
+      "before_sha256": "b0b0387275a819d4607afbb538e1bbe0562ce323bc0a645ac714082cdfb76602",
+      "sha256": "4ec98219a8ec118704516ad669429f3146d408c298dcb5afe72eb8b6aa71756e"
+    },
+    {
+      "path": "tests/test_program_index.py",
+      "before_sha256": "eec46b15f4b6e27869773fd7607ce2d341a124f99b730f56081c357e4300cfdc",
+      "sha256": "a4f171dbc58721b0d2289c1c19b778122dcffa7f37a73146d829ee6458cd047a"
+    },
+    {
+      "path": "tests/test_reader_claims.py",
+      "before_sha256": "7cd61543d9cae41c049603e9ee0f4dc3cf3bcc548818848a2b7d888bf3205e05",
+      "sha256": "b959371b1d112e6c65489d1cc916db2a38065aad3bc6b5a6523551b2fcd3165f"
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "before_sha256": "7f70f5fe4b4638b0888a75140332aca9221a05eaccab590e4b742539f3e27f31",
+      "sha256": "f2773eea911bcacaddf2c533c14ba83d486866ee80a63d46a054ca7c6e0062e7"
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "before_sha256": "072d78c3d5783cfa4fd5af848917ed46c1e5ab158a2626dc100402eb19363c88",
+      "sha256": "9af3f9a0230aa588232b3746bef9a117e09c21b8e3e72dafe2e31a6dbcaf00c2"
+    },
+    {
+      "path": "tests/test_s9_class_default_value.py",
+      "before_sha256": "862e144aa656e682fcb95457c9c2b7d3a650878433c43f68c37edc682dd51d25",
+      "sha256": "f6ea8b617616b51ff6b8871857fcf30f3c7749e4e953d39972a60dae2ca50d39"
+    },
+    {
+      "path": "tests/test_s9_config_annotation_mro.py",
+      "before_sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06",
+      "sha256": "a2466a14c3cf26debed7faebcd14c6559122d3a253c67728d8dd73ede9370427"
+    },
+    {
+      "path": "tests/test_s9_diffusion_defaults.py",
+      "before_sha256": "a569eb47aa0b3fcdfc335ed123fc1a60385cd8dcd768949e94d76e1d50a065e6",
+      "sha256": "c676f1999a6930aa4f69549981e5e5e4e4e55641f6430613b76439fe5206713e"
+    },
+    {
+      "path": "tests/test_s9_fact_unknowns.py",
+      "before_sha256": "c00a3c3e657eba664ce47b772bba8f759ba25205401606c158beff40d4604df5",
+      "sha256": "280726b296ad437a04b5f899f06a4e642bcce22d37de6f6566d88418d5be8fc8"
+    },
+    {
+      "path": "tests/test_s9_ffn_unbound.py",
+      "before_sha256": "6924767218456a210165cd0a853a1137b5bdc4c46ce3d326384418533e5d9f4b",
+      "sha256": "847364dd0616593523c230625955e01362e603441821adb980b3fd0c7ccbc704"
+    },
+    {
+      "path": "tests/test_s9_input_position_claims.py",
+      "before_sha256": "6315b23d2e440e045342c6dcb46d22dc5adc6fd1fe48b1b8f4fd86f84e5fdbee",
+      "sha256": "6f81be8e51f9683bd814322d829270d2f8f93bdc9be965fcbcc3094fab2f3080"
+    },
+    {
+      "path": "tests/test_s9_limited_document.py",
+      "before_sha256": "229103e30b47a3dcfd91c08b499f58fc100393cd84d6f728a37038a6e6d125c7",
+      "sha256": "8b43a1b225e9e0879322733880123b4e7b57c4782ca4bde98ea0eaff47a400e3"
+    },
+    {
+      "path": "tests/test_s9_norm_claims.py",
+      "before_sha256": "ad771dfc04a3f8908432a46f33df46fabcf1ba976071303e01955bd93d6be1a8",
+      "sha256": "4d516b523a24c7a990c33cddaaeda47746be9669d82f69667069c718dc6860fa"
+    },
+    {
+      "path": "tests/test_s9_operand_channels.py",
+      "before_sha256": "dddfee14299b1d35a1e2d9534807fca6834854d8ff8a793b8babd1194f812bbf",
+      "sha256": "1a56da24d3682aa31ed21bab8a02308cf512fb74208f823b4d2cda8325046c10"
+    },
+    {
+      "path": "tests/test_s9_presentation_chips.py",
+      "before_sha256": "840b6812a063d3717dfd3067d1b4703dafcc77e75663d689020cb9082520a220",
+      "sha256": "d334361196adc34c617ae29c415db44973aa35e4a07d82c047af901fe54ddc49"
+    },
+    {
+      "path": "tests/test_s9_projection_claim_requirements.py",
+      "before_sha256": "d0a49d7fb37a7850c168dcf383fd88f91321b3b2b483a0dc94b7ffe7bee93cc6",
+      "sha256": "454fb4d2fd1f550165ce41e9809aacb891f8910182a1e90e199166bc6fdfcfa7"
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "before_sha256": "afd708256e7847c63a8d90d5383cabb90667588721b1eee06b320dfc9b362e5f",
+      "sha256": "b9ab881d8906f277382052eada9f53a6eeed6c34b6dcaa50b413b419dfc675e3"
+    },
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "before_sha256": "cac0f49723d26483a888cb4cc7efe264f6a7c799a327e469be51c147c0e77029",
+      "sha256": "39188fa84749586c76dd29b9e949dc201c7c89140eaf6bc749b62c07688da45d"
+    },
+    {
+      "path": "tests/test_s9_registered_default_events.py",
+      "before_sha256": "19ab376ffbf131c8c6a6811abc63f6186d79e60f1d3fcdfb4957c73a7ec690da",
+      "sha256": "0d35f5bdf437097b6e682f96cb72dbd170688413be8b77768c19ae4926dc65d5"
+    },
+    {
+      "path": "tests/test_s9_scalar_decisions.py",
+      "before_sha256": "b5e1d84fb12e8dba12fdfea589220de09b83d00b80adc871d5ede450971e6ce2",
+      "sha256": "26382e9cc171cc7e5721989da10f6b589b952dade349da0d1ab990833616eeb6"
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "before_sha256": "6bb53f6f904c02ffde7f48c02b78b0a734e527385406a01722b869f068e50503",
+      "sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61"
+    },
+    {
+      "path": "tests/test_weight_tying.py",
+      "before_sha256": "de365f3efdf1f113ffc30283f697241d996561c4cfbc40f23471808ef199b36a",
+      "sha256": "675c09c8c2fced362739e9d90e8b002a3d5b863b4e55bcee788e24db778a26e9"
+    }
+  ],
+  "moves": [
+    {
+      "source": "tests/test_attention_clip.py",
+      "destination": "test_support/s9_fixtures/attention_clip.py",
+      "definitions": [
+        "_bundle",
+        "_read"
+      ],
+      "lines_moved": 51
+    },
+    {
+      "source": "tests/test_attention_geometry.py",
+      "destination": "test_support/s9_fixtures/attention_geometry.py",
+      "definitions": [
+        "_SOURCE",
+        "_config",
+        "_context",
+        "_real_schedule",
+        "_selector"
+      ],
+      "lines_moved": 78
+    },
+    {
+      "source": "tests/test_attention_mechanism.py",
+      "destination": "test_support/s9_fixtures/attention_mechanism.py",
+      "definitions": [
+        "_PREFIX",
+        "_gated_delta_mixer",
+        "_pipeline",
+        "_source",
+        "_split_attention"
+      ],
+      "lines_moved": 100
+    },
+    {
+      "source": "tests/test_attention_sinks.py",
+      "destination": "test_support/s9_fixtures/attention_sinks.py",
+      "definitions": [
+        "_SOURCE",
+        "_reader"
+      ],
+      "lines_moved": 62
+    },
+    {
+      "source": "tests/test_cell_topology.py",
+      "destination": "test_support/s9_fixtures/cell_topology.py",
+      "definitions": [
+        "_GUARDED_AUGMENTED_CELL",
+        "_GUARDED_NORMS",
+        "_read",
+        "_source"
+      ],
+      "lines_moved": 131
+    },
+    {
+      "source": "tests/test_cross_attention_replacement.py",
+      "destination": "test_support/s9_fixtures/cross_attention_replacement.py",
+      "definitions": [
+        "_case",
+        "_selector"
+      ],
+      "lines_moved": 70
+    },
+    {
+      "source": "tests/test_cross_attention_schedule.py",
+      "destination": "test_support/s9_fixtures/cross_attention_schedule.py",
+      "definitions": [
+        "_SOURCE"
+      ],
+      "lines_moved": 52
+    },
+    {
+      "source": "tests/test_decoder_norm.py",
+      "destination": "test_support/s9_fixtures/decoder_norm.py",
+      "definitions": [
+        "_read"
+      ],
+      "lines_moved": 61
+    },
+    {
+      "source": "tests/test_diffusion_config_binding.py",
+      "destination": "test_support/s9_fixtures/diffusion_config_binding.py",
+      "definitions": [
+        "CONFIG",
+        "REGISTERED_SOURCE",
+        "SOURCE",
+        "_bind",
+        "_inputs",
+        "_write"
+      ],
+      "lines_moved": 130
+    },
+    {
+      "source": "tests/test_diffusion_reader_claims.py",
+      "destination": "test_support/s9_fixtures/diffusion_reader_claims.py",
+      "definitions": [
+        "_projected"
+      ],
+      "lines_moved": 7
+    },
+    {
+      "source": "tests/test_embedding_bookend.py",
+      "destination": "test_support/s9_fixtures/embedding_bookend.py",
+      "definitions": [
+        "_SOURCE",
+        "_pipeline",
+        "_with_final_norm",
+        "_write"
+      ],
+      "lines_moved": 61
+    },
+    {
+      "source": "tests/test_ffn_mechanism.py",
+      "destination": "test_support/s9_fixtures/ffn_mechanism.py",
+      "definitions": [
+        "_ATTENTION",
+        "_PREFIX",
+        "_config_selected_wrapper_reader",
+        "_reader"
+      ],
+      "lines_moved": 133
+    },
+    {
+      "source": "tests/test_ffn_schedule.py",
+      "destination": "test_support/s9_fixtures/ffn_schedule.py",
+      "definitions": [
+        "_CORPUS",
+        "_config",
+        "_real_result",
+        "_selector"
+      ],
+      "lines_moved": 20
+    },
+    {
+      "source": "tests/test_mixer_schedule.py",
+      "destination": "test_support/s9_fixtures/mixer_schedule.py",
+      "definitions": [
+        "_CORPUS",
+        "_config",
+        "_real_result",
+        "_selector"
+      ],
+      "lines_moved": 20
+    },
+    {
+      "source": "tests/test_mtp.py",
+      "destination": "test_support/s9_fixtures/mtp.py",
+      "definitions": [
+        "_read",
+        "_source"
+      ],
+      "lines_moved": 79
+    },
+    {
+      "source": "tests/test_portable_claim_summary.py",
+      "destination": "test_support/s9_fixtures/portable_claim_summary.py",
+      "definitions": [
+        "_defaults"
+      ],
+      "lines_moved": 38
+    },
+    {
+      "source": "tests/test_position_absolute.py",
+      "destination": "test_support/s9_fixtures/position_absolute.py",
+      "definitions": [
+        "_SOURCE",
+        "_result"
+      ],
+      "lines_moved": 44
+    },
+    {
+      "source": "tests/test_position_fixed.py",
+      "destination": "test_support/s9_fixtures/position_fixed.py",
+      "definitions": [
+        "_CORPUS",
+        "_context",
+        "_pipeline",
+        "_source"
+      ],
+      "lines_moved": 67
+    },
+    {
+      "source": "tests/test_position_initialization.py",
+      "destination": "test_support/s9_fixtures/position_initialization.py",
+      "definitions": [
+        "_SOURCE",
+        "_result"
+      ],
+      "lines_moved": 111
+    },
+    {
+      "source": "tests/test_position_linear_bias.py",
+      "destination": "test_support/s9_fixtures/position_linear_bias.py",
+      "definitions": [
+        "_pipeline",
+        "_source"
+      ],
+      "lines_moved": 69
+    },
+    {
+      "source": "tests/test_position_relative_bias.py",
+      "destination": "test_support/s9_fixtures/position_relative_bias.py",
+      "definitions": [
+        "_CORPUS",
+        "_t5_context"
+      ],
+      "lines_moved": 6
+    },
+    {
+      "source": "tests/test_position_schedule.py",
+      "destination": "test_support/s9_fixtures/position_schedule.py",
+      "definitions": [
+        "_SOURCE",
+        "_result"
+      ],
+      "lines_moved": 94
+    },
+    {
+      "source": "tests/test_program_index.py",
+      "destination": "test_support/s9_fixtures/program_index.py",
+      "definitions": [
+        "_bundle",
+        "_class",
+        "_index",
+        "_write"
+      ],
+      "lines_moved": 18
+    },
+    {
+      "source": "tests/test_reader_claims.py",
+      "destination": "test_support/s9_fixtures/reader_claims.py",
+      "definitions": [
+        "_native_fact",
+        "_qualified_final"
+      ],
+      "lines_moved": 16
+    },
+    {
+      "source": "tests/test_s7_reconciliation.py",
+      "destination": "test_support/s9_fixtures/s7_reconciliation.py",
+      "definitions": [
+        "CLASS",
+        "CONFIG_HASH",
+        "FP",
+        "_inventory",
+        "_product_index",
+        "_product_ir"
+      ],
+      "lines_moved": 47
+    },
+    {
+      "source": "tests/test_s9_class_default_value.py",
+      "destination": "test_support/s9_fixtures/s9_class_default_value.py",
+      "definitions": [
+        "_fact",
+        "_read"
+      ],
+      "lines_moved": 37
+    },
+    {
+      "source": "tests/test_s9_fact_unknowns.py",
+      "destination": "test_support/s9_fixtures/s9_fact_unknowns.py",
+      "definitions": [
+        "investigated"
+      ],
+      "lines_moved": 19
+    },
+    {
+      "source": "tests/test_s9_scalar_decisions.py",
+      "destination": "test_support/s9_fixtures/s9_scalar_decisions.py",
+      "definitions": [
+        "_config",
+        "_parse"
+      ],
+      "lines_moved": 14
+    },
+    {
+      "source": "tests/test_weight_tying.py",
+      "destination": "test_support/s9_fixtures/weight_tying.py",
+      "definitions": [
+        "_reader",
+        "_source"
+      ],
+      "lines_moved": 68
+    }
+  ],
+  "runtime": "not run; full collection and affected fixture consumers required"
+}

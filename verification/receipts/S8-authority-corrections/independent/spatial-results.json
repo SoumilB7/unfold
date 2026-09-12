@@ -1,0 +1,20 @@
+{
+  "checkout_head": "f58170931e3cd05b1b699df5428920f7fc4c0147",
+  "inventory_kind": "synthetic boundary DTO, not a claimed actual model construction",
+  "misbound_stride_one_occurrence": null,
+  "projected_fact": {
+    "down.0.spatial.0": {
+      "effect": "reduce",
+      "operand": 2,
+      "primitive": "torch.nn.Conv2d"
+    }
+  },
+  "reader_issues": [],
+  "reader_positive_operation_count": 1,
+  "source": "\nfrom torch.nn import ModuleList, Conv2d, AvgPool2d, ConvTranspose2d\nfrom diffusers.configuration_utils import register_to_config\n\nclass Unit:\n    def __init__(self, width):\n        self.op = Conv2d(width, width, kernel_size=1, stride=1)\n    def forward(self, value): return self.op(value)\n\nclass Spatial:\n    def __init__(self, width, convolution=True, stride=2):\n        if convolution:\n            self.op = Conv2d(width, width, kernel_size=3, stride=stride)\n        else:\n            self.op = AvgPool2d(kernel_size=stride, stride=stride)\n    def forward(self, value):\n        return self.op(value)\n\nclass Stage:\n    def __init__(self, width, count, add_spatial, convolution):\n        self.units = ModuleList([Unit(width) for _ in range(count)])\n        if add_spatial:\n            self.spatial = ModuleList([Spatial(width, convolution, stride=2), Spatial(width, convolution, stride=1)])\n        else:\n            self.spatial = None\n    def forward(self, value, side=None):\n        for unit in self.units:\n            value = unit(value)\n        if self.spatial is not None:\n            for spatial in self.spatial:\n                value = spatial(value)\n        return value, (value,)\n\ndef choose(token, width, count, add_spatial, convolution):\n    if token == \"a\": return Stage(width, count, add_spatial, convolution)\n    if token == \"b\": return Stage(width, count, add_spatial, convolution)\n    raise ValueError(token)\n\nclass Root:\n    @register_to_config\n    def __init__(self, kinds=(\"a\",), widths=(4,), counts=(1,),\n                 spatial=(False,), convolution=(True,)):\n        self.down = ModuleList([])\n        self.up = ModuleList([])\n        for i, token in enumerate(kinds):\n            item = choose(token, widths[i], counts[i], spatial[i],\n                          convolution[i])\n            self.down.append(item)\n    def forward(self, value):\n        saved = ()\n        for stage in self.down:\n            value, branch = stage(value)\n            saved += branch\n        for stage in self.up:\n            value = stage(value, saved[-1:])\n        return value\n",
+  "source_construction_strides": {
+    "down.0.spatial.0": 2,
+    "down.0.spatial.1": 1
+  },
+  "source_sha256": "4686fffcb3be42157209a839aa8dae0def1101b6e372fdca4e704fc581019621"
+}

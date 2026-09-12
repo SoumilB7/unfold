@@ -1,0 +1,273 @@
+{
+  "inventory_sha256": "5ae16733f0be1e1355d5e9a890228669403bfeba99e1cdbf31947496ea21d5e7",
+  "limit": "Static replay of saved evidence, not a fresh model run or acceptance of all conditions.",
+  "lookup_kinds": {
+    "__class__": "unresolved",
+    "add_embedding": "conditional_registered_child",
+    "add_time_proj": "conditional_registered_child",
+    "class_embedding": "non_callable",
+    "config": "property_storage",
+    "conv_act": "conditional_registered_child",
+    "conv_in": "conditional_registered_child",
+    "conv_norm_out": "conditional_registered_child",
+    "conv_out": "conditional_registered_child",
+    "down_blocks": "conditional_registered_child",
+    "encoder_hid_proj": "non_callable",
+    "forward": "unresolved",
+    "get_aug_embed": "plain_bound_method",
+    "get_class_embed": "plain_bound_method",
+    "get_time_embed": "plain_bound_method",
+    "mid_block": "conditional_registered_child",
+    "num_upsamplers": "non_callable",
+    "position_net": "unresolved",
+    "process_encoder_hidden_states": "plain_bound_method",
+    "text_encoder_hid_proj": "unresolved",
+    "time_embed_act": "non_callable",
+    "time_embedding": "conditional_registered_child",
+    "time_proj": "conditional_registered_child",
+    "up_blocks": "conditional_registered_child"
+  },
+  "root_closed_helpers": [
+    {
+      "attribute": "get_time_embed",
+      "line": 1083
+    },
+    {
+      "attribute": "get_class_embed",
+      "line": 1086
+    },
+    {
+      "attribute": "get_aug_embed",
+      "line": 1093
+    },
+    {
+      "attribute": "process_encoder_hidden_states",
+      "line": 1105
+    }
+  ],
+  "root_open_helpers": [],
+  "same_guard_contradiction_count": 0,
+  "targets": [
+    {
+      "attribute": "get_time_embed",
+      "condition_count": 5,
+      "kind": "helper",
+      "line": 1083,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1083:16:1083:69",
+      "targets": null
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1084,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1084:14:1084:55",
+      "targets": [
+        "time_embedding"
+      ]
+    },
+    {
+      "attribute": "get_class_embed",
+      "condition_count": 5,
+      "kind": "helper",
+      "line": 1086,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1086:20:1086:82",
+      "targets": null
+    },
+    {
+      "attribute": "get_aug_embed",
+      "condition_count": 5,
+      "kind": "helper",
+      "line": 1093,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1093:18:1095:9",
+      "targets": null
+    },
+    {
+      "attribute": "process_encoder_hidden_states",
+      "condition_count": 5,
+      "kind": "helper",
+      "line": 1105,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1105:32:1107:9",
+      "targets": null
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1110,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1110:17:1110:37",
+      "targets": [
+        "conv_in"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1175,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1175:25:1182:17",
+      "targets": [
+        "mid_block"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1184,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1184:25:1184:52",
+      "targets": [
+        "mid_block"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1230,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1230:21:1230:47",
+      "targets": [
+        "conv_norm_out"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1231,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1231:21:1231:42",
+      "targets": [
+        "conv_act"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 1232,
+      "method": "UNet2DConditionModel.forward",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1232:17:1232:38",
+      "targets": [
+        "conv_out"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 897,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:897:22:897:63",
+      "targets": [
+        "add_embedding"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 907,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:907:22:907:63",
+      "targets": [
+        "add_embedding"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 920,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:920:26:920:64",
+      "targets": [
+        "add_time_proj"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 924,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:924:22:924:52",
+      "targets": [
+        "add_embedding"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 932,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:932:22:932:52",
+      "targets": [
+        "add_embedding"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 941,
+      "method": "UNet2DConditionModel.get_aug_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:941:22:941:58",
+      "targets": [
+        "add_embedding"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 883,
+      "method": "UNet2DConditionModel.get_class_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:883:31:883:59",
+      "targets": [
+        "time_proj"
+      ]
+    },
+    {
+      "attribute": null,
+      "condition_count": 6,
+      "kind": "constructed_target",
+      "line": 869,
+      "method": "UNet2DConditionModel.get_time_embed",
+      "same_guard_contradictions": [],
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:869:16:869:41",
+      "targets": [
+        "time_proj"
+      ]
+    }
+  ],
+  "wrapper_kind": "conditional_wrapper"
+}

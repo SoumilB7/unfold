@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s10-1-deletion",
+  "lanes": [
+    {
+      "name": "latency-contract",
+      "returncode": 0,
+      "duration": 2.278363333083689,
+      "before": "315a5c58ef8e154e70a11163dbaff573c91b2ec42b4a5a7c655c73b38cab65b1",
+      "after": "315a5c58ef8e154e70a11163dbaff573c91b2ec42b4a5a7c655c73b38cab65b1",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s10-1/qualification-latency-ratchet/latency-contract.log",
+      "passed": true
+    }
+  ],
+  "tools_before": {
+    "/private/tmp/s10_1_verify.py": "5c0093cf73f15d5b1a3abd484505e8f1e55f8c0eb46359e396ae7cdeee20a447",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s10-1-deletion/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s10-1-deletion/test_support/tree_state.py": "4a270ef2248eef33f55ea86b9c68d7fa65acd1e00cd7c951504e29139c55f3ba"
+  },
+  "tools_after": {
+    "/private/tmp/s10_1_verify.py": "5c0093cf73f15d5b1a3abd484505e8f1e55f8c0eb46359e396ae7cdeee20a447",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s10-1-deletion/scripts/verify_commit.py": "5b12dca3116efd454d878c7ad6bbe62859d90e0ad558df881406bb36bd318c5a",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s10-1-deletion/test_support/tree_state.py": "4a270ef2248eef33f55ea86b9c68d7fa65acd1e00cd7c951504e29139c55f3ba"
+  },
+  "error": null
+}

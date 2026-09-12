@@ -1,0 +1,45 @@
+{
+  "status": "bounded source/data audit complete; not S9-A acceptance, visual verdict or blessing",
+  "candidate": 26,
+  "models": {
+    "deepseek-v4-flash": {
+      "occurrences": 1502,
+      "active_kind_changes": 86,
+      "active_cited_fact_keys_removed": 0,
+      "active_cited_fact_keys_added": 86,
+      "unchanged_membership_identity_construction_execution_schedules": true,
+      "exact_reproofs": "86 direct input_layernorm/post_attention_layernorm callees; each retains applied_function reader proof. 130 invalid22 kind changes reverted (43 callers,86 nested attention norms,1 final norm)."
+    },
+    "gemma-3n-e2b": {
+      "occurrences": 2896,
+      "active_kind_changes": 0,
+      "active_cited_fact_keys_removed": 0,
+      "active_cited_fact_keys_added": 0,
+      "unchanged_membership_identity_construction_execution_schedules": true,
+      "correction": "All six audio/vision embedder borrowed placements removed; also removes borrowed decoder norm citation from model caller without changing its placement."
+    },
+    "nemotron-h-8b": {
+      "occurrences": 370,
+      "active_kind_changes": 0,
+      "active_cited_fact_keys_removed": 0,
+      "active_cited_fact_keys_added": 52,
+      "unchanged_membership_identity_construction_execution_schedules": true,
+      "correction": "52 whole-layer borrowed placements removed. Exactly52 .norm targets gain citations on already placed occurrences; no whole caller placement inferred."
+    },
+    "bloom": {
+      "occurrences": 777,
+      "active_kind_changes": 0,
+      "active_cited_fact_keys_removed": 0,
+      "active_cited_fact_keys_added": 1,
+      "unchanged_membership_identity_construction_execution_schedules": true,
+      "correction": "70 candidate22 borrowed caller-layer norm citations removed; all active placement retained. One model.embedding_norm_kind citation addition is separate from this norm placement correction."
+    }
+  },
+  "total_original_returned_kind_changes": 274,
+  "original_rows_restored_to_active_kind": 188,
+  "remaining_active_kind_changes": 86,
+  "source_cause": "The broad semantic-span-to-class placement inference is replaced for decoder norm by actual retained direct callee occurrences. Existing independently evidenced callers survive. Unrelated same-class nodes and whole callers no longer borrow the decoder norm citation.",
+  "scope_note": "The86 DeepSeek placement changes require named re-proof treatment and owner approval under S9-A; they are not stamping-only parity. Actual HTML review belongs to the root/owner.",
+  "project_source_changes_by_this_audit": false,
+  "project_runtime_by_this_audit": false
+}

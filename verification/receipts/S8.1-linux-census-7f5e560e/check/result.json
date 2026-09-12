@@ -1,0 +1,17 @@
+{
+  "status": "PASS_COMMITTED_CENSUS_CHECK",
+  "commit": "8d7bcdeaf8dd9ec9c5fa75be629fd22973be582d",
+  "lane": {
+    "name": "census-check",
+    "returncode": 0,
+    "duration": 59.728662457782775,
+    "before": "7f1d1cd2194d335881862e02a8be26bbdcb4ea9d8ca2b7ae54a8e75ab86a61fc",
+    "after": "7f1d1cd2194d335881862e02a8be26bbdcb4ea9d8ca2b7ae54a8e75ab86a61fc",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "log_path": "/private/tmp/unfold-s81-linux-census-check/census-check.log",
+    "passed": true
+  },
+  "worktree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s81-linux-8d7bcdea-census-check",
+  "tool_sha256": "1ca36c22a80e1f06dacbf0f9aa30163a3e1c9e68d6ac07e250d4b897e47572ab"
+}

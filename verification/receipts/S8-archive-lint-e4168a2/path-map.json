@@ -1,0 +1,76 @@
+{
+  "commit": "e4168a2",
+  "unused_imports_removed": 13,
+  "scripts": [
+    {
+      "original_path": "verification/receipts/S8-current-capture-supplement-fb1f871/driver/scripts/replay_bloom.py",
+      "executed_archive": "verification/receipts/S8-current-capture-supplement-fb1f871/driver/scripts/replay_bloom.executed.py.txt",
+      "original_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
+      "cleaned_sha256": "b2c61267f17a7b4b037b7d733af2f87b24e35e7992e894ebb5f66d62815604c8",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-current-capture-supplement-fb1f871/driver/scripts/replay_bloom_v3.py",
+      "executed_archive": "verification/receipts/S8-current-capture-supplement-fb1f871/driver/scripts/replay_bloom_v3.executed.py.txt",
+      "original_sha256": "7250e1b77ed9639aeaa322cbd5c730a1c71327392a7c8bf7b2dca78d7d820d5f",
+      "cleaned_sha256": "56f77b2e9eef6fdaeb86462273633669e93df6834b610ed43fb13dec1d0e470c",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-current-preservation-captures-fb1f871/driver/scripts/capture_sd14.py",
+      "executed_archive": "verification/receipts/S8-current-preservation-captures-fb1f871/driver/scripts/capture_sd14.executed.py.txt",
+      "original_sha256": "3ff5a6128c0e0a0aa23d8100302113a73c4f6c4f290759291c136c02c04d0f03",
+      "cleaned_sha256": "c9c8b59a587b7f331eec553e56a19d5eacc61106cae2c114619681546775269a",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-current-preservation-captures-fb1f871/driver/scripts/replay_final.py",
+      "executed_archive": "verification/receipts/S8-current-preservation-captures-fb1f871/driver/scripts/replay_final.executed.py.txt",
+      "original_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
+      "cleaned_sha256": "2dabad47b3ed9bb68c394870be67cc075e91fb0dbf332dc36fdacbbf7e037269",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-final-render-fb1f871/driver/scripts/replay_bloom.py",
+      "executed_archive": "verification/receipts/S8-final-render-fb1f871/driver/scripts/replay_bloom.executed.py.txt",
+      "original_sha256": "36d988ea03e38e163f5d640f9a98e7a7fe1f0d23f28d5e0e4632c767dc98fa9f",
+      "cleaned_sha256": "b2c61267f17a7b4b037b7d733af2f87b24e35e7992e894ebb5f66d62815604c8",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-final-render-fb1f871/driver/scripts/replay_final.py",
+      "executed_archive": "verification/receipts/S8-final-render-fb1f871/driver/scripts/replay_final.executed.py.txt",
+      "original_sha256": "9dbf44b7d9010427e780c8ba0bd14c62c11828a48c440eae0abff89d73f4719a",
+      "cleaned_sha256": "2dabad47b3ed9bb68c394870be67cc075e91fb0dbf332dc36fdacbbf7e037269",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-sd14-current-recovery-fb1f871/driver/scripts/capture_sd14.py",
+      "executed_archive": "verification/receipts/S8-sd14-current-recovery-fb1f871/driver/scripts/capture_sd14.executed.py.txt",
+      "original_sha256": "3ff5a6128c0e0a0aa23d8100302113a73c4f6c4f290759291c136c02c04d0f03",
+      "cleaned_sha256": "c9c8b59a587b7f331eec553e56a19d5eacc61106cae2c114619681546775269a",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    },
+    {
+      "original_path": "verification/receipts/S8-sd14-current-recovery-fb1f871/driver/scripts/capture_sd14_v2.py",
+      "executed_archive": "verification/receipts/S8-sd14-current-recovery-fb1f871/driver/scripts/capture_sd14_v2.executed.py.txt",
+      "original_sha256": "99a4d56768b9e6f906855878b7b34075abf9c24eff9b401d75e1c6210d8dc941",
+      "cleaned_sha256": "37c5468adb0e6b1629eedb6004f2873f07f72b2774d27b084ea37c29692b9230",
+      "cleaned_executed": false,
+      "ast_equal_excluding_named_unused_imports": true
+    }
+  ],
+  "historical_indexes": [
+    "verification/receipts/S8-current-capture-supplement-fb1f871/artifact-map.executed-original.json",
+    "verification/receipts/S8-current-preservation-captures-fb1f871/artifact-map.executed-original.json",
+    "verification/receipts/S8-final-render-fb1f871/artifact-map.executed-original.json",
+    "verification/receipts/S8-sd14-current-recovery-fb1f871/artifact-map.executed-original.json"
+  ]
+}

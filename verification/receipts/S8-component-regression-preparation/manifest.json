@@ -1,0 +1,79 @@
+{
+  "status": "prepared; no new model run",
+  "source_freeze": "executor must supply immutable candidate and serial model lane",
+  "cases": {
+    "sdxl-refiner": {
+      "stages": [
+        4,
+        1,
+        4
+      ],
+      "input_conv": [
+        384,
+        4,
+        3,
+        3
+      ],
+      "parameters": 2259526660,
+      "input": "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-refiner/input.json",
+      "input_sha256": "a9a8317c663c78e978d0697c58763d8c3d4faa75fd0006cdc03cf3b71a6787d8"
+    },
+    "sdxl-inpainting": {
+      "stages": [
+        3,
+        1,
+        3
+      ],
+      "input_conv": [
+        320,
+        9,
+        3,
+        3
+      ],
+      "parameters": 2567478084,
+      "input": "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-inpainting/input.json",
+      "input_sha256": "1a0586efef78cc84c7f03f04eb79e7670e5bb7f117cc45e7dbf718c73cb2a57a"
+    },
+    "ddpm-cifar10": {
+      "stages": [
+        4,
+        1,
+        4
+      ],
+      "input_conv": [
+        128,
+        3,
+        3,
+        3
+      ],
+      "parameters": 35746307,
+      "external_context_routes": 0,
+      "input": "/private/tmp/unfold-s8-generalization-293c2d9/ddpm-cifar10/input.json",
+      "input_sha256": "294054d1575eb18a7889f072cd6e9fff7f3cf93ad45d45046f3fd32e4b3cb1f3"
+    }
+  },
+  "full_pipeline_positive": {
+    "input": "verification/receipts/S8-final-run-preparation/inputs/sdxl.json",
+    "reuse_final_ordinary_if_same_candidate_and_exact_input": true
+  },
+  "commands": [
+    "python3 scripts/demonstrate_s8_unet.py --input <pinned-input> --output <new-candidate>/<witness> --condition ordinary --expect-source-sha256 <candidate-production-hash>"
+  ],
+  "checks": [
+    "Actual HTML exists and matches saved hash; report recomputes observations from page",
+    "Compare exact inventory occurrence paths to source_instance_path on canonical cards AND data-id nodes actually present in native SVG views; list legitimate unplaced containers separately",
+    "Component architecture and expanded SVG views contain no text encoder, scheduler, VAE, prompt or sampling_loop nodes; do not search raw strings because inactive shared templates/scripts contain vocabulary",
+    "Primary sample input node remains visible in actual denoiser view with retained input source route",
+    "Stage counts, input convolution weight shape and full parameter sum from inventory match pinned config witnesses",
+    "Unconditional DDPM has zero external context routes and no external context node/card",
+    "Full supplied SDXL pipeline retains supplied component cards and diffusion pipeline; reuse final ordinary only if exact same source/input",
+    "Generate native SVG/PNG gallery; inspect overview, root input and representative conditioning drills; record exact inspected images",
+    "Report remaining unbound source connections separately from scope regressions or omitted real modules"
+  ],
+  "limits": [
+    "No additional six-condition variants",
+    "No blessed output or corpus expansion",
+    "Installed-version reconstruction; no checkpoint weights or historical implementation assertion",
+    "Never overwrite prior failed candidate output"
+  ]
+}

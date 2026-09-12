@@ -1,0 +1,260 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_name_or_path": "zai-org/GLM-4.5",
+    "architectures": [
+      "Glm4MoeForCausalLM"
+    ],
+    "attention_bias": true,
+    "attention_dropout": 0.0,
+    "bos_token_id": null,
+    "chunk_size_feed_forward": 0,
+    "dtype": "bfloat16",
+    "eos_token_id": [
+      151329,
+      151336,
+      151338
+    ],
+    "first_k_dense_replace": 3,
+    "head_dim": 128,
+    "hidden_act": "silu",
+    "hidden_size": 5120,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "initializer_range": 0.02,
+    "intermediate_size": 12288,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "max_position_embeddings": 131072,
+    "model_type": "glm4_moe",
+    "moe_intermediate_size": 1536,
+    "n_group": 1,
+    "n_routed_experts": 160,
+    "n_shared_experts": 1,
+    "norm_topk_prob": true,
+    "num_attention_heads": 96,
+    "num_experts_per_tok": 8,
+    "num_hidden_layers": 92,
+    "num_key_value_heads": 8,
+    "num_nextn_predict_layers": 1,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "pad_token_id": 151329,
+    "partial_rotary_factor": 0.5,
+    "problem_type": null,
+    "return_dict": true,
+    "rms_norm_eps": 1e-05,
+    "rope_parameters": {
+      "partial_rotary_factor": 0.5,
+      "rope_theta": 1000000,
+      "rope_type": "default"
+    },
+    "routed_scaling_factor": 2.5,
+    "tie_word_embeddings": false,
+    "topk_group": 1,
+    "transformers_version": "5.12.1",
+    "use_cache": true,
+    "use_qk_norm": true,
+    "vocab_size": 151552
+  },
+  "hash_signature": [
+    "0ab3484877f3ffc1f5aae70428678459",
+    "14116d9baf3e2c6b075d22750390f718",
+    "1a58f54930d25fa7f9b24be19fed4cbb",
+    "48ffc71f29e33d83b6558475a9c256fa",
+    "a39b1c9708734671c499bce8772b066f",
+    "bc5df722fc681af5bf5ef5d127daa955",
+    "bdefc6faf978f47be8662e9e530a4ebb",
+    "d08a31aea8f3894b54d243ea115ebb9e",
+    "f3548d1e25ff73d275bb5df4b556af89"
+  ],
+  "model": "GLM-4.5",
+  "proven_facts": [
+    "decoder.attention.bias",
+    "decoder.attention.cached",
+    "decoder.attention.head_geometry",
+    "decoder.attention.mask",
+    "decoder.attention.mask_schedule",
+    "decoder.attention.mechanism",
+    "decoder.attention.mixer_schedule",
+    "decoder.attention.output_projection",
+    "decoder.attention.position_schedule",
+    "decoder.attention.projection_mode",
+    "decoder.attention.qk_norm",
+    "decoder.attention.qk_norm_schedule",
+    "decoder.attention.rope_initialization",
+    "decoder.attention.rope_theta",
+    "decoder.attention.scores_scale",
+    "decoder.ffn.activation",
+    "decoder.ffn.expert.expert_activation_formula",
+    "decoder.ffn.expert.expert_intermediate_size",
+    "decoder.ffn.expert.expert_projection_mode",
+    "decoder.ffn.expert.shared_expert_count",
+    "decoder.ffn.ffn_schedule",
+    "decoder.ffn.gated",
+    "decoder.ffn.projection_mode",
+    "decoder.ffn.routing_policy",
+    "decoder.layer.norm_kind",
+    "decoder.layer.norm_placement",
+    "decoder.layer.residual_topology",
+    "model.final_norm_kind",
+    "model.tie_word_embeddings"
+  ],
+  "review_verdict": {
+    "decision": "ACCEPT",
+    "gallery_manifest_sha256": "d0e68f3efdb7d31f1ec6224f0ba0d00eee1e7741a72466f9ab4dc2100d8067f2",
+    "her_eyes_review_sha256": "50d275aae1842534377343cadb7fc6b6679a55b14ee593a5ff157048761dfff6",
+    "implementer": "executor",
+    "independent_review_evidence": [
+      "verification/receipts/S8-approved-geometry-owner/review.json",
+      "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+    ],
+    "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved.",
+    "model": "GLM-4.5",
+    "pixel_review_sha256": "c881f2b2589d807319c86b58db71a5150316970aeed1856c3c57323953ab39ec",
+    "proven_facts_equal_prior_lock": true,
+    "report_phase": "actual-fb1-Sable-capture",
+    "report_sha256": "7e42b9f7bc1c814fcda5350282558f4fca6d5a5239396776c5f20e49ca922a36",
+    "retained_visual_suggestions": [
+      {
+        "delight": "DISLIKE",
+        "file": "04__ffn__1.png",
+        "inspected": true,
+        "label": "ffn",
+        "png_sha256": "d2e63f22841cf24c3122baa42f66607d4268993c17f9bd627a994570bcfeeee3",
+        "sentence": "The shared-expert input rail disappears behind the wide Router box; route it outside that box without dropping the branch.",
+        "source_svg_sha256": "c387a2993d64006c610db89de4f94ee8dcffe48b85508455b1f5624b39298963",
+        "verdict": "SUGGEST",
+        "visual_hash": "a39b1c9708734671c499bce8772b066f"
+      }
+    ],
+    "reviewed_at": "2026-09-08T08:20:09.970504+00:00",
+    "reviewer": "root",
+    "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+    "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+    "view_signature": [
+      {
+        "hash": "bc5df722fc681af5bf5ef5d127daa955",
+        "label": "architecture"
+      },
+      {
+        "hash": "d08a31aea8f3894b54d243ea115ebb9e",
+        "label": "architecture"
+      },
+      {
+        "hash": "48ffc71f29e33d83b6558475a9c256fa",
+        "label": "architecture_v1"
+      },
+      {
+        "hash": "f3548d1e25ff73d275bb5df4b556af89",
+        "label": "attn"
+      },
+      {
+        "hash": "0ab3484877f3ffc1f5aae70428678459",
+        "label": "expert_1"
+      },
+      {
+        "hash": "1a58f54930d25fa7f9b24be19fed4cbb",
+        "label": "ffn"
+      },
+      {
+        "hash": "a39b1c9708734671c499bce8772b066f",
+        "label": "ffn"
+      },
+      {
+        "hash": "bdefc6faf978f47be8662e9e530a4ebb",
+        "label": "g_topk"
+      },
+      {
+        "hash": "14116d9baf3e2c6b075d22750390f718",
+        "label": "router"
+      }
+    ]
+  },
+  "source": "local",
+  "superseded_hash_signature": [
+    "14116d9baf3e2c6b075d22750390f718",
+    "1a58f54930d25fa7f9b24be19fed4cbb",
+    "48ffc71f29e33d83b6558475a9c256fa",
+    "6358d38fa166c25631200a061e77e894",
+    "9f154ffd8f9114a8e742be3f83a85319",
+    "a39b1c9708734671c499bce8772b066f",
+    "bc5df722fc681af5bf5ef5d127daa955",
+    "bdefc6faf978f47be8662e9e530a4ebb",
+    "d08a31aea8f3894b54d243ea115ebb9e"
+  ],
+  "view_signature": [
+    {
+      "hash": "bc5df722fc681af5bf5ef5d127daa955",
+      "label": "architecture"
+    },
+    {
+      "hash": "d08a31aea8f3894b54d243ea115ebb9e",
+      "label": "architecture"
+    },
+    {
+      "hash": "48ffc71f29e33d83b6558475a9c256fa",
+      "label": "architecture_v1"
+    },
+    {
+      "hash": "f3548d1e25ff73d275bb5df4b556af89",
+      "label": "attn"
+    },
+    {
+      "hash": "0ab3484877f3ffc1f5aae70428678459",
+      "label": "expert_1"
+    },
+    {
+      "hash": "1a58f54930d25fa7f9b24be19fed4cbb",
+      "label": "ffn"
+    },
+    {
+      "hash": "a39b1c9708734671c499bce8772b066f",
+      "label": "ffn"
+    },
+    {
+      "hash": "bdefc6faf978f47be8662e9e530a4ebb",
+      "label": "g_topk"
+    },
+    {
+      "hash": "14116d9baf3e2c6b075d22750390f718",
+      "label": "router"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/glm-4-5",
+    "manifest": true,
+    "png_count": 9
+  }
+}

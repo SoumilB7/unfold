@@ -1,0 +1,49 @@
+{
+  "bundle": {
+    "architecture": "SanaTransformer2DModel",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "SanaTransformer2DModel",
+      "text_encoder": "Gemma2Model"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/sana_transformer.py"
+      ],
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+      ]
+    },
+    "component_model_types": {
+      "text_encoder": "gemma2"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/sana_transformer.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+    ],
+    "import_roots": {
+      "root": [
+        {
+          "package": "diffusers",
+          "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+        }
+      ]
+    },
+    "model_id": "Efficient-Large-Model/Sana_1600M_1024px_diffusers",
+    "model_type": null,
+    "pipeline_components": [
+      "text_encoder"
+    ],
+    "source": "local",
+    "supporting_files": {
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/configuration_gemma2.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY addresses, not portable identity"
+}

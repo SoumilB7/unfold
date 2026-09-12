@@ -1,0 +1,139 @@
+{
+  "actual_four_pre_render_IR_surfaces_have_no_drift": true,
+  "actual_log_sha256": "2349cd131ab081c32509b40450a541eb1ff4d5b1a0cfae3d4b883779f70015f7",
+  "actual_summary": "29 failed, 23 passed in 592.49s",
+  "blessed": false,
+  "current_decision_table_sha256": "3079f1d52481630127eaab78ec6bc97cce4978b9569601842b3b78a6f8b46e22",
+  "lineage_limit": "Current final comparator executed its original pre-render snapshot order. Current gate reports mismatches, not retained full output bytes; named causes rely on separately pinned actual captures and independent source/native reviews.",
+  "status": "All29 actual failure surface sets and messages exactly match reviewed prior set and current per-witness dispositions; test remains RED",
+  "witnesses": {
+    "auraflow-v0-3": {
+      "ledgers": "hash mismatch"
+    },
+    "bloom": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "cogvideox-5b": {
+      "ledgers": "hash mismatch"
+    },
+    "dbrx-base": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "deepseek-v3": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 11, actual 11)"
+    },
+    "flux-2-dev": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+    },
+    "fluxtransformer2dmodel": {
+      "ledgers": "hash mismatch"
+    },
+    "gemma-2-2b-it": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "glm-4-5": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+    },
+    "gpt-oss-20b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+    },
+    "granite-3-0-8b-instruct": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "hunyuanvideo": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 20, actual 20)"
+    },
+    "llama-7b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "ltx-video": {
+      "ledgers": "hash mismatch"
+    },
+    "lumina-image-2-0": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 16, actual 16)"
+    },
+    "mochi-1-preview": {
+      "ledgers": "hash mismatch"
+    },
+    "musicgen-small": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 8, actual 8)"
+    },
+    "olmo-2-1124-7b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "pixart-sigma-xl-2-1024-ms": {
+      "ledgers": "hash mismatch"
+    },
+    "prxpixel-t2i": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 9, actual 9)"
+    },
+    "qwen-image": {
+      "ledgers": "hash mismatch"
+    },
+    "qwen2-vl-7b-instruct": {
+      "ledgers": "hash mismatch"
+    },
+    "qwen3-5-27b-text": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 6, actual 6)"
+    },
+    "qwen3-8b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "sana-1600m-1024px-diffusers": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 12, actual 12)"
+    },
+    "stable-diffusion-3-5-large": {
+      "ledgers": "hash mismatch"
+    },
+    "stable-diffusion-xl-base-1-0": {
+      "expanded": "hash mismatch",
+      "html_meta": "hash mismatch",
+      "ir": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "params": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 29, actual 143)"
+    },
+    "stablelm-2-1-6b": {
+      "html_meta": "hash mismatch",
+      "ledgers": "hash mismatch",
+      "views": "occurrence sequence/hash mismatch (expected 4, actual 4)"
+    },
+    "wan2-2-t2v-a14b-diffusers": {
+      "ledgers": "hash mismatch"
+    }
+  }
+}

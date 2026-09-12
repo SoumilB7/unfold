@@ -1,0 +1,9 @@
+{
+  "status": "unavailable",
+  "selection": "browser runtime getForUrl for actual sparse26 decision page",
+  "selection_result": "No browser is available",
+  "recovery": "Read bootstrap-troubleshooting and performed one browser list",
+  "available_browsers": [],
+  "visual_verdict": "not performed",
+  "fallback": "none"
+}

@@ -1,0 +1,32 @@
+{
+  "architecture": "Olmo2ForCausalLM",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "Olmo2ForCausalLM"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "olmo2"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py"
+  ],
+  "import_roots": {},
+  "model_id": "allenai/OLMo-2-1124-7B",
+  "model_type": "olmo2",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/configuration_olmo2.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

@@ -1,0 +1,9 @@
+{
+  "files": {
+    "model_unfolder/evidence/reconciliation.py": "cd6246009d1b7be8753143fd351a84089ed022f892e06f9043cd75e42cd28dee",
+    "tests/test_s9_projection_claim_requirements.py": "134773bc586a952235e3aee0d22d9d2ee44de8c27fc9ffd0028b761dfe746f7c"
+  },
+  "runtime": "not run; parent owns runtime",
+  "diagnosis": "3656 actual22 findings are stale consumer requirements rejecting existing proof kinds; 481 score-formula findings genuinely lack proof and142 provenance findings remain held",
+  "source_diagnosis": "/private/tmp/unfold-s9a-matrix-claim-requirement-diagnosis.json"
+}

@@ -1,0 +1,13 @@
+{
+  "positive_canonical_stages": [
+    "instance_down_blocks__1",
+    "instance_down_blocks__0",
+    "instance_down_blocks__0"
+  ],
+  "positive_chain_gaps": [
+    [],
+    [],
+    []
+  ],
+  "missing_visible_stage_rejected": true
+}

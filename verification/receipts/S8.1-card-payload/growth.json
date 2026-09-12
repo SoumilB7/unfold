@@ -1,0 +1,131 @@
+{
+  "base_commit": "788abbde74795c78a4ce13691f41aed32d370fe2",
+  "scope": "Only this agent's page transport and semantic inspection changes; excludes executor's independent speed/cache work.",
+  "files": [
+    {
+      "path": "model_unfolder/renderers/html/card_payload.py",
+      "group": "production",
+      "before_sha256": null,
+      "after_sha256": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e",
+      "lines_added": 359,
+      "lines_deleted": 0
+    },
+    {
+      "path": "model_unfolder/renderers/html/interactions.py",
+      "group": "production",
+      "before_sha256": "b7e0f1aeaaf39ba3a0ed4976cc87fe35a1e315434b8fcc2c30819e3e01dae91d",
+      "after_sha256": "2b025b1ead179d51f78aabc8a8f3403ac29abdc92a221fd91d1134d8b11ba730",
+      "lines_added": 161,
+      "lines_deleted": 0
+    },
+    {
+      "path": "model_unfolder/renderers/html/document.py",
+      "group": "production",
+      "before_sha256": "31dfb62828f3f5084bb5293447c90c737a791e21cd3b7b6a949f539771144b50",
+      "after_sha256": "9ea97941d1559be4771439bd792b193c95e37a1860b1309f1f3de3b326303562",
+      "lines_added": 8,
+      "lines_deleted": 0
+    },
+    {
+      "path": "model_unfolder/preview.py",
+      "group": "production",
+      "before_sha256": "b9650cef820707e9be8b7c3f87b07fd828dc3be8155abfbb66ce477080f2796f",
+      "after_sha256": "0a7fbc4f610b03576549cf52e548662c0116ee1b180ad3d3193b8819603a297e",
+      "lines_added": 9,
+      "lines_deleted": 4
+    },
+    {
+      "path": "model_unfolder/block_schema.py",
+      "group": "production",
+      "before_sha256": "0779e9bd8dae3843f84f8a1643eb083f1c10cfc56ab83e70cd8bfa4a842004c5",
+      "after_sha256": "6b363c0f3ddb092775082f654b40d394bd14b6cb56daffd28f46308554144d57",
+      "lines_added": 12,
+      "lines_deleted": 0
+    },
+    {
+      "path": "scripts/report_s8_demonstration.py",
+      "group": "inspection_tools",
+      "before_sha256": "c9c57c33fdf7515fad52faf481c2fa53dbe388f0c4ef7d414c7c5e099977f07d",
+      "after_sha256": "79de515bcc93b5b3a3641bc8ab75fc480ccbd6fc44ac590846a34ee0b44bc120",
+      "lines_added": 6,
+      "lines_deleted": 2
+    },
+    {
+      "path": "scripts/dit_coverage.py",
+      "group": "inspection_tools",
+      "before_sha256": "2e6391a9974e43a542f2b79c5a09bb26a5c0ec262d5f30d0634b4f17b4ce9b61",
+      "after_sha256": "0fb3cef16da3e0a1e3595aed99e7e0ec5c064202ebd40b7ae238a0dc84d03d76",
+      "lines_added": 3,
+      "lines_deleted": 1
+    },
+    {
+      "path": "tests/test_card_payload.py",
+      "group": "tests",
+      "before_sha256": null,
+      "after_sha256": "ac345d6b23e27fa51ea36377ac6b132f8baa2a5fafc4c669aa63e83f5fd1df0f",
+      "lines_added": 201,
+      "lines_deleted": 0
+    },
+    {
+      "path": "tests/test_diffusion.py",
+      "group": "tests",
+      "before_sha256": "ce19967ce38638473c9635b5e4c1584f3c9d2e520fb63fb691afb8311b78c57e",
+      "after_sha256": "7144b0eb83e296e271e9790f09fef2641467a34ded6a33f2ea01cef3564287cd",
+      "lines_added": 21,
+      "lines_deleted": 19
+    },
+    {
+      "path": "tests/test_submodel_parity.py",
+      "group": "tests",
+      "before_sha256": "b263a4c9a9f7cf62a645aa95996c8450de831cb51a29464185955eccacca5f65",
+      "after_sha256": "c61214436b02ff2e2e242719f08ad926967fa2bbbddcd3ac82a364fdc7439d12",
+      "lines_added": 2,
+      "lines_deleted": 1
+    },
+    {
+      "path": "tests/test_smoke.py",
+      "group": "tests",
+      "before_sha256": "bbb376ce239827997ba4540f4ecd4140c6516bdbd110ad93619fe95ef2c688ca",
+      "after_sha256": "e1ad257050bed357c2558f82df11b3a82a221f2d2ab4a80a5f51adaab7654fd8",
+      "lines_added": 14,
+      "lines_deleted": 13
+    },
+    {
+      "path": "tests/test_code_evidence.py",
+      "group": "tests",
+      "before_sha256": "60e04425bf9fe9cea204bfd6f2c4883e0bc5cf25a99fae286306bd581bb6d9c5",
+      "after_sha256": "e87e2d838a0960ac74fb927c1aadb714a25bcecd9b5a60c32248087fe1cff7bd",
+      "lines_added": 2,
+      "lines_deleted": 1
+    }
+  ],
+  "totals": {
+    "production": {
+      "added": 549,
+      "deleted": 4
+    },
+    "inspection_tools": {
+      "added": 9,
+      "deleted": 3
+    },
+    "tests": {
+      "added": 240,
+      "deleted": 34
+    }
+  },
+  "authority_paths_removed": 0,
+  "new_authority_paths": 0,
+  "presentation_bridges_added": [
+    "One lossless card-payload codec and its lazy materialisation consumer after canonical rendering."
+  ],
+  "retained_implementation": [
+    "Original eager interaction serializer is retained for exact inverse inspection and small/unsupported eager pages."
+  ],
+  "debt_waivers": [],
+  "diff": {
+    "path": "growth-source-diff.diff.gzip",
+    "raw_sha256": "32fdd0b6b99158824e68b6314b247e11c9daf0b3c901d18df137a1356a160c9f",
+    "stored_sha256": "821bbb82f2a986f1b1e47f3e99adc508d4e5ad070d441944bc6573cf0b6e6bc4",
+    "raw_bytes": 58783
+  }
+}

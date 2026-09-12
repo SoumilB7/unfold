@@ -1,0 +1,27 @@
+{
+  "decision": "ACCEPT_STATIC_TRANSPORT_SCOPE",
+  "pins": {
+    "model_unfolder/renderers/html/card_payload.py": "b40a6e59611ab8f4848ab5138cb995ce51b5c440fd66973a2ca865d895e786f6",
+    "model_unfolder/renderers/html/interactions.py": "3c908f474c11e7bfd9a3c64b0cf9d34ed0fff3c6214142d1a2b705f5c508b521",
+    "model_unfolder/renderers/html/document.py": "9ea97941d1559be4771439bd792b193c95e37a1860b1309f1f3de3b326303562",
+    "model_unfolder/preview.py": "0a7fbc4f610b03576549cf52e548662c0116ee1b180ad3d3193b8819603a297e",
+    "model_unfolder/block_schema.py": "6b363c0f3ddb092775082f654b40d394bd14b6cb56daffd28f46308554144d57",
+    "tests/test_card_payload.py": "f22a1c1dd998733624af3ce7ca10f636ae6ead3afdcb6698c6ee9df9be8ff0fb"
+  },
+  "corrections": [
+    "Inverse binds exact current lazy JS envelope interval.",
+    "Packing requires contiguous card siblings except whitespace; unsupported interleaving stays eager.",
+    "Self-closing SVG does not consume a later SVG closing tag."
+  ],
+  "reviewed_optimizations": [
+    "Unchanged attribute bytes preserved; URL regex only when matching literal prefix exists.",
+    "Binary search computes the exact monotone common-prefix length using Python codepoints."
+  ],
+  "runtime_assessment": "Selection/default/backtracking/clearing code mirrors old JS with exact own-ID bindings and parent containers; actual browser interaction not established by inverse.",
+  "pending": [
+    "45 codec controls.",
+    "Exact actual current page inverse and measured packing cost.",
+    "Native deep/sibling/backtracking/default/variant browser controls."
+  ],
+  "execution_by_reviewer": false
+}

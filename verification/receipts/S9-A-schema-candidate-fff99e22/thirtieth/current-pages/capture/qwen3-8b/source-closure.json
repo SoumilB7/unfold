@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06",
+  "reference26_seal": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "49d9ccd0f29ccd977b93dba2004f84b867891b3d0509b71fd8ba3ed01054e64d",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

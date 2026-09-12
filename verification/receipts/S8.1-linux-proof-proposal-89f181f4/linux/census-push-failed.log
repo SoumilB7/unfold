@@ -1,0 +1,54 @@
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	﻿2026-09-10T08:14:28.6952209Z ##[group]Run python scripts/generate_s7_shadow.py --ci-shadow
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6952727Z ^[[36;1mpython scripts/generate_s7_shadow.py --ci-shadow^[[0m
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6989589Z shell: /usr/bin/bash -e {0}
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6989847Z env:
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6990115Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6990574Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib/pkgconfig
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6991012Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6991405Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6991797Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.10/x64
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6992191Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.10/x64/lib
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6992562Z   UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:28.6993248Z ##[endgroup]
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:29.2641167Z S7 shadow corpus auraflow-v0-3
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:14:48.1185824Z S7 shadow corpus bloom
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:15:11.5537241Z S7 shadow corpus cogvideox-5b
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:15:27.1872716Z S7 shadow corpus dbrx-base
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:15:56.2039029Z S7 shadow corpus deepseek-v3
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:16:41.5237612Z S7 shadow corpus flux-2-dev
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:17:05.9870975Z S7 shadow corpus fluxtransformer2dmodel
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:17:23.5813104Z S7 shadow corpus gemma-2-2b-it
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:17:45.3684415Z S7 shadow corpus glm-4-5
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:18:33.5223674Z S7 shadow corpus gpt-oss-20b
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:19:01.2250391Z S7 shadow corpus granite-3-0-8b-instruct
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:19:25.1440010Z S7 shadow corpus hunyuanvideo
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:19:44.5580307Z S7 shadow corpus llama-7b
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:20:12.2307537Z S7 shadow corpus ltx-video
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:20:26.1774150Z S7 shadow corpus lumina-image-2-0
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:20:40.8754066Z S7 shadow corpus mochi-1-preview
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:20:57.6803070Z S7 shadow corpus musicgen-small
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:21:03.7147336Z [transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:21:03.7149453Z [transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:21:19.9828132Z S7 shadow corpus olmo-2-1124-7b
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:21:42.7526151Z S7 shadow corpus pixart-sigma-xl-2-1024-ms
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:21:58.4642409Z S7 shadow corpus prxpixel-t2i
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:25:10.2804640Z S7 shadow corpus qwen-image
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:25:32.4838315Z S7 shadow corpus qwen2-vl-7b-instruct
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:26:14.4119938Z S7 shadow corpus qwen3-5-27b-text
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:27:10.4231726Z S7 shadow corpus qwen3-8b
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:27:34.3642060Z S7 shadow corpus sana-1600m-1024px-diffusers
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:27:49.1275373Z S7 shadow corpus stable-diffusion-3-5-large
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:28:11.5583165Z S7 shadow corpus stable-diffusion-xl-base-1-0
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3489169Z Traceback (most recent call last):
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3500891Z   File "/home/runner/work/unfold/unfold/scripts/generate_s7_shadow.py", line 1181, in <module>
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3501861Z     raise SystemExit(main())
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3502282Z                      ^^^^^^
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3503264Z   File "/home/runner/work/unfold/unfold/scripts/generate_s7_shadow.py", line 1170, in main
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3504112Z     result = generate(
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3504498Z              ^^^^^^^^^
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3505255Z   File "/home/runner/work/unfold/unfold/scripts/generate_s7_shadow.py", line 680, in generate
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3506054Z     _assert_logical_payload_matches(
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3507047Z   File "/home/runner/work/unfold/unfold/scripts/generate_s7_shadow.py", line 650, in _assert_logical_payload_matches
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3508000Z     raise ValueError(
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:18.3520450Z ValueError: live Linux S7 model artifact for 'stable-diffusion-xl-base-1-0' disagrees: $.table.occurrences[0].projection.fact_claim_proofs[2].index_fingerprints[0]: committed='09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d', live='e27e0a82b761ed6805a5be30fe0b0a6e57f119cdcfb409916e797e0b98a18824'; $.table.occurrences[0].projection.fact_claim_proofs[3].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[0].projection.fact_claim_proofs[4].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[0].projection.fact_claim_proofs[5].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[1].projection.fact_claim_proofs[2].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[2].projection.fact_claim_proofs[2].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[3].projection.fact_claim_proofs[2].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'; $.table.occurrences[4].projection.fact_claim_proofs[2].index_fingerprints[0]: committed='14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e', live='f3a8764adaa00599fb7c6e56538805d3860902f9d4a3c387b2721d2b51336553'
+evidence-receipts	S7 29+10 shadow runs behind the Linux network namespace	2026-09-10T08:29:21.1879991Z ##[error]Process completed with exit code 1.

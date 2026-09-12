@@ -1,0 +1,64 @@
+{
+  "compression": {
+    "format": "gzip",
+    "level": 3,
+    "mtime": 0
+  },
+  "directories": [
+    "computation-preservation-3724cba",
+    "computation-preservation-3724cba/cache",
+    "computation-preservation-preparation"
+  ],
+  "entries": {
+    "computation-preservation-3724cba.log": {
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source": "/private/tmp/unfold-s81-computation-preservation-3724cba.log",
+      "storage": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "stored": "streams/computation-preservation-3724cba.log.gzip"
+    },
+    "computation-preservation-3724cba/preservation.log": {
+      "raw": {
+        "bytes": 1270,
+        "sha256": "4fa61cf7bb72baa171965dc0f40294a8ddc6206446ba41ea598308a51f66f787"
+      },
+      "source": "/private/tmp/unfold-s81-computation-preservation-3724cba/preservation.log",
+      "storage": {
+        "bytes": 384,
+        "sha256": "809d80d7632acb1c6b2a655f14569edf73698b860a33cf25cbd57a34c3060cd1"
+      },
+      "stored": "streams/computation-preservation-3724cba/preservation.log.gzip"
+    },
+    "computation-preservation-3724cba/result.json": {
+      "raw": {
+        "bytes": 26801,
+        "sha256": "76ce79078126299fc3320a875f10f897292bccbe21f313a8224478cba262de1e"
+      },
+      "source": "/private/tmp/unfold-s81-computation-preservation-3724cba/result.json",
+      "storage": {
+        "bytes": 4757,
+        "sha256": "ef422e56255e6a435405ead986d078ce6e276c9e9c98cda20291320910e6a264"
+      },
+      "stored": "streams/computation-preservation-3724cba/result.json.gzip"
+    },
+    "computation-preservation-preparation/run.py": {
+      "raw": {
+        "bytes": 3166,
+        "sha256": "9ffc75d99f0ef9abd6eebb428c1182039100e447a393143c96ef7df141ea83cd"
+      },
+      "source": "/private/tmp/unfold-s81-computation-preservation-preparation/run.py",
+      "storage": {
+        "bytes": 1393,
+        "sha256": "172b020a6012775d2c9563b07332d194a1136c1d35e041162e81990e9c698bfb"
+      },
+      "stored": "streams/computation-preservation-preparation/run.py.gzip"
+    }
+  },
+  "schema_version": 1,
+  "storage_rule": "Append .gzip to the complete original logical filename."
+}

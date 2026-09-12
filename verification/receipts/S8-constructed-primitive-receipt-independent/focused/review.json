@@ -1,0 +1,5 @@
+{
+  "verdict": "ACCEPT retained15controlPASS0.03s",
+  "three_before_after_and_current_pins_equal": true,
+  "scope": "Actual saved-SVD identicalHTML/new-events check remains pending; no independent pytest/model run"
+}

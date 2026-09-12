@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "9f807927da97c0dbfdfabd77e472b8ad33d56c014ba384850723b45079515d09",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 0.7809583749622107,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.5728830001316965,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 0.948985833209008,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.3349609375,
+    2.75244140625,
+    3.41796875
+  ],
+  "mode": "fingerprint",
+  "name": "pixart-sigma-xl-2-1024-ms",
+  "parse_seconds": 17.877006041817367,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "375798fdb51a5c224ba3c4d2dcf6d22e94566965f10ff332aa4b5ba4f6daf4fd",
+    "html_meta": "d0533903c95b36df1c3ef9f3b6d878510f4295918d73a902f8174db69f72c5e2",
+    "ir": "f8a32662ef4d0ea05c199b3acd537ab0cf7b7804e7a424efe3ac73b036558699",
+    "ledgers": "d0fd598f0adef6db9ac52c34a431b14dfc64561041a56d50a6777d3912c37dcf",
+    "params": "40f7fb3d00c60a4a6e993ffb1a1666b845b5b4ce96419fe26ba02fa5067a3232"
+  }
+}

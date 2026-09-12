@@ -1,0 +1,31 @@
+{
+  "status": "baseline_only",
+  "included": [
+    {
+      "sample": "1b",
+      "readiness_ms": 1273.6000003814697,
+      "click_ms": 88.5,
+      "input_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+    },
+    {
+      "sample": "2b",
+      "readiness_ms": 1138,
+      "click_ms": 126.2999997138977,
+      "input_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+    },
+    {
+      "sample": "3",
+      "readiness_ms": 1083.5,
+      "click_ms": 109.59999990463257,
+      "input_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+    }
+  ],
+  "excluded": {
+    "1": "Chrome failed to initialize under terminal sandbox; no valid browser sample.",
+    "2": "Overlapped the renderer helper codec profile; excluded from quiet timing median."
+  },
+  "readiness_median_ms": 1138,
+  "denoiser_click_median_ms": 109.59999990463257,
+  "conditions": "Fresh temporary Chromium151 profile;1440x1000;deviceScale1;all HTTP(S) blocked including Google Fonts. Same local page and offline fallback fonts. Event through two requestAnimationFrame callbacks measures paint opportunity, not hardware presentation. No model workload or codec profile during included samples.",
+  "harness_sha256": "ca0a13d375252bddc51bf25f5b8708b1770e6efb39e6ce4cd34371752e0f22b6"
+}

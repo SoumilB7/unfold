@@ -1,0 +1,61 @@
+{
+  "checkpoint": "4637ef4b77a8139326a8643b9f7eb68ab9d0f93c",
+  "config_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+  "framework_witness_count": 1297,
+  "inventory_sha256": "4efeb27f5c487b77b8f189cd2ffc734d8932480c707a42b83d3484bf87efe9fd",
+  "missing_worker_witness_is_limited": true,
+  "ordinary_fact": {
+    "activation": "gelu",
+    "gated": true,
+    "input_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj",
+    "output_projection": "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2",
+    "projection_mode": "fused_gate_up"
+  },
+  "ordinary_ffn_count": 70,
+  "results": {
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj:forward": {
+      "claim_survives": false,
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj:type": {
+      "claim_survives": false,
+      "class_ref": "torch.nn.modules.activation.ReLU",
+      "framework_primitive": "relu",
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0:forward": {
+      "claim_survives": false,
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.1:forward": {
+      "claim_survives": false,
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.1:type": {
+      "claim_survives": false,
+      "class_ref": "torch.nn.modules.activation.ReLU",
+      "framework_primitive": "relu",
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2:forward": {
+      "claim_survives": false,
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2:type": {
+      "claim_survives": false,
+      "class_ref": "torch.nn.modules.activation.ReLU",
+      "framework_primitive": "relu",
+      "remaining_ffns": 69
+    },
+    "down_blocks.1.attentions.0.transformer_blocks.0.ff:forward": {
+      "claim_survives": false,
+      "remaining_ffns": 69
+    }
+  },
+  "runtime_hashes": [
+    "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  ],
+  "scope": "fresh positive static investigation plus explicit DTO poisons; no checkpoint execution by reviewer",
+  "selected_path": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+  "source_hash": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+}

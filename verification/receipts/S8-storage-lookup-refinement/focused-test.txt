@@ -1,0 +1,2 @@
+python3 -m pytest tests/test_s8_attribute_bindings.py -q
+23 passed in 30.22s

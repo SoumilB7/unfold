@@ -44,5 +44,15 @@ htmlcov/
 # Previewer
 previews/
 
-# Corpuses
-sable_test_corpus
+# Generated galleries only — the 25 corpus INPUT configs are
+# canonical preservation evidence and are COMMITTED (COR-0 §5)
+tests/sable_test_corpus/galleries/
+# U0 frozen preservation witnesses (artifacts on disk; hashes committed in tests/preservation_manifest.json)
+tests/preservation_baseline/
+
+# Harness-owned session worktrees only (REC-0 §6.2) — a project-owned
+# .claude configuration is source and stays tracked/fingerprinted
+.claude/worktrees/
+
+# B9 (15 §6, 2026-09-03): canonical z-docs live outside this repository.
+z-docs

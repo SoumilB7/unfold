@@ -1,0 +1,24 @@
+{
+  "decision": "ACCEPT bounded root producer correction at source level; added tests held for root review/runtime",
+  "producer_manifest_sha256": "6258409b1c39dd39009c4f1ea974bdfcfaecb513e4ffc200fd25751956122af1",
+  "producer_parser_sha256": "c3377e0a603b49c1a5baad0c676f316512b764c4701af9ab851db237b4c167a3",
+  "test_sha256": "b5e1d84fb12e8dba12fdfea589220de09b83d00b80adc871d5ede450971e6ce2",
+  "checks": [
+    "consume_decision delegates to the same consume with exact supplied mechanism/owner/key/reader/status/expected-value defaults. Width and tie therefore retain prior consumption event semantics. Width now reads value/present/selected_path from the same typed decision.",
+    "Width ambiguity yields no decision/value; explicit proof gate is safe through short-circuit type(hidden_size) is int. Sparse default remains provisional until the exact class-source proof and second class_default decision; no bare overlay grants positive proof.",
+    "Tie initial decision uses the existing empty mechanism explicitly, and its wrapper fallback remains on the original frozen raw site with _tie_resolution re-bound to the wrapper occurrence. No raw-consume threshold changes or blanket exemption.",
+    "Six new test cases cover ordinary canonical/alias width with exact proof-backed event fields; actual source sparse default; wrapper tie fallback; and two changed-decision poisons. The poisons mutate only the returned decision after a genuine recorded consumption: an equal value at an unrelated path, or a changed value at the original path, must retain declaration but lose qualification. These detect origin/value mixing rather than count calls."
+  ],
+  "limits": [
+    "Root owns runtime; no project imports/tests/models run by this reviewer. Source proof uses the actual ConfigResolution.consume_decision body, not a claim that tests already passed.",
+    "Ordinary/sparse/wrapper outputs still require current candidate capture and parity review. The legacy raw sites remain debt; this correction does not migrate them.",
+    "Six-file/earlier matrix and capture evidence retains its actual source label."
+  ],
+  "runtime": [
+    "tests/test_s9_scalar_decisions.py",
+    "tests/test_u2_r2_raw_consume_debt.py",
+    "tests/test_s9_class_default_value.py",
+    "tests/test_s9_limited_document.py",
+    "tests/test_config_access.py"
+  ]
+}

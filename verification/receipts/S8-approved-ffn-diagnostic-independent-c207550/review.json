@@ -1,0 +1,55 @@
+{
+  "verdict": "ACCEPT_ISOLATED_DIAGNOSTIC_EVIDENCE",
+  "commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "result": {
+    "elapsed_seconds": 276.00774179119617,
+    "exit_code": 0,
+    "selected_external_pins_equal": true,
+    "source_input_pins_equal": true
+  },
+  "exact_original_target_passed": true,
+  "unchanged_request": {
+    "timeout_seconds": 120,
+    "memory_limit_bytes": 17179869184
+  },
+  "inventory_occurrences": 1930,
+  "readers": {
+    "with_value": 16,
+    "incomplete_partial": 15,
+    "resolved_complete": 1
+  },
+  "resolved_nested_attempts": 9,
+  "qualified_ffn_occurrences": 70,
+  "first_ffn_card": {
+    "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+    "instance_path": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+    "fact_key": "root.denoiser.ffn_mechanisms",
+    "gated": true,
+    "activation": "gelu",
+    "projection_mode": "fused_gate_up"
+  },
+  "all_source_input_and_selected_external_pins_equal": true,
+  "artifact_sha256": {
+    "nested-ffn-metadata-0.json": "a70c5c9a698bffebd461c54914d8779aee2517f3b863f80698d792c5ad3c1cd5",
+    "inventory-result-0.json": "ce8fd841e949c822caddd353cbe20835ddf445796e37e6155f767aee05bdb773",
+    "result.json": "c6f3579cf4a391cb226020950cb542be1902ac37afea76d0d32a0dfc77fac078",
+    "reader-metadata-0.json": "2db017f56e6239917404a8c0a40fe832f398f49d6c0ba05380ec505453e9f48c",
+    "observed-call-counts.json": "7e2f989aaf2ed1816b637fa3cb0720d4ab88345301e55a7f153951549fdbd124",
+    "source-input-after-finally.json": "ffa910c58ecd964f908e6e6c7bb4c85124dccfc47b910f525aa03d6787f6a90c",
+    "external-after-finally.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "inventory-request-0.json": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6",
+    "external-before.json": "d2f81dada0ce8d335ebe13833ee9f30efc82eabe92e293ddb6b79279c5c5a42b",
+    "actual-model-ir-0.json": "96423522dcd759096982aa824ecb5e0fbd481d7ea80eb8894e4c27085cc92109",
+    "command.json": "77cae4174e622f6dc9c5dd42d9bf9cefe7fae04c722e4e8b1e3b16010c8c61d8",
+    "source-input-before.json": "ffa910c58ecd964f908e6e6c7bb4c85124dccfc47b910f525aa03d6787f6a90c",
+    "unfold-input-0.json": "7e35b6848058052c825c18c7e634bc3fd8798ecf960d3bfa6031a6ba3ecf327a"
+  },
+  "reviewer_ran_models_or_tests": false,
+  "limits": [
+    "Original failed broad IR and typed reasons were not retained; this successful isolated run cannot recover those causes",
+    "Fifteen readers remain partial despite positive values; this does not establish complete mechanism or execution closure",
+    "Retained IR was observed before the original test rendered HTML; the unchanged test itself passed its own rendered FFN graph assertions, but no separate diagnostic HTML archive was produced",
+    "Elapsed276s includes static reader and test work; it is not construction duration or evidence that the120s worker limit was exceeded",
+    "Full c207 remains red; no baseline or production change is authorized by this diagnostic result"
+  ]
+}

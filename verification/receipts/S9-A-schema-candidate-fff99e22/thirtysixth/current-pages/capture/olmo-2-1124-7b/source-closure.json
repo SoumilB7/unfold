@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da",
+  "reference26_seal": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da",
+  "scope": "Actual36 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "0c29cad0341e0dc97f4cd05835bae60b7558325d935af8ef3a6578401dfe4c2c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_olmo2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_olmo2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

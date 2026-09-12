@@ -1,0 +1,16 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN32_PIN",
+  "base": "Independently source-reviewed held31 capture; coordinate-only32 copy, no feature changes. 31 fleet capture never executed.",
+  "base_manifest_sha256": "5b210cd332b55149ee1b11d1d7e8023c5c06c565e81ea8f9b2e240344b94e6e9",
+  "files": {
+    "census.py": "31c2d911f90b377274d899f5f7f9be29aa4aeada9da4d2d62d1c385dfbcf585a",
+    "run-census.py": "f7892daae3e5e657b7009b2f05980129a0436fb9950434dbae60fa54b333ebb6",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "ac2db65cdf5fecef55e3d15e130392c958dafb2a3cc058eab80914866028b909",
+    "plan.json": "ff754a3a554b69e9a616463c9c765d5e262448e7523234dfe33987385a205bee",
+    "contract.json": "cebf8e942681b2583a71c7c178ce8675e09dc284b23b3acfd8e6cf37367a14b7"
+  },
+  "no_execution": "Only stdlib source/AST/hash inspection by placement_executor.",
+  "required_runtime_input": "--source-manifest-sha256, root exact frozen32 manifest; no default/inherited pin.",
+  "feature_changes": 0
+}

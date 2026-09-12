@@ -1,0 +1,20 @@
+{
+  "actual_check": {
+    "command": [
+      "python3",
+      "-u",
+      "/private/tmp/unfold-s8-coverage-capture.py",
+      "/private/tmp/unfold-s8-final-verification-7168440",
+      "/private/tmp/unfold-s8-coverage-7168440/actual-check",
+      "--check"
+    ],
+    "elapsed_seconds": 1231.294,
+    "exit_code": 0,
+    "implementation_unchanged": true
+  },
+  "check_log_sha256": "d650b4e1cfa4283dba2223d49ef625fbbfdbaaf5ef83c92ab1efc4033fd05175",
+  "coverage_sha256": "98d8c6777daa939584a564af302d8ad784d88405f0e2214850b296eaa6a0a675",
+  "implementation_before_after_sha256": "0c936df51056849c0c6fc7e7ff53ea766f47573d67753042fc5bbb6000b8d86b",
+  "implementation_manifest_entries": 335,
+  "status": "PASS"
+}

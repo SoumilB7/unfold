@@ -1,0 +1,21 @@
+Parsing ordinary
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-final-review-3693545/scripts/demonstrate_s8_unet.py", line 352, in <module>
+    main()
+  File "/private/tmp/unfold-s8-final-review-3693545/scripts/demonstrate_s8_unet.py", line 298, in main
+    ir = config_to_ir(config, parse_context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-review-3693545/model_unfolder/parser.py", line 102, in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-review-3693545/model_unfolder/evidence/config_access.py", line 1605, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-review-3693545/model_unfolder/adapters/diffusor/parser.py", line 648, in parse
+    result = build_unet_cutover(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-review-3693545/model_unfolder/adapters/diffusor/unet_cutover.py", line 68, in build_unet_cutover
+    context.facts.record_typed(fact)
+  File "/private/tmp/unfold-s8-final-review-3693545/model_unfolder/evidence/context.py", line 112, in record_typed
+    raise ValueError(
+ValueError: typed write violates the fact registry (H2): typed write of unregistered fact 'primary_state_ports' (owner 'root.denoiser')

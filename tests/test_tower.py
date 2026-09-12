@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
 from model_unfolder.renderers.html.graph_engine import render_graph
 from model_unfolder.renderers.html.graph import Graph, Node, Parallel
-from model_unfolder.renderers.html.tower import tower_graph
+from model_unfolder.renderers.html.tower import tower_cell, tower_graph
 
 SPEC = {
     "title": "my custom tower",
@@ -35,10 +35,26 @@ def test_tower_graph_builds_cell_group_and_residuals_from_the_spec():
 
 def test_custom_tower_renders_with_no_view_code():
     """An adapter that emits view:'tower' + detail.tower gets the backbone."""
+    from model_unfolder.renderers.html.render_context import current_render_context
+
     assert "tower" in VIEW_REGISTRY
     svg = render_graph(tower_graph(SPEC), {}, "t0", "tower-test", "custom tower")
     for marker in ("Custom mixer", "Embed", "× 24", "Custom output"):
         assert marker in svg
+    assert current_render_context() is None
+
+
+def test_low_level_svg_id_allocation_never_creates_ambient_render_state():
+    """Manual SVG builders may consume a document context, never install one."""
+    from model_unfolder.renderers.html.render_context import current_render_context
+    from model_unfolder.renderers.html.svg import _ids
+
+    assert current_render_context() is None
+    assert _ids("standalone", "view") == (
+        "standalone-view-0-arrow",
+        "standalone-view-0-shadow",
+    )
+    assert current_render_context() is None
 
 
 def test_single_cell_never_draws_repeat_frame_or_pill_even_with_a_label():
@@ -51,6 +67,33 @@ def test_single_cell_never_draws_repeat_frame_or_pill_even_with_a_label():
     assert graph.groups == []
     svg = render_graph(graph, {}, "single", "single-tower", "single tower")
     assert "decoder layer" not in svg and "× 1" not in svg
+
+
+def test_unknown_safe_ffn_tower_label_gets_truth_readable_geometry():
+    """The second honesty line must remain inside its tower node.
+
+    The handwritten SVG font is wider than the generic character estimate;
+    pin the explicit geometry at the shared tower primitive so every
+    denoiser/vision/audio/refiner caller receives the same correction.
+    """
+    cell = tower_cell(
+        "cell",
+        attn_label="Self-attention",
+        norm_label="LayerNorm",
+        ffn_fact={
+            "kind": "dense",
+            "gated": True,
+            "projection_mode": None,
+        },
+    )
+    ffn = next(block for block in cell if block["id"] == "cell_op_ffn")
+    assert ffn["label"] == ["Gated FFN", "storage unresolved"]
+    assert ffn["w"] >= 340 and ffn["h"] >= 76
+    node = next(
+        node for node in tower_graph({"cell": cell, "repeat": 2}).nodes
+        if node.id == "cell_op_ffn"
+    )
+    assert node.width() == ffn["w"] and node.height() == ffn["h"]
 
 
 def test_parallel_circle_fanin_distributes_arrowheads_around_connector_edge():
@@ -77,9 +120,8 @@ def test_parallel_circle_fanin_distributes_arrowheads_around_connector_edge():
     assert len(endpoints) == len(set(endpoints)), "two routes stack arrowheads at one connector point"
 
 
-def test_unknown_audio_encoder_opens_an_honest_tower():
-    """An encoder known only by depth/width/heads gets a norm-free cell — no
-    fabricated norm placement."""
+def test_unknown_audio_encoder_opens_one_opaque_tower_cell():
+    """Depth/width/head numbers do not prove an attention+FFN mechanism."""
     from model_unfolder.renderers.html.block_views.modality_views.audio import encoder_tower_spec
 
     spec = encoder_tower_spec(
@@ -87,8 +129,8 @@ def test_unknown_audio_encoder_opens_an_honest_tower():
     g = tower_graph(spec)
     assert g.groups[0].repeat == 12
     kinds = {n.id: n.kind for n in g.nodes}
-    assert kinds["enc_attn"] == "attention" and kinds["enc_ffn"] == "ffn"
-    assert "norm" not in set(kinds.values())
+    assert kinds["enc_opaque"] == "opaque"
+    assert not ({"attention", "ffn", "norm"} & set(kinds.values()))
     assert {"audio_encoder", "video_encoder"} <= set(VIEW_REGISTRY)
 
 

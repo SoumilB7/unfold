@@ -1,0 +1,21 @@
+{
+  "inputs": {
+    "manifest.json": "6a395f50cb9159276fb5728af3b3e89745fe0aeffbb70070657b879ebf0d7d26",
+    "run_broad.py": "fc8d48d363b4b3e5392751235c3acaa16f4b1ef368ebc32b3eaa496d893074b7",
+    "selected-external-inputs.json": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe"
+  },
+  "lineage": "Each next whole lane earns its own result; no isolated-pass stitching.",
+  "preparation_only": true,
+  "previous_full_commit": "c2075501e4b0cf7e97cc004c3d913011e64e3632",
+  "previous_result": "4415 passed /30 failed /14 skipped /2 xfailed; preservation52passed; overallRED",
+  "reason": "Actual two timeout-control failures and separately timestamped late host swap/compression activity warrant reducing simultaneous full-suite demand. Exact FFN and two unchanged physics diagnostics pass separately. No original UNet failure cause or missing RSS peak is reconstructed; the old MemoryModel result is retained.",
+  "scheduling_change": {
+    "argument": [
+      "--workers",
+      "2"
+    ],
+    "next_full_workers": 2,
+    "prior_full_workers": 10
+  },
+  "unchanged": "Coordinator, every target/assertion, child timeouts/memory thresholds, six serial phases, authority/preservation/focused scheduling and selected external scope. No production/test/baseline change."
+}

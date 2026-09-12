@@ -1,0 +1,33 @@
+{
+  "verdict": "PASS exact35 source composition/accounting only; runtime pending, no matrix or unit acceptance",
+  "source_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "source_archive_map_sha256": "7403f6499aff68b4b1ce21ac4fa2a465823695d349a262ba623ebf848b86fdc6",
+  "manifest_paths": 198,
+  "archive_members": 195,
+  "changes_vs34": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "after_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "added": 45,
+      "deleted": 8
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721",
+      "added": 106,
+      "deleted": 0
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "after_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07",
+      "added": 133,
+      "deleted": 0
+    }
+  ],
+  "other_python_changes": 0,
+  "semantic_review_limit": "Combined35 independent semantic review by event: d4ab395982460ea556f302b84d6c4225ec40b0dad06b8add3e6b749b7e070859. This author accounting review supplies no self-issued semantic approval.",
+  "runtime_record_separate": "Focused35 root lane in progress at preparation; actual34 pages do not imply35 results."
+}

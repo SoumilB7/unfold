@@ -1,0 +1,38 @@
+{
+  "status": "EXACT_NAMED_RELATIONSHIP",
+  "example_html": "/private/tmp/unfold-s8-current-captures-fb1f871/examples/candidate/stable-diffusion-xl-base-1-0.html",
+  "family_html": "/private/tmp/unfold-s8-current-captures-fb1f871/final-render/sdxl-ordinary/page.html",
+  "input_documents_equal": true,
+  "input_pins": {
+    "/private/tmp/unfold-s8-current-captures-fb1f871/examples/stable-diffusion-xl-base-1-0/input.json": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+    "/private/tmp/unfold-s8-compiler-final/verification/receipts/S8-final-run-preparation/inputs/sdxl.json": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db"
+  },
+  "raw_html_hashes": {
+    "/private/tmp/unfold-s8-current-captures-fb1f871/examples/candidate/stable-diffusion-xl-base-1-0.html": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22",
+    "/private/tmp/unfold-s8-current-captures-fb1f871/final-render/sdxl-ordinary/page.html": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06"
+  },
+  "actual_model_ir_difference": {
+    "path": "extras.render.loop_blocks[6].detail.fact_display_lines.root.denoiser.declared_constructor_defaults",
+    "example_source_order": [
+      "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+      "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+      "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+    ],
+    "saved_fact_order": [
+      "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+      "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+      "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+    ],
+    "same_unique_members": true,
+    "all_other_ir_exact": true
+  },
+  "warnings_parameters_exact": true,
+  "example_generated_header": "<!-- data-generated-by=scripts/generate_examples.py source=tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json input-sha256=dcb6fb8cdd67069d82c91a4fbc6295c36d79b41516f51b2ee9e9b71bc1aa081c -->",
+  "example_mount": "uf-example-stable-diffusion-xl-base-1-0",
+  "family_mount": "uf-s8-demonstration",
+  "whole_actual_html_equal_after_only_exact_header_removal_and_exact_mount_mapping": true,
+  "diagnostic_only_no_output_bytes_modified": true,
+  "existing_control_raw_equality_untouched": true,
+  "no_model_or_render_run": true,
+  "blessed": false
+}

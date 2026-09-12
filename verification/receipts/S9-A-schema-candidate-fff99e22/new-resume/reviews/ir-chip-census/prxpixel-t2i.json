@@ -1,0 +1,2398 @@
+{
+  "slug": "prxpixel-t2i",
+  "inputs": [
+    {
+      "path": "capture/prxpixel-t2i/ir-before-render.json.gz",
+      "sha256": "5a175b58ceaf3f75e5921546882fa89a0c221b6a7f6fffd912e737833c77f780"
+    },
+    {
+      "path": "capture/prxpixel-t2i/ir-after-render.json.gz",
+      "sha256": "5a175b58ceaf3f75e5921546882fa89a0c221b6a7f6fffd912e737833c77f780"
+    },
+    {
+      "path": "capture/prxpixel-t2i/page.html.gz",
+      "sha256": "03834d9ac9d636d9fdb20e8e45417e417fcbd71e3f156268e6eecfaa68128367"
+    }
+  ],
+  "phases": {
+    "ir-before-render.json.gz": {
+      "schema_unknown_count": 384,
+      "architectural_unknown_envelope_count": 48,
+      "serialized_annotation_count": 432,
+      "annotation_reason_counts": {
+        "investigation_missing": 432
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "opaque_layer_block"
+          ],
+          "markers": [
+            "resolved_false"
+          ],
+          "reason_issue": "missing_or_nonclosed_reason"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        }
+      ]
+    },
+    "ir-after-render.json.gz": {
+      "schema_unknown_count": 384,
+      "architectural_unknown_envelope_count": 48,
+      "serialized_annotation_count": 432,
+      "annotation_reason_counts": {
+        "investigation_missing": 432
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "opaque_layer_block"
+          ],
+          "markers": [
+            "resolved_false"
+          ],
+          "reason_issue": "missing_or_nonclosed_reason"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            0,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            1,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            2,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            3,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            4,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            5,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            6,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            7,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            8,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            9,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            10,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            11,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            12,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            13,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            14,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            15,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            16,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            17,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            18,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            19,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            20,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            21,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            22,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "layers",
+            23,
+            "blocks",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        }
+      ]
+    }
+  },
+  "html": {
+    "chip_emissions_by_kind": {},
+    "inline_chip_emissions": {},
+    "packed_card_chip_emissions": {},
+    "packed_payloads": [],
+    "unknown_group_count": 3,
+    "unique_rendered_unknown_paths": 432,
+    "missing_annotation_paths": [],
+    "unexpected_annotation_paths": [],
+    "findings": [],
+    "chip_style_rules": {
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;",
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;"
+    },
+    "four_styles_present_and_distinct": true
+  },
+  "before_after_metadata_counts_equal": {
+    "schema_unknown_count": true,
+    "architectural_unknown_envelope_count": true,
+    "serialized_annotation_count": true,
+    "chip_distinct_canonical_declarations": true,
+    "unknown_fact_count": true
+  }
+}

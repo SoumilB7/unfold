@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "b1e34cd9581efe4829c534e103842c4cb44e3ea556131aaa78cb3ae4e1b4fcc1",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/musicgen-small.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.4585325829684734,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.057642792351544,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.5644531673751771,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.0791015625,
+    3.86279296875,
+    3.53369140625
+  ],
+  "mode": "fingerprint",
+  "name": "musicgen-small",
+  "parse_seconds": 4.145354084204882,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "a3edd09183463f8c02f57b3fc5594212861c32e7f0f7251cb4879102d5e27c37",
+    "html_meta": "ec064ce2c56ba412c2213ccb9d471c2803e717b9675b74127a49b92a0d329b04",
+    "ir": "5a9c380073c8a1537f095154740a9bdf503e37ad251b9b39f375cdec3e09bfb0",
+    "ledgers": "bdd9adbe216bb3e1185e2adedf0ed592458b3b2473da532978ebfeed4a3994ec",
+    "params": "e130d8ffb3d0b53596aa7481c159387fb734120e11ae5144ff03b8bd5aa8794f"
+  }
+}

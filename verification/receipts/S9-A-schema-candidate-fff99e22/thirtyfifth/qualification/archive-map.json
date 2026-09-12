@@ -1,0 +1,32 @@
+[
+  {
+    "path": "cache/entries/1e5587c271a39fa4704a80459996f4b5df9f0d431839501d0d0e8a058d0ed3e5.json",
+    "sha256": "1e5587c271a39fa4704a80459996f4b5df9f0d431839501d0d0e8a058d0ed3e5",
+    "bytes": 3116423
+  },
+  {
+    "path": "cache/parses/0dede077bf8c722895c4f3934fb6a47205d0e7e65512e0d91315c0d824b432e4.json",
+    "sha256": "6199ff1eb5cc76a23c91ab19622e98d4ac1695b314ca4913b11dd82d7c3731f9",
+    "bytes": 83
+  },
+  {
+    "path": "cache/requests/86d42f8af89dd20ca876a33ca5b4121fc6820bfb0efc293d13297fced9ca04f4.json",
+    "sha256": "6199ff1eb5cc76a23c91ab19622e98d4ac1695b314ca4913b11dd82d7c3731f9",
+    "bytes": 83
+  },
+  {
+    "path": "qualification.log",
+    "sha256": "d81feedc724d78f9008b85310bcda2cb91d510d7ee6da0b12eedf0f11a7128e0",
+    "bytes": 3506
+  },
+  {
+    "path": "result.json",
+    "sha256": "33f09f09ae8d2b24bb255bcaf9469781a25daa359bd958aacca82f8cc55eda04",
+    "bytes": 525
+  },
+  {
+    "path": "run-focus.py",
+    "sha256": "b854e9300b828cc2bcb295ac56bc0ab142d55d3608e388894666f573bc07a21a",
+    "bytes": 1674
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "actual_output_bytes_modified": false,
+  "baseline_approval": false,
+  "independent_input_and_HTML_hashes_verified": true,
+  "lineage_receipt_sha256": "b5adab0b8448a3a2e507c0f4dab325fdaa52cca2e13ab7df92b1cc7d02aff4bd",
+  "prior_family_dispositions_apply_to_this_exact_HTML": true,
+  "status": "ACCEPT exact full HTML relationship",
+  "whole_HTML_exact_after_only_generator_comment_removal_and_known_mount_mapping": true
+}

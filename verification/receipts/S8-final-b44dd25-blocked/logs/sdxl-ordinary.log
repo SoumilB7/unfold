@@ -1,0 +1,16 @@
+Parsing ordinary
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-final-registration-review/scripts/demonstrate_s8_unet.py", line 352, in <module>
+    main()
+  File "/private/tmp/unfold-s8-final-registration-review/scripts/demonstrate_s8_unet.py", line 306, in main
+    _qualified_facts(context, artifact)
+  File "/private/tmp/unfold-s8-final-registration-review/scripts/demonstrate_s8_unet.py", line 65, in _qualified_facts
+    summary = fact.claim_evidence.summary() if fact.claim_evidence is not None else None
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-registration-review/model_unfolder/evidence/unet_primary_ports.py", line 110, in summary
+    return ClaimProofSummary(self.fact_id, self.claim_kind, self.proof_kind, self.reader_symbols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 12, in __init__
+  File "/private/tmp/unfold-s8-final-registration-review/model_unfolder/evidence/claim_evidence.py", line 231, in __post_init__
+    raise ValueError("claim proof summary values are canonical")
+ValueError: claim proof summary values are canonical

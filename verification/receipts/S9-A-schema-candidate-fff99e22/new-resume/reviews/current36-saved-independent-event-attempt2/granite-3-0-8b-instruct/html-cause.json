@@ -1,0 +1,19 @@
+{
+  "after_bytes": 67122,
+  "after_sha256": "ed50994498e5a4f8c43ed60645910e7802e290586a300107dcfd018dfb713816",
+  "before_bytes": 67122,
+  "before_sha256": "aa29300fd42a927d4e7f0aedb5b38c05c54bade2cc7659946fbd671e38113a5d",
+  "exact_new_mount_occurrences": 185,
+  "exact_old_mount_occurrences": 185,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-259a7705d1",
+  "mount_identity_before": "uf-ed5ea0025d",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "granite-3-0-8b-instruct",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

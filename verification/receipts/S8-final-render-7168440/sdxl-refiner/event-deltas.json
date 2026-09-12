@@ -1,0 +1,1152 @@
+{
+  "added": [
+    {
+      "block_path": [
+        "instance_down_blocks__0__downsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__0__downsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Downsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__downsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__downsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Downsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__downsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__downsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Downsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__0__upsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__0__upsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Upsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__upsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__upsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Upsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__upsamplers__0"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.spatial_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__upsamplers__0"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Upsample2D",
+      "variant": "",
+      "view": "card_fact_lines"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__0__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_down_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_down_blocks__1__attentions__1__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__0__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_down_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_down_blocks__2__attentions__1__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_mid_block__attentions__0__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_activation",
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_down_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_mid_block__attentions__0__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_activation",
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_down_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_mid_block__attentions__0__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_activation",
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_down_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_mid_block__attentions__0__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__0__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__1__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__1__attentions__2__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__0__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__1__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_activation",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__0__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_activation",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__1__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_activation",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__2__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.ffn_mechanisms"
+      ],
+      "node_ids": [
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_activation",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_down_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_gate_up_proj",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_gate_up_split",
+        "instance_up_blocks__2__attentions__2__transformer_blocks__3__ff__op_multiply"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "FeedForward",
+      "variant": "",
+      "view": "runtime_ffn_fact"
+    },
+    {
+      "block_path": [
+        "denoiser"
+      ],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "root.denoiser.declared_constructor_defaults"
+      ],
+      "node_ids": [
+        "denoiser"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "card_fact_lines"
+    }
+  ],
+  "after_count": 2630,
+  "before_count": 2579,
+  "removed": []
+}

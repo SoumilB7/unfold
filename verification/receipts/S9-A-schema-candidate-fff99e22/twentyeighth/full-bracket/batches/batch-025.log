@@ -1,0 +1,57 @@
+...................F...................................F................ [ 43%]
+........................................................................ [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_ test_production_can_request_isolated_inventory_but_cannot_construct_in_parent _
+
+    def test_production_can_request_isolated_inventory_but_cannot_construct_in_parent():
+        consumers = [*ROOT.glob("model_unfolder/adapters/**/*.py"),
+                     *ROOT.glob("model_unfolder/renderers/**/*.py")]
+        assert not [(path, line) for path in consumers
+                    for line in path.read_text().splitlines() if "physics" in line]
+        production = list((ROOT / "model_unfolder").rglob("*.py"))
+        # S8 is the authorized first consumer of S6. Its production boundary may
+        # carry requests/results and call the isolated parent API, never import
+        # the worker's construction or observation internals into an adapter.
+        public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess",
+                           "FrameworkPrimitiveWitness", "AttributeLookupRequest", "PythonFunctionWitness"}
+        # Owner-approved S8.1 replay only carries parent metadata/cache lifecycle.
+        # It does not authorize worker construction or the cache implementation API.
+        parent_cache_hooks = {"register_source_context", "cache_source_bundle",
+                              "cache_prepared_document", "parse_cache_active", "run_cached_parse"}
+        for path in production:
+            for node in ast.walk(ast.parse(path.read_text())):
+                if isinstance(node, ast.Import):
+                    assert not any(alias.name == "physics" or alias.name.startswith("physics.")
+                                   for alias in node.names), path
+                if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("physics"):
+                    boundary = (public_boundary if node.module == "physics.instance_inventory" else
+                                {"ExecutionRecipe", "ObservationResult", "TensorArgument", "observe_in_subprocess"}
+                                if node.module == "physics.execution_observation" else
+                                parent_cache_hooks if node.module == "physics.result_cache" else set())
+>                   assert boundary and {alias.name for alias in node.names} <= boundary, path
+E                   AssertionError: PosixPath('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyeighth/model_unfolder/evidence/checkpoint_metadata.py')
+E                   assert ({'AttributeLookupRequest', 'BuildRequest', 'Failure', 'FrameworkPrimitiveWitness', 'InventoryResult', 'PythonFunctionWitness', ...} and {'InstanceInventory'} <= {'AttributeLo...Witness', ...}
+E                     
+E                     Extra items in the left set:
+E                     'InstanceInventory')
+
+tests/test_s6_physics.py:351: AssertionError
+_______ test_projection_audit_is_wired_into_sable_as_blocking_and_clean ________
+
+    def test_projection_audit_is_wired_into_sable_as_blocking_and_clean():
+        """Wired like config_field_audit / evidence_ambiguity: present, blocking, and
+        green on a real decoder (every proven fact has a drawn witness)."""
+        report = sable(LLAMA, render_images=False)
+        check = next(c for c in report.checks if c.name == "projection_audit")
+        assert check.blocking is _PROJECTION_AUDIT_BLOCKING is True
+>       assert check.passed, check.findings
+E       AssertionError: ["ledger fact 'model.hidden_size' (config_declared) is proven from evidence but no render surface projects it — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"]
+E       assert False
+E        +  where False = SableCheck(name='projection_audit', findings=["ledger fact 'model.hidden_size' (config_declared) is proven from eviden...t — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"], note='', blocking=True).passed
+
+tests/test_projection_audit.py:114: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent
+FAILED tests/test_projection_audit.py::test_projection_audit_is_wired_into_sable_as_blocking_and_clean
+2 failed, 164 passed in 317.48s (0:05:17)

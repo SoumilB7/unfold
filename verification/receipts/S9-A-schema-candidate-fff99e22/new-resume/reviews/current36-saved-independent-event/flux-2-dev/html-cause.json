@@ -1,0 +1,20 @@
+{
+  "after_bytes": 218135,
+  "after_sha256": "50b23e7fdb5109843d3b6f187811f913bdfabea7f75556d0fa36d5a4f3093f2c",
+  "before_bytes": 218135,
+  "before_sha256": "be8abb3eaa076d25cb1eabfee0048bad2bd1484f2ad271349bd83c193d2474cc",
+  "exact_new_mount_occurrences": 365,
+  "exact_old_mount_occurrences": 365,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-2fb7e6dbaf",
+  "mount_identity_before": "uf-5e3ee96b1c",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 18,
+  "raw_ordered_svg_count_before": 18,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "flux-2-dev",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

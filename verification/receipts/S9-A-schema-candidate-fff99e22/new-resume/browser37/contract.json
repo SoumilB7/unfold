@@ -1,0 +1,8 @@
+{
+  "status": "HELD_BEFORE_ACTUAL37_BROWSER_RUN",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "scope": "Same six actual saved pages and clicks as36, four long-token CSS style probes. Requires published bytes exactly equal actual37 saved model/diagnostic output and passed source/artifact brackets. No derived CSS insertion.",
+  "runtime": "Isolated /private/tmp venv with exact browser36 requirements; fresh Chrome profile; saved-artifact browser only; root owns all model lanes.",
+  "planned_checks": "Three previously overflowing defaultcards fit644px, full text versus36, four longtoken styles fit750px and4px radius, no JS page errors, exact card/DOM identities, nestedSDXL drill; screenshots independently inspected.",
+  "limits": "Full actual37 native producer capture is root-owned. Saved HTML browser observations do not qualify facts or approve outputs. HTTP(S) fonts blocked; times not latency baselines."
+}

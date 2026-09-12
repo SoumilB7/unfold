@@ -1,8 +1,8 @@
 """Data containers for static model-code evidence.
 
-The evidence layer is intentionally separate from the config adapters.  Config
-parsing remains the source of dimensions and layer counts; code evidence is a
-second signal that can confirm topology or surface mismatches.
+Configuration may supply a numeric operand only after exact modeling code binds
+that value to an owning operation.  These records are therefore architectural
+authority, not a secondary hint layered over config-authored topology.
 """
 from __future__ import annotations
 
@@ -15,52 +15,25 @@ CODE_EVIDENCE_SCHEMA_VERSION = "1.0"
 
 
 @dataclass(frozen=True)
-class PositionalMechanism:
-    """One position signal proven from a concrete source path.
+class SourceImportRoot:
+    """One exact package root whose imports may extend a component's index.
 
-    ``application`` is deliberately separate from ``kind``: learned absolute
-    positions are added at model input, ALiBi biases attention scores, and RoPE
-    rotates Q/K.  Collapsing those altitudes was the original design mistake.
+    This is source-address metadata only.  It permits a demand-driven index
+    expansion to follow an explicitly imported, actually-called constructor or
+    factory into the same installed package without treating the package,
+    module or symbol spelling as architectural evidence.
     """
 
-    kind: str                       # rope | alibi | learned_absolute | fixed_absolute | none
-    application: str                # qk_rotation | attention_bias | embedding_add | none
-    class_name: str = ""
-    source_file: str = ""
-    line: int | None = None
-    symbols: tuple[str, ...] = ()
+    package: str
+    path: str
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "kind": self.kind,
-            "application": self.application,
-            "class_name": self.class_name,
-            "source_file": self.source_file,
-            "line": self.line,
-            "symbols": list(self.symbols),
-        }
-
-
-@dataclass(frozen=True)
-class PositionalEvidence:
-    """Typed decoder positional evidence and its confidence state."""
-
-    status: str                     # proven | ambiguous | oracle_missing
-    mechanisms: tuple[PositionalMechanism, ...] = ()
-    component: str = "root"
-    reason: str = ""
-
-    @property
-    def kinds(self) -> frozenset[str]:
-        return frozenset(item.kind for item in self.mechanisms)
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "component": self.component,
-            "reason": self.reason,
-            "mechanisms": [item.to_dict() for item in self.mechanisms],
-        }
+    def __post_init__(self) -> None:
+        if not self.package or not self.path:
+            raise ValueError("an import root carries a package and filesystem path")
+        if any(not part.isidentifier() for part in self.package.split(".")):
+            raise ValueError("an import-root package is a dotted Python address")
+        if not Path(self.path).is_absolute():
+            raise ValueError("an import-root path is absolute")
 
 
 @dataclass(frozen=True)
@@ -100,217 +73,22 @@ class SourceOp:
 
 
 @dataclass(frozen=True)
-class FFNStructureEvidence:
-    """Exact storage shape of one feed-forward callable.
+class ProjectorEvidence:
+    """Ordered operations of the exact multimodal connector callable.
 
-    ``projection_mode`` is structural, not a family label: ``dense`` means one
-    input and one output projection, ``split`` means distinct gate/up/down
-    projections, and ``fused_gate_up`` means one fused gate+up projection plus a
-    split before the product.  Ambiguous or missing source never selects a
-    conventional shape.
+    COR-4 (§9): the connector's terminal/entry widths are SOURCE-bound facts.
+    ``*_width_source`` classifies each binding — ``config_bound`` (the ctor
+    reads a config attribute; ``*_width_path`` is the exact dotted path from
+    the ROOT config), ``code_bound`` (a literal in source; ``*_width_value``),
+    ``derived`` (an arithmetic expression over ctor params — established but
+    not reduced here), or ``unavailable``.  The evidence layer never resolves
+    config VALUES: the consumer reads the bound path through the evented
+    accessor funnel, so ownership is proven here and the numeric premise stays
+    a logged config read.
     """
 
-    status: str                         # proven | ambiguous | oracle_missing
-    gated: bool | None = None
-    projection_mode: str = "unknown"
-    owner_class: str = ""
-    source_file: str = ""
-    line: int | None = None
-    component: str = "root"
-    reason: str = ""
-    candidate_classes: tuple[str, ...] = ()
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "gated": self.gated,
-            "projection_mode": self.projection_mode,
-            "owner_class": self.owner_class,
-            "source_file": self.source_file,
-            "line": self.line,
-            "component": self.component,
-            "reason": self.reason,
-            "candidate_classes": list(self.candidate_classes),
-        }
-
-
-@dataclass(frozen=True)
-class VisionLayerEvidence:
-    """Source-derived facts for one repeated vision encoder block variant."""
-
-    block_class: str
-    source_file: str
-    line: int | None
-    norm_kind: str
-    norm_placement: str
-    ffn_gated: bool
-    residual_gated: bool
-    #: activation applied to the residual gate when the block CALLS one around
-    #: the gate-mul (Gemma-3 vision: ``tanh``); None ⇒ evidence records only
-    #: that a learned gate exists — captions must not name an activation.
-    gate_activation: str | None = None
-    #: gate VALUES source: "conditioning" (computed by a producer, e.g. from
-    #: the timestep embedding) | "parameter" (learned static) | None (ungated).
-    gate_source: str | None = None
-    #: True when the block IS the standard two-sublayer cell (one attention +
-    #: at most one FFN, no in-block conv mixer) — a conformer is not, and must
-    #: never be projected as one.
-    standard_cell: bool = True
-    attention_class: str = ""
-    ffn_class: str = ""
-    projection_mode: str = "separate_qkv"
-    q_norm: bool = False
-    k_norm: bool = False
-    v_norm: bool = False
-    post_rope_scale: bool = False
-    position_kind: str = "unknown"
-    attention_kind: str = "softmax"
-    ffn_projection_mode: str = "split"
-    variant_key: str = ""
-    repeat_field: str = ""
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "block_class": self.block_class,
-            "source_file": self.source_file,
-            "line": self.line,
-            "norm_kind": self.norm_kind,
-            "norm_placement": self.norm_placement,
-            "ffn_gated": self.ffn_gated,
-            "residual_gated": self.residual_gated,
-            "gate_activation": self.gate_activation,
-            "standard_cell": self.standard_cell,
-            "gate_source": self.gate_source,
-            "attention_class": self.attention_class,
-            "ffn_class": self.ffn_class,
-            "projection_mode": self.projection_mode,
-            "q_norm": self.q_norm,
-            "k_norm": self.k_norm,
-            "v_norm": self.v_norm,
-            "post_rope_scale": self.post_rope_scale,
-            "position_kind": self.position_kind,
-            "attention_kind": self.attention_kind,
-            "ffn_projection_mode": self.ffn_projection_mode,
-            "variant_key": self.variant_key,
-            "repeat_field": self.repeat_field,
-        }
-
-
-@dataclass(frozen=True)
-class VisionTowerEvidence:
-    """Qualified evidence for a delegated vision tower."""
-
     status: str
-    component: str = "vision_config"
-    owner_class: str = ""
-    source_file: str = ""
-    reason: str = ""
-    patch_ops: tuple[SourceOp, ...] = ()
-    position_kind: str = "unknown"
-    input_position_kind: str = "unknown"
-    variants: tuple[VisionLayerEvidence, ...] = ()
-    final_norm_kind: str = "unknown"
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "component": self.component,
-            "owner_class": self.owner_class,
-            "source_file": self.source_file,
-            "reason": self.reason,
-            "patch_ops": [op.to_dict() for op in self.patch_ops],
-            "position_kind": self.position_kind,
-            "input_position_kind": self.input_position_kind,
-            "variants": [variant.to_dict() for variant in self.variants],
-            "final_norm_kind": self.final_norm_kind,
-        }
-
-
-@dataclass(frozen=True)
-class AudioCallableEvidence:
-    """Exact operation graph for one callable reached by an audio tower."""
-
-    class_name: str
-    source_file: str
-    line: int | None
-    ops: tuple[SourceOp, ...] = ()
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "class_name": self.class_name,
-            "source_file": self.source_file,
-            "line": self.line,
-            "ops": [op.to_dict() for op in self.ops],
-        }
-
-
-@dataclass(frozen=True)
-class AudioLayerEvidence:
-    """Source-derived graph for one repeated audio encoder block."""
-
-    block_class: str
-    source_file: str
-    line: int | None
-    ops: tuple[SourceOp, ...] = ()
-    callables: tuple[AudioCallableEvidence, ...] = ()
-    repeat_field: str = ""
-    #: typed per-layer facts from the ONE shared reader
-    #: (:func:`~.vision.layer_facts_from_block`) — norm kind/placement, FFN
-    #: gating, gates, projection modes — so the audio tower rides the same
-    #: cell projector as every other tower.
-    layer_facts: dict[str, Any] = field(default_factory=dict)
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "block_class": self.block_class,
-            "source_file": self.source_file,
-            "line": self.line,
-            "ops": [op.to_dict() for op in self.ops],
-            "callables": [item.to_dict() for item in self.callables],
-            "repeat_field": self.repeat_field,
-            "layer_facts": dict(self.layer_facts),
-        }
-
-
-@dataclass(frozen=True)
-class AudioTowerEvidence:
-    """Qualified evidence for a delegated audio tower and its connector."""
-
-    status: str
-    component: str = "audio_config"
-    owner_class: str = ""
-    source_file: str = ""
-    reason: str = ""
-    frontend_ops: tuple[SourceOp, ...] = ()
-    position_kind: str = "unknown"
-    position_application: str = "unknown"
-    variants: tuple[AudioLayerEvidence, ...] = ()
-    post_ops: tuple[SourceOp, ...] = ()
-    projector_ops: tuple[SourceOp, ...] = ()
-    projector_class: str = ""
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "status": self.status,
-            "component": self.component,
-            "owner_class": self.owner_class,
-            "source_file": self.source_file,
-            "reason": self.reason,
-            "frontend_ops": [op.to_dict() for op in self.frontend_ops],
-            "position_kind": self.position_kind,
-            "position_application": self.position_application,
-            "variants": [variant.to_dict() for variant in self.variants],
-            "post_ops": [op.to_dict() for op in self.post_ops],
-            "projector_ops": [op.to_dict() for op in self.projector_ops],
-            "projector_class": self.projector_class,
-        }
-
-
-@dataclass(frozen=True)
-class ProjectorEvidence:
-    """Ordered operations of the exact multimodal connector callable."""
-
-    status: str
+    modalities: tuple[str, ...] = ()
     component: str = "root"
     owner_class: str = ""
     field_name: str = ""
@@ -321,15 +99,28 @@ class ProjectorEvidence:
     kind: str = "code_defined_projector"
     learned_queries: bool = False
     reason: str = ""
+    out_width_source: str = "unavailable"
+    out_width_path: tuple[str, ...] = ()
+    out_width_value: int | None = None
+    in_width_source: str = "unavailable"
+    in_width_path: tuple[str, ...] = ()
+    in_width_value: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "status": self.status, "component": self.component,
+            "status": self.status, "modalities": list(self.modalities),
+            "component": self.component,
             "owner_class": self.owner_class, "field_name": self.field_name,
             "projector_class": self.projector_class, "source_file": self.source_file,
             "line": self.line, "ops": [op.to_dict() for op in self.ops],
             "kind": self.kind, "learned_queries": self.learned_queries,
             "reason": self.reason,
+            "out_width_source": self.out_width_source,
+            "out_width_path": list(self.out_width_path),
+            "out_width_value": self.out_width_value,
+            "in_width_source": self.in_width_source,
+            "in_width_path": list(self.in_width_path),
+            "in_width_value": self.in_width_value,
         }
 
 
@@ -390,6 +181,19 @@ class SourceBundle:
     # delegates to several model families.  A shared implementation file may
     # intentionally appear in more than one component tuple.
     component_files: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Exact same-revision support sources needed to interpret the modeling
+    # files (for example ``configuration_t5.py``).  They are indexed by the
+    # ONE ProgramIndex but deliberately stay out of ``files`` and
+    # ``component_files`` so legacy whole-file readers cannot begin treating a
+    # config class as modeling architecture.  A support source supplies code
+    # evidence only after an exact import/annotation edge reaches it.
+    supporting_files: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Exact package roots from which the ONE ProgramIndex may discover support
+    # sources through called import bindings.  Discovery is address-only and
+    # component-qualified; absence means no implicit import walk.  U11 uses this
+    # for Diffusers' factory-split U-Net implementation instead of reopening a
+    # second whole-file AST universe.
+    import_roots: dict[str, tuple[SourceImportRoot, ...]] = field(default_factory=dict)
     component_model_types: dict[str, str] = field(default_factory=dict)
     component_architectures: dict[str, str] = field(default_factory=dict)
     # Pipeline SLOT components (a Diffusers pipeline's fetched text encoders:
@@ -399,6 +203,10 @@ class SourceBundle:
     # domain-based pick ("the text component") must never select them for the
     # root's own views (the denoiser block is not a Mistral layer).
     pipeline_components: tuple[str, ...] = ()
+    # Additional pipeline denoiser candidates established at the address
+    # boundary. Presence is not an equivalence claim; U10-E resolves and
+    # compares every candidate independently.
+    companion_components: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

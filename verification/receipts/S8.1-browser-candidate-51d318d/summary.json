@@ -1,0 +1,30 @@
+{
+  "status": "browser_route_pass_visual_settle_pending",
+  "html_bytes": 2171535,
+  "html_sha256": "51d318d35ea6ae6abc23af285b63cb7d556a5740d2e39d22849274607801c7d2",
+  "canonical_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "samples": [
+    {
+      "sample": 1,
+      "ready_ms": 463,
+      "click_ms": 21.800000190734863
+    },
+    {
+      "sample": 2,
+      "ready_ms": 398.09999990463257,
+      "click_ms": 19
+    },
+    {
+      "sample": 3,
+      "ready_ms": 443.69999980926514,
+      "click_ms": 18.09999990463257
+    }
+  ],
+  "readiness_median_ms": 443.69999980926514,
+  "click_median_ms": 19,
+  "initial_dom_elements": 242,
+  "functional_steps": 16,
+  "all_visible_cards_exact": true,
+  "screenshots_exact": false,
+  "limits": "Finite CSS animation settling still to verify; no HTML generation timing from failed render-event archiver; no whole S8.1 performance acceptance."
+}

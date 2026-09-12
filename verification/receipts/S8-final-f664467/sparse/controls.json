@@ -1,0 +1,134 @@
+{
+  "act_fn": {
+    "omitted": "silu",
+    "origin": "declared class default"
+  },
+  "addition_embed_type_num_heads": {
+    "omitted": 64,
+    "origin": "declared class default"
+  },
+  "center_input_sample": {
+    "omitted": false,
+    "origin": "declared class default"
+  },
+  "class_embed_type": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "class_embeddings_concat": {
+    "omitted": false,
+    "origin": "declared class default"
+  },
+  "conv_in_kernel": {
+    "omitted": 3,
+    "origin": "declared class default"
+  },
+  "conv_out_kernel": {
+    "omitted": 3,
+    "origin": "declared class default"
+  },
+  "cross_attention_norm": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "downsample_padding": {
+    "omitted": 1,
+    "origin": "declared class default"
+  },
+  "dual_cross_attention": {
+    "omitted": false,
+    "origin": "declared class default"
+  },
+  "encoder_hid_dim": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "encoder_hid_dim_type": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "flip_sin_to_cos": {
+    "omitted": true,
+    "origin": "declared class default"
+  },
+  "freq_shift": {
+    "omitted": 0,
+    "origin": "declared class default"
+  },
+  "in_channels": {
+    "omitted": 4,
+    "origin": "declared class default"
+  },
+  "layers_per_block": {
+    "omitted": 2,
+    "origin": "declared class default"
+  },
+  "mid_block_only_cross_attention": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "mid_block_scale_factor": {
+    "omitted": 1,
+    "origin": "declared class default"
+  },
+  "mid_block_type": {
+    "omitted": "UNetMidBlock2DCrossAttn",
+    "origin": "declared class default"
+  },
+  "norm_eps": {
+    "omitted": 1e-05,
+    "origin": "declared class default"
+  },
+  "norm_num_groups": {
+    "omitted": 32,
+    "origin": "declared class default"
+  },
+  "num_attention_heads": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "num_class_embeds": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "only_cross_attention": {
+    "omitted": false,
+    "origin": "declared class default"
+  },
+  "out_channels": {
+    "omitted": 4,
+    "origin": "declared class default"
+  },
+  "resnet_out_scale_factor": {
+    "omitted": 1.0,
+    "origin": "declared class default"
+  },
+  "resnet_skip_time_act": {
+    "omitted": false,
+    "origin": "declared class default"
+  },
+  "resnet_time_scale_shift": {
+    "omitted": "default",
+    "origin": "declared class default"
+  },
+  "time_cond_proj_dim": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "time_embedding_act_fn": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "time_embedding_dim": {
+    "omitted": null,
+    "origin": "declared class default"
+  },
+  "time_embedding_type": {
+    "omitted": "positional",
+    "origin": "declared class default"
+  },
+  "timestep_post_act": {
+    "omitted": null,
+    "origin": "declared class default"
+  }
+}

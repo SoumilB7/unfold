@@ -1,0 +1,8 @@
+{
+  "scope": "Late host context only; not historical failure-time, per-worker, allocated-byte, peak-RSS or causal evidence",
+  "sha256": {
+    "late-host-vm.json": "7fcd57d6766e99d07d2fae82bb67907b1542df61eabfb03d3686e7946c909a44",
+    "counter-deltas.json": "953e7fb60a7c90e6c6d162ae39db81c0fd3aca345ddf18c640cbb8ce49e6f261",
+    "later-host-vm.json": "6e4dab58060ca3110743be4601d470c423b9a67eece1c70f630caa582b08e434"
+  }
+}

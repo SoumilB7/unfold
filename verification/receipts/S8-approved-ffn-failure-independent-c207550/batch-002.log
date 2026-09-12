@@ -1,0 +1,26 @@
+..............................................................s.ss..ssss [ 42%]
+.s...ss...sss...s....................................................... [ 84%]
+......F....................                                              [100%]
+=================================== FAILURES ===================================
+_____________ test_example_check_never_invokes_platform_rasterizer _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x320aca150>
+
+    def test_example_check_never_invokes_platform_rasterizer(monkeypatch):
+        monkeypatch.setattr(
+            generate_examples, "svg_to_png",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("verification invoked the platform rasterizer")))
+>       assert generate_examples.check() == 0
+E       assert 1 == 0
+E        +  where 1 = <function check at 0x1313ac360>()
+E        +    where <function check at 0x1313ac360> = generate_examples.check
+
+tests/test_s5_release.py:205: AssertionError
+----------------------------- Captured stdout call -----------------------------
+examples are stale
+- manifest metadata or hero SVG-input seal is stale
+- deterministic HTML is stale: stable-diffusion-xl-base-1-0.html
+=========================== short test summary info ============================
+FAILED tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer
+1 failed, 156 passed, 14 skipped in 1608.42s (0:26:48)

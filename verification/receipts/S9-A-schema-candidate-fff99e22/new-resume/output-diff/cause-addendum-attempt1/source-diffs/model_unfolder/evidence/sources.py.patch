@@ -1,0 +1,23 @@
+--- fff99e22/model_unfolder/evidence/sources.py
++++ frozen26/model_unfolder/evidence/sources.py
+@@ -275,6 +275,20 @@
+                 break
+         if imported:
+             paths.append(framework_rope)
++    framework_activations = family_dir.parent.parent / "activations.py"
++    if framework_activations.is_file():
++        for modeling in sorted(family_dir.glob("modeling*.py")):
++            try:
++                source = modeling.read_text(encoding="utf-8")
++            except (OSError, UnicodeDecodeError):
++                continue
++            if re.search(
++                    r"^from\s+(?:\.{2,}activations|transformers\.activations)\s+import\s+.*\b(?:ACT2FN|get_activation)\b",
++                    source, re.M):
++                # Address closure only: the reader must prove the exact key,
++                # registry instantiation protocol and selected callable body.
++                paths.append(framework_activations)
++                break
+     framework_config = family_dir.parent.parent / "configuration_utils.py"
+     if framework_config.is_file():
+         imported = False

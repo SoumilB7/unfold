@@ -1,0 +1,114 @@
+[
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      3,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "cc11d6385a1744659b9a1ec9f2106f89",
+    "after_present": true,
+    "after_type": "str",
+    "before": "8359a7c8bf514555ad8102902d98c5c2",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

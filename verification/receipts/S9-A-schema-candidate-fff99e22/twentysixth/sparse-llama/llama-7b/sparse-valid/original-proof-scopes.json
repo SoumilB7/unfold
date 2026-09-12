@@ -1,0 +1,3103 @@
+{
+  "model.hidden_size": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.class_default_value.ModelHiddenSizeDefaultClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 435,
+        "column": 8,
+        "end_line": 435,
+        "end_column": 32
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 435,
+        "column": 25,
+        "end_line": 435,
+        "end_column": 31
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 336,
+        "column": 27,
+        "end_line": 336,
+        "end_column": 42
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 41,
+        "column": 0,
+        "end_line": 41,
+        "end_column": 70
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 429,
+        "column": 23,
+        "end_line": 429,
+        "end_column": 43
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 337,
+        "column": 12,
+        "end_line": 337,
+        "end_column": 23
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 46,
+        "column": 0,
+        "end_line": 46,
+        "end_column": 44
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 337,
+        "column": 4,
+        "end_line": 337,
+        "end_column": 23
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+        "source_sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda",
+        "component": "root",
+        "line": 65,
+        "column": 4,
+        "end_line": 65,
+        "end_column": 27
+      }
+    ]
+  },
+  "decoder.ffn.intermediate_size": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.ffn_width.FFNWidthClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 177,
+        "column": 25,
+        "end_line": 177,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 178,
+        "column": 23,
+        "end_line": 178,
+        "end_column": 96
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 179,
+        "column": 25,
+        "end_line": 179,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 47,
+        "end_line": 183,
+        "end_column": 64
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 68,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 20,
+        "end_line": 183,
+        "end_column": 84
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 65
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 180,
+        "column": 22,
+        "end_line": 180,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 184,
+        "column": 8,
+        "end_line": 184,
+        "end_column": 24
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 176,
+        "column": 33,
+        "end_line": 176,
+        "end_column": 57
+      }
+    ]
+  },
+  "decoder.ffn.activation": {
+    "root_bound": false,
+    "qualification": "not_proved"
+  },
+  "decoder.attention.rope_theta": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.position_initialization.PositionInitializationClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 35,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 8,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 278,
+        "column": 12,
+        "end_line": 278,
+        "end_column": 24
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 279,
+        "column": 12,
+        "end_line": 279,
+        "end_column": 22
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 82,
+        "end_line": 267,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 87,
+        "end_line": 267,
+        "end_column": 90
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 146,
+        "column": 0,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 168,
+        "column": 4,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 164,
+        "column": 4,
+        "end_line": 164,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 165,
+        "column": 4,
+        "end_line": 165,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 166,
+        "column": 4,
+        "end_line": 166,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 167,
+        "column": 4,
+        "end_line": 167,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 138,
+        "column": 0,
+        "end_line": 142,
+        "end_column": 39
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 30,
+        "end_line": 408,
+        "end_column": 87
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 74,
+        "end_line": 408,
+        "end_column": 86
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 135,
+        "column": 8,
+        "end_line": 135,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 132,
+        "column": 18,
+        "end_line": 132,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 133,
+        "column": 18,
+        "end_line": 133,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 131,
+        "column": 18,
+        "end_line": 131,
+        "end_column": 51
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 92
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 95,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 12,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 27,
+        "end_line": 397,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 12,
+        "end_line": 397,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 89,
+        "column": 8,
+        "end_line": 89,
+        "end_column": 68
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 87,
+        "column": 8,
+        "end_line": 87,
+        "end_column": 76
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 87,
+        "column": 43,
+        "end_line": 87,
+        "end_column": 76
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 93,
+        "column": 4,
+        "end_line": 120,
+        "end_column": 41
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 111,
+        "column": 15,
+        "end_line": 111,
+        "end_column": 51
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 85,
+        "column": 11,
+        "end_line": 85,
+        "end_column": 25
+      }
+    ]
+  },
+  "decoder.attention.rope_initialization": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.position_initialization.PositionInitializationClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 35,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 8,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 278,
+        "column": 12,
+        "end_line": 278,
+        "end_column": 24
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 279,
+        "column": 12,
+        "end_line": 279,
+        "end_column": 22
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 82,
+        "end_line": 267,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 87,
+        "end_line": 267,
+        "end_column": 90
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 146,
+        "column": 0,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 168,
+        "column": 4,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 164,
+        "column": 4,
+        "end_line": 164,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 165,
+        "column": 4,
+        "end_line": 165,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 166,
+        "column": 4,
+        "end_line": 166,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 167,
+        "column": 4,
+        "end_line": 167,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 138,
+        "column": 0,
+        "end_line": 142,
+        "end_column": 39
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 30,
+        "end_line": 408,
+        "end_column": 87
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 74,
+        "end_line": 408,
+        "end_column": 86
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 135,
+        "column": 8,
+        "end_line": 135,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 132,
+        "column": 18,
+        "end_line": 132,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 133,
+        "column": 18,
+        "end_line": 133,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 131,
+        "column": 18,
+        "end_line": 131,
+        "end_column": 51
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 92
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 95,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 12,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 27,
+        "end_line": 397,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 12,
+        "end_line": 397,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 89,
+        "column": 8,
+        "end_line": 89,
+        "end_column": 68
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 87,
+        "column": 8,
+        "end_line": 87,
+        "end_column": 76
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 87,
+        "column": 43,
+        "end_line": 87,
+        "end_column": 76
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 93,
+        "column": 4,
+        "end_line": 120,
+        "end_column": 41
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 111,
+        "column": 15,
+        "end_line": 111,
+        "end_column": 51
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 85,
+        "column": 11,
+        "end_line": 85,
+        "end_column": 25
+      }
+    ]
+  },
+  "decoder.attention.position_schedule": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.position_schedule.PositionScheduleClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 13,
+        "end_line": 363,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 39,
+        "end_line": 363,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 297,
+        "column": 25,
+        "end_line": 297,
+        "end_column": 75
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 297,
+        "column": 65,
+        "end_line": 297,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 12,
+        "end_line": 363,
+        "end_column": 99
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 54,
+        "end_line": 363,
+        "end_column": 63
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 67,
+        "end_line": 363,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 73,
+        "end_line": 363,
+        "end_column": 97
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 35,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 8,
+        "end_line": 267,
+        "end_column": 91
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 278,
+        "column": 12,
+        "end_line": 278,
+        "end_column": 24
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 279,
+        "column": 12,
+        "end_line": 279,
+        "end_column": 22
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 82,
+        "end_line": 267,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 267,
+        "column": 87,
+        "end_line": 267,
+        "end_column": 90
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 146,
+        "column": 0,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 168,
+        "column": 4,
+        "end_line": 168,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 164,
+        "column": 4,
+        "end_line": 164,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 165,
+        "column": 4,
+        "end_line": 165,
+        "end_column": 38
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 166,
+        "column": 4,
+        "end_line": 166,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 167,
+        "column": 4,
+        "end_line": 167,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 138,
+        "column": 0,
+        "end_line": 142,
+        "end_column": 39
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 30,
+        "end_line": 408,
+        "end_column": 87
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 408,
+        "column": 74,
+        "end_line": 408,
+        "end_column": 86
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 135,
+        "column": 8,
+        "end_line": 135,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 132,
+        "column": 18,
+        "end_line": 132,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 133,
+        "column": 18,
+        "end_line": 133,
+        "end_column": 27
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 131,
+        "column": 18,
+        "end_line": 131,
+        "end_column": 51
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 92
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 95,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 27,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 396,
+        "column": 12,
+        "end_line": 396,
+        "end_column": 111
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 27,
+        "end_line": 397,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 397,
+        "column": 12,
+        "end_line": 397,
+        "end_column": 52
+      }
+    ]
+  },
+  "decoder.attention.mixer_schedule": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.mixer_schedule.MixerScheduleClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 13,
+        "end_line": 363,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 39,
+        "end_line": 363,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 12,
+        "end_line": 363,
+        "end_column": 99
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 54,
+        "end_line": 363,
+        "end_column": 63
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 67,
+        "end_line": 363,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 73,
+        "end_line": 363,
+        "end_column": 97
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 316,
+        "column": 27,
+        "end_line": 324,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 297,
+        "column": 25,
+        "end_line": 297,
+        "end_column": 75
+      }
+    ]
+  },
+  "decoder.ffn.ffn_schedule": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.ffn_schedule.FFNScheduleClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 13,
+        "end_line": 363,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 39,
+        "end_line": 363,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 12,
+        "end_line": 363,
+        "end_column": 99
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 54,
+        "end_line": 363,
+        "end_column": 63
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 67,
+        "end_line": 363,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 73,
+        "end_line": 363,
+        "end_column": 97
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 299,
+        "column": 19,
+        "end_line": 299,
+        "end_column": 35
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 330,
+        "column": 24,
+        "end_line": 330,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 177,
+        "column": 25,
+        "end_line": 177,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 178,
+        "column": 23,
+        "end_line": 178,
+        "end_column": 96
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 179,
+        "column": 25,
+        "end_line": 179,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 47,
+        "end_line": 183,
+        "end_column": 64
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 68,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 20,
+        "end_line": 183,
+        "end_column": 84
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 65
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 180,
+        "column": 22,
+        "end_line": 180,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 184,
+        "column": 8,
+        "end_line": 184,
+        "end_column": 24
+      }
+    ]
+  },
+  "decoder.attention.mask_schedule": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention_mask.MaskExecutionClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 399,
+        "column": 22,
+        "end_line": 405,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 399,
+        "column": 8,
+        "end_line": 405,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 411,
+        "column": 28,
+        "end_line": 419,
+        "end_column": 13
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 413,
+        "column": 31,
+        "end_line": 413,
+        "end_column": 42
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 316,
+        "column": 27,
+        "end_line": 324,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 318,
+        "column": 27,
+        "end_line": 318,
+        "end_column": 41
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 281,
+        "column": 12,
+        "end_line": 281,
+        "end_column": 26
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 214,
+        "column": 38,
+        "end_line": 214,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 214,
+        "column": 8,
+        "end_line": 214,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 357,
+        "column": 8,
+        "end_line": 357,
+        "end_column": 32
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 357,
+        "column": 25,
+        "end_line": 357,
+        "end_column": 31
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 336,
+        "column": 27,
+        "end_line": 336,
+        "end_column": 42
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 41,
+        "column": 0,
+        "end_line": 41,
+        "end_column": 70
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 355,
+        "column": 17,
+        "end_line": 355,
+        "end_column": 37
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 73,
+        "end_line": 363,
+        "end_column": 97
+      }
+    ]
+  },
+  "decoder.layer.norm_kind": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.decoder_norm.DecoderNormClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 314,
+        "column": 24,
+        "end_line": 314,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 300,
+        "column": 31,
+        "end_line": 300,
+        "end_column": 88
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 65,
+        "column": 19,
+        "end_line": 65,
+        "end_column": 62
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 66,
+        "column": 40,
+        "end_line": 66,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 329,
+        "column": 24,
+        "end_line": 329,
+        "end_column": 68
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 301,
+        "column": 40,
+        "end_line": 301,
+        "end_column": 97
+      }
+    ]
+  },
+  "decoder.ffn.gated": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.ffn_mechanism.FFNMechanismClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 177,
+        "column": 25,
+        "end_line": 177,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 178,
+        "column": 23,
+        "end_line": 178,
+        "end_column": 96
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 179,
+        "column": 25,
+        "end_line": 179,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 47,
+        "end_line": 183,
+        "end_column": 64
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 68,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 20,
+        "end_line": 183,
+        "end_column": 84
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 65
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 180,
+        "column": 22,
+        "end_line": 180,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 184,
+        "column": 8,
+        "end_line": 184,
+        "end_column": 24
+      }
+    ]
+  },
+  "decoder.ffn.projection_mode": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.ffn_mechanism.FFNMechanismClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 177,
+        "column": 25,
+        "end_line": 177,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 178,
+        "column": 23,
+        "end_line": 178,
+        "end_column": 96
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 179,
+        "column": 25,
+        "end_line": 179,
+        "end_column": 98
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 47,
+        "end_line": 183,
+        "end_column": 64
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 68,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 20,
+        "end_line": 183,
+        "end_column": 84
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 65
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 180,
+        "column": 22,
+        "end_line": 180,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 183,
+        "column": 35,
+        "end_line": 183,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 184,
+        "column": 8,
+        "end_line": 184,
+        "end_column": 24
+      }
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention_storage.AttentionStorageClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 238,
+        "column": 22,
+        "end_line": 240,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 262,
+        "column": 23,
+        "end_line": 262,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      }
+    ]
+  },
+  "decoder.attention.output_projection": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention_output.AttentionOutputClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 238,
+        "column": 22,
+        "end_line": 240,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 262,
+        "column": 23,
+        "end_line": 262,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 221,
+        "column": 4,
+        "end_line": 221,
+        "end_column": 36
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 8,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 247,
+        "column": 22,
+        "end_line": 249,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 288,
+        "column": 22,
+        "end_line": 288,
+        "end_column": 46
+      }
+    ]
+  },
+  "decoder.layer.norm_placement": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.cell_topology.CellTopologyClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 316,
+        "column": 27,
+        "end_line": 324,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 330,
+        "column": 24,
+        "end_line": 330,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 325,
+        "column": 24,
+        "end_line": 325,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 314,
+        "column": 24,
+        "end_line": 314,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 300,
+        "column": 31,
+        "end_line": 300,
+        "end_column": 88
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 65,
+        "column": 19,
+        "end_line": 65,
+        "end_column": 62
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 66,
+        "column": 40,
+        "end_line": 66,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 331,
+        "column": 24,
+        "end_line": 331,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 329,
+        "column": 24,
+        "end_line": 329,
+        "end_column": 68
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 301,
+        "column": 40,
+        "end_line": 301,
+        "end_column": 97
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 332,
+        "column": 8,
+        "end_line": 332,
+        "end_column": 28
+      }
+    ]
+  },
+  "decoder.attention.mechanism": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention.AttentionMechanismClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 238,
+        "column": 22,
+        "end_line": 240,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 239,
+        "column": 32,
+        "end_line": 239,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 242,
+        "column": 32,
+        "end_line": 242,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 245,
+        "column": 32,
+        "end_line": 245,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 239,
+        "column": 61,
+        "end_line": 239,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 262,
+        "column": 23,
+        "end_line": 262,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      }
+    ]
+  },
+  "decoder.attention.head_geometry": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention_geometry.AttentionGeometryClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 238,
+        "column": 22,
+        "end_line": 240,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 239,
+        "column": 32,
+        "end_line": 239,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 242,
+        "column": 32,
+        "end_line": 242,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 245,
+        "column": 32,
+        "end_line": 245,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 239,
+        "column": 61,
+        "end_line": 239,
+        "end_column": 74
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 262,
+        "column": 23,
+        "end_line": 262,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 232,
+        "column": 24,
+        "end_line": 232,
+        "end_column": 101
+      }
+    ]
+  },
+  "decoder.attention.bias": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.projection_bias.AttentionBiasClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 238,
+        "column": 22,
+        "end_line": 240,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 262,
+        "column": 23,
+        "end_line": 262,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 216,
+        "column": 19,
+        "end_line": 216,
+        "end_column": 83
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 23,
+        "column": 0,
+        "end_line": 23,
+        "end_column": 20
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 212,
+        "column": 19,
+        "end_line": 212,
+        "end_column": 66
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 22,
+        "column": 0,
+        "end_line": 22,
+        "end_column": 12
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 218,
+        "column": 18,
+        "end_line": 218,
+        "end_column": 58
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 221,
+        "column": 4,
+        "end_line": 221,
+        "end_column": 36
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 8,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 247,
+        "column": 22,
+        "end_line": 249,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 288,
+        "column": 22,
+        "end_line": 288,
+        "end_column": 46
+      }
+    ]
+  },
+  "decoder.attention.scores_scale": {
+    "root_bound": false,
+    "qualification": "not_proved"
+  },
+  "decoder.attention.cached": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention.AttentionCacheClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 241,
+        "column": 22,
+        "end_line": 243,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 244,
+        "column": 22,
+        "end_line": 246,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 263,
+        "column": 21,
+        "end_line": 263,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 264,
+        "column": 23,
+        "end_line": 264,
+        "end_column": 49
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 270,
+        "column": 39,
+        "end_line": 270,
+        "end_column": 103
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 270,
+        "column": 12,
+        "end_line": 270,
+        "end_column": 103
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 269,
+        "column": 8,
+        "end_line": 270,
+        "end_column": 103
+      }
+    ]
+  },
+  "decoder.attention.mask": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.attention_mask.MaskExecutionClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 399,
+        "column": 22,
+        "end_line": 405,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 399,
+        "column": 8,
+        "end_line": 405,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 411,
+        "column": 28,
+        "end_line": 419,
+        "end_column": 13
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 413,
+        "column": 31,
+        "end_line": 413,
+        "end_column": 42
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 316,
+        "column": 27,
+        "end_line": 324,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 318,
+        "column": 27,
+        "end_line": 318,
+        "end_column": 41
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 276,
+        "column": 36,
+        "end_line": 285,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 281,
+        "column": 12,
+        "end_line": 281,
+        "end_column": 26
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 214,
+        "column": 38,
+        "end_line": 214,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 214,
+        "column": 8,
+        "end_line": 214,
+        "end_column": 52
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 357,
+        "column": 8,
+        "end_line": 357,
+        "end_column": 32
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 357,
+        "column": 25,
+        "end_line": 357,
+        "end_column": 31
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 336,
+        "column": 27,
+        "end_line": 336,
+        "end_column": 42
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 41,
+        "column": 0,
+        "end_line": 41,
+        "end_column": 70
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 355,
+        "column": 17,
+        "end_line": 355,
+        "end_column": 37
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 363,
+        "column": 73,
+        "end_line": 363,
+        "end_column": 97
+      }
+    ]
+  },
+  "decoder.layer.residual_topology": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.cell_topology.CellTopologyClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 316,
+        "column": 27,
+        "end_line": 324,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 330,
+        "column": 24,
+        "end_line": 330,
+        "end_column": 47
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 325,
+        "column": 24,
+        "end_line": 325,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 314,
+        "column": 24,
+        "end_line": 314,
+        "end_column": 59
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 300,
+        "column": 31,
+        "end_line": 300,
+        "end_column": 88
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 65,
+        "column": 19,
+        "end_line": 65,
+        "end_column": 62
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 66,
+        "column": 40,
+        "end_line": 66,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 331,
+        "column": 24,
+        "end_line": 331,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 329,
+        "column": 24,
+        "end_line": 329,
+        "end_column": 68
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 301,
+        "column": 40,
+        "end_line": 301,
+        "end_column": 97
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 332,
+        "column": 8,
+        "end_line": 332,
+        "end_column": 28
+      }
+    ]
+  },
+  "decoder.layer.parallel_norm_count": {
+    "root_bound": false,
+    "qualification": "not_proved"
+  },
+  "model.tie_word_embeddings": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "config_resolution"
+  },
+  "model.final_norm_kind": {
+    "root_bound": true,
+    "qualification": "validated_original_proof",
+    "proof_kind": "retained_reader_projection",
+    "witness_type": "model_unfolder.evidence.final_bookend.FinalNormClaimWitness",
+    "required_spans": [
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 421,
+        "column": 24,
+        "end_line": 421,
+        "end_column": 48
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 365,
+        "column": 20,
+        "end_line": 365,
+        "end_column": 77
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 65,
+        "column": 19,
+        "end_line": 65,
+        "end_column": 62
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 66,
+        "column": 40,
+        "end_line": 66,
+        "end_column": 85
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 422,
+        "column": 8,
+        "end_line": 425,
+        "end_column": 9
+      },
+      {
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "source_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+        "component": "root",
+        "line": 411,
+        "column": 28,
+        "end_line": 419,
+        "end_column": 13
+      }
+    ]
+  }
+}

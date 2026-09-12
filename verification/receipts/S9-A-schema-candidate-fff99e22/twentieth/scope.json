@@ -1,0 +1,11 @@
+{
+  "base_manifest": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338",
+  "handoffs": [
+    {
+      "original": "/private/tmp/unfold-s9a-nineteenth-return-correction.json",
+      "sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452"
+    }
+  ],
+  "diffusion_unready_changes_excluded": true,
+  "new_default_declarations_and_MRO_included": true
+}

@@ -1,58 +1,80 @@
 """Detail view for the MoE router — the gate that turns a token into expert weights.
 
 The top-level MoE view keeps the router a single box; this drill-down shows the
-*policy* it runs, built entirely from the config's ``routing`` facts so it adapts
-across families. Only the two things a researcher would name get a box — the
-**gate** and the **selection** — per Gate C; the rest are sub-lines or wiring:
+*policy* proven from its exact source callable. Config supplies only operands
+that callable actually reads. Only positively-proven operations get boxes. An
+affine score producer is shown as the **gate** when its exact call is proven;
+otherwise the view begins at the already-produced router logits.
 
     Gate (Linear → scores · sigmoid│softmax)        score fn = a sub-line on the gate
         → Select top-k  [· group-limited: g of N]   group-limit = a sub-line, not a box
-        → [renormalize weights]                     (norm_topk_prob)
-        → [(×) routed_scaling_factor]               a connector glyph, not a box
+        → [renormalize weights]                     only when source proves it
+        → [(×) routed scale]                       a connector glyph, not a box
         → expert weights
 
-Each bracketed step is drawn **only when the config declares it** — a plain
-softmax top-k router (Mixtral, Qwen3-MoE) collapses to gate → top-k, while
-DeepSeek-V3 shows the grouped, bias-corrected, scaled selection.
+Each bracketed step is drawn **only when source proves it** — a plain
+softmax top-k route collapses to gate → top-k, while a source that
+enacts grouped, bias-corrected, scaled selection shows those exact operations.
 
-The aux-loss-free subtlety (``topk_method == "noaux_tc"``, DeepSeek-V3/Kimi) is
-honest here: a learned **bias** enters the *selection* step from the side, but the
+When code proves a stored bias affects selection only, that **bias** enters the
+*selection* step from the side, but the
 mixing weights come from the **raw** scores — so the bias is wired into top-k, not
-into the score→weight path, and the caption says so.  (HF: ``DeepseekV3TopkRouter``.)
+into the score→weight path, and the caption says so.
 """
 from __future__ import annotations
 
 from ..graph import Graph, Node, SideInput
 from ..graph_engine import render_graph
+from ..fact_projection import router_facts
 from .block_facts import ffn_from_block
 
 
 def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
-    # Which STEPS exist is config-driven; every count/flag/value is a card chip,
-    # so the view only needs the on/off knobs here (the cards read the rest).
-    r = (ffn_from_block(block, info).get("routing")) or {}
-    norm = bool(r.get("norm_topk_prob"))
+    # Source owns which steps exist; config supplies only cited operands.
+    ffn = ffn_from_block(block, info)
+    r = (ffn.get("routing")) or {}
+    selection_kind = r.get("selection_kind")
+    if selection_kind not in {"topk", "sparse_mixer"}:
+        graph = Graph(
+            nodes=[
+                Node("g_in", "port", ["token", "hidden"], static=True),
+                Node("g_unknown", "opaque", "Router policy unresolved"),
+                Node("g_out", "port", "expert assignments", static=True),
+            ],
+            flow=["g_in", "g_unknown", "g_out"],
+        )
+        return render_graph(
+            graph, info, mount_id, "moe_router",
+            f"{ir.get('name', 'model')} expert router", min_width=560,
+            facts_projected=router_facts(ir),
+        )
+    norm = r.get("normalization_kind") in {"sum", "p_norm"}
     scale = r.get("routed_scaling_factor")
-    # Resolved aux-loss-free bias: code-proven (e_score_correction_bias) OR the
-    # declared noaux_tc string — GLM-4.5 enacts it in code without the string.
-    bias_corrected = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
+    bias_corrected = bool(r.get("bias_correction"))
 
-    # Gate C de-blocked: the GATE and the SELECTION are the only named compute
-    # here — everything else is a property or wiring. Labels stay the bare op name
+    # Gate C de-blocked: the GATE is named only when its affine producer is
+    # independently proven; SELECTION comes from the route-policy proof.
+    # Everything else is a property or wiring. Labels stay the bare op name
     # (the scoring fn, expert counts, group-limit knobs all live in the cards as
     # chips, never on the block — the standing label rule); × routed_scaling_factor
     # is a connector glyph, not a box.
-    nodes: list[Node] = [Node("g_in", "port", ["token", "hidden"], static=True)]
+    affine_source = r.get("score_source_kind") == "affine"
+    nodes: list[Node] = [Node(
+        "g_in", "port",
+        ["token", "hidden"] if affine_source else "router logits",
+        static=True,
+    )]
     flow = ["g_in"]
 
-    nodes.append(Node("g_gate", "linear", "Linear (Gate)"))
-    flow.append("g_gate")
+    if affine_source:
+        nodes.append(Node("g_gate", "linear", "Linear (Gate)"))
+        flow.append("g_gate")
 
     # The score transform (sigmoid/softmax) is a REAL op — drawn as its own node
     # when the code runs it BEFORE selection (code-derived), so the drill's
     # "expert scores" input has a visible on-screen origin instead of appearing
-    # from nowhere.  A model that top-ks raw logits first (gpt-oss) has no node
-    # here — drawing one would misplace the op.
+    # from nowhere.  A route that top-ks raw logits first has no node
+    # here; it is drawn after selection below instead.
     scoring = r.get("scoring_func")
     if scoring and r.get("scoring_before_topk"):
         nodes.append(Node("g_score", "activation", scoring))
@@ -61,14 +83,23 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
     # Selection is one block on the router view; its card drills into the actual
     # torch sequence (two torch.topk calls + mask + gather) that boils N experts
     # down to k — what PyTorch really does, not a "select top-k" logic label.
-    nodes.append(Node("g_topk", "select", "Top-k"))
+    selection_label = (
+        "Sparse mixer" if selection_kind == "sparse_mixer" else "Top-k")
+    nodes.append(Node("g_topk", "select", selection_label))
     flow.append("g_topk")
 
+    if scoring and not r.get("scoring_before_topk"):
+        nodes.append(Node("g_score", "activation", scoring))
+        flow.append("g_score")
+
     if norm:
-        nodes.append(Node("g_norm", "norm", "renormalize weights"))
+        norm_label = (
+            "sum renormalize" if r.get("normalization_kind") == "sum"
+            else "p-norm normalize")
+        nodes.append(Node("g_norm", "norm", norm_label))
         flow.append("g_norm")
 
-    if scale:
+    if scale not in (None, 1, 1.0):
         # × by a labelled constant: a connector glyph (not a box), but the constant
         # operand IS shown beside it (sub) so "× what?" is answered on the diagram —
         # the value's digit also marks it constant-scaled, exempting the lone input.
@@ -80,34 +111,35 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
 
     side_inputs: list[SideInput] = []
     if bias_corrected:
-        # The aux-loss-free (noaux_tc) subtlety — bias steers selection, weights use
-        # the raw scores — is NOT a floating caption; it lives in the bias card and
-        # the Gather-weights leaf (where "raw scores" actually happens).
-        nodes.append(Node("g_bias", "embedding", ["learned bias", "(load-balancing)"]))
+        # The proven claim is behavioural: a stored value steers selection while
+        # weights use raw scores.  Whether it is a trainable parameter, a buffer,
+        # or updated by a balancing algorithm is a separate fact and is not
+        # invented by this view.
+        nodes.append(Node("g_bias", "source", ["stored bias", "selection only"]))
         side_inputs.append(SideInput("g_bias", "g_topk", side="left"))
 
     graph = Graph(nodes=nodes, flow=flow, side_inputs=side_inputs)
     return render_graph(
         graph, info, mount_id, "moe_router",
         f"{ir.get('name', 'model')} expert router", min_width=560,
+        facts_projected=router_facts(ir),
     )
 
 
 def build_topk_selection_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
-    """What ``torch.topk`` actually does to boil N experts down to k — adapted per
-    family, never inherited.
+    """What ``torch.topk`` actually does to boil N experts down to k, derived
+    from the exact source operation sequence.
 
     The router's "Top-k" block opens here whenever there's real structure to show:
-      * grouped (DeepSeek/Kimi/GLM): Group scores → torch.topk(groups) → masked_fill
-      * bias-corrected (noaux_tc): … → torch.topk(experts) → gather RAW weights
-    A grouped-but-unbiased router (DeepSeek-V2 group_limited_greedy) gets the group
-    steps but NO gather (its top-k values are the weights); a plain softmax router
-    (Mixtral/Qwen) has a single ``torch.topk`` and stays an honest leaf, no drill.
-    Counts are chips on the cards, never on the blocks. (HF: ``DeepseekV3MoE.
-    route_tokens_to_experts``.)"""
+      * grouped: Group scores → torch.topk(groups) → masked_fill
+      * bias-corrected: … → torch.topk(experts) → gather raw weights
+    A grouped-but-unbiased route gets the group steps but no gather because its
+    top-k values are the weights. A plain softmax route has a single
+    ``torch.topk`` and stays an honest leaf. Counts are chips on the cards,
+    never on the blocks."""
     r = (ffn_from_block(block, info).get("routing")) or {}
-    grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
-    bias = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
+    grouped = bool(r.get("grouped"))
+    bias = bool(r.get("bias_correction"))
 
     nodes: list[Node] = [Node("ts_in", "port", "expert scores", static=True)]
     flow = ["ts_in"]

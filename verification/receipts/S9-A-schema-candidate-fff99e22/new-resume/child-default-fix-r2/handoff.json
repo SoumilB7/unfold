@@ -1,0 +1,36 @@
+{
+  "status": "held_source_only_runtime_pending",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/class_default_value.py",
+      "sha256": "20dfe12577200b57f9e83877772608d335333509f43d025a5cfea5e83aa09556",
+      "held_path": "held/model_unfolder/evidence/class_default_value.py",
+      "lines_added": 7,
+      "lines_deleted": 5
+    },
+    {
+      "path": "tests/test_s9_child_class_default.py",
+      "sha256": "d3a20bc57325562edd7709508873d51524cd03cdab4ab2561e4a403f05ecede1",
+      "held_path": "held/tests/test_s9_child_class_default.py",
+      "lines_added": 38,
+      "lines_deleted": 0
+    }
+  ],
+  "growth": {
+    "lines_added": 45,
+    "lines_deleted": 5,
+    "new_authority_paths": 0,
+    "removed_authority_paths": 0
+  },
+  "cause": "Root29 trace shows callee-token spans compared with whole-call construction spans. Both neutral call representations now compare full call expression identity; framework super allowance matches; missing call identity refuses.",
+  "proposed_tests": [
+    "tests/test_s9_child_class_default.py",
+    "tests/test_s9_class_default_value.py",
+    "tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config",
+    "tests/test_smoke.py::test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure",
+    "tests/test_smoke.py::test_qwen2_audio_code_evidence_does_not_mark_config_partial"
+  ],
+  "scope": "Two files only; parser unchanged. No mutation, alias, foreign document, own-class declaration, or root/child config binding checks relaxed.",
+  "runtime": "Root owned; only standard-library AST/hash/diff inspection by this subagent",
+  "output_blessing": false
+}

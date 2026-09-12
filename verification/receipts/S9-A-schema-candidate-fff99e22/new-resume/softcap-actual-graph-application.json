@@ -1,0 +1,17 @@
+{
+  "manifest": "e92e422ab2ebb018a0b9fa972d3108a3b9439db98fe36493982d5c92e7c5d5ca",
+  "independent_verdict": "ba81f0cd9c1be21ffcb45f927fa112c4b782b230f894e0b7acfd6e23c323e9c1",
+  "status": "exactsource applied; runtimepending; nooutputsblessed",
+  "files": [
+    {
+      "path": "model_unfolder/renderers/html/block_views/attention.py",
+      "before_sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "proposed_sha256": "a14e54916470208eb44dcbe012e72d0677a9f488fb508c18161817ad074a9377"
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "proposed_sha256": "56e39a520de7f2d1eaf858502fd12e119c2b51f98f1bbcefcdd7f0275498d3d1"
+    }
+  ]
+}

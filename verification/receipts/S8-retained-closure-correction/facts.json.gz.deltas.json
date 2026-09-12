@@ -1,0 +1,3 @@
+[
+  "$.root.denoiser.diffusion_root_topology: missing live; committed={'source': 'exact diffusion source occurrence', 'status': 'code_proven', 'value': 'repeated_stack'}"
+]

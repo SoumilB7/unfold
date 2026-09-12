@@ -1,0 +1,20 @@
+{
+  "after_bytes": 240162,
+  "after_sha256": "ea238b1be87870c6af90ddf78bf8733d14a35d44463433c9c7d6af2c2764174e",
+  "before_bytes": 240162,
+  "before_sha256": "d89316e46608f35d74cec0b2b0480ca2b962b91fe67676603f68515b313403e4",
+  "exact_new_mount_occurrences": 433,
+  "exact_old_mount_occurrences": 433,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-5b363310cd",
+  "mount_identity_before": "uf-560d9e3e9e",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 22,
+  "raw_ordered_svg_count_before": 22,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "fluxtransformer2dmodel",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

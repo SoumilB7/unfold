@@ -1,0 +1,57 @@
+{
+  "actual_portable_seal": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+  "baseline_output": {
+    "ir_after_sha256": "d5ffc63a4fd95f931906583656d1ff3890e8d2ff304c504380b3129806148109",
+    "ir_before_sha256": "d5ffc63a4fd95f931906583656d1ff3890e8d2ff304c504380b3129806148109",
+    "page_bytes": 95750,
+    "page_sha256": "792ff81a981366a04e423bd778fa0f2c79eee66dcff5c16463f186973dc1d68d",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+  "seconds": 3.8433387499990204,
+  "slug": "qwen3-5-27b-text",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "f9d6330bc658363330167f8a8943dff48f040566e1ab0f296eddb2ffb524d367",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_5.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "395439341ea5ba4dd14c103e830383caa75686cfaf6b693dd7efb58622224da6",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_5.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5,
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,27 @@
+{
+  "block_ids": [
+    "noise",
+    "timestep",
+    "text_encoder",
+    "latent",
+    "denoiser",
+    "scheduler",
+    "vae_decode",
+    "image"
+  ],
+  "component_scope": null,
+  "expanded_sampling_loop": true,
+  "scope": "Source-unresolved render producer used by failed UNet cutover; no full model run",
+  "source_hashes": {
+    "model_unfolder/adapters/diffusor/blocks.py": "98d59226b6cd0c3f1e2429630333d26a1962e8bc9c5d055860937d92fe273c79",
+    "model_unfolder/adapters/diffusor/parser.py": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758",
+    "model_unfolder/expanded/loop.py": "accf5e4d2756c70f35ec156c6bdbf749335c007a5bdcd3f298f82c0baa5c8075",
+    "model_unfolder/renderers/html/views_diffusion.py": "5be3e118f2a1b0d058299de9c4ecd910d895406c3720363b0bdfe6a2ee8042b1"
+  },
+  "source_unchanged": true,
+  "visible_labels": {
+    "Noise": true,
+    "Scheduler": true,
+    "VAE": true
+  }
+}

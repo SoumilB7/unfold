@@ -1,0 +1,20 @@
+{
+  "archive_seconds": 0.21289195772260427,
+  "archiver": {
+    "bytes": 6460,
+    "sha256": "f4d7384fbde3bc85712e49cc7fa7facb83ccd37ee1d9bce2ad60d9b0f3c6f5e4"
+  },
+  "artifact_map": {
+    "bytes": 62833,
+    "sha256": "639b9793cd7e5de943946b45ae4602a2daf2e1f5028f8a1cbb874a09dea42dda"
+  },
+  "directory_count": 14,
+  "full_file_directory_restoration": true,
+  "injective_paths": true,
+  "original_membership_and_bytes_unchanged": true,
+  "raw_bytes": 4524409,
+  "scope": "Only lossless packaging; no new test/render/model or full-corpus/latency claim.",
+  "status": "PASS_ARCHIVE_INTEGRITY",
+  "stored_bytes": 724997,
+  "stream_count": 107
+}

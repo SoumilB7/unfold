@@ -1,0 +1,5 @@
+{
+  "physics/attribute_bindings.py": "5bd7302f421e3c6786391dbdabd341bb0b93a3b6da26ba9e5b4ba5002feb0f04",
+  "physics/instance_inventory.py": "e7c8931be7b6cdf84c0e67d87b9f8b5434eb5a5ac3897ff2521464735baacb6f",
+  "tests/test_s8_attribute_bindings.py": "f9932d985f6fc52639a6483c63bc09bd4c4cf5c3ada4701bda8e77e321ca3844"
+}

@@ -1,0 +1,367 @@
+{
+  "status": "Bounded source review evidence; no unit/output acceptance; original RETURN preserved",
+  "files": [
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/manifest.json",
+      "bytes": 2254,
+      "sha256": "c9a90ae767c72104fbb42d07e1070857c5b19585e69d79f3c94f16cd7432d1b0"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 37192,
+      "sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 70498,
+      "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34497,
+      "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 31978,
+      "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 48217,
+      "sha256": "823b47a6691df58822080355a70ab3f64c8a6ab198d5ea619fa43a3e80b6bf8d"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 74052,
+      "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source/tests/test_s9_diffusion_defaults.py",
+      "bytes": 10620,
+      "sha256": "22e75fb81a7aa52a4fea8deb4cdc711488ca696a88270502d7d453b8335ad687"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation/source.diff",
+      "bytes": 39523,
+      "sha256": "34782b51dfafcf9ba30e82e4a3520a5cdd59336c7af57bb8be33b2b4fee0bd7e"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/manifest.json",
+      "bytes": 2491,
+      "sha256": "e41cb9d27f99edcaf591dbcdd6bb24cb12b76a6bb05176a1567d8d8a1c3c8af2"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 37192,
+      "sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 70498,
+      "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34497,
+      "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 31978,
+      "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 48377,
+      "sha256": "12441bc00e61589fbc2c51f387afc6fb8d635f6960a17324abbe7c794fb01b12"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 74052,
+      "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source/tests/test_s9_diffusion_defaults.py",
+      "bytes": 10971,
+      "sha256": "a569eb47aa0b3fcdfc335ed123fc1a60385cd8dcd768949e94d76e1d50a065e6"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-preparation-v2/source.diff",
+      "bytes": 40047,
+      "sha256": "bc036625a409ce3d8a22e4280236559a43cdb09139e9e061030ac134ca02ed15"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/dependencies/component_owner.py",
+      "bytes": 103142,
+      "sha256": "1c6bc27735c9244e5220b19f79c55ae8bc02a44435448664deb59964dd0d39af"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/dependencies/config_access.py",
+      "bytes": 88854,
+      "sha256": "3f3251d6b301ddc5aa235829b8cb500d7bd841e85d931ce96b34ee07bd6caaba"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/dependencies/config_registration.py",
+      "bytes": 13377,
+      "sha256": "97288c4881016168751e11f72ac8a48401ed7cf0b26796277a9a2b0cd404bbbb"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/dependencies/document.py",
+      "bytes": 18663,
+      "sha256": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/dependencies/program_index.py",
+      "bytes": 156229,
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/manifest.json",
+      "bytes": 2254,
+      "sha256": "c9a90ae767c72104fbb42d07e1070857c5b19585e69d79f3c94f16cd7432d1b0"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 37192,
+      "sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 70498,
+      "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34497,
+      "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 31978,
+      "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 48217,
+      "sha256": "823b47a6691df58822080355a70ab3f64c8a6ab198d5ea619fa43a3e80b6bf8d"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 74052,
+      "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/source/tests/test_s9_diffusion_defaults.py",
+      "bytes": 10620,
+      "sha256": "22e75fb81a7aa52a4fea8deb4cdc711488ca696a88270502d7d453b8335ad687"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-review/verdict.json",
+      "bytes": 4425,
+      "sha256": "7c2a8c75bba1a8aa9f56e3cef2c4ac2a4701fbbaae9472b4d85a3e956af78c73"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/manifest.json",
+      "bytes": 2491,
+      "sha256": "e41cb9d27f99edcaf591dbcdd6bb24cb12b76a6bb05176a1567d8d8a1c3c8af2"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 37192,
+      "sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 70498,
+      "sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34497,
+      "sha256": "60e3d83cc6e771b29b45a496aa92784e347ab166de3cefbaea085441df9f5aa4"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 31978,
+      "sha256": "f06d6465c0ff985110078e1b11349adbcf915d3841098d02b89bee49c207c3b8"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 48377,
+      "sha256": "12441bc00e61589fbc2c51f387afc6fb8d635f6960a17324abbe7c794fb01b12"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 74052,
+      "sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/source/tests/test_s9_diffusion_defaults.py",
+      "bytes": 10971,
+      "sha256": "a569eb47aa0b3fcdfc335ed123fc1a60385cd8dcd768949e94d76e1d50a065e6"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-default-v2-review/verdict.json",
+      "bytes": 1548,
+      "sha256": "22993a8791a94b61bd20ce070515d8ddb65bd1983ba0e272ce90572f39c4c37b"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-test-correction/before.py",
+      "bytes": 40016,
+      "sha256": "8f428160221a38f0ea9efde9f4303c5cb4fb639f1ad443aaed6a8a060d9c080e"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-test-correction/manifest.json",
+      "bytes": 644,
+      "sha256": "a0a8f04765616ae58a78ade389050849e2c33177f1ecf400a5066fc3ba66c09b"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-test-correction/source.diff",
+      "bytes": 3603,
+      "sha256": "c078513559e93ccad464fec4fc6ac98b9a0a389d28e4360e401222217ba877da"
+    },
+    {
+      "path": "unfold-s9a-diffusion-default-test-correction/test_diffusion_config_binding.py",
+      "bytes": 41610,
+      "sha256": "115e657bb196db5829e2366b6524c4033b2dc2b578e80d6be8a70dcc85640ce8"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/before.py",
+      "bytes": 40016,
+      "sha256": "8f428160221a38f0ea9efde9f4303c5cb4fb639f1ad443aaed6a8a060d9c080e"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/census-lane-result.json",
+      "bytes": 517,
+      "sha256": "3b20c112a987ed4eba52603d592cfee4b1639f68d655b709bb29bd4a83154597"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/census-result.json",
+      "bytes": 220339,
+      "sha256": "e816d901b2e0261339847042714e209b3f9ca5b85ab5d0a7ff3f8e42647c0c75"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/manifest.json",
+      "bytes": 644,
+      "sha256": "a0a8f04765616ae58a78ade389050849e2c33177f1ecf400a5066fc3ba66c09b"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/qualification-result.json",
+      "bytes": 541,
+      "sha256": "6cbcb1071b57d027a2725b083f02ea284cd1b21d359a389d3d481ceed85fbc6f"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/source.diff",
+      "bytes": 3603,
+      "sha256": "c078513559e93ccad464fec4fc6ac98b9a0a389d28e4360e401222217ba877da"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/test_diffusion_config_binding.py",
+      "bytes": 41610,
+      "sha256": "115e657bb196db5829e2366b6524c4033b2dc2b578e80d6be8a70dcc85640ce8"
+    },
+    {
+      "path": "unfold-s9a-independent-diffusion-test-correction-review/verdict.json",
+      "bytes": 2059,
+      "sha256": "319484b5432875229261871474b3bce50768c354cca178d3b3e9c72843489e20"
+    },
+    {
+      "path": "unfold-s9a-sparse-witness-preparation-v4/manifest.json",
+      "bytes": 1889,
+      "sha256": "337430dc10f18bacb39927664e2093d083e8720d8a81b4977bedc13dac73aa44"
+    },
+    {
+      "path": "unfold-s9a-sparse-witness-preparation-v4/plan.json",
+      "bytes": 817,
+      "sha256": "85c6e4a631c894e8327c9cc11a4c326877ead2740d5c3c8518e64e5c07751be5"
+    },
+    {
+      "path": "unfold-s9a-sparse-witness-preparation-v4/prepare_edit.py",
+      "bytes": 10000,
+      "sha256": "1e47b0df0968a5f7dfd779b13f0aa1a7dcc979adc65e975fa221c10f71addc6a"
+    },
+    {
+      "path": "unfold-s9a-sparse-witness-preparation-v4/run_sparse.py",
+      "bytes": 42114,
+      "sha256": "0cc13b9517b965337dd86ee80a8fce76988cbf5efe915e49a98dbffc68b0cf0a"
+    },
+    {
+      "path": "unfold-s9a-sparse-witness-preparation-v4/source.diff",
+      "bytes": 13024,
+      "sha256": "4beffa4010cc8ca0b1a27bf1d985493e9607619425a663985f740c566957c955"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-observer-v4-review/manifest.json",
+      "bytes": 1889,
+      "sha256": "337430dc10f18bacb39927664e2093d083e8720d8a81b4977bedc13dac73aa44"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-observer-v4-review/plan.json",
+      "bytes": 817,
+      "sha256": "85c6e4a631c894e8327c9cc11a4c326877ead2740d5c3c8518e64e5c07751be5"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-observer-v4-review/run_sparse.py",
+      "bytes": 42114,
+      "sha256": "0cc13b9517b965337dd86ee80a8fce76988cbf5efe915e49a98dbffc68b0cf0a"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-observer-v4-review/source.diff",
+      "bytes": 13024,
+      "sha256": "4beffa4010cc8ca0b1a27bf1d985493e9607619425a663985f740c566957c955"
+    },
+    {
+      "path": "unfold-s9a-independent-sparse-observer-v4-review/verdict.json",
+      "bytes": 2546,
+      "sha256": "6e363ea9be6976683934d3c7ea68c2dd7521075e5349985a0d93f90ba4584bac"
+    },
+    {
+      "path": "unfold-s9a-s7-proof-preservation/manifest.json",
+      "bytes": 482,
+      "sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f"
+    },
+    {
+      "path": "unfold-s9a-s7-proof-preservation/source/model_unfolder/evidence/claim_evidence.py",
+      "bytes": 20160,
+      "sha256": "5cda8903f32cf8084db611bf5e3f67b4522370b26c5f7ab3c6e5d47a5c9e49b8"
+    },
+    {
+      "path": "unfold-s9a-s7-proof-preservation/source/tests/test_s7_reconciliation.py",
+      "bytes": 58913,
+      "sha256": "a36b888defdda5604908adb5f2dc4c946543b6d24eaab7a7cd99d4c9a67573e5"
+    },
+    {
+      "path": "unfold-s9a-independent-s7-proof-preservation-review/generate_s7_shadow-reviewed.py",
+      "bytes": 56808,
+      "sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c"
+    },
+    {
+      "path": "unfold-s9a-independent-s7-proof-preservation-review/manifest.json",
+      "bytes": 482,
+      "sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f"
+    },
+    {
+      "path": "unfold-s9a-independent-s7-proof-preservation-review/source/model_unfolder/evidence/claim_evidence.py",
+      "bytes": 20160,
+      "sha256": "5cda8903f32cf8084db611bf5e3f67b4522370b26c5f7ab3c6e5d47a5c9e49b8"
+    },
+    {
+      "path": "unfold-s9a-independent-s7-proof-preservation-review/source/tests/test_s7_reconciliation.py",
+      "bytes": 58913,
+      "sha256": "a36b888defdda5604908adb5f2dc4c946543b6d24eaab7a7cd99d4c9a67573e5"
+    },
+    {
+      "path": "unfold-s9a-independent-s7-proof-preservation-review/verdict.json",
+      "bytes": 1836,
+      "sha256": "9b9dcc49aa1796746d53e4ebc4afbe90ab5c07591949a665ff3bbdfb9ce6c669"
+    },
+    {
+      "path": "unfold-s9a-twentyfirst-native-value-audit.json",
+      "bytes": 13872,
+      "sha256": "f88a246a552628e1cd1c3afb57908e2d20aea860376ab94c9939977e29bd9ad6"
+    }
+  ],
+  "all_restored_members_equal": true,
+  "archive_sha256": "41c632f84a0c19958f67cca0414b68b8982029dc87669b6f688fb62d7afe1d6b"
+}

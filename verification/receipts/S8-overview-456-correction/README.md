@@ -1,0 +1,7 @@
+# Overview correction on saved actual 4560449 IR
+
+The actual frozen ordinary page exposed a solid primary-state rail crossing two target-only cards (conv_act and conv_norm_out), faint dashed identity links, an overflowing invocation subtitle, and conditioning argument targets inside the repeat-slot frame. The bounded renderer correction separates the target groups, labels conditioning/argument targets without implying loop execution, strengthens dashed identity links, shortens the subtitle and routes the solid primary link around target cards using distinct incoming/outgoing ports.
+
+Native after.png was inspected. The saved-IR geometry replay verifies every node and all eight primary source/target pairs are retained, and finds zero unrelated-card intersections after correcting the two motivating intersections. No canonical fact, IR, call target, tensor-port relation or source proof changed. Both before.svg and after.svg are retained. The actual 4560449 ordinary HTML remains untouched and provisional; after.png is a renderer-only preview on its exact saved IR, not a fresh corrected production page. The original gallery PNG has an amber clickability overlay; the direct corrected PNG does not, while the SVG comparison preserves the product node styles.
+
+No model or pytest run was performed for this correction. Renderer tests, new immutable candidate and fresh ordinary page are executor-owned.

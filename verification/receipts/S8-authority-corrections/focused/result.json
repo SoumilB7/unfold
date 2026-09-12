@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_s8_cell_connections.py",
+    "tests/test_s8_constructor_bindings.py",
+    "tests/test_s8_framework_primitives.py",
+    "tests/test_s8_port_routes.py",
+    "tests/test_s8_runtime_source.py",
+    "tests/test_s8_source_override.py",
+    "tests/test_s8_unet_routing.py",
+    "tests/test_unet_stage_cells.py",
+    "tests/test_opgraph.py",
+    "tests/test_s7_artifacts.py",
+    "tests/test_s6_physics.py",
+    "-k",
+    "not real_sdxl and not installed and (not test_s6_physics or production_can_request)"
+  ],
+  "exit_code": 1,
+  "seconds": 21.367,
+  "fingerprint_before": "edc49d75c9b723f4c1318eda006081114bfde3c067002ca3023d67bdf5ec1432",
+  "fingerprint_after": "edc49d75c9b723f4c1318eda006081114bfde3c067002ca3023d67bdf5ec1432"
+}

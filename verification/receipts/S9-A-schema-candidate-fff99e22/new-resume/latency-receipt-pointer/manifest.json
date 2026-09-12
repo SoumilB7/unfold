@@ -1,0 +1,23 @@
+{
+  "scope": "S10 receipt index pointer repair only; twelve original sample bytes, timing values, host measurements and budget limits unchanged. No remeasurement or baseline output blessing.",
+  "path": "verification/latency_budgets.json",
+  "before_sha256": "d2468dc7e1a9c471c341adb35d03c705afd679f25547e31e11b7ccf8cb31d547",
+  "after_sha256": "c54f86d62df83ce357564ba098817b8a640fd90a2f8e5abf8aac8d6c0d278431",
+  "old_map_sha256": "a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04",
+  "actual_map_sha256": "269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c",
+  "exact_original_samples_validated": [
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
+    "latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
+    "latency-unet/samples/sd-v1-4/0/cold/result.json",
+    "latency-unet/samples/sd-v1-4/0/warm/result.json",
+    "latency-unet/samples/sd-v1-4/1/cold/result.json",
+    "latency-unet/samples/sd-v1-4/1/warm/result.json",
+    "latency-unet/samples/sd-v1-4/2/cold/result.json",
+    "latency-unet/samples/sd-v1-4/2/warm/result.json"
+  ],
+  "note": "The overall artifact map gained later receipt entries; measurement descriptors still match every packed and raw original sample. Current frozen27 remains immutable and keeps the failed pointer."
+}

@@ -1,0 +1,2272 @@
+{
+  "slug": "nemotron-h-8b",
+  "status": "unblessed actual data, source cause review required for deltas",
+  "inputs": {
+    "active_sha256": "34fe03766a7cde6f03456b2f863afaea667787aa883fbf2cf48c7af936b91ef6",
+    "candidate22_sha256": "89dd8b4de06878e473fc39c16bf6b8beb4e4bfe6a4242d0c9a7f037bcd3173a0",
+    "candidate26_sha256": "6721447e5de6064ebae6295ed474722eab32471718b0712897c069392df59257"
+  },
+  "membership": {
+    "active_count": 370,
+    "candidate22_count": 370,
+    "candidate26_count": 370,
+    "added_from_active": [],
+    "removed_from_active": []
+  },
+  "construction_changes_from_active": [],
+  "execution_changes_from_active": [],
+  "runtime_identity_changes_from_active": [],
+  "static_identity_changes_from_active": [],
+  "product_layer_schedule_unchanged": true,
+  "construction_schedules_unchanged": true,
+  "original_returned_projection_changes": [
+    {
+      "instance_path": "model.layers.0",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.1",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.10",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.11",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.12",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.13",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.14",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.15",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.16",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.17",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.18",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.19",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.2",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.20",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.21",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.22",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.23",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.24",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.25",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.26",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.27",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.28",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.29",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.3",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.30",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.31",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.32",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.33",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.34",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.35",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.36",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.37",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.38",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.39",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.4",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.40",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.41",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.42",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.43",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.44",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.45",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.46",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.47",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.48",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.49",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.5",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.50",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.51",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.6",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.7",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.8",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.9",
+      "active": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      },
+      "candidate22": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "candidate26": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    }
+  ],
+  "projection_kind_changes_from_active": [],
+  "projection_kind_changes_from_candidate22": [
+    {
+      "instance_path": "model.layers.0",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.1",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.10",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.11",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.12",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.13",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.14",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.15",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.16",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.17",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.18",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.19",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.2",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.20",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.21",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.22",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.23",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.24",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.25",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.26",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.27",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.28",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.29",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.3",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.30",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.31",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.32",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.33",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.34",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.35",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.36",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.37",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.38",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.39",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.4",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.40",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.41",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.42",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.43",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.44",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.45",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.46",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.47",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.48",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.49",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.5",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.50",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.51",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.6",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.7",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.8",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    },
+    {
+      "instance_path": "model.layers.9",
+      "before": {
+        "kind": "grouped",
+        "parent": "model",
+        "fact_keys": [
+          "decoder.layer.norm_kind"
+        ],
+        "decoder_norm_cited": true
+      },
+      "after": {
+        "kind": "projection_unresolved",
+        "parent": null,
+        "fact_keys": [],
+        "decoder_norm_cited": false
+      }
+    }
+  ],
+  "potential_placement_losses_from_active": [],
+  "norm_citation_membership": {
+    "active": [],
+    "candidate22": [
+      "model.layers.0",
+      "model.layers.0.norm",
+      "model.layers.1",
+      "model.layers.1.norm",
+      "model.layers.10",
+      "model.layers.10.norm",
+      "model.layers.11",
+      "model.layers.11.norm",
+      "model.layers.12",
+      "model.layers.12.norm",
+      "model.layers.13",
+      "model.layers.13.norm",
+      "model.layers.14",
+      "model.layers.14.norm",
+      "model.layers.15",
+      "model.layers.15.norm",
+      "model.layers.16",
+      "model.layers.16.norm",
+      "model.layers.17",
+      "model.layers.17.norm",
+      "model.layers.18",
+      "model.layers.18.norm",
+      "model.layers.19",
+      "model.layers.19.norm",
+      "model.layers.2",
+      "model.layers.2.norm",
+      "model.layers.20",
+      "model.layers.20.norm",
+      "model.layers.21",
+      "model.layers.21.norm",
+      "model.layers.22",
+      "model.layers.22.norm",
+      "model.layers.23",
+      "model.layers.23.norm",
+      "model.layers.24",
+      "model.layers.24.norm",
+      "model.layers.25",
+      "model.layers.25.norm",
+      "model.layers.26",
+      "model.layers.26.norm",
+      "model.layers.27",
+      "model.layers.27.norm",
+      "model.layers.28",
+      "model.layers.28.norm",
+      "model.layers.29",
+      "model.layers.29.norm",
+      "model.layers.3",
+      "model.layers.3.norm",
+      "model.layers.30",
+      "model.layers.30.norm",
+      "model.layers.31",
+      "model.layers.31.norm",
+      "model.layers.32",
+      "model.layers.32.norm",
+      "model.layers.33",
+      "model.layers.33.norm",
+      "model.layers.34",
+      "model.layers.34.norm",
+      "model.layers.35",
+      "model.layers.35.norm",
+      "model.layers.36",
+      "model.layers.36.norm",
+      "model.layers.37",
+      "model.layers.37.norm",
+      "model.layers.38",
+      "model.layers.38.norm",
+      "model.layers.39",
+      "model.layers.39.norm",
+      "model.layers.4",
+      "model.layers.4.norm",
+      "model.layers.40",
+      "model.layers.40.norm",
+      "model.layers.41",
+      "model.layers.41.norm",
+      "model.layers.42",
+      "model.layers.42.norm",
+      "model.layers.43",
+      "model.layers.43.norm",
+      "model.layers.44",
+      "model.layers.44.norm",
+      "model.layers.45",
+      "model.layers.45.norm",
+      "model.layers.46",
+      "model.layers.46.norm",
+      "model.layers.47",
+      "model.layers.47.norm",
+      "model.layers.48",
+      "model.layers.48.norm",
+      "model.layers.49",
+      "model.layers.49.norm",
+      "model.layers.5",
+      "model.layers.5.norm",
+      "model.layers.50",
+      "model.layers.50.norm",
+      "model.layers.51",
+      "model.layers.51.norm",
+      "model.layers.6",
+      "model.layers.6.norm",
+      "model.layers.7",
+      "model.layers.7.norm",
+      "model.layers.8",
+      "model.layers.8.norm",
+      "model.layers.9",
+      "model.layers.9.norm",
+      "model.norm_f"
+    ],
+    "candidate26": [
+      "model.layers.0.norm",
+      "model.layers.1.norm",
+      "model.layers.10.norm",
+      "model.layers.11.norm",
+      "model.layers.12.norm",
+      "model.layers.13.norm",
+      "model.layers.14.norm",
+      "model.layers.15.norm",
+      "model.layers.16.norm",
+      "model.layers.17.norm",
+      "model.layers.18.norm",
+      "model.layers.19.norm",
+      "model.layers.2.norm",
+      "model.layers.20.norm",
+      "model.layers.21.norm",
+      "model.layers.22.norm",
+      "model.layers.23.norm",
+      "model.layers.24.norm",
+      "model.layers.25.norm",
+      "model.layers.26.norm",
+      "model.layers.27.norm",
+      "model.layers.28.norm",
+      "model.layers.29.norm",
+      "model.layers.3.norm",
+      "model.layers.30.norm",
+      "model.layers.31.norm",
+      "model.layers.32.norm",
+      "model.layers.33.norm",
+      "model.layers.34.norm",
+      "model.layers.35.norm",
+      "model.layers.36.norm",
+      "model.layers.37.norm",
+      "model.layers.38.norm",
+      "model.layers.39.norm",
+      "model.layers.4.norm",
+      "model.layers.40.norm",
+      "model.layers.41.norm",
+      "model.layers.42.norm",
+      "model.layers.43.norm",
+      "model.layers.44.norm",
+      "model.layers.45.norm",
+      "model.layers.46.norm",
+      "model.layers.47.norm",
+      "model.layers.48.norm",
+      "model.layers.49.norm",
+      "model.layers.5.norm",
+      "model.layers.50.norm",
+      "model.layers.51.norm",
+      "model.layers.6.norm",
+      "model.layers.7.norm",
+      "model.layers.8.norm",
+      "model.layers.9.norm"
+    ]
+  }
+}

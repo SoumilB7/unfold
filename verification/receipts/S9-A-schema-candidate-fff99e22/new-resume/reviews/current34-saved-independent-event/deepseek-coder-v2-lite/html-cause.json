@@ -1,0 +1,19 @@
+{
+  "after_bytes": 95710,
+  "after_sha256": "51889500d2bf0a1407e63c0ebb7f06063a33b0650fe2d7709575618bdbed3dc8",
+  "before_bytes": 95710,
+  "before_sha256": "f0bcf54009fd9e4edf4e1d61715d3ad3c0da6732142dcafd55296761b7c49483",
+  "exact_new_mount_occurrences": 230,
+  "exact_old_mount_occurrences": 230,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-109d756d41",
+  "mount_identity_before": "uf-8130295bcd",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 9,
+  "raw_ordered_svg_count_before": 9,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "deepseek-coder-v2-lite",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

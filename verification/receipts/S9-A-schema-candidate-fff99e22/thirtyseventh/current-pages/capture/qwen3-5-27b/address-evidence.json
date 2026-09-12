@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "87e8ca83858be43474be729fd3aaf4ec315695466bbf8e3679460de40a84fc5b",
+  "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+  "input_sha256": "3613cacae919e52e25d64ac34f63227357bda2cfde1ebda0bd35a47c1c237082",
+  "resolved_class": {
+    "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+    "qualname": "Qwen3_5ForConditionalGeneration"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

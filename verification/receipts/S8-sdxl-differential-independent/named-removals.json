@@ -1,0 +1,62 @@
+{
+  "edge_author": "blocks.py:322\u2013328/346\u2013351 derives encoder targets solely from nonempty text_encoders display list; pure presence-only reproduction passed. Parser.py:151\u2013169 supplies independently parsed component names, not an output-to-denoiser connection proof.",
+  "honesty_cost": "Supplied encoders remain visible but no longer have arrows into the denoiser. Their role/text dimension chips are limited; Image label becomes Output domain unresolved. This intentionally communicates less than the old conventional pipeline drawing.",
+  "image_author": "unet_geom sets video from temporal and no output_domain. blocks.py:461/672\u2013690 defaults nonaudio/nonvideo output to Image/generated image pixels; no codec output-domain reader premise.",
+  "legacy_modality_author": "Actual input encoder_hid_dim_type=None; parser._u11_unet_conditioning uses conventional elif has_text modality fallback. Encoder internals do not prove external edges.",
+  "named_removal_verdict": "ACCEPT conservative removal of these two unproved outer connections and default output-domain assertion; owner separately accepted after source-path review. No source-proven drawing removed by these specific changes.",
+  "removed_outer_edges": [
+    {
+      "from": "encoder_0",
+      "lane_index": 1,
+      "route": "lateral",
+      "to": "denoiser",
+      "to_port": "left",
+      "when": "each_step"
+    },
+    {
+      "from": "encoder_1",
+      "lane_index": 2,
+      "route": "lateral",
+      "to": "denoiser",
+      "to_port": "left",
+      "when": "each_step"
+    }
+  ],
+  "shared_other_drill_svg_lists_identical": true,
+  "shared_svg_cards_changed": [
+    "<architecture>",
+    "denoiser",
+    "encoder_0",
+    "encoder_1"
+  ],
+  "source": {
+    "model_unfolder/adapters/diffusor/blocks.py": {
+      "sha256": "2e5fe4bb9a6c139c98656076c5d460ce1620ff85331ac9d741bfe6e78e72239a",
+      "snippets": [
+        "322:     encoders = geom.get(\"text_encoders\") or []\n323:     text_ids = (\n324:         [] if geom.get(\"suppress_conditioning_source\") else\n325:         [f\"encoder_{i}\" for i in range(len(encoders))] if encoders else\n326:         [\"text_encoder\"])\n327:     has_text_projection = bool(\n328:         geom.get(\"caption_input_dim\") or geom.get(\"caption_projection_dim\"))",
+        "346:     ]\n347:     # Conditioning enters the denoiser's LEFT edge \u2014 computed once, read every step.\n348:     edges += [\n349:         {\"from\": cid, \"to\": \"denoiser\", \"to_port\": \"left\",\n350:          \"when\": \"each_step\", \"route\": \"lateral\", \"lane_index\": i}\n351:         for i, cid in enumerate(cond_ids)\n352:     ]\n353:     # The prompt fans out to each encoder (a splitter; drawn as one bus).\n354:     if encoders:\n355:         edges += [{\"from\": \"prompt\", \"to\": f\"encoder_{i}\", \"route\": \"prompt\"}\n356:                   for i in range(len(encoders))]",
+        "459:     family = geom.get(\"denoiser_family\")\n460:     added = geom.get(\"added_cond\")          # SDXL-style text_time micro-conditioning\n461:     unknown_output = geom.get(\"output_domain\") == \"unknown\"\n462: ",
+        "672:             \"id\": \"image\",\n673:             \"role\": \"output\",\n674:             \"kind\": \"source\",\n675:             \"diffusion_stage\": \"image_output\",\n676:             \"label\": (\"Output\" if unknown_output else\n677:                       \"Waveform\" if geom.get(\"audio\")\n678:                       else \"Frames\" if geom.get(\"video\") else \"Image\"),\n679:             \"title\": (\"Output domain unresolved\" if unknown_output else\n680:                       \"Output waveform\" if geom.get(\"audio\")\n681:                       else \"Output frames\" if geom.get(\"video\") else \"Output image\"),\n682:             \"description\": (\n683:                             \"The downstream codec/output domain is outside the \"\n684:                             \"U10 denoiser proof and remains unresolved.\"\n685:                             if unknown_output else\n686:                             \"The generated audio waveform.\"\n687:                             if geom.get(\"audio\") else\n688:                             \"The generated video frames in pixel space.\"\n689:                             if geom.get(\"video\") else\n690:                             \"The generated image in pixel space.\"),"
+      ]
+    },
+    "model_unfolder/adapters/diffusor/parser.py": {
+      "sha256": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758",
+      "snippets": [
+        "151:     # context-less parse under the wrong ownership namespace).\n152:     text_encoder_specs = _text_encoder_specs(cfg, context=context)\n153:     text_encoders = [s[\"name\"] for s in text_encoder_specs]\n154:     conditioning = _u11_unet_conditioning(cfg, text_encoders)\n155:     # The cross-attention K/V label the UNet view draws follows the resolved\n156:     # conditioning modality (image_proj -> \"Image embeds\", never \"Encoded text\").\n157:     # Set BEFORE unet_geom: it builds the denoiser cards from ``unet`` in-place.\n158:     unet[\"kv_label\"] = conditioning.get(\"kv_label\")\n159:     unet[\"kv_modality\"] = conditioning.get(\"kv_modality\")\n160:     _ignore_component_container(cfg, \"_vae_config\", \"root.vae\")\n161:     geom = unet_geom(cfg, unet, text_encoders=text_encoders,\n162:                      scheduler_geom=_scheduler_geom(cfg),\n163:                      text_encoder_specs=text_encoder_specs)\n164:     geom[\"vae\"] = _vae_geom(cfg)\n165:     geom[\"text_encoder_specs\"] = text_encoder_specs\n166:     geom[\"conditioning\"] = conditioning\n167: \n168:     extras: dict = {\"render\": unet_render_spec(geom), \"unet\": unet}\n169:     meta = {k: v for k, v in {",
+        "904:     enc_map = vocab[\"encoder_hid_dim_type\"]\n905:     add_map = vocab[\"addition_embed_type\"]\n906:     ehdt = _g(cfg, \"encoder_hid_dim_type\")\n907:     aet = _g(cfg, \"addition_embed_type\")\n908:     has_text = bool(encoders)\n909:     out: dict = {\n910:         \"encoder_hid_dim_type\": ehdt,\n911:         \"addition_embed_type\": aet,\n912:         \"has_text_encoder\": has_text,\n913:     }\n914:     kv = enc_map.get(str(ehdt)) if ehdt else None\n915:     if kv:\n916:         out[\"kv_modality\"] = kv.get(\"modality\")\n917:         out[\"kv_label\"] = kv.get(\"kv_label\")\n918:         out[\"projector\"] = kv.get(\"projector\")\n919:         out[\"kv_text\"] = bool(kv.get(\"text\"))\n920:     elif ehdt:                                   # declared but unmapped: honest-unknown\n921:         out[\"kv_modality\"] = \"unknown\"\n922:         out[\"kv_label\"] = \"External conditioning\"\n923:         out[\"kv_text\"] = False\n924:     elif has_text:                               # conventional text conditioning\n925:         out[\"kv_modality\"] = \"text\"\n926:         out[\"kv_label\"] = \"Encoded text\"\n927:         out[\"kv_text\"] = True\n928:     else:\n929:         out[\"kv_modality\"] = \"unknown\"\n930:         out[\"kv_label\"] = \"External conditioning\"\n931:         out[\"kv_text\"] = False\n932:     add = add_map.get(str(aet)) if aet else None\n933:     if add:\n934:         out[\"add_modality\"] = add.get(\"modality\")\n935:         out[\"add_label\"] = add.get(\"add_label\")\n936:     return out"
+      ]
+    },
+    "model_unfolder/adapters/diffusor/unet.py": {
+      "sha256": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+      "snippets": [
+        "186:               text_encoder_specs: list | None = None) -> dict:\n187:     \"\"\"Loop-view geometry for a UNet denoiser (the denoiser node label/desc).\"\"\"\n188:     n = len(unet[\"block_out_channels\"])\n189:     # SDXL-style micro-conditioning: pooled text + size/crop/target (\"time_ids\")\n190:     # embeddings are projected and ADDED to the timestep embedding. Surfaced only\n191:     # when the config declares addition_embed_type = text_time.\n192:     aet = _g(cfg, \"addition_embed_type\")\n193:     added_cond = ({\"type\": aet,\n194:                    \"proj_in\": _g(cfg, \"projection_class_embeddings_input_dim\"),\n195:                    \"time_embed_dim\": _g(cfg, \"addition_time_embed_dim\")}\n196:                   if aet == \"text_time\" else None)\n197:     # F3: a spatio-temporal (video) UNet mixes information ACROSS frames \u2014 every\n198:     # ResNet/Transformer stage carries a temporal branch + AlphaBlender.  Surface\n199:     # the frames axis and (SVD) the added_time_ids micro-conditioning.\n200:     temporal = bool(unet.get(\"temporal\"))\n201:     num_frames = _g(cfg, \"num_frames\")\n202:     add_time_dim = _g(cfg, \"addition_time_embed_dim\")\n203:     temporal_desc = (\n204:         \" This is a VIDEO U-net: every ResNet and Transformer stage additionally \"\n205:         \"runs a TEMPORAL branch (mixing across the \"\n206:         + (f\"{num_frames} \" if num_frames else \"\")\n207:         + \"frames) and blends it with the spatial branch through a learned \"\n208:         \"AlphaBlender \u2014 the mechanism that makes the frames coherent.\"\n209:         if temporal else \"\")\n210:     return {\n211:         \"denoiser_family\": \"unet\",\n212:         \"video\": temporal,\n213:         \"num_frames\": num_frames,\n214:         \"in_channels\": unet[\"in_channels\"],\n215:         \"cross_attention_dim\": unet[\"cross_attention_dim\"],\n216:         \"joint_attention_dim\": None,\n217:         \"pooled_projection_dim\": None,\n218:         \"guidance_embeds\": None,\n219:         \"added_cond\": added_cond,\n220:         \"added_time_ids\": ({\"time_embed_dim\": add_time_dim,\n221:                             \"proj_in\": _g(cfg, \"projection_class_embeddings_input_dim\")}\n222:                            if temporal and add_time_dim else None),\n223:         \"text_encoders\": text_encoders,\n224:         \"denoiser_label\": [\"Video U-Net\", \"Denoiser\"] if temporal else [\"U-Net\", \"Denoiser\"],\n225:         \"denoiser_title\": \"Spatio-temporal U-Net denoiser\" if temporal else \"U-Net denoiser\",\n226:         \"denoiser_desc\": ("
+      ]
+    },
+    "model_unfolder/adapters/diffusor/unet_projection.py": {
+      "sha256": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c",
+      "snippets": [
+        "429:     geom.update({\n430:         \"denoiser_family\": \"source_projected\",\n431:         \"denoiser_label\": [\"U-Net\", \"Denoiser\"],\n432:         \"denoiser_title\": \"Constructed U-Net denoiser\",\n433:         \"denoiser_desc\": \"Exact constructed stages and parameter shapes. Open execution relations remain visible.\",\n434:         \"denoiser_children\": stage_cards + other_cards,\n435:         \"denoiser_view\": \"unet_constructed\",\n436:         \"output_domain\": \"unknown\", \"block_conditioning\": None,\n437:         \"suppress_conditioning_source\": True,\n438:     })"
+      ]
+    }
+  }
+}

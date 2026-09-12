@@ -1,0 +1,15 @@
+{
+  "command": "python3 -m pytest tests/test_construction_summary.py -q",
+  "exit_code": 0,
+  "output_blessed": false,
+  "passed": 12,
+  "reported_seconds": 0.33,
+  "scope": "Dedicated working-tree construction-summary controls; component-entry/audit-hook integration is executor-owned and verified separately.",
+  "shared_files": "ModelIR and project_unet summary sections also changed; executor owns simultaneous separate component-entry sections. This receipt does not claim a frozen full-tree source manifest.",
+  "source_sha256_after_test": {
+    "model_unfolder/evidence/construction_summary.py": "58a97eefd6079b239cb161cb85ae2a5d25d8c712008b6768ea6b03fbabfc7e1f",
+    "model_unfolder/params.py": "d030e07e5142b9b0baf79e82a557e553e03b09d4417875f8d8fe64834295c121",
+    "model_unfolder/renderers/html/sections.py": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+    "tests/test_construction_summary.py": "6b81ba1fb2948aead65ce8251857be6e06e11eb75b34b031e3cbda42de3ad5f3"
+  }
+}

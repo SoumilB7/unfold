@@ -1,0 +1,36 @@
+........................................................................ [ 42%]
+........................................................................ [ 84%]
+.........F................                                               [100%]
+=================================== FAILURES ===================================
+_____________ test_example_check_never_invokes_platform_rasterizer _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x17e4a8ad0>
+
+    def test_example_check_never_invokes_platform_rasterizer(monkeypatch):
+        monkeypatch.setattr(
+            generate_examples, "svg_to_png",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("verification invoked the platform rasterizer")))
+>       assert generate_examples.check() == 0
+E       assert 1 == 0
+E        +  where 1 = <function check at 0x11012d120>()
+E        +    where <function check at 0x11012d120> = generate_examples.check
+
+tests/test_s5_release.py:205: AssertionError
+----------------------------- Captured stdout call -----------------------------
+examples are stale
+- manifest metadata or hero SVG-input seal is stale
+- deterministic HTML is stale: deepseek-v3.html
+- deterministic HTML is stale: granite-3-0-8b-instruct.html
+- deterministic HTML is stale: hunyuanvideo.html
+- deterministic HTML is stale: llama-7b.html
+- deterministic HTML is stale: musicgen-small.html
+- deterministic HTML is stale: pixart-sigma-xl-2-1024-ms.html
+- deterministic HTML is stale: qwen2-vl-7b-instruct.html
+- deterministic HTML is stale: stable-diffusion-xl-base-1-0.html
+----------------------------- Captured stderr call -----------------------------
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+=========================== short test summary info ============================
+FAILED tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer
+1 failed, 169 passed in 36.67s

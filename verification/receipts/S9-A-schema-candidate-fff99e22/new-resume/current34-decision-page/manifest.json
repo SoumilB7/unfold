@@ -1,0 +1,46 @@
+{
+  "scope": "Publication of saved actual34 pages only; no model imports or output blessing",
+  "validated_supplied_proofs": 522,
+  "links_checked": 73,
+  "outputs": [
+    {
+      "path": "z-docs/12-design/S9-schema/current-thirtyfourth.html",
+      "sha256": "07109ac222f58f162b0c4c69e18082d5f09a9ecc545c67ef9bbec3dcddb7fe3d"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/index.html",
+      "sha256": "8a3c67e30437c19e166fc2fdfd1b8017ec5dd434e4c30e38fe27776df6aec7e0"
+    },
+    {
+      "path": "z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "d16a07fc8a84108dfed29f037c8e668c233b10c0e78334fba37e4e6111cdb584"
+    },
+    {
+      "path": "z-docs/12-design/S9-transformer/index.html",
+      "sha256": "b751545003108863b8212d753072b77016557ba10f4a36fa85c63fb882f59424"
+    },
+    {
+      "path": "z-docs/12-design/S9-unet/index.html",
+      "sha256": "28e08ef48f05e87c57ea2126d9e1959b0dfefcdb174290a43f110c5fa3133fed"
+    }
+  ],
+  "before": [
+    {
+      "path": "before/z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "501ad7c3f62cf9c3f5e106d6c7202a7a82e2e4efa1ce67c0d0714af013d6c85b"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-schema/index.html",
+      "sha256": "4b7f4ec915570c421adc12f770f54689d25569fd86289f82b38afe661b79bca3"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-transformer/index.html",
+      "sha256": "4807a6d50c7eb519985df295b19155d5c95e42a816259ee462016d9185624cbb"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-unet/index.html",
+      "sha256": "4eee3d18b22f10d0943268a069f72f8f4889123d8bfd7722ce84e3cacb286f62"
+    }
+  ],
+  "generator_sha256": "e7af353218d3e73b79c0d681847a038c54555b042337b56110351b9a7f66d25e"
+}

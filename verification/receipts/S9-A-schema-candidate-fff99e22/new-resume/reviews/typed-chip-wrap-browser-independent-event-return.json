@@ -1,0 +1,66 @@
+{
+  "verdict": "RETURN_BOUNDED_VISUAL_R1_BORDER_INTERSECTS_MULTILINE_TEXT",
+  "source_proposal_manifest_sha256": "da92c41973cd615901b03f7ae431619d3b6eefc090be08b9107d529b39dee18c",
+  "browser_manifest_sha256": "a3979f2d3627b9f9eebf2a8d79ac180a3c110435352ca2b7becd2afda4af9667",
+  "browser_packet_checks": [
+    {
+      "case": "llama",
+      "original_sha256": "25949499d548b0255689648e551cde6f4205fc9eaecc29a5efd71c54beb23157",
+      "derived_sha256": "338faa6cadb31ec45a45cb8770da68dab171ff85a16b30802fe012ac15d53f43",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "after_no_card_horizontal_overflow": true
+    },
+    {
+      "case": "sdxl",
+      "original_sha256": "8a972e6cb63429b0de1e269028d38750f1fc9b5a2fc9a4a2ddd7459334e12650",
+      "derived_sha256": "d3e4e8389123ae9abfc4f1a29de4765790d3b783613539e582d8225bd35692ec",
+      "exact_CSS_insertions": 2,
+      "interactions": 2,
+      "after_no_card_horizontal_overflow": true
+    },
+    {
+      "case": "bloom-ordinary",
+      "original_sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba",
+      "derived_sha256": "5f662b2d39f8f1b7f6a2a482b597b581d7cbc9e95363585616935408e7b8cc45",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "after_no_card_horizontal_overflow": true
+    },
+    {
+      "case": "bloom-sparse",
+      "original_sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035",
+      "derived_sha256": "b48d04cc265a019ce426134dbe970afec6532fe5c4cee2e4c61c5d51021e61c9",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "after_no_card_horizontal_overflow": true
+    },
+    {
+      "case": "musicgen-ordinary",
+      "original_sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f",
+      "derived_sha256": "82fd14be22ba86284be7e2e78c26c7a7c7b47c66e0fe11a3bd25330519564a92",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "after_no_card_horizontal_overflow": true
+    },
+    {
+      "case": "musicgen-sparse",
+      "original_sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a",
+      "derived_sha256": "eb8f59d70d9ec8738de7c0e08dd5908d4503acb8eef32970d3a89f9880a33aa3",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "after_no_card_horizontal_overflow": true
+    }
+  ],
+  "data_result": "Exact reverse-CSS removal reproduces all six original saved HTML byte-for-byte, including both SDXL root/deferred stylesheet insertions. Card identity/full text and click counts retained; all resulting measured cards fit644px. Every held file/hash verified. Nested SDXL uses its separate recorded card_id/text shape and remains identical.",
+  "images_independently_viewed": [
+    "browser36/results-r2/sdxl/card-viewport.png",
+    "typed-chip-wrap-browser-r2/results/sdxl/card-viewport.png",
+    "typed-chip-wrap-browser-r2/results/bloom-sparse/card-viewport.png",
+    "typed-chip-wrap-browser-r2/results/musicgen-sparse/card-viewport.png",
+    "typed-chip-wrap-browser-r2/results/four-style-probe.png"
+  ],
+  "finding": "Wrapping solves measured overflow, but retained999px capsule radius curves through first/last text lines near the left of tall MusicGen default chip. Inline four-style probe fragments capsule outlines across lines. Full text is retained; this is border/text interference, not hidden or truncated text.",
+  "requested_correction": "Keep bounded four typed selectors and distinct border/color treatments; use modest corners suitable for multiline text, then verify same actual saved-page screenshots. No facts, proof, graph, JS or reader changes.",
+  "scope_limits": "Visual return on derived CSS demonstration, not an architecture or source-authority rejection. Actual37 regeneration remains necessary; no output blessing."
+}

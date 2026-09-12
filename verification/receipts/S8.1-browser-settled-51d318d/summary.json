@@ -1,0 +1,59 @@
+{
+  "sdxl_visible_card_pairs_exact": 16,
+  "sdxl_clicked_screenshots_byte_exact": 14,
+  "sdxl_clicked_screenshots_total": 16,
+  "sdxl_initial_screenshot_exact": true,
+  "remaining_pixel_differences": [
+    {
+      "step": 13,
+      "bbox": [
+        795,
+        476,
+        796,
+        486
+      ],
+      "different_pixels": 4,
+      "channel_extrema": [
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "step": 14,
+      "bbox": [
+        1431,
+        16,
+        1438,
+        531
+      ],
+      "different_pixels": 11,
+      "channel_extrema": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    }
+  ],
+  "synthetic_variant_steps_exact": 8,
+  "synthetic_variant_screenshots_exact": 8,
+  "scope": "Finite existing CSS animations completed before screenshots, no CSS changes. SDXL pixel differences retained rather than normalized. Variant fixture is synthetic and does not expand model coverage."
+}

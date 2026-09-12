@@ -1,0 +1,10 @@
+{
+  "/private/tmp/unfold-s8-coverage-7168440/actual-generate/stable-diffusion-xl-base-1-0/display-ir.json.gz": "174fbda72c6f7890118f98b42946a1aeff6d4b0141e674df9999bc4f66afbd32",
+  "/private/tmp/unfold-s8-coverage-7168440/actual-generate/stable-diffusion-xl-base-1-0/ir.json.gz": "97abef2b950bbcadc5881e7f2baf1f2ed800bc274385a151374c10de66134985",
+  "/private/tmp/unfold-s8-coverage-7168440/actual-generate/stable-diffusion-xl-base-1-0/page.html.gz": "d6e51ccccc352ec99444391640f80cd07670d3cce604c79bb1780c7b1c5dcd2c",
+  "/private/tmp/unfold-s8-public-output-control.py": "5b0c0afeb9de08563c8627b4196d92a3c2e5b826661a37964908368ee235dbb1",
+  "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-ordinary/ir.json": "331f843e84f8112e935ddaaebc81ba0bb76371215be763311e6bca4df8f308e2",
+  "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-ordinary/page.html": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+  "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-ordinary/render-events.json.gz": "10f22226d993f9b38c4760e1aa7bf757177f19cf59221e48de83afcb4f95500c",
+  "/private/tmp/unfold-s8-typed-phase-7168440/sdxl-ordinary/render-input.json": "ee6467063c1ff2052114494832a8ed8c5f741a7cf02c3ae1f13cb86dca22c5a6"
+}

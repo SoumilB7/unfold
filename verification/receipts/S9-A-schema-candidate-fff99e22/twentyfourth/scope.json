@@ -1,0 +1,13 @@
+{
+  "base_manifest": "4da632834b4c2f0506303d419d81b1d951c923a341859c93f9a1429c8084835b",
+  "handoffs": [
+    {
+      "path": "/private/tmp/unfold-s9a-projection-consumer-requirements-handoff.json",
+      "sha256": "229c700e5bea38e8877bd505da4e8ca35d1c280d1c6b3263c85b3b72dad2288e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-relation-poison-fixture.json",
+      "sha256": "55635378d81153b234c26741571d88bebc0f3752d84a55655e0f11e331102866"
+    }
+  ]
+}

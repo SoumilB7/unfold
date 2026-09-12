@@ -1,0 +1,1388 @@
+{
+  "archive": "frozen26-output-and-svg-audits.tar.gz",
+  "sha256": "e17777f5bd8bea7ce5741fdeb0f4b15dafa6791829e579f1bfffebac11865370",
+  "bytes": 2528458,
+  "members": [
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/closure-deltas.json",
+      "sha256": "fac0f10a145afc01ffaccfcdbca5e952f39092bca2b4f23ac5d7a082bc45b9f5",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/html-full.patch.gz",
+      "sha256": "f63d852a003d5dc9a8e1de618d8a1b4e7dc69113c5e823753827bfe3f95fa0c8",
+      "bytes": 25898
+    },
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/html-summary.json",
+      "sha256": "ce5b286c287a39a690c7e39d89a0c662aa5a1f46642cfa07db3ae7388f7d4e80",
+      "bytes": 3913
+    },
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/ir-after-render-deltas.json.gz",
+      "sha256": "1e91c4e85ae6a482f2d1b83a98c4bd097f813546ee46e421807cdcc6386aaa1a",
+      "bytes": 5721
+    },
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/ir-before-render-deltas.json.gz",
+      "sha256": "1e91c4e85ae6a482f2d1b83a98c4bd097f813546ee46e421807cdcc6386aaa1a",
+      "bytes": 5721
+    },
+    {
+      "path": "output-delta-enumeration/auraflow-v0-3/structural-and-parameter-summaries.json.gz",
+      "sha256": "3d592300ad166674c364231bdc089cbbd956b1405435c813fe830bf852c07bdd",
+      "bytes": 8813
+    },
+    {
+      "path": "output-delta-enumeration/bloom/closure-deltas.json",
+      "sha256": "6cb669011a3882a0208150668cb722c27be85c6c3d2c1f01643a9a45b7bd9257",
+      "bytes": 670
+    },
+    {
+      "path": "output-delta-enumeration/bloom/html-full.patch.gz",
+      "sha256": "c4026b32985d37404d36fafb44f3dc74b2e2bb51e457183245c81673e0ed068f",
+      "bytes": 10055
+    },
+    {
+      "path": "output-delta-enumeration/bloom/html-summary.json",
+      "sha256": "8774e3f4eecb9243d1a5899e491bc30d991da484b51ff5ed39ca9da34155a35a",
+      "bytes": 2007
+    },
+    {
+      "path": "output-delta-enumeration/bloom/ir-after-render-deltas.json.gz",
+      "sha256": "62005b49dbac0f075b1ebffefc7922ea8b9e68dd06575855abd46f43cc75dad2",
+      "bytes": 4406
+    },
+    {
+      "path": "output-delta-enumeration/bloom/ir-before-render-deltas.json.gz",
+      "sha256": "62005b49dbac0f075b1ebffefc7922ea8b9e68dd06575855abd46f43cc75dad2",
+      "bytes": 4406
+    },
+    {
+      "path": "output-delta-enumeration/bloom/structural-and-parameter-summaries.json.gz",
+      "sha256": "88346bef0609c8908b83a619cc7c2ffcc15f64cc6abaae5edf6de32f34e5c1a8",
+      "bytes": 14363
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/closure-deltas.json",
+      "sha256": "88b4629a3cb280ee8f0ecac4d05e8bec7744c2e74ebc38c6a7e7d8fc3b8d592e",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/html-full.patch.gz",
+      "sha256": "9b53e98bef218097531bf0f6f59aa205d4d6634ee509ca6c323c97ac7fe0e7d2",
+      "bytes": 28424
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/html-summary.json",
+      "sha256": "ace2dff2bf4d6d616f8c33aa7f74ff6c80b4996627ed56e60ea4e8076b150979",
+      "bytes": 3777
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/ir-after-render-deltas.json.gz",
+      "sha256": "74f2546911a38ad9762c6d28830641e1009af328bba5848c97ac5e092eab1025",
+      "bytes": 6336
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/ir-before-render-deltas.json.gz",
+      "sha256": "74f2546911a38ad9762c6d28830641e1009af328bba5848c97ac5e092eab1025",
+      "bytes": 6336
+    },
+    {
+      "path": "output-delta-enumeration/cogvideox-5b/structural-and-parameter-summaries.json.gz",
+      "sha256": "fc5e9479a53fd2aaf74f3fd6ced5a708a63334f272676a9f78601d4ee6f37940",
+      "bytes": 7864
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/closure-deltas.json",
+      "sha256": "b4689830aeef966933562b999c8be66369b2e39f309703d009d5928be4bf40c9",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/html-full.patch.gz",
+      "sha256": "715ee275b0d2375c524dccdf75f3f9e78fe60e3eb8027155ac4e5d74bd68c021",
+      "bytes": 14097
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/html-summary.json",
+      "sha256": "099cf6f9211521cf93bac4f3a168070b57f6194c1ae7e9b3546f0735e8918e60",
+      "bytes": 2467
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/ir-after-render-deltas.json.gz",
+      "sha256": "14e14f981ba69367fd27cd32a81288b927da347e2a12a32f21dd8fa234b6642f",
+      "bytes": 5396
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/ir-before-render-deltas.json.gz",
+      "sha256": "14e14f981ba69367fd27cd32a81288b927da347e2a12a32f21dd8fa234b6642f",
+      "bytes": 5396
+    },
+    {
+      "path": "output-delta-enumeration/command-a-03-2025/structural-and-parameter-summaries.json.gz",
+      "sha256": "8b6c6419901ebb65b0ae24c45da3e40e03d1e4ec2323d50506aeae6ed04cc21f",
+      "bytes": 13315
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/closure-deltas.json",
+      "sha256": "0ccd150a3a3aad4cd0b1e4fa043ad10fa1300fc46aa5f29684e8c1dc7b40a987",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/html-full.patch.gz",
+      "sha256": "15e97d9ddda5d8961462cfbd4018ae4243365ebfc97e76956d89b3af09c5112a",
+      "bytes": 17256
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/html-summary.json",
+      "sha256": "fcc4539e926d07537c9a549a7b7f1faccc1fb9468e46de520ed26a04ce0f87bf",
+      "bytes": 2343
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/ir-after-render-deltas.json.gz",
+      "sha256": "e9dba25975c967be99dec1a3e4aa8f40a45ad2594fbc07567a6e982e412cdbc5",
+      "bytes": 6052
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/ir-before-render-deltas.json.gz",
+      "sha256": "e9dba25975c967be99dec1a3e4aa8f40a45ad2594fbc07567a6e982e412cdbc5",
+      "bytes": 6052
+    },
+    {
+      "path": "output-delta-enumeration/dbrx-base/structural-and-parameter-summaries.json.gz",
+      "sha256": "91fad0026c98df60360d6e3cab6308888adce070bb9f405c4c19f30e031c8388",
+      "bytes": 22273
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/closure-deltas.json",
+      "sha256": "d57c3624a5c50551bd38d1a96cdf26ea08341d1f13ac1301788c6c6ebca852be",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/html-full.patch.gz",
+      "sha256": "92bcc7d918c7bb03f162b8b644900a151c31027a936ca36535a04acce61426d3",
+      "bytes": 16256
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/html-summary.json",
+      "sha256": "b0aa7cc774acc711bdffd93367c5705996a9df167e45f3b91bae76f57ab5b3e3",
+      "bytes": 2787
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/ir-after-render-deltas.json.gz",
+      "sha256": "4315b2f065772977ae46bbd7ea06b978bdf92be1384ccc60f900013b1668c333",
+      "bytes": 5237
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/ir-before-render-deltas.json.gz",
+      "sha256": "4315b2f065772977ae46bbd7ea06b978bdf92be1384ccc60f900013b1668c333",
+      "bytes": 5237
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-coder-v2-lite/structural-and-parameter-summaries.json.gz",
+      "sha256": "7fc3c126ef010ff77f9a2202a5134d34d8b686e4ee8c8ad86d9d4cfb5d6ec5a7",
+      "bytes": 11414
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/closure-deltas.json",
+      "sha256": "f043e0ef6b7438d8829d66270810f50c083b38e17ff48815831bd54c064411c7",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/html-full.patch.gz",
+      "sha256": "d4a12677ccb0d8d126e87b025a35ded62252499cf663dbecfe3bc51ca2d19016",
+      "bytes": 24433
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/html-summary.json",
+      "sha256": "99195451c75ff27e1bf611551922ea3f030d755735fd12969ee25edb65b14349",
+      "bytes": 3531
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/ir-after-render-deltas.json.gz",
+      "sha256": "151f58e4e366f9f7c51cc6b87e2c11ac4ece5add5392ae26d18b96b16179c072",
+      "bytes": 6071
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/ir-before-render-deltas.json.gz",
+      "sha256": "151f58e4e366f9f7c51cc6b87e2c11ac4ece5add5392ae26d18b96b16179c072",
+      "bytes": 6071
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v3/structural-and-parameter-summaries.json.gz",
+      "sha256": "f6fb1577594fd48feef1e5525b6b6eef36cc7d1bf84bdad41630e9d41946c930",
+      "bytes": 44228
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/closure-deltas.json",
+      "sha256": "f2c87ebb32582f7f1086575cfe389cad9d92535d20fd1e4e2659a8e61f520781",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/html-full.patch.gz",
+      "sha256": "b04cf17b8ffbba481a977073ee03c5c44a8edb82545217cec7bb36f5a2c01d86",
+      "bytes": 11167
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/html-summary.json",
+      "sha256": "e459d4a3dbe0c0f1010d89af4bb76fc04df575330a10db621f0c01c810ff0c5a",
+      "bytes": 2027
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/ir-after-render-deltas.json.gz",
+      "sha256": "323a1b4464cb85fa07c1dea3190a01bdc875d0c1b5c5c04818b4420e85bb89a7",
+      "bytes": 6397
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/ir-before-render-deltas.json.gz",
+      "sha256": "323a1b4464cb85fa07c1dea3190a01bdc875d0c1b5c5c04818b4420e85bb89a7",
+      "bytes": 6397
+    },
+    {
+      "path": "output-delta-enumeration/deepseek-v4-flash/structural-and-parameter-summaries.json.gz",
+      "sha256": "460cac236f450d2c91b3ac0e1eb121456314382b0b1b3398589f7cdf1ce3fd8e",
+      "bytes": 6838
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/closure-deltas.json",
+      "sha256": "be3b4573f4f16d9382eaaf285efb83c52f103b43c84c5179f47ea3955c25c229",
+      "bytes": 1450
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/html-full.patch.gz",
+      "sha256": "6b4c976b8fb4d4f8cac4cd37b29758e4120e6679e9b28c5081b64beb0f2b352c",
+      "bytes": 32081
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/html-summary.json",
+      "sha256": "b9b82a734c73b2b2d45c34b534749c498f5db50980cc954b40d30451740d57b0",
+      "bytes": 4061
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/ir-after-render-deltas.json.gz",
+      "sha256": "4000fbaf6a951648fc0cb54ada4610277b851b965128a0ec905a7264ca2021fe",
+      "bytes": 8015
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/ir-before-render-deltas.json.gz",
+      "sha256": "4000fbaf6a951648fc0cb54ada4610277b851b965128a0ec905a7264ca2021fe",
+      "bytes": 8015
+    },
+    {
+      "path": "output-delta-enumeration/flux-2-dev/structural-and-parameter-summaries.json.gz",
+      "sha256": "0d21b230a943c6ea514c18fc2a4dad879365462b6997091de17dcd6b9e180a9f",
+      "bytes": 9767
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/closure-deltas.json",
+      "sha256": "c2f524febc64416db090bd5d9688774e2f88e6298a1fc3779c9ea69442ad9f58",
+      "bytes": 1174
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/html-full.patch.gz",
+      "sha256": "ed9cc9820ff0e6a2f9e4d51c49083e052caa8791e0af06483cad48ebe50d0037",
+      "bytes": 34502
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/html-summary.json",
+      "sha256": "5ee848cc7c916b03475b8d433f5a508979f4491b04bb09c7d0203a5920335033",
+      "bytes": 4653
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/ir-after-render-deltas.json.gz",
+      "sha256": "c69235409699c6a5ca3bfbad7605a18465a0ef9e7cf13e060e24569a394c5591",
+      "bytes": 7506
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/ir-before-render-deltas.json.gz",
+      "sha256": "c69235409699c6a5ca3bfbad7605a18465a0ef9e7cf13e060e24569a394c5591",
+      "bytes": 7506
+    },
+    {
+      "path": "output-delta-enumeration/fluxtransformer2dmodel/structural-and-parameter-summaries.json.gz",
+      "sha256": "8f45c7653c2f3dfe9c2740f4fefe8a109484e79348528f41eb60a0b92c829e87",
+      "bytes": 10964
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/closure-deltas.json",
+      "sha256": "4fe22801e0a9c523fc2d45887b2434fc59e58bf65483c61dd339e924bd9deb30",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/html-full.patch.gz",
+      "sha256": "6a9de23cb940f325fbf4f84032a251daed0d123a3b71beae4690840809476ffc",
+      "bytes": 15426
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/html-summary.json",
+      "sha256": "b2abe2fa2a376186fdf6fe8a1346f5bce335585a39c40b6fe4829f008633dd9b",
+      "bytes": 2465
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/ir-after-render-deltas.json.gz",
+      "sha256": "31b8557f7ad5f7095c9413ffa27f60d3463c893d264dd7a11f0f0a0f99625b2b",
+      "bytes": 4912
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/ir-before-render-deltas.json.gz",
+      "sha256": "31b8557f7ad5f7095c9413ffa27f60d3463c893d264dd7a11f0f0a0f99625b2b",
+      "bytes": 4912
+    },
+    {
+      "path": "output-delta-enumeration/gemma-2-2b-it/structural-and-parameter-summaries.json.gz",
+      "sha256": "447ce0673703dec186bf7c2e64578ff35be5d83e1f1b0260ceac92a0a1eafc49",
+      "bytes": 11364
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/closure-deltas.json",
+      "sha256": "c1eda2f61ed554ad9988938eabd6d76d190bbe576c75963cfe3df51312c649c7",
+      "bytes": 1666
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/html-full.patch.gz",
+      "sha256": "6ce7e3db987490324f0eea323a9d098bd10a5fb7f37e3a029be56cb99ff4efbf",
+      "bytes": 24118
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/html-summary.json",
+      "sha256": "1b1714a4c466100feb3f3a1fd42c9254942c0c5c8f90db9a0bf8852761d115c7",
+      "bytes": 4835
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/ir-after-render-deltas.json.gz",
+      "sha256": "ba5779f17d3474f8b2805bd4ecb74e0b3046c8af96cbd75b092456ffb8686158",
+      "bytes": 5843
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/ir-before-render-deltas.json.gz",
+      "sha256": "ba5779f17d3474f8b2805bd4ecb74e0b3046c8af96cbd75b092456ffb8686158",
+      "bytes": 5843
+    },
+    {
+      "path": "output-delta-enumeration/gemma-3n-e2b/structural-and-parameter-summaries.json.gz",
+      "sha256": "413875f465e080819b91fded93b2a4169a52c7ebe638003883bc38f4beddde0a",
+      "bytes": 8038
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/closure-deltas.json",
+      "sha256": "1545559410ae599f1a47af834591139578d8d5e3475948e805921cd3762a9818",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/html-full.patch.gz",
+      "sha256": "71c59c151f4a7f38b908eea222ca786067c798f04754762951b56fa55080b703",
+      "bytes": 22433
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/html-summary.json",
+      "sha256": "8f5aa03bd9f6a62298c3b911896d1d2e6ab03bad7d998fdce9cc1cd23d7e40f2",
+      "bytes": 2939
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/ir-after-render-deltas.json.gz",
+      "sha256": "8ca4a84bfd0862b06ae72e1d25d4facf6974a17952e8f0eda6e5248c839ddca0",
+      "bytes": 5082
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/ir-before-render-deltas.json.gz",
+      "sha256": "8ca4a84bfd0862b06ae72e1d25d4facf6974a17952e8f0eda6e5248c839ddca0",
+      "bytes": 5082
+    },
+    {
+      "path": "output-delta-enumeration/glm-4-5/structural-and-parameter-summaries.json.gz",
+      "sha256": "3b0060bf86c88a9972a69764612ae2ccc5fa614edee46b3de3a2c774b31f6805",
+      "bytes": 54772
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/closure-deltas.json",
+      "sha256": "0320f39d87e07af3f00108a207190349b5541277705a74dc2aaf1ca0bb915999",
+      "bytes": 670
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/html-full.patch.gz",
+      "sha256": "a4828384f743b039785a5eec622990c267a99bd366323e19e248d97da9d4446a",
+      "bytes": 20107
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/html-summary.json",
+      "sha256": "f256b4f05e0eeb4ba885a31d86674bc2949d77bff19598cdfaad4a76844cf78c",
+      "bytes": 3089
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/ir-after-render-deltas.json.gz",
+      "sha256": "1917761d5d01a4b1a798b5819bad230f19e00b572351c1eb001b076a9c7a475a",
+      "bytes": 5526
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/ir-before-render-deltas.json.gz",
+      "sha256": "1917761d5d01a4b1a798b5819bad230f19e00b572351c1eb001b076a9c7a475a",
+      "bytes": 5526
+    },
+    {
+      "path": "output-delta-enumeration/gpt-oss-20b/structural-and-parameter-summaries.json.gz",
+      "sha256": "9e010ab40722c2a8e52f9e72052a0ac4d0f12bd72138fd295c2486898f1fa7ce",
+      "bytes": 19146
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/closure-deltas.json",
+      "sha256": "80bc840d2bd85045f24e7c6343cb7e1eeafd3efdba5fb46b82ebadd5dfc5be35",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/html-full.patch.gz",
+      "sha256": "e13eed21334c13afe46fd83a48f571e460fa87063a399d6bfaf9edc9dd5f3753",
+      "bytes": 13182
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/html-summary.json",
+      "sha256": "c782879aa16ca6267aa7eefea30e8b1ba132064b086c2fe34ce02fae490fa50e",
+      "bytes": 2017
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/ir-after-render-deltas.json.gz",
+      "sha256": "0fe701e630b25aeff62125bafe15068ad4cc7490458d8189ba499d489c2d4fdf",
+      "bytes": 5106
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/ir-before-render-deltas.json.gz",
+      "sha256": "0fe701e630b25aeff62125bafe15068ad4cc7490458d8189ba499d489c2d4fdf",
+      "bytes": 5106
+    },
+    {
+      "path": "output-delta-enumeration/granite-3-0-8b-instruct/structural-and-parameter-summaries.json.gz",
+      "sha256": "cf0c142c0f9c3e5e9676eff0f90a4853afd628b29c3fd859c1d6239f499ee2e5",
+      "bytes": 16261
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/closure-deltas.json",
+      "sha256": "38d1e2e36a084291ab4906d4966497d2be55eef1bcf7bb9df92fcfe5822cd93b",
+      "bytes": 1175
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/html-full.patch.gz",
+      "sha256": "910a7d067e9a0f0b2e5d2f5ab3dec26a4ca9227c2d404871b1e2c870fc4723cd",
+      "bytes": 35473
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/html-summary.json",
+      "sha256": "8b77a37b90ba41d9144d2a88ee0587c8062c2633b5f4356a748c85b2c7b9e732",
+      "bytes": 4517
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/ir-after-render-deltas.json.gz",
+      "sha256": "d4d825efe373f95469c891d57de9acc2daf01b4ada18e765979880c75f7c6a74",
+      "bytes": 8609
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/ir-before-render-deltas.json.gz",
+      "sha256": "d4d825efe373f95469c891d57de9acc2daf01b4ada18e765979880c75f7c6a74",
+      "bytes": 8609
+    },
+    {
+      "path": "output-delta-enumeration/hunyuanvideo/structural-and-parameter-summaries.json.gz",
+      "sha256": "c3b548876467a65c376a5b1082c2b63ef0ad8741e194a3b535094f274451786b",
+      "bytes": 11692
+    },
+    {
+      "path": "output-delta-enumeration/input-sha256.json",
+      "sha256": "df9410ac157a8693a94294cddb419d43b21935904bfc8edeb4be9ca61b6e6875",
+      "bytes": 54973
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/closure-deltas.json",
+      "sha256": "5e4a5d7b00ff005ee176b24b28efe33584b3f8ef4240d3090c066d0009a91d8d",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/html-full.patch.gz",
+      "sha256": "1eec070be2c23e1c40c8ed9bca36dcb0b8e92fdc799cf3fe971af73f2e730b16",
+      "bytes": 9930
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/html-summary.json",
+      "sha256": "68de8e072c2110fa33fbded6ed6de008124b6831943fdd702777f063bb33575a",
+      "bytes": 2019
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/ir-after-render-deltas.json.gz",
+      "sha256": "08a984de1bf918e91175f62620447cd2691987d7ef18b6e42288592c17aba28d",
+      "bytes": 5204
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/ir-before-render-deltas.json.gz",
+      "sha256": "08a984de1bf918e91175f62620447cd2691987d7ef18b6e42288592c17aba28d",
+      "bytes": 5204
+    },
+    {
+      "path": "output-delta-enumeration/jamba-v0-1/structural-and-parameter-summaries.json.gz",
+      "sha256": "cfe24f8d2e44b038b02970c96301c7b76fd7aa753cce70bcf59dab5d2d47ab41",
+      "bytes": 5408
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/closure-deltas.json",
+      "sha256": "fbbca21eccdad384d8c67372096679bb17bc99996ff3433c6440f028859a6199",
+      "bytes": 670
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/html-full.patch.gz",
+      "sha256": "d0e759a002e1d11d4280907c037a4ea5109344cccde8d7d4295499130b75a523",
+      "bytes": 10829
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/html-summary.json",
+      "sha256": "4713cfefcbf2fd0f94a9f7ad9a48e64194de966c540fa4741d54114e9b2b03d3",
+      "bytes": 2021
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/ir-after-render-deltas.json.gz",
+      "sha256": "25753b15f5eb5c4233d822f361947487b8e965e932fce5f43d7966f21ad5444a",
+      "bytes": 4783
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/ir-before-render-deltas.json.gz",
+      "sha256": "25753b15f5eb5c4233d822f361947487b8e965e932fce5f43d7966f21ad5444a",
+      "bytes": 4783
+    },
+    {
+      "path": "output-delta-enumeration/lfm2-1-2b/structural-and-parameter-summaries.json.gz",
+      "sha256": "0245fa0df2dc17be9a67d93718489a08896f96ea6622b6c9299dd9041e08da31",
+      "bytes": 6123
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/closure-deltas.json",
+      "sha256": "97f476a912a4b262a9003e6471b8d9d64edd99cf2ec239081b9db28f073a2bf7",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/html-full.patch.gz",
+      "sha256": "154cb7396de2dd208870582dfd2ae7991c5a95c12f1667fb606fcbc299ef1e97",
+      "bytes": 9834
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/html-summary.json",
+      "sha256": "d7f0b68794c939f6f3a6f3319ff990b92c39b5cd6439d836587a279169c82bd8",
+      "bytes": 2017
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/ir-after-render-deltas.json.gz",
+      "sha256": "023485c6342051174650df6398658504ddcc21046e3aff9818bee0555d0c3ccf",
+      "bytes": 4742
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/ir-before-render-deltas.json.gz",
+      "sha256": "023485c6342051174650df6398658504ddcc21046e3aff9818bee0555d0c3ccf",
+      "bytes": 4742
+    },
+    {
+      "path": "output-delta-enumeration/llama-7b/structural-and-parameter-summaries.json.gz",
+      "sha256": "f76ac30c0a25664ba3e9f761248418ad8ea5c2a5d71498547aa0cae354dfdb63",
+      "bytes": 13117
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/closure-deltas.json",
+      "sha256": "82d4200832e4103ebbc459ca8855dd02c313326534b23f0edbaaa357beb6a572",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/html-full.patch.gz",
+      "sha256": "b2b03cc2bf39bf65582e912326280c0b30481eab7f416df3747d144ab988f2f9",
+      "bytes": 25888
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/html-summary.json",
+      "sha256": "2ca1418160000dbd158a040ecd2b86aac6ba7adef9682bdc914062413e76bd42",
+      "bytes": 3321
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/ir-after-render-deltas.json.gz",
+      "sha256": "0b0a925d37b944f87af66a149ae73868e6f0472321e6ef437927a64568364a86",
+      "bytes": 6925
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/ir-before-render-deltas.json.gz",
+      "sha256": "0b0a925d37b944f87af66a149ae73868e6f0472321e6ef437927a64568364a86",
+      "bytes": 6925
+    },
+    {
+      "path": "output-delta-enumeration/ltx-video/structural-and-parameter-summaries.json.gz",
+      "sha256": "fcb0b1ff14035e5c03307f49e9dc8da7bde367a589f638c37c1ce8bf495a9a80",
+      "bytes": 7803
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/closure-deltas.json",
+      "sha256": "1c316721ba6a5b867530fde152069425602996d3199b3cdd8557ce748227a5b4",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/html-full.patch.gz",
+      "sha256": "45ad186c1da6400b7607e397253ee39768fc3233274356f966e8b719d798dfe0",
+      "bytes": 31345
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/html-summary.json",
+      "sha256": "93e339c595ee28156d25da421f511a7f3f23377fb9f8d8fc5aee342d9e1a7434",
+      "bytes": 3913
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/ir-after-render-deltas.json.gz",
+      "sha256": "ce8a900c9e1406fc9cb88ec962cffc054e214438adb9a83cb007d75ad9abf4e8",
+      "bytes": 5569
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/ir-before-render-deltas.json.gz",
+      "sha256": "ce8a900c9e1406fc9cb88ec962cffc054e214438adb9a83cb007d75ad9abf4e8",
+      "bytes": 5569
+    },
+    {
+      "path": "output-delta-enumeration/lumina-image-2-0/structural-and-parameter-summaries.json.gz",
+      "sha256": "e1cc69b8ec595e22e570373e9cf3190293b021bbf61923c2eb290c0b10eda022",
+      "bytes": 5699
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/closure-deltas.json",
+      "sha256": "f94d96b4a5794b4a0b29c85671ee7cd33c6a0ebc6d0b7f4270a80da2b08780e0",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/html-full.patch.gz",
+      "sha256": "3504e5f8fca91c030f8bce2e756453ea767369d4b0a03ab3bd75900bac1ed755",
+      "bytes": 23414
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/html-summary.json",
+      "sha256": "8f65e1774ab1a4fd391c6c1f6748370e813534c1408b051a9d4bc6b44dd95126",
+      "bytes": 2877
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/ir-after-render-deltas.json.gz",
+      "sha256": "d1c6f67a075a40f51c6e6f6897050100a2ce639e793b40c5cdc34b3b50a349c2",
+      "bytes": 6037
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/ir-before-render-deltas.json.gz",
+      "sha256": "d1c6f67a075a40f51c6e6f6897050100a2ce639e793b40c5cdc34b3b50a349c2",
+      "bytes": 6037
+    },
+    {
+      "path": "output-delta-enumeration/mochi-1-preview/structural-and-parameter-summaries.json.gz",
+      "sha256": "879ace2b22369efa26dfd65e1b804f4f12148c0907fcca8a96cef91d16d86758",
+      "bytes": 3998
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/closure-deltas.json",
+      "sha256": "f08210d929dd685771531d9ad83dcbfe3e7ce7ca4f6e12c9af0860effae6bc9f",
+      "bytes": 1411
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/html-full.patch.gz",
+      "sha256": "a6f5e412370008f9b7d634cb3beeaf5822b03fc79dedf898c68f0b948bdc5d43",
+      "bytes": 17723
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/html-summary.json",
+      "sha256": "1be11da9499d9813e2b7bb5a34a88aca8d307b4ebcd7a6c8b73473eaf03272b0",
+      "bytes": 2753
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/ir-after-render-deltas.json.gz",
+      "sha256": "f5e4ef9834af93ecb08aa60abe7230dda8f8ec3e75ef8561073074dc5119c21c",
+      "bytes": 6602
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/ir-before-render-deltas.json.gz",
+      "sha256": "f5e4ef9834af93ecb08aa60abe7230dda8f8ec3e75ef8561073074dc5119c21c",
+      "bytes": 6602
+    },
+    {
+      "path": "output-delta-enumeration/musicgen-small/structural-and-parameter-summaries.json.gz",
+      "sha256": "da91ea3e92d676bb5f098fa256f838c41380ebc0ad1c824557017d4766f93b03",
+      "bytes": 10545
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/closure-deltas.json",
+      "sha256": "c23ad9ec797f99ae803106f805d0a6dbffa1dd7deb4e685eecb422f55dcb47c0",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/html-full.patch.gz",
+      "sha256": "ae30142ff7e8960ca0814134dd8cf38b3e50250914fb5ca58d37c4fa01554fb3",
+      "bytes": 11598
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/html-summary.json",
+      "sha256": "9dc693651d5bca906b0966a9a83d2fc6848797008472f4349a5af3e743865e85",
+      "bytes": 2019
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/ir-after-render-deltas.json.gz",
+      "sha256": "215a78e0b9d2b7c5061f9725ff40dda29c0ce01e4cadc223d477f838904c4bd9",
+      "bytes": 6960
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/ir-before-render-deltas.json.gz",
+      "sha256": "215a78e0b9d2b7c5061f9725ff40dda29c0ce01e4cadc223d477f838904c4bd9",
+      "bytes": 6960
+    },
+    {
+      "path": "output-delta-enumeration/nemotron-h-8b/structural-and-parameter-summaries.json.gz",
+      "sha256": "97502d7ffa60e295cbb44955056f3b4a34c5e3b4e794010c7d3e9b07783abab3",
+      "bytes": 7352
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/closure-deltas.json",
+      "sha256": "92d0ef33b2db5649621c20241bb6da596b415a82082fc8cb9ebb025abc7b5d17",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/html-full.patch.gz",
+      "sha256": "6a3548ae8902fb3448c83e4478095434674112603de253f452afb5234f9ebca6",
+      "bytes": 9704
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/html-summary.json",
+      "sha256": "ca8760292e4977008fe8fe9c948c4f528375cc8d95162734819b1d64c39ae3a6",
+      "bytes": 2019
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/ir-after-render-deltas.json.gz",
+      "sha256": "7bee32a0cf98aeb4a35b3acc9df1d128bd22fe0e8c99fb9055738ad09e24f96c",
+      "bytes": 4650
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/ir-before-render-deltas.json.gz",
+      "sha256": "7bee32a0cf98aeb4a35b3acc9df1d128bd22fe0e8c99fb9055738ad09e24f96c",
+      "bytes": 4650
+    },
+    {
+      "path": "output-delta-enumeration/olmo-2-1124-7b/structural-and-parameter-summaries.json.gz",
+      "sha256": "a60b17c69bb3a4b160686944576390d654394db55d05a65368118edbd9a185e5",
+      "bytes": 11317
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/closure-deltas.json",
+      "sha256": "03e7cd7ef6ad86e62a66b6b464906f2cc5ea4e9cd6856f530badcaa1c71fa865",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/html-full.patch.gz",
+      "sha256": "bbb1e07cee6520e2e6e479e1e7466c2f0f6593ee98772d0290d42c2072f7718f",
+      "bytes": 22503
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/html-summary.json",
+      "sha256": "1fb6521da0133c42acff697d3fc3f45f8c145a6588ab8cf0ea614dcbb112ee09",
+      "bytes": 3467
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/ir-after-render-deltas.json.gz",
+      "sha256": "e4bbb34ec49210a0a686813ece326aee28b33042ac366737b9e076d1d7c521a4",
+      "bytes": 1385
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/ir-before-render-deltas.json.gz",
+      "sha256": "e4bbb34ec49210a0a686813ece326aee28b33042ac366737b9e076d1d7c521a4",
+      "bytes": 1385
+    },
+    {
+      "path": "output-delta-enumeration/pixart-sigma-xl-2-1024-ms/structural-and-parameter-summaries.json.gz",
+      "sha256": "26f123bdf2c3d8dde081fe2baa58d36c816f33a871af1beb70db4c25123e347c",
+      "bytes": 510
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/closure-deltas.json",
+      "sha256": "6aebf6f9c231d117524c1c0c5d6945369cf68c5dbf4725d41d822aa2fbbc5c7a",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/html-full.patch.gz",
+      "sha256": "92b241785fbeff1c88b7a9c371689789b832de6d15239ef4f1d1d1f45b43dcf9",
+      "bytes": 22960
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/html-summary.json",
+      "sha256": "99941ab849c238cc5f3e4e1dc9eb3dab8d2a6e77bdedde2d5eb262e2078ed8ea",
+      "bytes": 2726
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/ir-after-render-deltas.json.gz",
+      "sha256": "dd13db4c5be338b4d1d34e54b80a1809235c8c47995c904e2159d9b2b93063c2",
+      "bytes": 4994
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/ir-before-render-deltas.json.gz",
+      "sha256": "dd13db4c5be338b4d1d34e54b80a1809235c8c47995c904e2159d9b2b93063c2",
+      "bytes": 4994
+    },
+    {
+      "path": "output-delta-enumeration/prxpixel-t2i/structural-and-parameter-summaries.json.gz",
+      "sha256": "a07d7f67d0d5c1be3db729cb2d301499da802f28fc671693e3a75ef866e44f64",
+      "bytes": 6029
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/closure-deltas.json",
+      "sha256": "c21c1d7e2b5222a0d51b4fbd997ca141ed86f5aa50b5e7ec2e23ea59ff55d0ae",
+      "bytes": 1450
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/html-full.patch.gz",
+      "sha256": "94ceb63c799d67ba4452c5ba310acf6704b3fd459e90d17b81e633ae796857f7",
+      "bytes": 27316
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/html-summary.json",
+      "sha256": "a5a1571881b77379e665746cc5c26a9aa27535b1c7e556bbb8300fcac72dd107",
+      "bytes": 3481
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/ir-after-render-deltas.json.gz",
+      "sha256": "0a6d68ea86137a996c8fdb37372c54ab667be1216227540b5773861e43ea3f80",
+      "bytes": 7709
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/ir-before-render-deltas.json.gz",
+      "sha256": "0a6d68ea86137a996c8fdb37372c54ab667be1216227540b5773861e43ea3f80",
+      "bytes": 7709
+    },
+    {
+      "path": "output-delta-enumeration/qwen-image/structural-and-parameter-summaries.json.gz",
+      "sha256": "cad1c1b6909d9b71c755000c2b6f76b9d3ded670e0a0e67587e0b5780cb77ae0",
+      "bytes": 9054
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/closure-deltas.json",
+      "sha256": "60e2431b843795cd624e31a40181892b1774919f4bbdd94770cd8e4f9f953795",
+      "bytes": 1416
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/html-full.patch.gz",
+      "sha256": "aba2358688624952d209558215446e5c4093158ff06640178813595f51eca757",
+      "bytes": 20853
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/html-summary.json",
+      "sha256": "ca82682ca2691deb084dd9971262c43852ff3c30dfdd2f14105e05e0889c22c1",
+      "bytes": 3357
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/ir-after-render-deltas.json.gz",
+      "sha256": "605ae47e667b30d4b08ce75f170ba54a40de730d256d4e354e5d4b09e21d2300",
+      "bytes": 4937
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/ir-before-render-deltas.json.gz",
+      "sha256": "605ae47e667b30d4b08ce75f170ba54a40de730d256d4e354e5d4b09e21d2300",
+      "bytes": 4937
+    },
+    {
+      "path": "output-delta-enumeration/qwen2-vl-7b-instruct/structural-and-parameter-summaries.json.gz",
+      "sha256": "a38946f4f2cf310b3b3055db58fb1f627548fbdb8d3530b9e17cc3285b15d325",
+      "bytes": 6833
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/closure-deltas.json",
+      "sha256": "f05d1354a8586a08c1869e30865b2df16e4f1158076262527f4630ca9f0595be",
+      "bytes": 1416
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/html-full.patch.gz",
+      "sha256": "4d9fd82978176a860d02f5a12aeb1cafe2e141c76c6621739ecb143107697c5d",
+      "bytes": 31997
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/html-summary.json",
+      "sha256": "1e4b96b4593d1c01ee219ac46bea5f011c82ee24e3dd08b918529a5c009f82c3",
+      "bytes": 4543
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/ir-after-render-deltas.json.gz",
+      "sha256": "5e5f6981bd108ecd7f0311602c9a81048e78e6f9063326de468f040a992a0e5f",
+      "bytes": 6112
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/ir-before-render-deltas.json.gz",
+      "sha256": "5e5f6981bd108ecd7f0311602c9a81048e78e6f9063326de468f040a992a0e5f",
+      "bytes": 6112
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b/structural-and-parameter-summaries.json.gz",
+      "sha256": "99ba9611419ed49ced36c370a9e01cc1878994658a6d9b76d7e35d484518ef01",
+      "bytes": 47048
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/closure-deltas.json",
+      "sha256": "476352c3c05899a378515928a83300355a92e49a58273615d6e4a419a2241de9",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/html-full.patch.gz",
+      "sha256": "f0a007b2882f450f101514b801990bad343056e000fe54660f8cf959daf46316",
+      "bytes": 17324
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/html-summary.json",
+      "sha256": "4dca368bcf8cd03fb3b785d1ea0e1ab34065c40ffc6cc8920b91797960474d3a",
+      "bytes": 2468
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/ir-after-render-deltas.json.gz",
+      "sha256": "f8f757becc91ef52349816f17324ecec47bba8a6b8a16338a05a497f2ca4ee27",
+      "bytes": 5850
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/ir-before-render-deltas.json.gz",
+      "sha256": "f8f757becc91ef52349816f17324ecec47bba8a6b8a16338a05a497f2ca4ee27",
+      "bytes": 5850
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-5-27b-text/structural-and-parameter-summaries.json.gz",
+      "sha256": "d775c4a48d50abb130ebaf02a598c9ab2b9257cfaaa7e608fcfd66e7f81a8f90",
+      "bytes": 47031
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/closure-deltas.json",
+      "sha256": "56f3f4e868dc7d7d31c4668e79a299177ce8f834cafbaa38f4344555211806ae",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/html-full.patch.gz",
+      "sha256": "39de7c303921e943053b356eee4deda6678556e29fac93ae31ff0c7c4c7b3495",
+      "bytes": 12413
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/html-summary.json",
+      "sha256": "41d25409eae707f6d86f1c2f86258887b6277b229442bbe74fb1fdafe8d3dfee",
+      "bytes": 2021
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/ir-after-render-deltas.json.gz",
+      "sha256": "e801cef106a285405767a424ba44ba687ff6c698ca102e715087ef8e3ca90840",
+      "bytes": 4671
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/ir-before-render-deltas.json.gz",
+      "sha256": "e801cef106a285405767a424ba44ba687ff6c698ca102e715087ef8e3ca90840",
+      "bytes": 4671
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-8b/structural-and-parameter-summaries.json.gz",
+      "sha256": "349c6837cd96628a4ed52bcec958e6eb8ded423b7617a19838c2b3f44c21ba57",
+      "bytes": 13896
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/closure-deltas.json",
+      "sha256": "bcee85f0ca6e8ac1e53ed8536569ac7d739ee674e9a276d54f2bea53500670b1",
+      "bytes": 2499
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/html-full.patch.gz",
+      "sha256": "a289c2ae7b6a074f572ffb3f305d844b633d22d2a41cfe614c0c600e0affaa97",
+      "bytes": 18504
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/html-summary.json",
+      "sha256": "1e6692fcf0b5bd2137994e932fd20a1da6b65a51d95c39ce389f92d56da1cd5d",
+      "bytes": 3058
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/ir-after-render-deltas.json.gz",
+      "sha256": "634310661ff44da089ef847d820dcf9e93d3abf0d596f80e4b36f2adb11f144c",
+      "bytes": 6525
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/ir-before-render-deltas.json.gz",
+      "sha256": "634310661ff44da089ef847d820dcf9e93d3abf0d596f80e4b36f2adb11f144c",
+      "bytes": 6525
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-omni-30b/structural-and-parameter-summaries.json.gz",
+      "sha256": "b164031791ec8d538519e11446daf845744ea38932a075545b7785740911199d",
+      "bytes": 6887
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/closure-deltas.json",
+      "sha256": "2006fcb75a421ff5b8370d4ad960ad057e616027ade07057168b7423fc5ae95e",
+      "bytes": 1416
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/html-full.patch.gz",
+      "sha256": "35e027fd35890126083068473bee82d8786a2c12223cd2aa44f43d4b358acf18",
+      "bytes": 26394
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/html-summary.json",
+      "sha256": "1dd2ee21e97113d677c6c098fdf6745d36728ebc2be9dffd4387c00c0db2a2cf",
+      "bytes": 3385
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/ir-after-render-deltas.json.gz",
+      "sha256": "8f4948213868238791e6d0dc2e323271d92c88dd3f52a835aa6cb0d99e3fc7bc",
+      "bytes": 7979
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/ir-before-render-deltas.json.gz",
+      "sha256": "8f4948213868238791e6d0dc2e323271d92c88dd3f52a835aa6cb0d99e3fc7bc",
+      "bytes": 7979
+    },
+    {
+      "path": "output-delta-enumeration/qwen3-vl-235b/structural-and-parameter-summaries.json.gz",
+      "sha256": "bcd1e7f944082e70aa661b64f804b1c4c366bf51f78ade4f4e1619b55dbef95c",
+      "bytes": 35611
+    },
+    {
+      "path": "output-delta-enumeration/result.json",
+      "sha256": "a7c0d38ad061c7579b3d32e13f9ab82f7e01aabfc2585b9edf13ce6a3cb0e153",
+      "bytes": 43080
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/closure-deltas.json",
+      "sha256": "542506b87a189cc455ca59393d5f20294f14ebb3edbc07cf3a540381c0367aed",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/html-full.patch.gz",
+      "sha256": "dc7233de4130117cfa653c30ce08d33211c11b3e027704c73dfff7532cd7f7ef",
+      "bytes": 28430
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/html-summary.json",
+      "sha256": "19a2bdf9b4ea8f56368b3695a8d874da3da62c9941b97e1ff0a1ba317c7b842c",
+      "bytes": 3321
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/ir-after-render-deltas.json.gz",
+      "sha256": "263111edc4b1317ea24d6b5f4c01dbc682ff0ee4070f487e897ba59e7816605e",
+      "bytes": 5899
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/ir-before-render-deltas.json.gz",
+      "sha256": "263111edc4b1317ea24d6b5f4c01dbc682ff0ee4070f487e897ba59e7816605e",
+      "bytes": 5899
+    },
+    {
+      "path": "output-delta-enumeration/sana-1600m-1024px-diffusers/structural-and-parameter-summaries.json.gz",
+      "sha256": "0ca205fcfa323f11d5a1cda3333b768ec8705f20e98c2c6e4141ccb6c81ca28c",
+      "bytes": 6650
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/closure-deltas.json",
+      "sha256": "9a84c8147fe792fd6d73f953d7295ecb43c1e537d28f4137451890a02db5a30c",
+      "bytes": 1428
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/html-full.patch.gz",
+      "sha256": "a81acbe0e93a5de1a47003d2e6b19ed711dd38914e067c7820723d017adaff65",
+      "bytes": 27057
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/html-summary.json",
+      "sha256": "e578e2c24ac194dfe7db05aaa4027b0ecc232fe3330d057f60f890d7e9da6b25",
+      "bytes": 4503
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/ir-after-render-deltas.json.gz",
+      "sha256": "7797a8f95cd6c2b6f9aae515f9332685a7307f1cd2481b5b9ce5f9c7a17bbdf7",
+      "bytes": 1853
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/ir-before-render-deltas.json.gz",
+      "sha256": "7797a8f95cd6c2b6f9aae515f9332685a7307f1cd2481b5b9ce5f9c7a17bbdf7",
+      "bytes": 1853
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-3-5-large/structural-and-parameter-summaries.json.gz",
+      "sha256": "8280b7fdac4d96b6cf629a49f9aec1d796322a7f8d7359f985879298538df983",
+      "bytes": 514
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/closure-deltas.json",
+      "sha256": "a2fefcb375304f17aee4427346ef29d325df936cfe66c819ac0837a98a3cb4dd",
+      "bytes": 1695
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/html-full.patch.gz",
+      "sha256": "75cba487712ac011a7b135dc71f1fad9efb2e95fa62f642734f4fd185b501a91",
+      "bytes": 489192
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/html-summary.json",
+      "sha256": "b95e2ba112a247fbd416abdb966f546f8faa57ffa8ac04325a792e0a8f194589",
+      "bytes": 1291
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/ir-after-render-deltas.json.gz",
+      "sha256": "2aaea814db827f31f741f66b0721baffd11027fbc47cefbc43e6a423f3c2a9fd",
+      "bytes": 64452
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/ir-before-render-deltas.json.gz",
+      "sha256": "2aaea814db827f31f741f66b0721baffd11027fbc47cefbc43e6a423f3c2a9fd",
+      "bytes": 64452
+    },
+    {
+      "path": "output-delta-enumeration/stable-diffusion-xl-base-1-0/structural-and-parameter-summaries.json.gz",
+      "sha256": "8fae73cbbdb8100994d5a9db8d95ab553cf02760436de173c9092f827791bb2f",
+      "bytes": 41141
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/closure-deltas.json",
+      "sha256": "45ddfc1f6838824a1d388448b142e8e0e52b010ae69af6e3118a88d422054d5c",
+      "bytes": 914
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/html-full.patch.gz",
+      "sha256": "ba70e0c22f2ac6ccb30605897e9be4eace10f7cdcf017f310da9bb247c74af88",
+      "bytes": 9660
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/html-summary.json",
+      "sha256": "f6345c723f0e47f95333be03b442ca86a29a7e496693eee8301378c2921cba93",
+      "bytes": 2019
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/ir-after-render-deltas.json.gz",
+      "sha256": "de75cf904233d403fc02ac97de0e4b9a966f40576846b78c179547923dd52b58",
+      "bytes": 4774
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/ir-before-render-deltas.json.gz",
+      "sha256": "de75cf904233d403fc02ac97de0e4b9a966f40576846b78c179547923dd52b58",
+      "bytes": 4774
+    },
+    {
+      "path": "output-delta-enumeration/stablelm-2-1-6b/structural-and-parameter-summaries.json.gz",
+      "sha256": "57c8511000516bf105e34d2f0bdd7f076bff25ace36c73a9a770bfadab47d729",
+      "bytes": 11209
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/closure-deltas.json",
+      "sha256": "10da984ffc187fc4ec6c8d19b09c6adcc85c0dc7fbdd548d8048c7ab8ed0c587",
+      "bytes": 922
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/html-full.patch.gz",
+      "sha256": "4515f813ed8cbdba66c18c52c80f14eaa289a5b20105f9aea57d43d117773ae0",
+      "bytes": 21808
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/html-summary.json",
+      "sha256": "9df819f9929cecd0683c3cb0c5736706ebbc28bfce8269bffc4b511c82222504",
+      "bytes": 3172
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/ir-after-render-deltas.json.gz",
+      "sha256": "4a037611ec44653264f75f37d73a8c9e1b0bf685224ea8c9c63cf36367b7c736",
+      "bytes": 5434
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/ir-before-render-deltas.json.gz",
+      "sha256": "4a037611ec44653264f75f37d73a8c9e1b0bf685224ea8c9c63cf36367b7c736",
+      "bytes": 5434
+    },
+    {
+      "path": "output-delta-enumeration/wan2-2-t2v-a14b-diffusers/structural-and-parameter-summaries.json.gz",
+      "sha256": "f109de4de1d65045e904c4ce38f8a75987cf772b3f0cc4cdb9ee40323338d904",
+      "bytes": 3650
+    },
+    {
+      "path": "svg-identity-audit/auraflow-v0-3.json.gz",
+      "sha256": "ead1ec0705bff0b6fc336b8ddac4ded750445a7e9b1a39fa89bba419e7eeba05",
+      "bytes": 7360
+    },
+    {
+      "path": "svg-identity-audit/bloom.json.gz",
+      "sha256": "1518147260cf0a0c0bea1f427b64bf66fcb5afb993e99d46ed11066182d34ff4",
+      "bytes": 1868
+    },
+    {
+      "path": "svg-identity-audit/cogvideox-5b.json.gz",
+      "sha256": "8c3b3ea2d814e7c503bb6389a816f420572f9b74a998a9cfbb4439bc41dfa9b3",
+      "bytes": 7456
+    },
+    {
+      "path": "svg-identity-audit/command-a-03-2025.json.gz",
+      "sha256": "4e7b1e06499be36c3504a444d687c7d231101e8d991c26237a730cfffecf1cb2",
+      "bytes": 2598
+    },
+    {
+      "path": "svg-identity-audit/dbrx-base.json.gz",
+      "sha256": "4c1572439b3e239ad3884992532bd8db13dcf72e5e05d0158e16b3aeb5ff7c2a",
+      "bytes": 2368
+    },
+    {
+      "path": "svg-identity-audit/deepseek-coder-v2-lite.json.gz",
+      "sha256": "7bb07bb57c8c3f85a39ad34693b4ab18f7c432302e5e3b978fbaab607a0da274",
+      "bytes": 2779
+    },
+    {
+      "path": "svg-identity-audit/deepseek-v3.json.gz",
+      "sha256": "0c4335b1fc3669e6cf76eace9a20b2d34cfd549299d58cc4ea9ffebb56d415f9",
+      "bytes": 6940
+    },
+    {
+      "path": "svg-identity-audit/deepseek-v4-flash.json.gz",
+      "sha256": "87734afe72867b36d0f338607f2e902a0f48cf74a5c18d46498f688d30d2fe81",
+      "bytes": 1313
+    },
+    {
+      "path": "svg-identity-audit/flux-2-dev.json.gz",
+      "sha256": "162dc8a61337ad76681cb37ff2f2bc8023bd73de558a830019c6826b39d6d005",
+      "bytes": 8104
+    },
+    {
+      "path": "svg-identity-audit/fluxtransformer2dmodel.json.gz",
+      "sha256": "0aa681f7a314c1570cf8f4c79be618e40f76606f9698764a061d3fbbab1ba4d6",
+      "bytes": 9816
+    },
+    {
+      "path": "svg-identity-audit/gemma-2-2b-it.json.gz",
+      "sha256": "70fb155d62fa11f25010abac4c98d2c1b74fa22be43b2bce9de1467bccb26369",
+      "bytes": 4324
+    },
+    {
+      "path": "svg-identity-audit/gemma-3n-e2b.json.gz",
+      "sha256": "081720aadea8eaa2d3ee7f06f06426795ad0a4351cd8cc45f91a88ad3d1ab91e",
+      "bytes": 10528
+    },
+    {
+      "path": "svg-identity-audit/glm-4-5.json.gz",
+      "sha256": "1621a5c46172e8d821ed1b66eb8385544df9f80472bebe86655d0c3239e05e0e",
+      "bytes": 5473
+    },
+    {
+      "path": "svg-identity-audit/gpt-oss-20b.json.gz",
+      "sha256": "192f646d0d537c197ebe72c81285aa6cfe977812eb57615f9f6821a06d70ea27",
+      "bytes": 5802
+    },
+    {
+      "path": "svg-identity-audit/granite-3-0-8b-instruct.json.gz",
+      "sha256": "cf26260ae709d40a21b12f2161dbd3079baaa260f0eff34017382aa56036bc75",
+      "bytes": 1919
+    },
+    {
+      "path": "svg-identity-audit/hunyuanvideo.json.gz",
+      "sha256": "2a73b1ca5367e81195fb6b473c14748cae4ea1f20adb2a43ff2b9ec435c58271",
+      "bytes": 9536
+    },
+    {
+      "path": "svg-identity-audit/jamba-v0-1.json.gz",
+      "sha256": "704f3d3fa7bb9c1d91a06b57781cd70f4920fef6df4df08d86e88550b04e4939",
+      "bytes": 1305
+    },
+    {
+      "path": "svg-identity-audit/lfm2-1-2b.json.gz",
+      "sha256": "47f74b5bb8e00269c8b0b2a204ad0c1eab684e366ef89f5ac8ff926b9b353250",
+      "bytes": 1765
+    },
+    {
+      "path": "svg-identity-audit/llama-7b.json.gz",
+      "sha256": "efd0c2d1333309f5c8f6a84a06700099e70155407fc828990af252d95b387a5e",
+      "bytes": 1842
+    },
+    {
+      "path": "svg-identity-audit/ltx-video.json.gz",
+      "sha256": "9ba9de735a91f0a9aa8311812cb07ba0944f0d62858afec605ec764f82cb9175",
+      "bytes": 6078
+    },
+    {
+      "path": "svg-identity-audit/lumina-image-2-0.json.gz",
+      "sha256": "57b02d456a47233743fafff9acaeaa28687cc0b4741f71e55a7113aa57c2c14c",
+      "bytes": 8439
+    },
+    {
+      "path": "svg-identity-audit/mochi-1-preview.json.gz",
+      "sha256": "848cf66a4447b966fcc936594f4e294b25c6b48f9e8eb0597edbc455ef858047",
+      "bytes": 5030
+    },
+    {
+      "path": "svg-identity-audit/musicgen-small.json.gz",
+      "sha256": "ae7380462b5cd680cce2ee4415f4c664885a7888a4d73b97ece2f5c5f51440b0",
+      "bytes": 2666
+    },
+    {
+      "path": "svg-identity-audit/nemotron-h-8b.json.gz",
+      "sha256": "ad29207bf068fa6a57bb3a328c5228738fcf6cfec80eca2854421b7a8a99d738",
+      "bytes": 1311
+    },
+    {
+      "path": "svg-identity-audit/olmo-2-1124-7b.json.gz",
+      "sha256": "7ec7ff536e275155e592c611e70966915bb34d96d682fa324e3ee17dd8e8a812",
+      "bytes": 1902
+    },
+    {
+      "path": "svg-identity-audit/pixart-sigma-xl-2-1024-ms.json.gz",
+      "sha256": "3db2162d7e594f13990e55e9db79b46c9ba933dd216e5178cb2cdbd9c5a99260",
+      "bytes": 6700
+    },
+    {
+      "path": "svg-identity-audit/prxpixel-t2i.json.gz",
+      "sha256": "9ed7c2113c2488d9a1fb3de5aa5e127a4cf25253dd6bcaee11441fefe8565271",
+      "bytes": 3025
+    },
+    {
+      "path": "svg-identity-audit/qwen-image.json.gz",
+      "sha256": "78af6b79771d421503553c2bcaaf3515783c9a4b7ad86b5322b3e0f41ee00823",
+      "bytes": 6284
+    },
+    {
+      "path": "svg-identity-audit/qwen2-vl-7b-instruct.json.gz",
+      "sha256": "41ef22b747f3b607e2e3df72b00e6398704558b7321ff25b6c8e64c29fbaa2fd",
+      "bytes": 5693
+    },
+    {
+      "path": "svg-identity-audit/qwen3-5-27b-text.json.gz",
+      "sha256": "4c7480f4c6a9398e4a605412254ddaf1daf579d1f2fdbe7f4467abce57d028e3",
+      "bytes": 4283
+    },
+    {
+      "path": "svg-identity-audit/qwen3-5-27b.json.gz",
+      "sha256": "7023e1408b58bc682772c7266c42a1d06792346a2d38a964e2d92793e4d92fa9",
+      "bytes": 8931
+    },
+    {
+      "path": "svg-identity-audit/qwen3-8b.json.gz",
+      "sha256": "76da692a3f7d3b48a47d9825e48bbc9381a072049f945955ad19630045d543ef",
+      "bytes": 1906
+    },
+    {
+      "path": "svg-identity-audit/qwen3-omni-30b.json.gz",
+      "sha256": "a6750de0db40834bf0e101437eb9d550b0b4339f7f7dec75996f5f4b2058fedc",
+      "bytes": 2638
+    },
+    {
+      "path": "svg-identity-audit/qwen3-vl-235b.json.gz",
+      "sha256": "9e9e26b53c0be5fbc26a75e93a30ecf6945a8fb3bd8d244ba5ca8b57d82fbfec",
+      "bytes": 5431
+    },
+    {
+      "path": "svg-identity-audit/result.json",
+      "sha256": "e6b93ab53d15fd5aa79a64199ce77c0ceef509a48700e0d5329a5ee75f337b2d",
+      "bytes": 26573
+    },
+    {
+      "path": "svg-identity-audit/sana-1600m-1024px-diffusers.json.gz",
+      "sha256": "661bec457db5637befcb8b4ff41ee02602367746130b89d25528d764085dace7",
+      "bytes": 6808
+    },
+    {
+      "path": "svg-identity-audit/stable-diffusion-3-5-large.json.gz",
+      "sha256": "8376c9ff65b67dd833e9f6d22b6875eeff32afd81dfa3d759a09b853705c5fd9",
+      "bytes": 9295
+    },
+    {
+      "path": "svg-identity-audit/stable-diffusion-xl-base-1-0.json.gz",
+      "sha256": "c54ea67cbe517e447d6f21f2230f857f6d8bc9f473dbec1735b2206ea66902db",
+      "bytes": 565849
+    },
+    {
+      "path": "svg-identity-audit/stablelm-2-1-6b.json.gz",
+      "sha256": "cb7de9ec0cccfa9294b4bce791c626ad16d040b6c672655cdec502d8b2654e4e",
+      "bytes": 1854
+    },
+    {
+      "path": "svg-identity-audit/wan2-2-t2v-a14b-diffusers.json.gz",
+      "sha256": "90b8257df221d20de58a1e2f2d858777f68cd17d1cb798536f2ffccaf5e9b4ab",
+      "bytes": 5376
+    }
+  ],
+  "scope": "Saved-data comparison/audit only; parent separately archives original closure/page captures."
+}

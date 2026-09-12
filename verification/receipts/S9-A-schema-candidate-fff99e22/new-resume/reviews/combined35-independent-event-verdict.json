@@ -1,0 +1,62 @@
+{
+  "authority_limit": "source_fact_keys can qualify placement only together with an existing explicit source_instance_path, or via separate actual RenderEvent evidence. Proposed cards introduce no instance path and paired render controls require same graph/event/receipt semantics. Exact runtime/matrix effects still need measurement; source review is not a zero-delta or coverage verdict.",
+  "base_relative_nonoverlapping_intervals": [
+    {
+      "author": "layer-count-alias-default-proposal-r2",
+      "end": 1228,
+      "start": 1226
+    },
+    {
+      "author": "layer-count-alias-default-proposal-r2",
+      "end": 1235,
+      "start": 1229
+    },
+    {
+      "author": "repeated-schedule-visibility-proposal-r2",
+      "end": 4336,
+      "start": 4336
+    },
+    {
+      "author": "repeated-schedule-visibility-proposal-r2",
+      "end": 4582,
+      "start": 4582
+    }
+  ],
+  "combined_manifest_sha256": "548aef2adf1c3d4bd58505541d8f195c680929a0f863cd73c40fe1da3b31865d",
+  "composition_interaction": "Count selection happens before the unchanged retained schedule reader projection and loop construction; qualified schedule citations happen before/after the existing loop. The count source address is retained and the schedule proof remains responsible for its ordered value. Disjoint hunks do not overwrite either boundary.",
+  "count_boundary": "Only absent num_hidden_layers selection changes. Checkpoint arbitration still runs first; present null/zero/alias conflict never falls through. Each supported spelling is resolved at its exact selected child path through existing bound PreparedDocument/default-premise validation. Unequal default values reject; equal values retain vocabulary-first supplying address. No config hydration, model-name selection, alias expansion, reader proof construction or source/schema changes.",
+  "files": [
+    {
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "proposed_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a"
+    },
+    {
+      "before_sha256": null,
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "proposed_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721"
+    },
+    {
+      "before_sha256": null,
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "proposed_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07"
+    }
+  ],
+  "independently_recomputed_composition_equals_combined": true,
+  "no_runtime_models_tests_or_live_source_changes_by_reviewer": true,
+  "origin_manifests": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/layer-count-alias-default-proposal-r2/manifest.json",
+      "sha256": "c4f3ab81462e669b8d26f86f99a1107046b67b3b58dc46d4d05a9afc391d8a4c"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/repeated-schedule-visibility-proposal-r2/manifest.json",
+      "sha256": "24050ff7373e377a9a5997ab753cebae29b35b54311a33812740b445a255278e"
+    }
+  ],
+  "output_approval": false,
+  "runtime_required": "Root applies only exact three held files, freezes35 and runs the planned461 focused lane plus actual ordinary/sparse diagnostics. Subsequent matrix/pages/output deltas require new generation pins and owner approval; no inherited34 result is relabelled.",
+  "test_controls": "Eight alias/default cases plus six visibility cases. Synthetic internal parse controls now activate the actual ConfigAccessLedger, making positive and negative event assertions meaningful. Actual Bloom/GPT2 defaults, conflicting/equal/unsupported aliases, present null/zero and checkpoint conflicts retained. Visibility ordinary/default Bloom/MusicGen checks exact native chip references and HTML, omission poison, paired graph/event/receipt signatures and citation-only non-placement; stripped proof cannot gain citation. presentation_census now receives the actual dict contract.",
+  "verdict": "PASS_SOURCE_ONLY_EXACT_COMBINED35_READY_FOR_ROOT_APPLY_AND_RUNTIME",
+  "visibility_boundary": "Only the two already-qualified relation readers map their whole repeated schedule to existing canonical attn/cross_attn attention cards. Existing native proof is validated before citation. Every tier gets the same source_fact_keys citation; class_default chip is produced by existing generic presentation machinery. No new block, graph operation, source_instance_path, construction occurrence or native fact is authored."
+}

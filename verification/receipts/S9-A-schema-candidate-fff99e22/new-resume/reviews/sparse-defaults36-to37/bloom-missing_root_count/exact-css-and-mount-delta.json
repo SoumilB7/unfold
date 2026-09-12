@@ -1,0 +1,6 @@
+{
+  "before_mount": "uf-6ff1bd1be0",
+  "after_mount": "uf-f560548c57",
+  "inserted_css": "#uf-f560548c57 .uf-chip-unresolved,\n#uf-f560548c57 .uf-chip-pending_design,\n#uf-f560548c57 .uf-chip-class_default,\n#uf-f560548c57 .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}",
+  "scope": "Finite raw cause accounting; not an output acceptance normalization."
+}

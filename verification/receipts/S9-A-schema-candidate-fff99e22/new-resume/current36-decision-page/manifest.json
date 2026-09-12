@@ -1,0 +1,94 @@
+{
+  "scope": "Publication of saved actual36 fleet and finite sparse diagnostic pages only; no model imports or output blessing",
+  "validated_supplied_proofs": 522,
+  "links_checked": 82,
+  "outputs": [
+    {
+      "path": "z-docs/12-design/S9-schema/current-thirtysixth.html",
+      "sha256": "628722de3b45bf0e6cfd76fa83538500ab6ed777cda3536238d10b3ccfe1129c"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/index.html",
+      "sha256": "b35e50e1314e2662b1f15ffb8b2fadcbfa0217e958146badd1c242d07c6f3513"
+    },
+    {
+      "path": "z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "bc6c68da00f92650e55a5a3e317482f86bff281cc8ba1aff4394f9e3258f77d8"
+    },
+    {
+      "path": "z-docs/12-design/S9-transformer/index.html",
+      "sha256": "3f885af974e98d3c73b17eec5d5914d1dee19c3998bbb4cd78f5fb0e398607b3"
+    },
+    {
+      "path": "z-docs/12-design/S9-unet/index.html",
+      "sha256": "9cabcd2e5b20665c6144f146d1db7875235ada4fcc8b9962048e4c2afd9b3c74"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/ordinary.html",
+      "sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/ordinary.input.json",
+      "sha256": "c3df161181ad2b4b42ca1d0fd86a077382c34ddbebbf2e285ef6b4ee8fc08c92"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/ordinary.result.json",
+      "sha256": "7f6ff1b73aabfd288b04dcfc4d65ce665483bec007cd6fa72af61376e6dfd7de"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/sparse.html",
+      "sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/sparse.input.json",
+      "sha256": "ac2e047db81f59146003e8e4682bca0447357bb714d8743aff31e4b4f294b990"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/sparse.result.json",
+      "sha256": "a7ed6eb5e72df53b541230976c1316c8cd7e1f1c22699f399b4345492d144697"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/ordinary.html",
+      "sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/ordinary.input.json",
+      "sha256": "23f84920adfc10e68115959e32a32b5bd2a03d4a566984f1fbe66c5182289d26"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/ordinary.result.json",
+      "sha256": "683519153d99f17f5f76ec351e0badd483155287d69bc680df6dd36d2f528617"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/sparse.html",
+      "sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/sparse.input.json",
+      "sha256": "1cbe0bd0a14a770f90a98beaf1ac7e49376ef7733ebc91db7cf28ee6a263424d"
+    },
+    {
+      "path": "z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/sparse.result.json",
+      "sha256": "96208d84621fc9e6f9b4a5374e2f147f8924c8222c5d52f2c9d7594518f4892c"
+    }
+  ],
+  "before": [
+    {
+      "path": "before/z-docs/12-design/S9-diffusion/index.html",
+      "sha256": "779e7af8bac85f0355c7b0043f877ac630c74b462bade60585a56e38e9d43274"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-schema/index.html",
+      "sha256": "8a3c67e30437c19e166fc2fdfd1b8017ec5dd434e4c30e38fe27776df6aec7e0"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-transformer/index.html",
+      "sha256": "b9324af62988ddd0ae79ee0df3302d118dde5eb7e954991844b8484337de3ded"
+    },
+    {
+      "path": "before/z-docs/12-design/S9-unet/index.html",
+      "sha256": "fa34d0247f203bc91270fe4f6b2e2b8aa3706b39f3c729500e858824781b0d9c"
+    }
+  ],
+  "generator_sha256": "e7af353218d3e73b79c0d681847a038c54555b042337b56110351b9a7f66d25e"
+}

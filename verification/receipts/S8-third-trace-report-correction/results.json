@@ -1,0 +1,8 @@
+{
+  "positive_chain_gaps": [],
+  "arrows": 3,
+  "parameters": 2050560,
+  "conditions": 7,
+  "missing_visible_bookend_rejected": true,
+  "dropped_condition_rejected": true
+}

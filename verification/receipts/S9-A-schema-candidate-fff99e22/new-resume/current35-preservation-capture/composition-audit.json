@@ -1,0 +1,36 @@
+{
+  "status": "SOURCE_AND_SAVED_INPUT_INSPECTION_ONLY",
+  "source_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "prior_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "source_manifest_rows": 198,
+  "exact_delta_paths": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "after_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a"
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721"
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "after_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07"
+    }
+  ],
+  "complete_preservation_import_source_changes": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "after_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a"
+    }
+  ],
+  "baseline_lane_and_original31_recovery_origin_exactly_unchanged": true,
+  "historical_baseline_files": 203,
+  "historical_baseline_bytes_unchanged": true,
+  "historical_canonical_expectations_not_repaired": "Original inventory unchanged;118 stale historical expectations do not become authoritative. Exact recovered31baseline must independently match committed expectation.",
+  "preservation_test_and_expected_manifest_and_corpus_unchanged": true,
+  "authority": "Source/input composition only; root owns runtime. Original31 exact-fff baseline output read-only through original31 contract; current35 through new. Previous measured fleets/matrices are separate origins. No acceptance/blessing."
+}

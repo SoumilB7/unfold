@@ -10,12 +10,19 @@ def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
     """Video frames -> visual encoder -> grid-aware video token stream."""
     view = StackView(info, mount_id, "video-path", f"{ir.get('name', 'model')} video pathway")
     view.block("video_frames", "Video frames", w=220, h=44)
-    view.block("video_patches", "Temporal patches", w=260, h=44)
-    view.block("video_encoder", "Vision encoder", w=300, h=54)
     video = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs", {}).get("video") or {}
+    view.block("video_patches", (
+        "Temporal patches" if (video.get("embedding") or {}).get("kind") == "temporal_patch_embedding"
+        else "Code-defined video embedding"), w=260, h=44)
+    encoder = video.get("encoder") or {}
+    view.block("video_encoder", (
+        "Vision encoder" if encoder.get("source_owner")
+        else "Code-defined video encoder"), w=300, h=54)
     projector = video.get("projector") or {}
-    view.block("video_projector", _connector_label(projector, True), w=270, h=48)
-    view.block("video_tokens", "Video grid tokens", w=290, h=48)
+    view.block("video_projector", _connector_label(projector), w=270, h=48)
+    view.block("video_tokens", (
+        "Video grid tokens" if (video.get("tokens") or {}).get("kind") == "grid_video_tokens"
+        else "Code-defined video output"), w=290, h=48)
     return view.render()
 
 

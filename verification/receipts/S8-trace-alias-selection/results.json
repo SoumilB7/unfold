@@ -1,0 +1,89 @@
+{
+  "artifact_hashes": {
+    "facts": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+    "ir": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "observation": "ffbfbb2154e796352e55071aee158e7c81e82ed70faa7486b25db37b6602117d"
+  },
+  "artifact_paths": {
+    "facts": "/private/tmp/unfold-s8-final-4560449/sdxl/ordinary/facts.json",
+    "ir": "/private/tmp/unfold-s8-final-4560449/sdxl/ordinary/ir.json",
+    "observation": "/private/tmp/unfold-s8-final-4560449/sdxl/ordinary/observation.json"
+  },
+  "reporter_sha256": "8b96fb064c1a59a753e9eb064816d001b02253cf8fc2984b8a11999e971d524c",
+  "rows": [
+    {
+      "claim": "ffn_mechanisms",
+      "occurrence": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+      "same_occurrence_stage_cards": [
+        {
+          "id": "instance_down_blocks__1",
+          "visible": true
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_true__call__slot_1",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_1",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_1",
+          "visible": false
+        }
+      ],
+      "selected_stage_id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_1",
+      "selected_stage_visible": false
+    },
+    {
+      "claim": "cell_connections",
+      "occurrence": "down_blocks.0.resnets.0",
+      "same_occurrence_stage_cards": [
+        {
+          "id": "instance_down_blocks__0",
+          "visible": true
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_true__call__slot_0",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_0",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_0",
+          "visible": false
+        }
+      ],
+      "selected_stage_id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_0",
+      "selected_stage_visible": false
+    },
+    {
+      "claim": "spatial_mechanisms",
+      "occurrence": "down_blocks.0.downsamplers.0",
+      "same_occurrence_stage_cards": [
+        {
+          "id": "instance_down_blocks__0",
+          "visible": true
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_true__call__slot_0",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_true__operand_0__call__slot_0",
+          "visible": false
+        },
+        {
+          "id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_0",
+          "visible": false
+        }
+      ],
+      "selected_stage_id": "unet_primary_region_3__iteration__when_false__when_false__call__slot_0",
+      "selected_stage_visible": false
+    }
+  ],
+  "scope": "Trace report selection only; saved actual 4560449 artifacts",
+  "source_unchanged": true
+}

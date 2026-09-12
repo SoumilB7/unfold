@@ -1,0 +1,132 @@
+{
+  "broad_command": [
+    "python3",
+    "scripts/verify_commit.py",
+    "--commit",
+    "<commit_with_verified_s7_artifacts>",
+    "--focus",
+    "tests/test_s8_attribute_bindings.py",
+    "--focus",
+    "tests/test_s8_lookup_closure.py",
+    "--focus",
+    "tests/test_s8_wrapper_binding.py",
+    "--focus",
+    "tests/test_s8_iteration_binding.py",
+    "--focus",
+    "tests/test_s8_primary_ports.py",
+    "--focus",
+    "tests/test_s8_call_port_layout.py",
+    "--focus",
+    "tests/test_s8_component_scope.py",
+    "--focus",
+    "tests/test_s8_port_routes.py",
+    "--focus",
+    "tests/test_s8_cell_connections.py",
+    "--focus",
+    "tests/test_s8_runtime_source.py",
+    "--focus",
+    "tests/test_s7_artifacts.py",
+    "--focus",
+    "tests/test_s8_source_override.py",
+    "--focus",
+    "tests/test_s8_retained_source_index.py",
+    "--focus",
+    "tests/test_construction_summary.py",
+    "--focus",
+    "tests/test_s8_card_projection_receipts.py",
+    "--focus",
+    "tests/test_structural_writes.py"
+  ],
+  "coverage_capture": "Unchanged scripts/coverage.py main and sable behavior; observer saves actual SDXL/SD14 Diagram output for comparison with reviewed final projection.",
+  "coverage_commands": [
+    [
+      "python3",
+      "-u",
+      "/private/tmp/unfold-s8-coverage-capture.py",
+      "/private/tmp/unfold-s8-final-verification-7168440",
+      "<capture_dir>"
+    ],
+    [
+      "python3",
+      "-u",
+      "/private/tmp/unfold-s8-coverage-capture.py",
+      "/private/tmp/unfold-s8-final-verification-7168440",
+      "<check_capture_dir>",
+      "--check"
+    ]
+  ],
+  "coverage_scope": "Exact existing29+15denominator; no silent finding accepted; preserve acceptedS7 manifest and per-model deltas",
+  "family_output": "/private/tmp/unfold-s8-family-96d0c1e",
+  "matrix_check": [
+    "python3",
+    "scripts/generate_s7_shadow.py",
+    "--check"
+  ],
+  "matrix_command": [
+    "python3",
+    "-u",
+    "/private/tmp/unfold-s8-retained-index-replay.py",
+    "/private/tmp/unfold-s8-final-verification-7168440",
+    "/private/tmp/unfold-s8-matrix-replay-7168440"
+  ],
+  "matrix_output": "/private/tmp/unfold-s8-matrix-replay-7168440",
+  "matrix_tree": "/private/tmp/unfold-s8-final-verification-7168440",
+  "production_candidate": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "scope": "S7 artifacts may regenerate; no product/preservation baseline blessing. Exact output deltas need Soumil approval. All lanes serial.",
+  "serial_order": [
+    "complete_model_source_campaign_historical_c38",
+    "family_verification_historical96",
+    "complete_derived39_matrix5227",
+    "three_actual_typed_summary_proofs_per_saved_case716",
+    "final_actual_saved_case_HTML716",
+    "strict_saved_SDXL_matrix_reconciliation716",
+    "44_actual_public_coverage_generate716",
+    "44_actual_public_coverage_check716",
+    "named_per_model_delta_review_and_exact_public_count_freshness",
+    "final_artifact_commit",
+    "isolated_serial_broad_coordinator"
+  ],
+  "status": "all_model_source_render_matrix_coverage_pass_first_broad_static_only_fail_archive_cleanup_pending_fresh_coordinator",
+  "prior_matrix_lineage": {
+    "fresh_39_model_run": false,
+    "fresh_final_source_targets": 12,
+    "original_matrix_failure_preserved": "S8-matrix-96d0c1e-source-index-return",
+    "preserved_original_generation_96d0c1e": 25,
+    "preserved_with_separate_exact_PixArt_address_replay": 1,
+    "saved_evidence_reconciled_at_5227e9c_SDXL": 1
+  },
+  "matrix_lineage": {
+    "base": "complete5227 derived39 matrix",
+    "preserve_exact_unaffected_artifacts": 38,
+    "saved_SDXL_reconciliation_at_7168440": 1,
+    "fresh_model_or_execution_runs_in_this_derivation": 0,
+    "prior_generation_lineage": "25original96 +1separately replayedPixArt +1savedSDXL +12actual5227",
+    "pending": null,
+    "result": "all117 payload bytes and39 summaries preserved; owner scope and final derivative reviews accepted"
+  },
+  "coverage_runner": "/private/tmp/unfold-s8-final-coverage-runner-7168440.py",
+  "coverage_output": "/private/tmp/unfold-s8-coverage-7168440",
+  "coverage_measured_totals": {
+    "proven": 645,
+    "flagged": 294,
+    "silent": 0
+  },
+  "coverage_check": {
+    "exit_code": 0,
+    "elapsed_seconds": 1231.294,
+    "implementation_unchanged": true
+  },
+  "historical_broad": {
+    "commit": "4df71c8ca919161e6995192eae0d49deffecb6b7",
+    "receipt": "S8-final-broad-4df71c8",
+    "failed_lanes": [
+      "static"
+    ],
+    "missing_lanes": [
+      "full",
+      "preservation"
+    ]
+  },
+  "next_broad_runner": "/private/tmp/unfold-s8-final-broad-runner-clean-7168440.py",
+  "next_broad_output": "/private/tmp/unfold-s8-final-broad-clean-7168440"
+}

@@ -1,0 +1,19 @@
+{
+  "actual_abort_attribution": "outer KeyboardInterrupt/null; executor-reported launcher130; owned-process closure separatelychecked",
+  "counts_checked": {
+    "changed_examples": 6,
+    "focused_failed": 1,
+    "focused_passed": 510,
+    "galleries": 19,
+    "individual_images": 294,
+    "isolated_pytest_seconds": 11.34,
+    "isolated_retry_passed": 1,
+    "preservation_witnesses": 29,
+    "retained_artifacts": 117
+  },
+  "decision": "ACCEPT",
+  "scope": "Appended Output approval implemented; fresh verification pending only",
+  "sha256": "183cf5e3a60d5e3c030e58ed8b12b2c76da6988678d361808340cc058001f5e4",
+  "source": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S8-review.md",
+  "whole_gate_still_pending": true
+}

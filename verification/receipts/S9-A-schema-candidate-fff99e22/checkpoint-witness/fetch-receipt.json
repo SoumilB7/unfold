@@ -1,0 +1,31 @@
+{
+  "address": {
+    "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+    "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "file": "unet/diffusion_pytorch_model.safetensors"
+  },
+  "requests": [
+    {
+      "range": [
+        0,
+        7
+      ],
+      "status": 206,
+      "content_range": "bytes 0-7/10270077736",
+      "bytes_read": 8,
+      "sha256": "db0ddd8f332eb0f3b86b938bd25c7469630bd68e8bc08cccf23301a925ebbe0a"
+    },
+    {
+      "range": [
+        8,
+        222999
+      ],
+      "status": 206,
+      "content_range": "bytes 8-222999/10270077736",
+      "bytes_read": 222992,
+      "sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    }
+  ],
+  "weight_payload_bytes_read": 0,
+  "header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+}

@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "b8965771470e95ff43d8377c8f0b205f96da0c8fa887074e939aa796c1efe2c7",
+  "baseline_output": {
+    "ir_after_sha256": "29e81f59588810adfba0760e538217263d391012f06711ecbd20d7c9779714eb",
+    "ir_before_sha256": "29e81f59588810adfba0760e538217263d391012f06711ecbd20d7c9779714eb",
+    "page_bytes": 112380,
+    "page_sha256": "3379444a943ccfb46eb818df6f35080470fb5e7fcc7c5130b4fff52a0f085409",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "b8965771470e95ff43d8377c8f0b205f96da0c8fa887074e939aa796c1efe2c7",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "b8965771470e95ff43d8377c8f0b205f96da0c8fa887074e939aa796c1efe2c7",
+  "seconds": 3.9119665830003214,
+  "slug": "ltx-video",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "a3cddf30002e2a60fd1f6497b75f1d9d991058c613f276c8c92c80be2733530e",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_ltx.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

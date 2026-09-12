@@ -1,0 +1,157 @@
+--- candidate26/model_unfolder/adapters/transformer/parser.py
++++ limited-document-fix/model_unfolder/adapters/transformer/parser.py
+@@ -1442,9 +1442,13 @@
+             legacy_source=_model_width_reader,
+             reason="exact checkpoint scalar declaration; not a state-flow connection",
+             claim_kind="value", claim_readers=(_model_width_reader,))
+-        _facts.record_typed(qualify_config_value_fact(
+-            _declared_width, context.config_access.events,
+-            _config_access.current_prepared_document.get()))
++        _width_document = _config_access.current_prepared_document.get()
++        if _width_document is not None:
++            _declared_width = qualify_config_value_fact(
++                _declared_width, context.config_access.events, _width_document)
++        # A lawful direct adapter parse can lack the outer document boundary.
++        # Retain its VALUE declaration; no checkpoint proof can be issued then.
++        _facts.record_typed(_declared_width)
+     # A missing operand may use an exact source-bound config CLASS value. No
+     # default-reader work is needed for an ordinary explicit width, and this
+     # does not enable the broad shape overlay or prove embedding execution.
+@@ -4539,9 +4543,11 @@
+                 legacy_source="tie_word_embeddings",
+                 reason="exact checkpoint boolean declaration; not a weight-sharing relation",
+                 claim_kind="value", claim_readers=(_tie_reader,))
+-            _facts.record_typed(qualify_config_value_fact(
+-                _declared_tie, context.config_access.events,
+-                current_prepared_document.get()))
++            _tie_document = current_prepared_document.get()
++            if _tie_document is not None:
++                _declared_tie = qualify_config_value_fact(
++                    _declared_tie, context.config_access.events, _tie_document)
++            _facts.record_typed(_declared_tie)
+     elif _code_lm_head_tying(
+             text_cfg, context, config_path=_text_path):
+         tie_word_embeddings = True
+--- candidate26/model_unfolder/evidence/reader_claims.py
++++ limited-document-fix/model_unfolder/evidence/reader_claims.py
+@@ -585,12 +585,17 @@
+ 
+ 
+ def declare_reader_fact(fact, reader_result, index, prepared_document):
+-    """Attach only an actual producer's intended kind; never qualify its value."""
++    """Attach only an actual producer's intended kind; never qualify its value.
++
++    An actual unbound invocation may declare its finite question without a
++    prepared document. Matching None is no checkpoint authority: positive
++    proofs, occurrence citations and investigated exhaustion still require
++    their existing exact document boundaries.
++    """
+     if reader_result is None or not reader_result.claim_reader_symbol:
+         return fact
+     symbol, actual_index, actual_document, _occurrence = retained_reader_attempt(reader_result)
+-    if actual_index is not index or actual_document is not prepared_document \
+-            or prepared_document is None:
++    if actual_index is not index or actual_document is not prepared_document:
+         raise ValueError("reader declaration belongs to another source index or prepared document")
+     intended = _PRODUCER_CALLABLES[symbol][3]
+     if not intended:
+--- candidate26/tests/test_s9_limited_document.py
++++ limited-document-fix/tests/test_s9_limited_document.py
+@@ -0,0 +1,82 @@
++"""Unbound direct parses declare questions without inventing checkpoint proof."""
++from dataclasses import replace
++
++import pytest
++
++from model_unfolder.evidence.claim_evidence import qualify_config_value_fact
++from model_unfolder.evidence.config_access import bound_document, current_prepared_document
++from model_unfolder.evidence.context import ParseContext
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
++from model_unfolder.evidence.facts import EvidenceFact
++from model_unfolder.evidence.final_bookend import final_stage_norm_evidence
++from model_unfolder.evidence.models import SourceBundle
++from model_unfolder.evidence.reader_claims import (
++    ReaderProjectionClaimProof, declare_reader_fact, qualify_reader_fact,
++    validate_reader_investigation,
++)
++from test_reader_claims import _native_fact, _pipeline, _with_final_norm
++
++
++@pytest.mark.parametrize('readable_source', [False, True])
++def test_direct_parse_keeps_explicit_values_without_forging_a_document(tmp_path, readable_source):
++    from model_unfolder.adapters.transformer import parser
++    assert current_prepared_document.get() is None
++    if readable_source:
++        bundle, index, *_ = _pipeline(tmp_path, _with_final_norm())
++        context = ParseContext(bundle)
++        context._program_index = index
++    else:
++        context = ParseContext(SourceBundle(source='local', files=()))
++    config = {'hidden_size': 8, 'num_hidden_layers': 2, 'num_attention_heads': 2,
++              'num_key_value_heads': 2, 'intermediate_size': 16, 'vocab_size': 32,
++              'tie_word_embeddings': True}
++    ir = parser.parse(config, context=context)
++    assert ir.hidden_size == 8 and len(ir.layers) == 2
++    for key, expected in [('model.hidden_size', 8), ('model.tie_word_embeddings', True)]:
++        fact = context.facts.typed_records()[key]
++        assert fact.value == expected and fact.status == 'config_declared'
++        assert fact.claim_kind == 'value' and fact.claim_readers
++        assert fact.claim_evidence is None and not fact.claim_document_token
++        assert fact.occurrence_citation is None
++    assert current_prepared_document.get() is None
++    assert context.prepared_documents == {}
++
++
++def test_unbound_reader_declares_only_its_actual_question_and_cannot_gain_document_authority(tmp_path):
++    assert current_prepared_document.get() is None
++    bundle, index, *_ = _pipeline(tmp_path, _with_final_norm())
++    result = final_stage_norm_evidence(index, bundle)
++    assert result.status == 'resolved'
++    fact = _native_fact(result)
++    declared = qualify_reader_fact(fact, result, index, None)
++    assert declared.claim_kind == 'applied_function'
++    assert declared.claim_readers == (result.claim_reader_symbol,)
++    assert declared.claim_evidence is None and not declared.claim_document_token
++    assert declared.occurrence_citation is None
++    with pytest.raises(ValueError, match='actual retained reader invocation'):
++        declare_reader_fact(fact, replace(result), index, None)
++    with pytest.raises(ValueError, match='another source index or prepared document'):
++        declare_reader_fact(fact, result, object(), None)
++    forged = PreparedDocument({}, {})
++    with pytest.raises(ValueError, match='another source index or prepared document'):
++        declare_reader_fact(fact, result, index, forged)
++    with pytest.raises(ValueError, match='prepared document'):
++        ReaderProjectionClaimProof(fact.ledger_key(), result, index, None)
++    with bound_document(DocumentBinding('root', (), forged)):
++        bound = final_stage_norm_evidence(index, bundle)
++    with pytest.raises(ValueError, match='another source index or prepared document'):
++        declare_reader_fact(_native_fact(bound), bound, index, None)
++
++
++def test_missing_document_still_cannot_qualify_a_value_or_investigated_exhaustion(tmp_path):
++    value = EvidenceFact(owner='model', key='hidden_size', value=8,
++                         status='config_declared', completeness='complete',
++                         claim_kind='value', claim_readers=('adapters.transformer.parser.parse',))
++    with pytest.raises(TypeError, match='exact prepared document'):
++        qualify_config_value_fact(value, (), None)
++    bundle, index, *_ = _pipeline(tmp_path)
++    result = final_stage_norm_evidence(index, bundle)
++    assert result.status in {'failed', 'ambiguous', 'incomplete', 'absent'}
++    with pytest.raises(ValueError, match='no exact prepared-document mapping binding'):
++        validate_reader_investigation(result, owner='model', key='final_norm_kind',
++                                      claim_kind='applied_function')
+--- candidate26/tests/test_diffusion.py
++++ limited-document-fix/tests/test_diffusion.py
+@@ -1336,8 +1336,11 @@
+ 
+ def test_moe_dit_counts_do_not_manufacture_a_router():
+     """Expert counts are geometry, not proof that this exact DiT routes."""
++    # The actual class also declares num_single_layers=32. Set it explicitly
++    # so this router-absence control still contains exactly four double blocks.
+     cfg = {"_class_name": "HiDreamImageTransformer2DModel",
+-           "num_layers": 4, "num_attention_heads": 20, "attention_head_dim": 128,
++           "num_layers": 4, "num_single_layers": 0,
++           "num_attention_heads": 20, "attention_head_dim": 128,
+            "num_routed_experts": 4, "num_activated_experts": 2,
+            "joint_attention_dim": 4096}
+     ir = unfold(cfg).to_ir()

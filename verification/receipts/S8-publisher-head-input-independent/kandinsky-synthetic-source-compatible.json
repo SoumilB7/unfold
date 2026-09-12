@@ -1,0 +1,35 @@
+{
+  "_class_name": "UNet2DConditionModel",
+  "_repo_id": "kandinsky-community/kandinsky-2-2-decoder",
+  "in_channels": 4,
+  "out_channels": 8,
+  "block_out_channels": [
+    384,
+    768,
+    1536,
+    3072
+  ],
+  "layers_per_block": 3,
+  "cross_attention_dim": 768,
+  "encoder_hid_dim": 1280,
+  "encoder_hid_dim_type": "image_proj",
+  "addition_embed_type": "image",
+  "down_block_types": [
+    "ResnetDownsampleBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D",
+    "SimpleCrossAttnDownBlock2D"
+  ],
+  "up_block_types": [
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "SimpleCrossAttnUpBlock2D",
+    "ResnetUpsampleBlock2D"
+  ],
+  "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+  "scheduler": [
+    "diffusers",
+    "DDPMScheduler"
+  ],
+  "attention_head_dim": 64
+}

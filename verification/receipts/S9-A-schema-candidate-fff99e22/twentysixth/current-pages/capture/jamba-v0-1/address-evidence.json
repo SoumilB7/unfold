@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "64f748d3f0ff43eaf718addc5803b5be02dcc8d1d01ea872eacb9706388a0839",
+  "input": "tests/unseen_model_configs/jamba-v0-1.json",
+  "input_sha256": "0dd8df0799c1849d6caf7dad2cf23023b67cdc2e156ca5015faebf1eb38c98aa",
+  "resolved_class": {
+    "module": "transformers.models.jamba.modeling_jamba",
+    "qualname": "JambaForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

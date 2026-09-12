@@ -1,0 +1,19 @@
+{
+  "after_bytes": 183876,
+  "after_sha256": "b3305f80db58f0471400f5832a43d7a46ab3d5e3b2b1d2f68a469ec0817db037",
+  "before_bytes": 183876,
+  "before_sha256": "bad2fb360ad9751a65881b0edb32594315ccd5a6fae11d2fb221f63388eebace",
+  "exact_new_mount_occurrences": 320,
+  "exact_old_mount_occurrences": 320,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-4edec3d132",
+  "mount_identity_before": "uf-2181c04905",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 13,
+  "raw_ordered_svg_count_before": 13,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "sana-1600m-1024px-diffusers",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

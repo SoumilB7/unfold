@@ -1,0 +1,16 @@
+[
+  {
+    "after": "25f058a8cf7043b0a91f70e9bbd5e086",
+    "after_present": true,
+    "after_type": "str",
+    "before": "b66c93969c58492891582ead1371c435",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

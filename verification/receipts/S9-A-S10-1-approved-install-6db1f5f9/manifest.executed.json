@@ -1,0 +1,155 @@
+{
+  "approved_scope": {
+    "coverage_after": {
+      "flagged": 294,
+      "models": 44,
+      "proven": 671,
+      "silent": 0
+    },
+    "coverage_before": {
+      "flagged": 294,
+      "models": 44,
+      "proven": 645,
+      "silent": 0
+    },
+    "coverage_cause": "one newly proven fact per text model - model.hidden_size, config_declared - the same fact the owner enumerated as 14 additions on the 29 preservation witnesses, over the 44-model coverage denominator (26 text models). flagged unchanged, silent 0.",
+    "example_architecture_svg_identical": true,
+    "example_files_changed": 8,
+    "example_hero_png_rerasterized": false,
+    "example_hunk_causes": {
+      "banner": 7,
+      "chip": 1,
+      "compact_transport_digest": 3,
+      "css": 8,
+      "html_unknown": 8
+    },
+    "preservation_surface_change_counts": {
+      "html_meta": 29,
+      "ir": 29,
+      "ledgers": 29,
+      "sable": 29
+    },
+    "preservation_unchanged_surfaces": [
+      "expanded",
+      "gallery",
+      "params"
+    ],
+    "preservation_views_changed": 0,
+    "preservation_witnesses": 29,
+    "readme_and_s5_constant": "645 -> 671 proven in README.md line 73 and tests/test_s5_release.py lines 125-126; the assertion floor rises (stricter), nothing is relaxed",
+    "unit": "S9-A + S10-1 approved output delta"
+  },
+  "archive": "/private/tmp/unfold-s9a-install-6db1f5f9/archive",
+  "base_commit": "6db1f5f9e54fdf662dec0bd3a4485cf5bc92cb13",
+  "branch": "audio-composite-support",
+  "checkout": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg",
+  "control_sha256": {
+    "examples/images/llama-7b.png": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69",
+    "model_unfolder/evidence/reader_claims.py": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be",
+    "model_unfolder/presentation.py": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740",
+    "model_unfolder/renderers/html/styles.py": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+    "model_unfolder/uncertainty.py": "f29d5fba5f33b4f4a969759dd06a2202cec0c3a258957355f227bd00616afab6",
+    "scripts/coverage.py": "15b587960dc7d7ea22244c1e193e43b952967bffebe25274360bbd77fa51e45f",
+    "scripts/generate_examples.py": "a8a7a86639b75e0c1364cd2f455117d6de66f962fc86d3cd75a3c1f29a9ad47b",
+    "test_support/preservation.py": "22470d509c5c3198719de6419ed97cf9ec32783f046a344753e80272eaea52cb",
+    "tests/preservation_manifest.json": "e9ed0476d0e158fb46bb182a8fd314518d9951bdc231f200cb5278add160e283",
+    "verification/latency_budgets.json": "c54f86d62df83ce357564ba098817b8a640fd90a2f8e5abf8aac8d6c0d278431",
+    "verification/s7/matrix.json": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1"
+  },
+  "enumeration": {
+    "path": "/private/tmp/unfold-s9a-install-6db1f5f9/delta-enumeration.json",
+    "sha256": "c1a1ab121ed412e188c04fb03614f11933a541b7bea2c56506a6197c33425708"
+  },
+  "files": {
+    "README.md": {
+      "candidate_path": "README.md",
+      "new_sha256": "5badf766333a9496f29702da0bf24b30b0683687782918973d58ae69055f1c7e",
+      "old_sha256": "a7da9e1a4506d67bce67585b3cbf3a39d48d28bf83306551dd5aef7db2eef788"
+    },
+    "coverage.json": {
+      "candidate_path": "coverage.json",
+      "new_sha256": "d5610ec1f866f0348f53a5d6c94420960f4ca63761b25dc05b47dd71b6c7f70a",
+      "old_sha256": "98d8c6777daa939584a564af302d8ad784d88405f0e2214850b296eaa6a0a675"
+    },
+    "examples/deepseek-v3.html": {
+      "candidate_path": "examples/deepseek-v3.html",
+      "new_sha256": "9c5595b33836fc39b2811aba12db79680fa793178ae247f16c88afb5e4f510af",
+      "old_sha256": "f8435adcfc79a794dfaf54a7ca7b07cec4ec96019be6a74bc0c1bcd1c3161a41"
+    },
+    "examples/granite-3-0-8b-instruct.html": {
+      "candidate_path": "examples/granite-3-0-8b-instruct.html",
+      "new_sha256": "b67167db5a96f1bf3b6ffbefef96197137ad1f6d5cb16e22be0b391cb818b593",
+      "old_sha256": "efde2279a0e7866fef15a920a7f9c0502cf7245152d9df933fe9820e6c0c0626"
+    },
+    "examples/hunyuanvideo.html": {
+      "candidate_path": "examples/hunyuanvideo.html",
+      "new_sha256": "a77af2aab3f8025d53e4ddf2afba150f6ff051f37652ca7e6421eae0741928f0",
+      "old_sha256": "f6826af644f0bc5498c29d299a3f401b66ef1310d3e250acda0e34cf28e351bf"
+    },
+    "examples/llama-7b.html": {
+      "candidate_path": "examples/llama-7b.html",
+      "new_sha256": "50f3ae92bb7456d57b5b1a3da8f9de61f8f68711f4bf3b5b6c619394e3f18565",
+      "old_sha256": "12e62abaa4d42c8139103fce15c7aeb98f1b1b48675c75b3b0351876a618091e"
+    },
+    "examples/manifest.json": {
+      "candidate_path": "examples/manifest.json",
+      "new_sha256": "81dd0e051c4de0ef987ffb73de764fb5e0204aa46d92ec6254d620d1134c3e0a",
+      "old_sha256": "2a47d68e0ae7514936546fba822da8914034bd2c3f1aeadb25e992f4cae57b59"
+    },
+    "examples/musicgen-small.html": {
+      "candidate_path": "examples/musicgen-small.html",
+      "new_sha256": "1a52287ca73ecdf9e68468a70b8a8eab497bff988f5586a056e2d9a6bff72f82",
+      "old_sha256": "36fc58700e3a596dc408eab328b12af845d8162094046cd28ff15ae75926e05c"
+    },
+    "examples/pixart-sigma-xl-2-1024-ms.html": {
+      "candidate_path": "examples/pixart-sigma-xl-2-1024-ms.html",
+      "new_sha256": "34d90344411da070f2a4382b7393d6b77a3584bed04e02e6e15725c8f9efebb9",
+      "old_sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea"
+    },
+    "examples/qwen2-vl-7b-instruct.html": {
+      "candidate_path": "examples/qwen2-vl-7b-instruct.html",
+      "new_sha256": "2ed408d9a8ecb16e2cf17800a49df7908d1dbb21f9210fe948db34b8a990b913",
+      "old_sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d"
+    },
+    "examples/stable-diffusion-xl-base-1-0.html": {
+      "candidate_path": "examples/stable-diffusion-xl-base-1-0.html",
+      "new_sha256": "fd64a99bb57e231f53101b738d7ddce3332fc94169af6bc53b76934132a1e60d",
+      "old_sha256": "2ed5ee8403e969523d229d7583098e026d5bcf5b01fe9c3fc36d691430b96c2f"
+    },
+    "tests/preservation_expected_manifest.json": {
+      "candidate_path": "preservation_expected_manifest.json",
+      "new_sha256": "80e239f7d1c63eb3a670f65696c4d0ac329febeb22b5f63c8e055ac3b829523e",
+      "old_sha256": "f19f31b165e5f3bbce490e9d0a4f1fc4b45cfb3c6d244c7044c8f949170b2e82"
+    },
+    "tests/test_s5_release.py": {
+      "candidate_path": "test_s5_release.py",
+      "new_sha256": "9a97192b4630e31b70d8e8da8e8876935b65e79b808d35aa11593b2fd412d838",
+      "old_sha256": "8a0208bcefa09737b2671c8764413ab99846395a92931e5154eeb6022d09cf91"
+    }
+  },
+  "implementer": "executor (Claude Fable 5.1)",
+  "installer_sha256": "9a9116bdf704bce1fc9e417539891f4f16213ea381167dff38c9e71b25c6652c",
+  "prior_untracked_count": 5,
+  "prior_untracked_sha256": {
+    "docs/U0_U1_FINAL_RECOVERY_CORRECTION_PLAN.md": "7ef6fe6984d848fba29aba5ae7fd8e07bdcd71057f28bcee9545e8aa6ac6f870",
+    "docs/U0_U1_RECOVERY_EXECUTION_PLAN.md": "6f4c16629b0a6f8238620d178b0fadca1f6fa595633119b0f746e21d3cae24de",
+    "docs/U2_DEFINITIVE_COMPLETION_SPEC.md": "381271a2eeffbf5696675ec7c55075ebf5dc94761e316c86f2c1a32a3dce9472",
+    "docs/architecture_atlas.html": "29a732d2e0e505c498bc89c82f4dad79880e144853eca2b90af9dcaae7fb7501",
+    "verification/receipts/S9-A-owner-review-37/owner-verdict.json": "4534786fc484cf30725535c651b9cce9c4af22ae79dd2081cfc883efd105c562"
+  },
+  "status": "OWNER_VERDICT_AND_ARBITER_APPROVAL_BOUND",
+  "unit": "S9-A + S10-1 approved output delta",
+  "verdict": {
+    "evidence_sha256": {
+      "verification/receipts/S9-A-owner-review-37/cause-audit-r3-summary.json": "513fc7374fe2367b51c323c234e72cb39cb82106b0d394c1a1c129f4257ab333",
+      "verification/receipts/S9-A-owner-review-37/cause-audit-reconciliation.json": "0e72eb3e5f62d09d51a14278e69b29177323e6630177cb6b6867de2e1b00c2a9",
+      "verification/receipts/S9-A-owner-review-37/output_delta_audit.json": "b44c17226efb548961dac10460c03c22d91dbc567ec33f4251fc6dba989b523c"
+    },
+    "path": "/private/tmp/unfold-s9a-install-6db1f5f9/owner-verdict.json",
+    "persisted_by": "Soumil (arbiter), 2026-09-12: \"i approve both\"",
+    "repo_copy": "verification/receipts/S9-A-owner-review-37/owner-verdict.json",
+    "review_document": "z-docs/11-execution/S9-A-review.md",
+    "reviewer": "owner (Claude), z-docs/11-execution/S9-A-review.md",
+    "sha256": "4534786fc484cf30725535c651b9cce9c4af22ae79dd2081cfc883efd105c562"
+  }
+}

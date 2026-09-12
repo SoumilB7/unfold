@@ -7,7 +7,13 @@ from ...common import get_config_value as _g
 
 
 def first(cfg: Any, *keys: str) -> Any:
-    """Return the first present config value from ``keys``."""
+    """Return the first present config value from ``keys``.
+
+    U1 note: this is a PRIORITY CHAIN over semantically DISTINCT fields
+    (qwen2-vl vision: ``embed_dim``=1280 internal width vs ``hidden_size``=3584
+    merger output) — NOT an alias family, so it must never route through the
+    exact alias resolver (unequal priorities are not a conflict).  Each present
+    hit still records its own owner-scoped event via the ``_g`` funnel."""
     for key in keys:
         value = _g(cfg, key)
         if value is not None:
@@ -19,20 +25,6 @@ def nested(cfg: Any, key: str) -> Any:
     """Return a nested config object when present."""
     value = _g(cfg, key)
     return value if isinstance(value, dict) or value is not None else None
-
-
-def architecture(cfg: Any) -> str | None:
-    """Return the first declared architecture or the model type."""
-    architectures = _g(cfg, "architectures") or []
-    if architectures:
-        return architectures[0]
-    model_type = _g(cfg, "model_type")
-    return str(model_type) if model_type else None
-
-
-def model_type(cfg: Any) -> str:
-    """Return a normalized model_type string."""
-    return str(_g(cfg, "model_type", "") or "").lower()
 
 
 def as_int(value: Any) -> int | None:
@@ -63,4 +55,3 @@ def drop_none(value: Any) -> Any:
     if isinstance(value, list):
         return [drop_none(v) for v in value if v is not None]
     return value
-

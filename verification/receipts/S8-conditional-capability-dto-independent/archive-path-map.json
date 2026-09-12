@@ -1,0 +1,9 @@
+{
+  "status": "unexecuted historical source snapshot; not a replay program",
+  "original_logical_path": "physics/instance_inventory.py",
+  "original_archive_path": "source/physics/instance_inventory.py",
+  "current_archive_path": "source/physics/instance_inventory.py.txt",
+  "sha256": "7150ac1840c1acf826ba2ed67133b2ea6fe2f51f0e67c112584ab09ec3893254",
+  "bytes_unchanged": true,
+  "original_review_pins_unchanged": true
+}

@@ -1,0 +1,11 @@
+# Actual public coverage output comparison —7168440
+
+PASS for both actual44 public captures: stable-diffusion-xl-base-1-0 and sd-v1-4. These are the public generator's actual saved IR, display IR and HTML, preserved verbatim under actual-public-capture/. No model, pytest, production edit, output blessing or change to the original six-condition identity control occurred.
+
+Compared with final716 reviewed IR, SDXL has3 differing scalar positions and SD-v1-4 has31. Each is exactly one permutation of the declared_constructor_defaults fact_display_lines metadata list. Both sides contain the same unique exact strings. Every other IR field, including actual card facts and their display order, is equal. ir-deltas.json preserves all original positions and both full lists; their original ordering is not normalized away.
+
+The actual public HTML differs from the reviewed page only by its exact generated mount identifier: uf-0fd80a3fd4 occurs28,103times on SDXL; uf-41090357b6 occurs26,187times on SD-v1-4. Substituting that exact identifier in memory accounts for every byte; no embedding, warning, quantity, card or SVG change remains. Original public and reviewed files remain untouched.
+
+A separate real Diagram replay consumes each actual public IR with the exact reviewed typed warning metadata, parameter record and saved experiment mount. Its display IR must equal the actual captured public display IR in full. Its returned HTML is byte-identical to the reviewed page and, with only the exact namespace substitution, to the actual public page. Its complete ordered canonical render-event bytes are identical to the reviewed events. All five existing HTML/tree validators, label lint and projection audit pass on both replays. Thus reused warning metadata is checked against the complete actual public page, not inferred from warning strings alone.
+
+SDXL reviewed/replayed HTML SHA256: d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06. SD-v1-4: c647b578c95d03ba2f268aa9624509411cbde790de5b8fb529844d3261936385. Public original hashes, source manifests before/after, exact input pins, complete supplemental pages/render inputs/events and comparison results are retained. The historical ordinary/rewrite/unchanged raw-byte identity control remains unchanged and unnormalized.

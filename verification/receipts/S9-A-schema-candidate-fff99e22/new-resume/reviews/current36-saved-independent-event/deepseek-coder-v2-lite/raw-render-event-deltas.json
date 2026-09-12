@@ -1,0 +1,58 @@
+[
+  {
+    "after": "f638508f2b8e44d290920673795f5813",
+    "after_present": true,
+    "after_type": "str",
+    "before": "12a3926e1203436a9aaa6b6099a14ee4",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      8,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "f638508f2b8e44d290920673795f5813",
+    "after_present": true,
+    "after_type": "str",
+    "before": "12a3926e1203436a9aaa6b6099a14ee4",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      8,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "f638508f2b8e44d290920673795f5813",
+    "after_present": true,
+    "after_type": "str",
+    "before": "12a3926e1203436a9aaa6b6099a14ee4",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      8,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "f638508f2b8e44d290920673795f5813",
+    "after_present": true,
+    "after_type": "str",
+    "before": "12a3926e1203436a9aaa6b6099a14ee4",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      9,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

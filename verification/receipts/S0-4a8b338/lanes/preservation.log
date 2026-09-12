@@ -1,0 +1,13 @@
+....................................................                     [100%]
+============================= slowest 10 durations =============================
+108.25s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+106.75s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+71.52s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[musicgen-small]
+52.48s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+45.01s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[prxpixel-t2i]
+43.97s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[fluxtransformer2dmodel]
+41.98s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[auraflow-v0-3]
+39.01s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen3-5-27b-text]
+35.18s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[cogvideox-5b]
+33.91s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[hunyuanvideo]
+52 passed in 1073.14s (0:17:53)

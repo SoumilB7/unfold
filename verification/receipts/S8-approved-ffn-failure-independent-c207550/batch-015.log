@@ -1,0 +1,25 @@
+................................................................xx...... [ 43%]
+.................................................................F...... [ 87%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_relation_recipe_is_version_qualified ___________________
+
+    def test_relation_recipe_is_version_qualified():
+        recipe = _recipe()
+        bad = ExecutionRecipe(
+            recipe.recipe_id, recipe.input_modality, recipe.train_eval,
+            recipe.cache_state, recipe.encoder_decoder_mode,
+            recipe.conditioning_present, recipe.dtype, {"torch": "0.invalid"},
+            tensor_arguments=recipe.tensor_arguments)
+        result = observe_relations_in_subprocess(_request(), bad, "layers")
+        assert result.status == "failed"
+>       assert result.failure and "version mismatch" in result.failure.detail
+E       AssertionError: assert (Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout') and 'version mismatch' in 'RuntimeError: timeout')
+E        +  where Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout') = RelationObservationResult(status='failed', recipe=ExecutionRecipe(recipe_id='relation', input_modality='hidden_states'...failure=Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout'), stdout='', stderr='').failure
+E        +  and   'RuntimeError: timeout' = Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout').detail
+E        +    where Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout') = RelationObservationResult(status='failed', recipe=ExecutionRecipe(recipe_id='relation', input_modality='hidden_states'...failure=Failure(kind='TimeoutExpired', stage='relation_observe', detail='RuntimeError: timeout'), stdout='', stderr='').failure
+
+tests/test_s7_relation_observation.py:254: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s7_relation_observation.py::test_relation_recipe_is_version_qualified
+1 failed, 161 passed, 2 xfailed in 970.18s (0:16:10)

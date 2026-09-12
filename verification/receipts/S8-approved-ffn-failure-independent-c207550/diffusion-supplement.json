@@ -1,0 +1,258 @@
+{
+  "status": "23_ACTUAL_FAILURES_WITH_SHARED_LIMITED_INPUT_DEPENDENCIES",
+  "summary": {
+    "failed": 23,
+    "passed": 147,
+    "seconds": 2569.38
+  },
+  "group_counts": {
+    "shared_fixture_consumers": 18,
+    "additional_sdxl_depth_parse": 1,
+    "independent_variant_parses": 4
+  },
+  "reviewer_ran_models_or_tests": false,
+  "source_sha256": {
+    "tests/test_diffusion.py": "ce19967ce38638473c9635b5e4c1584f3c9d2e520fb63fb691afb8311b78c57e",
+    "model_unfolder/adapters/diffusor/unet_cutover.py": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b",
+    "model_unfolder/adapters/diffusor/parser.py": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b"
+  },
+  "rows": [
+    {
+      "nodeid": "tests/test_diffusion.py::test_sdxl_retains_both_encoders_and_conditional_added_embedding",
+      "test_line": 692,
+      "source_obligation": "Encoder components survive; own added-embedding bindings do not imply universal conditioning.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_published_image_decoder_keeps_own_projection_without_text_tower",
+      "test_line": 714,
+      "source_obligation": "Published Kandinsky input preserves image projection occurrences without asserting unproved K/V roles.",
+      "parse_group": "independent_variant_parse",
+      "input": "published Kandinsky decoder",
+      "actual_observation": "Required root.denoiser.constructed_modules absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells",
+      "test_line": 785,
+      "source_obligation": "The documented default-head variant constructs; familiar attention classes cannot invent GEGLU.",
+      "parse_group": "independent_variant_parse",
+      "input": "synthetic first IF with omitted head fields",
+      "actual_observation": "Required root.denoiser.declared_constructor_defaults absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn",
+      "test_line": 830,
+      "source_obligation": "Temporal shapes and the proved temporal-result argument survive; no alpha/frame formula is inferred.",
+      "parse_group": "independent_variant_parse",
+      "input": "SVD_UNET",
+      "actual_observation": "Required root.denoiser.constructed_modules absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_image_unet_has_2d_occurrences_without_temporal_fabrication",
+      "test_line": 859,
+      "source_obligation": "Actual 2D operations remain visible; temporal operations are not fabricated.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_sdxl_draws_constructed_transformer2d_and_qualified_ffn",
+      "test_line": 872,
+      "source_obligation": "Constructed Transformer2D depth and its separately proved FFN stay visible.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_context_argument_does_not_assert_unproved_kv_role",
+      "test_line": 912,
+      "source_obligation": "A source-bound external argument remains distinct from an unproved K/V role.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_simple_cross_stage_occurrences_are_constructed_and_carded",
+      "test_line": 924,
+      "source_obligation": "The original valid variant retains all nine exact stages without positional role invention.",
+      "parse_group": "independent_variant_parse",
+      "input": "original second DeepFloyd literal",
+      "actual_observation": "Required root.denoiser.constructed_stage_relations absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_structure_has_constructed_stages_and_nonzero_summary",
+      "test_line": 952,
+      "source_obligation": "Stage membership, own population and quantities come from qualified facts.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_component_entry_and_constructed_stages_couple",
+      "test_line": 971,
+      "source_obligation": "The component entry opens actual down/mid/up stages and backed skip routes.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_diffusion_recursive_depth_conforms[sdxl_unet]",
+      "test_line": 1138,
+      "source_obligation": null,
+      "parse_group": "independent_sdxl_depth_parse",
+      "input": "SDXL_UNET, separately parsed by parameterized depth test",
+      "actual_observation": "Exact nonvacuity assertion found0 reference leaves instead of15",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_overview_draws_the_source_bound_context_route",
+      "test_line": 1658,
+      "source_obligation": "The actual external context source and backed stage destinations are visible.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_stage_drills_show_each_occurrences_own_weight_shape",
+      "test_line": 1737,
+      "source_obligation": "Distinct stage cards retain each constructed convolution's own dimensions.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_resnet_is_one_drawn_occurrence_not_a_repeated_cell",
+      "test_line": 1760,
+      "source_obligation": "A stage's actual two ResNets remain distinct, with no invented cell repeat.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_attention_containment_does_not_invent_inner_compute",
+      "test_line": 1775,
+      "source_obligation": "Own constructed projections are visible without an invented attention algorithm.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_context_reference_couples_at_each_proved_deep_drill",
+      "test_line": 1792,
+      "source_obligation": "Each proved attention argument has its own drawn route and deep source card.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_external_context_drill_is_distinct_from_self_attention",
+      "test_line": 1813,
+      "source_obligation": "An external argument route is drawn only on the occurrence whose source proves it.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_component_entry_uses_its_actual_denoiser_label",
+      "test_line": 1828,
+      "source_obligation": "The entry's actual denoiser card supplies its label; no DiT name is invented.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_overview_stage_occurrences_and_skip_routes_are_carded",
+      "test_line": 1843,
+      "source_obligation": "Actual stage occurrences and each proved skip route survive the overview projection.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_entry_arrows_are_declared_ports_not_a_sampling_claim",
+      "test_line": 1870,
+      "source_obligation": "The old eight-edge pipeline template is replaced by the exact component interface.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_stage_drills_keep_occurrence_cards_and_qualified_ffn_opener",
+      "test_line": 1886,
+      "source_obligation": "Distinct constructed cells keep their own cards and the proved FFN graph opener.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_mid_occurrences_preserve_shapes_with_stage_order_open",
+      "test_line": 1905,
+      "source_obligation": "Preserve three actual mid occurrences; the old template's two edges are retired.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    },
+    {
+      "nodeid": "tests/test_diffusion.py::test_unet_resnet_draws_proved_fragments_and_conditional_arithmetic",
+      "test_line": 1927,
+      "source_obligation": "Five proved call edges and conditional arithmetic survive; the bridge stays open.",
+      "parse_group": "shared_sdxl_render",
+      "input": "SDXL_UNET, one module-scoped parse/render reused",
+      "actual_observation": "Shared fixture repr is an opaque zero-layer denoiser; required fact, occurrence, source port or overview is absent",
+      "disposition": "ACTUAL_REQUIRED_OUTPUT_ABSENT; no waiver or independent mechanism-loss claim",
+      "cause_limit": "Typed inventory result and reader failure record were not retained for this failed parse"
+    }
+  ],
+  "next_diagnostic": "One approved isolated FFN/SDXL parse plus two original physics controls first; registry/variant reruns only if distinct unresolved evidence needs them",
+  "limits": [
+    "No attribution to TimeoutExpired or any specific resource failure without actual result",
+    "The18 shared failures are downstream observations of the same limited fixture, not18 independently diagnosed mechanism regressions",
+    "The four variant failures remain distinct actual parse failures; no automatic claim that they share the SDXL cause",
+    "The depth nonvacuity check correctly rejects an empty limited shell; it should not be relaxed"
+  ]
+}

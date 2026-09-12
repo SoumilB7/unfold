@@ -1,0 +1,17 @@
+{
+  "searched_exact_locations": [
+    "/private/tmp/unfold-s9a-twentysixth/source-closure-replay/before/capture",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-output-deltas"
+  ],
+  "closure26_example_files": [
+    "closure.json",
+    "ir-after-render.json.gz",
+    "ir-before-render.json.gz",
+    "page.html.gz",
+    "source-bundle-after-local.json",
+    "source-bundle-before-local.json"
+  ],
+  "closure26_limit": "Raw actual IR and standalone HTML are available; expanded/params/Sable canonical documents were not captured. No arbitrary reconstruction is presented as canonical baseline.",
+  "next": "Optional exact fff99e22 same-observer lane. A recovered surface is usable solely if canonical SHA256 equals committed expected surface SHA256.",
+  "older_s81": "Prior observer source reused; older packet output has not been treated as current baseline authority."
+}

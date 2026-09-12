@@ -1,0 +1,3490 @@
+{
+  "diagram-ir-after-render.json.gz": [
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ad1ed8780524d172",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "ad1ed8780524d172",
+      "after_present": true,
+      "after_type": "str",
+      "before": "3c4a50286ab0d351",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.ffn",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "3c4a50286ab0d351",
+      "after_present": true,
+      "after_type": "str",
+      "before": "85f2d9c6229e99af",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.ffn",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "85f2d9c6229e99af",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoderness",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "num_hidden_layers",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoderness",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.layer",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "a615d6a9effdcd21",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "a615d6a9effdcd21",
+      "after_present": true,
+      "after_type": "str",
+      "before": "6108b7a81a8f98e5",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "6108b7a81a8f98e5",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "model",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "34b451cd19670900",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": {
+        "expected_value_status_hash": "34b451cd19670900",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "model"
+        }
+      },
+      "after_present": true,
+      "before": null,
+      "before_present": false,
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        13
+      ]
+    },
+    {
+      "after": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "after_present": true,
+      "after_type": "dict",
+      "before": null,
+      "before_present": true,
+      "before_type": "NoneType",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "claim_proof"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "status"
+      ]
+    },
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "7d50e6e457de4bbd",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "value_status_hash"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "status"
+      ]
+    }
+  ],
+  "diagram-ir-before-render.json.gz": [
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ad1ed8780524d172",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "ad1ed8780524d172",
+      "after_present": true,
+      "after_type": "str",
+      "before": "3c4a50286ab0d351",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.ffn",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "3c4a50286ab0d351",
+      "after_present": true,
+      "after_type": "str",
+      "before": "85f2d9c6229e99af",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.ffn",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "85f2d9c6229e99af",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoderness",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "num_hidden_layers",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoderness",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.layer",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "a615d6a9effdcd21",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "a615d6a9effdcd21",
+      "after_present": true,
+      "after_type": "str",
+      "before": "6108b7a81a8f98e5",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "6108b7a81a8f98e5",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "model",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "34b451cd19670900",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": {
+        "expected_value_status_hash": "34b451cd19670900",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "model"
+        }
+      },
+      "after_present": true,
+      "before": null,
+      "before_present": false,
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        13
+      ]
+    },
+    {
+      "after": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "after_present": true,
+      "after_type": "dict",
+      "before": null,
+      "before_present": true,
+      "before_type": "NoneType",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "claim_proof"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "status"
+      ]
+    },
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "7d50e6e457de4bbd",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "value_status_hash"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "status"
+      ]
+    }
+  ],
+  "ir-after-render.json.gz": [
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ad1ed8780524d172",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "ad1ed8780524d172",
+      "after_present": true,
+      "after_type": "str",
+      "before": "3c4a50286ab0d351",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.ffn",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "3c4a50286ab0d351",
+      "after_present": true,
+      "after_type": "str",
+      "before": "85f2d9c6229e99af",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.ffn",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "85f2d9c6229e99af",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoderness",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "num_hidden_layers",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoderness",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.layer",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "a615d6a9effdcd21",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "a615d6a9effdcd21",
+      "after_present": true,
+      "after_type": "str",
+      "before": "6108b7a81a8f98e5",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "6108b7a81a8f98e5",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "model",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "34b451cd19670900",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": {
+        "expected_value_status_hash": "34b451cd19670900",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "model"
+        }
+      },
+      "after_present": true,
+      "before": null,
+      "before_present": false,
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        13
+      ]
+    },
+    {
+      "after": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "after_present": true,
+      "after_type": "dict",
+      "before": null,
+      "before_present": true,
+      "before_type": "NoneType",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "claim_proof"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "status"
+      ]
+    },
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "7d50e6e457de4bbd",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "value_status_hash"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "status"
+      ]
+    }
+  ],
+  "ir-before-render.json.gz": [
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ad1ed8780524d172",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "position_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mixer_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        3,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "ad1ed8780524d172",
+      "after_present": true,
+      "after_type": "str",
+      "before": "3c4a50286ab0d351",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mixer_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "ffn_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.ffn",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        4,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "3c4a50286ab0d351",
+      "after_present": true,
+      "after_type": "str",
+      "before": "85f2d9c6229e99af",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "ffn_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask_schedule",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.ffn",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        5,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "85f2d9c6229e99af",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoderness",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "num_hidden_layers",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "is_encoder_decoder",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask_schedule",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mask",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        6,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoderness",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "is_encoder_decoder",
+      "after_present": true,
+      "after_type": "str",
+      "before": "layer_norm_epsilon",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "mask",
+      "after_present": true,
+      "after_type": "str",
+      "before": "norm_kind_eps",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.layer",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        7,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "a615d6a9effdcd21",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "layer_norm_epsilon",
+      "after_present": true,
+      "after_type": "str",
+      "before": "n_head",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "norm_kind_eps",
+      "after_present": true,
+      "after_type": "str",
+      "before": "mechanism",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.layer",
+      "after_present": true,
+      "after_type": "str",
+      "before": "decoder.attention",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "a615d6a9effdcd21",
+      "after_present": true,
+      "after_type": "str",
+      "before": "6108b7a81a8f98e5",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "attention_head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "mechanism",
+      "after_present": true,
+      "after_type": "str",
+      "before": "head_geometry",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        9,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "n_head",
+      "after_present": true,
+      "after_type": "str",
+      "before": "hidden_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        10,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "6108b7a81a8f98e5",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "attention_head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "mechanism"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "hidden_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "head_geometry",
+      "after_present": true,
+      "after_type": "str",
+      "before": "vocab_size",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": "decoder.attention",
+      "after_present": true,
+      "after_type": "str",
+      "before": "model",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        11,
+        "target",
+        "owner"
+      ]
+    },
+    {
+      "after": "",
+      "after_present": true,
+      "after_type": "str",
+      "before": "34b451cd19670900",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "expected_value_status_hash"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "canonical"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "path"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "source",
+        "spelling"
+      ]
+    },
+    {
+      "after": "vocab_size",
+      "after_present": true,
+      "after_type": "str",
+      "before": "tie_word_embeddings",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        12,
+        "target",
+        "key"
+      ]
+    },
+    {
+      "after": {
+        "expected_value_status_hash": "34b451cd19670900",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "model"
+        }
+      },
+      "after_present": true,
+      "before": null,
+      "before_present": false,
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        13
+      ]
+    },
+    {
+      "after": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "after_present": true,
+      "after_type": "dict",
+      "before": null,
+      "before_present": true,
+      "before_type": "NoneType",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "claim_proof"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "status"
+      ]
+    },
+    {
+      "after": "73daf2ce797c8576",
+      "after_present": true,
+      "after_type": "str",
+      "before": "7d50e6e457de4bbd",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "presentation_reference",
+        "value_status_hash"
+      ]
+    },
+    {
+      "after": "code_and_config",
+      "after_present": true,
+      "after_type": "str",
+      "before": "code_proven",
+      "before_present": true,
+      "before_type": "str",
+      "path": [
+        "extras",
+        "fact_provenance",
+        "decoder.attention.position_schedule",
+        "status"
+      ]
+    }
+  ]
+}

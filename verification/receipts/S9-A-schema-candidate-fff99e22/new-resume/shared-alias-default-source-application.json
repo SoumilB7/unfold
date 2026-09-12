@@ -1,0 +1,22 @@
+{
+  "proposal_sha256": "70c06b2a5bd91045093808faebc5853d5eeff8341070dd4d58ab02208084c906",
+  "independent_verdict_sha256": "47504324733161506e63a20532529b8d635a9d2ad58034433d3f1c6c1add934c",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "proposed_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "proposed_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    {
+      "path": "tests/test_s9_shared_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "6635e585ee23d1758eafa6949c13a4880c756a8994a51a80552703374c46a01d"
+    }
+  ],
+  "scope": "Exact reviewed source/test bytes only; no active artifact renewal or bless."
+}

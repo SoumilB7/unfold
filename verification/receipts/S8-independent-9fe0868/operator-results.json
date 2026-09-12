@@ -1,0 +1,159 @@
+{
+  "checkpoint": "9fe08684f53feafed01735d328586ca369905772",
+  "results": [
+    {
+      "arrow_count": 3,
+      "block": {
+        "children": [
+          {
+            "description": "Exact source argument/result port wiring.",
+            "detail": {
+              "argument_port": "0"
+            },
+            "facts": [
+              "Source operand port: 0"
+            ],
+            "id": "review_operator__operand_0",
+            "kind": "source",
+            "label": "Input: emb",
+            "role": "source_port_route",
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Input: emb"
+          },
+          {
+            "description": "Exact source argument/result port wiring.",
+            "detail": {
+              "argument_port": "1"
+            },
+            "facts": [
+              "Source operand port: 1"
+            ],
+            "id": "review_operator__operand_1",
+            "kind": "source",
+            "label": "Input: aug",
+            "role": "source_port_route",
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Input: aug"
+          },
+          {
+            "description": "These source operands enter the operator boundary. Operand dispatch, internal dependence and mutation behavior remain unresolved.",
+            "id": "review_operator__operator",
+            "kind": "unknown",
+            "label": "Source +",
+            "resolved": false,
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Source operator boundary: +"
+          }
+        ],
+        "description": "Exact source argument/result port wiring.",
+        "detail": {
+          "argument_ids": [
+            "review_operator__operand_0",
+            "review_operator__operand_1"
+          ],
+          "boundary_id": "review_operator__operator",
+          "port_route_kind": "source_operation",
+          "source_operator": "+"
+        },
+        "facts": [
+          "Source operator: +",
+          "investigation_missing \u00b7 operand dispatch and mutation semantics \u00b7 owner: S8"
+        ],
+        "id": "review_operator",
+        "kind": "opaque",
+        "label": "Source operation",
+        "resolved": false,
+        "role": "source_port_route",
+        "source_fact_keys": [
+          "root.denoiser.primary_state_ports"
+        ],
+        "title": "Source operation",
+        "view": "runtime_port_route"
+      },
+      "kind": "source_operation"
+    },
+    {
+      "arrow_count": 3,
+      "block": {
+        "children": [
+          {
+            "description": "Exact source argument/result port wiring.",
+            "detail": {
+              "argument_port": "0"
+            },
+            "facts": [
+              "Source operand port: 0"
+            ],
+            "id": "review_operator__operand_0",
+            "kind": "source",
+            "label": "Input: emb",
+            "role": "source_port_route",
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Input: emb"
+          },
+          {
+            "description": "Exact source argument/result port wiring.",
+            "detail": {
+              "argument_port": "1"
+            },
+            "facts": [
+              "Source operand port: 1"
+            ],
+            "id": "review_operator__operand_1",
+            "kind": "source",
+            "label": "Input: aug",
+            "role": "source_port_route",
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Input: aug"
+          },
+          {
+            "description": "These source operands enter the operator boundary. Operand dispatch, internal dependence and mutation behavior remain unresolved.",
+            "id": "review_operator__operator",
+            "kind": "unknown",
+            "label": "Source +=",
+            "resolved": false,
+            "source_fact_keys": [
+              "root.denoiser.primary_state_ports"
+            ],
+            "title": "Source operator boundary: +="
+          }
+        ],
+        "description": "Exact source argument/result port wiring.",
+        "detail": {
+          "argument_ids": [
+            "review_operator__operand_0",
+            "review_operator__operand_1"
+          ],
+          "boundary_id": "review_operator__operator",
+          "port_route_kind": "inplace_operation",
+          "source_operator": "+="
+        },
+        "facts": [
+          "Source operator: +=",
+          "investigation_missing \u00b7 operand dispatch and mutation semantics \u00b7 owner: S8"
+        ],
+        "id": "review_operator",
+        "kind": "opaque",
+        "label": "Conditional update",
+        "resolved": false,
+        "role": "source_port_route",
+        "source_fact_keys": [
+          "root.denoiser.primary_state_ports"
+        ],
+        "title": "Conditional update",
+        "view": "runtime_port_route"
+      },
+      "kind": "inplace_operation"
+    }
+  ]
+}

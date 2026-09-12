@@ -1,0 +1,2 @@
+Coordinate-only37 capture.39 exact inputs/classes unchanged. Latest executed fleet36 and matrix32 retain separate historical origins; matrix36 deliberately aborted, not a baseline.37 requires actual execution.
+python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current37-capture-template/run-census.py --source-manifest-sha256 ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99

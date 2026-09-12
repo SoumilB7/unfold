@@ -1,0 +1,44 @@
+{
+  "llama": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/page.html.gz",
+    "captured_sha256": "1ee57d874901f7cefa2f0bfbefc22e79d2384a0c98a39c2ac4e53f73b411bb9d",
+    "raw_sha256": "c162872a08d4b0cd1d53d0ee369d1cabe5e5f2d489b9941b6b5a4f71fc5469a0",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/result.json",
+    "packet_sha256": "ed0533497d783dd43f45368c10e64838953d8e6d22099169b36b5610425b425c"
+  },
+  "sdxl": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/page.html.gz",
+    "captured_sha256": "7551a0cf9e29143bd66d574de16336f2bcf62dfb0788cf1f34ca6b8ec34b887c",
+    "raw_sha256": "1508e6b151cea5c81cfcc999d20e7881104bb45497d748e4ddb887c2f1ccb532",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/result.json",
+    "packet_sha256": "ed0533497d783dd43f45368c10e64838953d8e6d22099169b36b5610425b425c"
+  },
+  "bloom-ordinary": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic/capture/ordinary/page.html",
+    "captured_sha256": "cac1b49920189869a66a1cb2a86f82e6280b2153afdd679b161f6af526ee00a2",
+    "raw_sha256": "cac1b49920189869a66a1cb2a86f82e6280b2153afdd679b161f6af526ee00a2",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic/result.json",
+    "packet_sha256": "28a1247b18652cd4c63098d8ebd44d611fb304b2db7c6cf4a7eba2d8dc97fc39"
+  },
+  "bloom-sparse": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic/capture/missing_root_count/page.html",
+    "captured_sha256": "8b526360209bd82328eab6cf803d1d5a8eb6ebd53ab69de81cc644720e7eb518",
+    "raw_sha256": "8b526360209bd82328eab6cf803d1d5a8eb6ebd53ab69de81cc644720e7eb518",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic/result.json",
+    "packet_sha256": "28a1247b18652cd4c63098d8ebd44d611fb304b2db7c6cf4a7eba2d8dc97fc39"
+  },
+  "musicgen-ordinary": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic/capture/ordinary/page.html",
+    "captured_sha256": "bb56861342eaeb7654b1f0f056c7900d7403aec83a2272546eeebc3b9d056496",
+    "raw_sha256": "bb56861342eaeb7654b1f0f056c7900d7403aec83a2272546eeebc3b9d056496",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic/result.json",
+    "packet_sha256": "3bb4a3d1ea5d465b3e44c2befd00a2f6f3cc458d959be6e25e63d89e005884e6"
+  },
+  "musicgen-sparse": {
+    "captured_origin": "/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic/capture/missing_decoder_count/page.html",
+    "captured_sha256": "a9ba70a855472e7216f132cc98e41d5b211a3d4d13eae2e9b29b866c3a51ced9",
+    "raw_sha256": "a9ba70a855472e7216f132cc98e41d5b211a3d4d13eae2e9b29b866c3a51ced9",
+    "packet": "/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic/result.json",
+    "packet_sha256": "3bb4a3d1ea5d465b3e44c2befd00a2f6f3cc458d959be6e25e63d89e005884e6"
+  }
+}

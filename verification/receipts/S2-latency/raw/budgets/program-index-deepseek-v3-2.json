@@ -1,0 +1,32 @@
+{
+  "calls": 766,
+  "classes": 17,
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/deepseek-v3.json",
+  "index_fingerprint": "7ec9f7f2bff6f73ee4a9ebacadbc2c6f33a91c5e5b20b038ac50bb49a1c17d6c",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.403451459016651,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.059264499694109,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.6970003340393305,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    4.68408203125,
+    3.92529296875,
+    3.58056640625
+  ],
+  "mode": "program-index",
+  "name": "deepseek-v3",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 0.3574804998934269,
+  "source_nodes": 4
+}

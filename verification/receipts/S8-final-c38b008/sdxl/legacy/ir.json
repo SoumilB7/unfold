@@ -1,0 +1,4352 @@
+{
+  "architecture": "UNet2DConditionModel",
+  "cross_layer_edges": [],
+  "embedding_norm_kind": null,
+  "extras": {
+    "config_access": {
+      "absent_default": [
+        "root.scheduler:shift",
+        "root.scheduler:use_dynamic_shifting",
+        "root.text_encoder:apply_residual_connection_post_layernorm",
+        "root.text_encoder:attention_multiplier",
+        "root.text_encoder:attn_logit_softcapping",
+        "root.text_encoder:audio_channels",
+        "root.text_encoder:clip_qkv",
+        "root.text_encoder:embedding_multiplier",
+        "root.text_encoder:feed_forward_proj",
+        "root.text_encoder:final_logit_softcapping",
+        "root.text_encoder:hidden_size_per_layer_input",
+        "root.text_encoder:is_gated_act",
+        "root.text_encoder:layer_norm_epsilon",
+        "root.text_encoder:logits_scaling",
+        "root.text_encoder:max_window_layers",
+        "root.text_encoder:mlp_bias",
+        "root.text_encoder:moe_intermediate_size",
+        "root.text_encoder:norm_type",
+        "root.text_encoder:num_experts",
+        "root.text_encoder:num_experts_per_tok",
+        "root.text_encoder:num_mtp_layers",
+        "root.text_encoder:num_nextn_predict_layers",
+        "root.text_encoder:num_shared_experts",
+        "root.text_encoder:query_pre_attn_scalar",
+        "root.text_encoder:rms_norm_eps",
+        "root.text_encoder:scale_embedding",
+        "root.text_encoder:sliding_window",
+        "root.text_encoder:sliding_window_pattern",
+        "root.text_encoder:swiglu_limit",
+        "root.text_encoder:tie_word_embeddings",
+        "root.text_encoder:use_bidirectional_attention",
+        "root.text_encoder:use_sliding_window",
+        "root.text_encoder:vocab_size_per_layer_input",
+        "root.text_encoder_2:apply_residual_connection_post_layernorm",
+        "root.text_encoder_2:attention_multiplier",
+        "root.text_encoder_2:attn_logit_softcapping",
+        "root.text_encoder_2:audio_channels",
+        "root.text_encoder_2:clip_qkv",
+        "root.text_encoder_2:embedding_multiplier",
+        "root.text_encoder_2:feed_forward_proj",
+        "root.text_encoder_2:final_logit_softcapping",
+        "root.text_encoder_2:hidden_size_per_layer_input",
+        "root.text_encoder_2:is_gated_act",
+        "root.text_encoder_2:layer_norm_epsilon",
+        "root.text_encoder_2:logits_scaling",
+        "root.text_encoder_2:max_window_layers",
+        "root.text_encoder_2:mlp_bias",
+        "root.text_encoder_2:moe_intermediate_size",
+        "root.text_encoder_2:norm_type",
+        "root.text_encoder_2:num_experts",
+        "root.text_encoder_2:num_experts_per_tok",
+        "root.text_encoder_2:num_mtp_layers",
+        "root.text_encoder_2:num_nextn_predict_layers",
+        "root.text_encoder_2:num_shared_experts",
+        "root.text_encoder_2:query_pre_attn_scalar",
+        "root.text_encoder_2:rms_norm_eps",
+        "root.text_encoder_2:scale_embedding",
+        "root.text_encoder_2:sliding_window",
+        "root.text_encoder_2:sliding_window_pattern",
+        "root.text_encoder_2:swiglu_limit",
+        "root.text_encoder_2:tie_word_embeddings",
+        "root.text_encoder_2:use_bidirectional_attention",
+        "root.text_encoder_2:use_sliding_window",
+        "root.text_encoder_2:vocab_size_per_layer_input",
+        "root.vae:audio_channels",
+        "root.vae:decoder_input_channels",
+        "root.vae:downsampling_ratios",
+        "root.vae:latents_mean",
+        "root.vae:latents_std",
+        "root.vae:mid_block_add_attention",
+        "root.vae:num_vq_embeddings",
+        "root.vae:sampling_rate",
+        "root.vae:shift_factor",
+        "root.vae:upsampling_ratios",
+        "root.vae:use_post_quant_conv",
+        "root.vae:use_quant_conv",
+        "root.vae:vq_embed_dim"
+      ],
+      "accessed": [
+        "root.denoiser:_class_name",
+        "root.denoiser:_repo_id",
+        "root.denoiser:_scheduler_config",
+        "root.denoiser:_text_encoder_configs",
+        "root.denoiser:_vae_config",
+        "root.denoiser:act_fn",
+        "root.denoiser:addition_embed_type",
+        "root.denoiser:addition_time_embed_dim",
+        "root.denoiser:attention_head_dim",
+        "root.denoiser:block_out_channels",
+        "root.denoiser:cross_attention_dim",
+        "root.denoiser:down_block_types",
+        "root.denoiser:encoder_hid_dim",
+        "root.denoiser:encoder_hid_dim_type",
+        "root.denoiser:in_channels",
+        "root.denoiser:layers_per_block",
+        "root.denoiser:mid_block_type",
+        "root.denoiser:num_attention_heads",
+        "root.denoiser:out_channels",
+        "root.denoiser:projection_class_embeddings_input_dim",
+        "root.denoiser:text_encoder",
+        "root.denoiser:text_encoder_2",
+        "root.denoiser:transformer_layers_per_block",
+        "root.denoiser:up_block_types",
+        "root.scheduler:beta_schedule",
+        "root.scheduler:num_train_timesteps",
+        "root.scheduler:prediction_type",
+        "root.scheduler:scheduler",
+        "root.scheduler:timestep_spacing",
+        "root.text_encoder:_name_or_path",
+        "root.text_encoder:architectures",
+        "root.text_encoder:hidden_act",
+        "root.text_encoder:hidden_size",
+        "root.text_encoder:intermediate_size",
+        "root.text_encoder:is_encoder_decoder",
+        "root.text_encoder:layer_norm_eps",
+        "root.text_encoder:max_position_embeddings",
+        "root.text_encoder:model_type",
+        "root.text_encoder:num_attention_heads",
+        "root.text_encoder:num_hidden_layers",
+        "root.text_encoder:vocab_size",
+        "root.text_encoder_2:_name_or_path",
+        "root.text_encoder_2:architectures",
+        "root.text_encoder_2:hidden_act",
+        "root.text_encoder_2:hidden_size",
+        "root.text_encoder_2:intermediate_size",
+        "root.text_encoder_2:is_encoder_decoder",
+        "root.text_encoder_2:layer_norm_eps",
+        "root.text_encoder_2:max_position_embeddings",
+        "root.text_encoder_2:model_type",
+        "root.text_encoder_2:num_hidden_layers",
+        "root.text_encoder_2:vocab_size",
+        "root.vae:_class_name",
+        "root.vae:_vae_config",
+        "root.vae:block_out_channels",
+        "root.vae:down_block_types",
+        "root.vae:latent_channels",
+        "root.vae:layers_per_block",
+        "root.vae:norm_num_groups",
+        "root.vae:out_channels",
+        "root.vae:scaling_factor",
+        "root.vae:up_block_types"
+      ],
+      "accessed_unconsumed": [
+        "root.denoiser:addition_embed_type",
+        "root.denoiser:addition_time_embed_dim",
+        "root.denoiser:block_out_channels",
+        "root.denoiser:down_block_types",
+        "root.denoiser:encoder_hid_dim",
+        "root.denoiser:encoder_hid_dim_type",
+        "root.denoiser:layers_per_block",
+        "root.denoiser:mid_block_type",
+        "root.denoiser:projection_class_embeddings_input_dim",
+        "root.denoiser:transformer_layers_per_block",
+        "root.denoiser:up_block_types"
+      ],
+      "accessed_unconsumed_exact": [
+        {
+          "canonical": "addition_embed_type",
+          "component": "root.denoiser",
+          "path": "addition_embed_type",
+          "spelling": "addition_embed_type"
+        },
+        {
+          "canonical": "addition_time_embed_dim",
+          "component": "root.denoiser",
+          "path": "addition_time_embed_dim",
+          "spelling": "addition_time_embed_dim"
+        },
+        {
+          "canonical": "block_out_channels",
+          "component": "root.denoiser",
+          "path": "block_out_channels",
+          "spelling": "block_out_channels"
+        },
+        {
+          "canonical": "down_block_types",
+          "component": "root.denoiser",
+          "path": "down_block_types",
+          "spelling": "down_block_types"
+        },
+        {
+          "canonical": "encoder_hid_dim",
+          "component": "root.denoiser",
+          "path": "encoder_hid_dim",
+          "spelling": "encoder_hid_dim"
+        },
+        {
+          "canonical": "encoder_hid_dim_type",
+          "component": "root.denoiser",
+          "path": "encoder_hid_dim_type",
+          "spelling": "encoder_hid_dim_type"
+        },
+        {
+          "canonical": "layers_per_block",
+          "component": "root.denoiser",
+          "path": "layers_per_block",
+          "spelling": "layers_per_block"
+        },
+        {
+          "canonical": "mid_block_type",
+          "component": "root.denoiser",
+          "path": "mid_block_type",
+          "spelling": "mid_block_type"
+        },
+        {
+          "canonical": "projection_class_embeddings_input_dim",
+          "component": "root.denoiser",
+          "path": "projection_class_embeddings_input_dim",
+          "spelling": "projection_class_embeddings_input_dim"
+        },
+        {
+          "canonical": "transformer_layers_per_block",
+          "component": "root.denoiser",
+          "path": "transformer_layers_per_block",
+          "spelling": "transformer_layers_per_block"
+        },
+        {
+          "canonical": "up_block_types",
+          "component": "root.denoiser",
+          "path": "up_block_types",
+          "spelling": "up_block_types"
+        }
+      ],
+      "consumed": [
+        "root.denoiser:act_fn",
+        "root.denoiser:attention_head_dim",
+        "root.denoiser:cross_attention_dim",
+        "root.denoiser:in_channels",
+        "root.denoiser:num_attention_heads",
+        "root.denoiser:out_channels",
+        "root.scheduler:num_train_timesteps",
+        "root.scheduler:prediction_type",
+        "root.text_encoder:hidden_act",
+        "root.text_encoder:hidden_size",
+        "root.text_encoder:intermediate_size",
+        "root.text_encoder:is_encoder_decoder",
+        "root.text_encoder:layer_norm_eps",
+        "root.text_encoder:max_position_embeddings",
+        "root.text_encoder:num_attention_heads",
+        "root.text_encoder:num_hidden_layers",
+        "root.text_encoder:vocab_size",
+        "root.text_encoder_2:hidden_size",
+        "root.text_encoder_2:is_encoder_decoder",
+        "root.text_encoder_2:layer_norm_eps",
+        "root.text_encoder_2:max_position_embeddings",
+        "root.text_encoder_2:num_hidden_layers",
+        "root.text_encoder_2:vocab_size",
+        "root.vae:block_out_channels",
+        "root.vae:down_block_types",
+        "root.vae:latent_channels",
+        "root.vae:layers_per_block",
+        "root.vae:norm_num_groups",
+        "root.vae:out_channels",
+        "root.vae:scaling_factor",
+        "root.vae:up_block_types"
+      ],
+      "consumed_unprojected": [
+        "root.denoiser:act_fn",
+        "root.denoiser:attention_head_dim",
+        "root.denoiser:cross_attention_dim",
+        "root.denoiser:in_channels",
+        "root.denoiser:num_attention_heads",
+        "root.denoiser:out_channels",
+        "root.scheduler:num_train_timesteps",
+        "root.scheduler:prediction_type",
+        "root.text_encoder:hidden_act",
+        "root.text_encoder:hidden_size",
+        "root.text_encoder:intermediate_size",
+        "root.text_encoder:is_encoder_decoder",
+        "root.text_encoder:layer_norm_eps",
+        "root.text_encoder:max_position_embeddings",
+        "root.text_encoder:num_attention_heads",
+        "root.text_encoder:num_hidden_layers",
+        "root.text_encoder:vocab_size",
+        "root.text_encoder_2:hidden_size",
+        "root.text_encoder_2:is_encoder_decoder",
+        "root.text_encoder_2:layer_norm_eps",
+        "root.text_encoder_2:max_position_embeddings",
+        "root.text_encoder_2:num_hidden_layers",
+        "root.text_encoder_2:vocab_size",
+        "root.vae:block_out_channels",
+        "root.vae:down_block_types",
+        "root.vae:latent_channels",
+        "root.vae:layers_per_block",
+        "root.vae:norm_num_groups",
+        "root.vae:out_channels",
+        "root.vae:scaling_factor",
+        "root.vae:up_block_types"
+      ],
+      "document_roots": {
+        "root.denoiser": [],
+        "root.scheduler": [],
+        "root.text_encoder": [
+          "_text_encoder_configs",
+          "text_encoder"
+        ],
+        "root.text_encoder_2": [
+          "_text_encoder_configs",
+          "text_encoder_2"
+        ],
+        "root.vae": []
+      },
+      "migration_claims": [
+        {
+          "bindings": [
+            {
+              "observed_events": 0,
+              "path": "vision_config.hidden_size",
+              "target_key": "projector_out_features",
+              "target_kind": "fact",
+              "target_matches": 0,
+              "target_owner": "root.vision"
+            }
+          ],
+          "claimed_by": "COR-4",
+          "observed_events": 0,
+          "scope": "root.vision/projector_out_width",
+          "target_matches": 0,
+          "violations": []
+        },
+        {
+          "bindings": [
+            {
+              "observed_events": 0,
+              "path": "vision_config.hidden_size",
+              "target_key": "projector_out_features",
+              "target_kind": "fact",
+              "target_matches": 0,
+              "target_owner": "root.video"
+            }
+          ],
+          "claimed_by": "COR-4",
+          "observed_events": 0,
+          "scope": "root.video/projector_out_width",
+          "target_matches": 0,
+          "violations": []
+        },
+        {
+          "bindings": [
+            {
+              "observed_events": 0,
+              "path": "vision_config.vision_output_dim",
+              "target_key": "projector_in_features",
+              "target_kind": "fact",
+              "target_matches": 0,
+              "target_owner": "root.vision"
+            },
+            {
+              "observed_events": 0,
+              "path": "vision_config.hidden_size",
+              "target_key": "projector_in_features",
+              "target_kind": "fact",
+              "target_matches": 0,
+              "target_owner": "root.vision"
+            }
+          ],
+          "claimed_by": "U9-G",
+          "observed_events": 0,
+          "scope": "root.vision/projector_in_width",
+          "target_matches": 0,
+          "violations": []
+        }
+      ],
+      "non_checkpoint": [
+        {
+          "component": "root.denoiser",
+          "path": "_repo_id",
+          "provenance": "loader_metadata"
+        },
+        {
+          "component": "root.denoiser",
+          "path": "_scheduler_config",
+          "provenance": "loader_metadata"
+        },
+        {
+          "component": "root.denoiser",
+          "path": "_text_encoder_configs",
+          "provenance": "loader_metadata"
+        },
+        {
+          "component": "root.denoiser",
+          "path": "_vae_config",
+          "provenance": "loader_metadata"
+        },
+        {
+          "component": "root.vae",
+          "path": "_vae_config",
+          "provenance": "loader_metadata"
+        }
+      ],
+      "projection_coverage": {
+        "receipted_scopes": [
+          [
+            "decoder",
+            "codebook_streams"
+          ],
+          [
+            "decoder",
+            "mtp_modules"
+          ],
+          [
+            "decoder",
+            "per_layer_embedding_pathway"
+          ],
+          [
+            "decoder.attention",
+            "attention_cache_update"
+          ],
+          [
+            "decoder.attention",
+            "attention_logit_softcap"
+          ],
+          [
+            "decoder.attention",
+            "attention_output_gate"
+          ],
+          [
+            "decoder.attention",
+            "attention_output_projection"
+          ],
+          [
+            "decoder.attention",
+            "attention_qkv_clip"
+          ],
+          [
+            "decoder.attention",
+            "cross_attention_schedule"
+          ],
+          [
+            "decoder.attention",
+            "gated_delta_geometry"
+          ],
+          [
+            "decoder.attention",
+            "kv_sharing_schedule"
+          ],
+          [
+            "decoder.attention",
+            "mask_schedule"
+          ],
+          [
+            "decoder.attention",
+            "mixer_schedule"
+          ],
+          [
+            "decoder.attention",
+            "position_frequency_initialization"
+          ],
+          [
+            "decoder.attention",
+            "position_schedule"
+          ],
+          [
+            "decoder.attention",
+            "qk_norm_gate"
+          ],
+          [
+            "decoder.attention",
+            "qk_norm_schedule"
+          ],
+          [
+            "decoder.ffn",
+            "ffn_schedule"
+          ],
+          [
+            "decoder.input",
+            "position_addition"
+          ],
+          [
+            "root.denoiser",
+            "cell_arithmetic"
+          ],
+          [
+            "root.denoiser",
+            "cell_connections"
+          ],
+          [
+            "root.denoiser",
+            "constructed_modules"
+          ],
+          [
+            "root.denoiser",
+            "constructed_parameter_shapes"
+          ],
+          [
+            "root.denoiser",
+            "constructed_stage_relations"
+          ],
+          [
+            "root.denoiser",
+            "context_connections"
+          ],
+          [
+            "root.denoiser",
+            "declared_constructor_defaults"
+          ],
+          [
+            "root.denoiser",
+            "diffusion_bookend_geometry"
+          ],
+          [
+            "root.denoiser",
+            "diffusion_bookend_operations"
+          ],
+          [
+            "root.denoiser",
+            "diffusion_root_topology"
+          ],
+          [
+            "root.denoiser",
+            "ffn_mechanisms"
+          ],
+          [
+            "root.denoiser",
+            "primary_state_ports"
+          ],
+          [
+            "root.denoiser",
+            "runtime_primitives"
+          ],
+          [
+            "root.denoiser",
+            "spatial_mechanisms"
+          ],
+          [
+            "root.denoiser",
+            "stage_join_connections"
+          ],
+          [
+            "root.denoiser.stacks[i]",
+            "diffusion_nested_stack_depth"
+          ],
+          [
+            "root.denoiser.stacks[i]",
+            "diffusion_root_stack_depth"
+          ],
+          [
+            "root.denoiser.stacks[i]",
+            "diffusion_stack_variant"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_head_geometry"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_head_protocol"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_position_application"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_qk_norm"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_attention_score_scaling"
+          ],
+          [
+            "root.denoiser.stacks[i].attention[i]",
+            "diffusion_stream_relation"
+          ],
+          [
+            "root.denoiser.stacks[i].cell",
+            "diffusion_cell_topology"
+          ],
+          [
+            "root.denoiser.stacks[i].cell",
+            "diffusion_conditioning_applications"
+          ],
+          [
+            "root.denoiser.stacks[i].cell",
+            "diffusion_norm_mechanism"
+          ],
+          [
+            "root.denoiser.stacks[i].ffn",
+            "diffusion_ffn_activation"
+          ],
+          [
+            "root.denoiser.stacks[i].ffn",
+            "diffusion_ffn_mechanism"
+          ],
+          [
+            "root.denoiser.stacks[i].mixers[i]",
+            "diffusion_gated_delta_geometry"
+          ],
+          [
+            "root.video",
+            "projector_in_width"
+          ],
+          [
+            "root.video",
+            "projector_out_width"
+          ],
+          [
+            "root.vision",
+            "projector_in_width"
+          ],
+          [
+            "root.vision",
+            "projector_out_width"
+          ]
+        ]
+      },
+      "projection_obligations": [
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_attention_heads",
+            "component": "root.denoiser",
+            "path": "num_attention_heads",
+            "spelling": "num_attention_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_heads",
+            "kind": "fact",
+            "owner": "root.denoiser.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "attention_head_dim",
+            "component": "root.denoiser",
+            "path": "attention_head_dim",
+            "spelling": "attention_head_dim"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_dim",
+            "kind": "fact",
+            "owner": "root.denoiser.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "cross_attention_dim",
+            "component": "root.denoiser",
+            "path": "cross_attention_dim",
+            "spelling": "cross_attention_dim"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "cross_attention_dim",
+            "kind": "fact",
+            "owner": "root.denoiser.conditioning"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "act_fn",
+            "component": "root.denoiser",
+            "path": "act_fn",
+            "spelling": "act_fn"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "activation",
+            "kind": "fact",
+            "owner": "root.denoiser.ffn"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "in_channels",
+            "component": "root.denoiser",
+            "path": "in_channels",
+            "spelling": "in_channels"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "in_channels",
+            "kind": "geometry",
+            "owner": "root.denoiser.patch"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "unet_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "out_channels",
+            "component": "root.denoiser",
+            "path": "out_channels",
+            "spelling": "out_channels"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "out_channels",
+            "kind": "geometry",
+            "owner": "root.denoiser.patch"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_hidden_layers",
+            "component": "root.text_encoder",
+            "path": "num_hidden_layers",
+            "spelling": "num_hidden_layers"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_layers",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "95901018c179e229",
+          "mechanism": "ffn_intermediate_width",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "intermediate_size",
+            "component": "root.text_encoder",
+            "path": "intermediate_size",
+            "spelling": "intermediate_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "intermediate_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.ffn"
+          }
+        },
+        {
+          "expected_value_status_hash": "efe793cdf189c087",
+          "mechanism": "ffn_activation",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_act",
+            "component": "root.text_encoder",
+            "path": "hidden_act",
+            "spelling": "hidden_act"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "activation",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.ffn"
+          }
+        },
+        {
+          "expected_value_status_hash": "22ee0fb75be79874",
+          "mechanism": "ffn_schedule",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_hidden_layers",
+            "component": "root.text_encoder",
+            "path": "num_hidden_layers",
+            "spelling": "num_hidden_layers"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "ffn_schedule",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.ffn"
+          }
+        },
+        {
+          "expected_value_status_hash": "6a14b63c64ee8511",
+          "mechanism": "mask_schedule",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_hidden_layers",
+            "component": "root.text_encoder",
+            "path": "num_hidden_layers",
+            "spelling": "num_hidden_layers"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "mask_schedule",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "decoderness",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "is_encoder_decoder",
+            "component": "root.text_encoder",
+            "path": "is_encoder_decoder",
+            "spelling": "is_encoder_decoder"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "mask",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "norm_kind_eps",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "layer_norm_eps",
+            "component": "root.text_encoder",
+            "path": "layer_norm_eps",
+            "spelling": "layer_norm_eps"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "norm_kind_eps",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.layer"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "attention_mechanism",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_attention_heads",
+            "component": "root.text_encoder",
+            "path": "num_attention_heads",
+            "spelling": "num_attention_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_heads",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "037940ee470e73e3",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_attention_heads",
+            "component": "root.text_encoder",
+            "path": "num_attention_heads",
+            "spelling": "num_attention_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "8b128aa787d814ce",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "vocab_size",
+            "component": "root.text_encoder",
+            "path": "vocab_size",
+            "spelling": "vocab_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "vocab_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "max_position_embeddings",
+            "component": "root.text_encoder",
+            "path": "max_position_embeddings",
+            "spelling": "max_position_embeddings"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "max_position_embeddings",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_hidden_layers",
+            "component": "root.text_encoder_2",
+            "path": "num_hidden_layers",
+            "spelling": "num_hidden_layers"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_layers",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_2",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "43c8dac4496c036b",
+          "mechanism": "ffn_schedule",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_hidden_layers",
+            "component": "root.text_encoder_2",
+            "path": "num_hidden_layers",
+            "spelling": "num_hidden_layers"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "ffn_schedule",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.decoder.ffn"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "decoderness",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "is_encoder_decoder",
+            "component": "root.text_encoder_2",
+            "path": "is_encoder_decoder",
+            "spelling": "is_encoder_decoder"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "mask",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.decoder.attention"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "norm_kind_eps",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "layer_norm_eps",
+            "component": "root.text_encoder_2",
+            "path": "layer_norm_eps",
+            "spelling": "layer_norm_eps"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "norm_kind_eps",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.decoder.layer"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "vocab_size",
+            "component": "root.text_encoder_2",
+            "path": "vocab_size",
+            "spelling": "vocab_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "vocab_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "max_position_embeddings",
+            "component": "root.text_encoder_2",
+            "path": "max_position_embeddings",
+            "spelling": "max_position_embeddings"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "max_position_embeddings",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "sampling_loop",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_train_timesteps",
+            "component": "root.scheduler",
+            "path": "_scheduler_config.num_train_timesteps",
+            "spelling": "num_train_timesteps"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_train_timesteps",
+            "kind": "fact",
+            "owner": "root.scheduler.sampling"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "sampling_loop",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "prediction_type",
+            "component": "root.scheduler",
+            "path": "_scheduler_config.prediction_type",
+            "spelling": "prediction_type"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "prediction_type",
+            "kind": "fact",
+            "owner": "root.scheduler.sampling"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "block_out_channels",
+            "component": "root.vae",
+            "path": "_vae_config.block_out_channels",
+            "spelling": "block_out_channels"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "block_out_channels",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "layers_per_block",
+            "component": "root.vae",
+            "path": "_vae_config.layers_per_block",
+            "spelling": "layers_per_block"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "layers_per_block",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "latent_channels",
+            "component": "root.vae",
+            "path": "_vae_config.latent_channels",
+            "spelling": "latent_channels"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "latent_channels",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "out_channels",
+            "component": "root.vae",
+            "path": "_vae_config.out_channels",
+            "spelling": "out_channels"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "out_channels",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "scaling_factor",
+            "component": "root.vae",
+            "path": "_vae_config.scaling_factor",
+            "spelling": "scaling_factor"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "scaling_factor",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "norm_num_groups",
+            "component": "root.vae",
+            "path": "_vae_config.norm_num_groups",
+            "spelling": "norm_num_groups"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "norm_num_groups",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "down_block_types",
+            "component": "root.vae",
+            "path": "_vae_config.down_block_types",
+            "spelling": "down_block_types"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "down_block_types",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        },
+        {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "up_block_types",
+            "component": "root.vae",
+            "path": "_vae_config.up_block_types",
+            "spelling": "up_block_types"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "up_block_types",
+            "kind": "geometry",
+            "owner": "root.vae.geometry"
+          }
+        }
+      ]
+    },
+    "config_audit": {
+      "accessed": [
+        "_class_name",
+        "_name_or_path",
+        "_repo_id",
+        "_scheduler_config",
+        "_text_encoder_configs",
+        "_vae_config",
+        "act_fn",
+        "addition_embed_type",
+        "addition_time_embed_dim",
+        "architectures",
+        "attention_head_dim",
+        "beta_schedule",
+        "block_out_channels",
+        "cross_attention_dim",
+        "down_block_types",
+        "encoder_hid_dim",
+        "encoder_hid_dim_type",
+        "hidden_act",
+        "hidden_size",
+        "in_channels",
+        "intermediate_size",
+        "is_encoder_decoder",
+        "latent_channels",
+        "layer_norm_eps",
+        "layers_per_block",
+        "max_position_embeddings",
+        "mid_block_type",
+        "model_type",
+        "norm_num_groups",
+        "num_attention_heads",
+        "num_hidden_layers",
+        "num_train_timesteps",
+        "out_channels",
+        "prediction_type",
+        "projection_class_embeddings_input_dim",
+        "scaling_factor",
+        "scheduler",
+        "text_encoder",
+        "text_encoder_2",
+        "timestep_spacing",
+        "transformer_layers_per_block",
+        "up_block_types",
+        "vocab_size"
+      ],
+      "pending_classification": [
+        "_vae_config.sample_size",
+        "add_watermarker",
+        "class_embed_type",
+        "cross_attention_norm",
+        "flip_sin_to_cos",
+        "freq_shift",
+        "mid_block_only_cross_attention",
+        "num_class_embeds",
+        "only_cross_attention",
+        "sample_size",
+        "time_embedding_dim",
+        "upcast_attention",
+        "use_linear_projection"
+      ],
+      "pending_projection": [
+        "_vae_config.act_fn",
+        "_vae_config.in_channels",
+        "addition_embed_type_num_heads",
+        "center_input_sample",
+        "class_embeddings_concat",
+        "conv_in_kernel",
+        "conv_out_kernel",
+        "downsample_padding",
+        "dual_cross_attention",
+        "mid_block_scale_factor",
+        "norm_num_groups",
+        "resnet_out_scale_factor",
+        "resnet_skip_time_act",
+        "resnet_time_scale_shift",
+        "time_cond_proj_dim",
+        "time_embedding_act_fn",
+        "time_embedding_type",
+        "timestep_post_act"
+      ],
+      "unread": []
+    },
+    "config_consumed": [
+      "act_fn",
+      "attention_head_dim",
+      "block_out_channels",
+      "cross_attention_dim",
+      "down_block_types",
+      "hidden_act",
+      "hidden_size",
+      "in_channels",
+      "intermediate_size",
+      "is_encoder_decoder",
+      "latent_channels",
+      "layer_norm_eps",
+      "layers_per_block",
+      "max_position_embeddings",
+      "norm_num_groups",
+      "num_attention_heads",
+      "num_hidden_layers",
+      "num_train_timesteps",
+      "out_channels",
+      "prediction_type",
+      "scaling_factor",
+      "up_block_types",
+      "vocab_size"
+    ],
+    "diffusion": {
+      "conditioning": {
+        "add_label": "the pooled text vector together with the size/crop/target (\"time_ids\") embeddings",
+        "add_modality": "text_time",
+        "addition_embed_type": "text_time",
+        "encoder_hid_dim_type": null,
+        "has_text_encoder": true,
+        "kv_label": "Encoded text",
+        "kv_modality": "text",
+        "kv_text": true
+      },
+      "cross_attention_dim": 2048,
+      "downscale": 4,
+      "in_channels": 4,
+      "scheduler": "Euler",
+      "scheduler_train_timesteps": 1000,
+      "text_encoders": [
+        "CLIP (768-d)",
+        "CLIP (1,280-d)"
+      ],
+      "unet_stages": 3
+    },
+    "fact_provenance": {},
+    "render": {
+      "denoiser_view": "unet",
+      "family": "diffusion",
+      "layout": "unet_pipeline",
+      "loop_blocks": [
+        {
+          "description": "z_T: random Gaussian latent, shape [4 channels], sampled in the VAE latent space. (Image-to-image instead starts from an encoded input image.) This is the latent the loop iteratively denoises.",
+          "diffusion_stage": "noise_input",
+          "id": "noise",
+          "kind": "source",
+          "label": "Noise",
+          "role": "input",
+          "title": "Initial noise"
+        },
+        {
+          "description": "The current step's noise level t (decreasing T -> 0). Embedded, then projected and added inside every ResNet block (and the mid block) \u2014 a U-net conditions on the noise level additively, not through AdaLN. SDXL also adds a micro-conditioning embedding \u2014 the pooled text vector together with the image size / crop / target-size ('time_ids') embeddings, projected from 2,816-d \u2014 to this timestep embedding (addition_embed_type = text_time).",
+          "diffusion_stage": "timestep",
+          "facts": null,
+          "id": "timestep",
+          "kind": "source",
+          "label": [
+            "Timestep t",
+            ""
+          ],
+          "role": "input",
+          "title": "Timestep"
+        },
+        {
+          "description": "The conditioning prompt, encoded by 2 text encoders (CLIP (768-d), CLIP (1,280-d)). Their token features are concatenated along the feature axis (768 + 1,280 = 2,048-d) into the cross-attention conditioning.",
+          "diffusion_stage": "prompt",
+          "id": "prompt",
+          "kind": "source",
+          "label": "Text prompt",
+          "role": "input",
+          "title": "Text prompt"
+        },
+        {
+          "children": [
+            {
+              "description": "Maps each token id to a vector.",
+              "facts": [
+                "49,408 vocab",
+                "768-d",
+                "max seq 77"
+              ],
+              "id": "encoder_0_op_embed",
+              "title": "Token embedding"
+            },
+            {
+              "children": [
+                {
+                  "description": "External input feeding this block.",
+                  "facts": [],
+                  "id": "encoder_0_attn_hidden",
+                  "title": "Input"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "768 \u2192 768"
+                  ],
+                  "id": "encoder_0_attn_q_proj",
+                  "title": "Linear (Q)"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "768 \u2192 768"
+                  ],
+                  "id": "encoder_0_attn_k_proj",
+                  "title": "Linear (K)"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "768 \u2192 768"
+                  ],
+                  "id": "encoder_0_attn_v_proj",
+                  "title": "Linear (V)"
+                },
+                {
+                  "description": "The token-mixing kernel \u2014 positions exchange information here.",
+                  "facts": [
+                    "scaled_dot_product"
+                  ],
+                  "id": "encoder_0_attn_scaled_scores",
+                  "title": "Attention core"
+                },
+                {
+                  "description": "Element-wise non-linearity.",
+                  "facts": [
+                    "softmax"
+                  ],
+                  "id": "encoder_0_attn_attn_softmax",
+                  "title": "Softmax"
+                },
+                {
+                  "description": "Combines its input lanes element by element.",
+                  "facts": [],
+                  "id": "encoder_0_attn_attn_apply_v",
+                  "title": "Element-wise op"
+                },
+                {
+                  "description": "Regroups one tensor into a new shape (no learned weights).",
+                  "facts": [],
+                  "id": "encoder_0_attn_concat_heads",
+                  "title": "Concat heads"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "768 \u2192 768"
+                  ],
+                  "id": "encoder_0_attn_o_proj",
+                  "title": "Linear (out)"
+                }
+              ],
+              "description": "Each token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.",
+              "detail": {
+                "attention": {
+                  "bias": true,
+                  "cached": null,
+                  "compress_ratio": null,
+                  "conv_kernel_size": null,
+                  "cross_attention": false,
+                  "cross_kv_source": null,
+                  "head_dim": 64,
+                  "hidden": 768,
+                  "index_head_dim": null,
+                  "index_n_heads": null,
+                  "index_topk": null,
+                  "k_norm": null,
+                  "kind": "mha",
+                  "kv_lora_rank": null,
+                  "kv_source_layer": null,
+                  "mask": "causal",
+                  "mrope_section": null,
+                  "no_rope": false,
+                  "node_prefix": "encoder_0_attn_",
+                  "num_heads": 12,
+                  "num_kv_heads": 12,
+                  "output_gate": null,
+                  "output_projection": true,
+                  "position_application": "unknown",
+                  "position_kind": "unknown",
+                  "projection_mode": "split_qkv",
+                  "q_lora_rank": null,
+                  "q_norm": null,
+                  "qk_nope_head_dim": null,
+                  "qk_norm": null,
+                  "qk_rope_head_dim": null,
+                  "rope": null,
+                  "rope_3d": false,
+                  "rope_dim": null,
+                  "scores_scaled": true,
+                  "shared": false,
+                  "v_head_dim": null,
+                  "variant": null,
+                  "window_size": null
+                }
+              },
+              "facts": [
+                "12 heads",
+                "head dim 64",
+                "position scheme unresolved",
+                "+bias",
+                "QK norm unresolved",
+                "cache unresolved",
+                "position application unresolved"
+              ],
+              "id": "encoder_0_op_selfattn",
+              "kind": "attention",
+              "role": "attention",
+              "source_component": "text_encoder",
+              "title": "Multi-head self-attention; bias on Q/K/V/O projections",
+              "view": "attention"
+            },
+            {
+              "children": [
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "768 \u2192 3,072"
+                  ],
+                  "id": "encoder_0_ffn_up_proj",
+                  "title": "Linear (in)"
+                },
+                {
+                  "description": "Element-wise non-linearity.",
+                  "facts": [
+                    "quick_gelu"
+                  ],
+                  "id": "encoder_0_ffn_activation",
+                  "title": "Quick Gelu"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [
+                    "3,072 \u2192 768"
+                  ],
+                  "id": "encoder_0_ffn_down_proj",
+                  "title": "Linear (out)"
+                }
+              ],
+              "description": "Two-layer MLP \u2014 expand, apply the non-linearity, project back.",
+              "detail": {
+                "ffn": {
+                  "activation": "quick_gelu",
+                  "activation_from_class": false,
+                  "bias": true,
+                  "expert_activation_formula": null,
+                  "expert_intermediate_size": null,
+                  "expert_projection_mode": null,
+                  "gated": false,
+                  "hidden": 768,
+                  "intermediate_size": 3072,
+                  "kind": "dense",
+                  "num_experts": null,
+                  "num_experts_per_tok": null,
+                  "num_shared_experts": null,
+                  "projection_mode": "dense",
+                  "routing": null
+                },
+                "op_namespace": "encoder_0_ffn_"
+              },
+              "facts": [
+                "Quick Gelu",
+                "hidden 3,072"
+              ],
+              "id": "encoder_0_op_ffn",
+              "kind": "ffn",
+              "role": "ffn",
+              "source_component": "text_encoder",
+              "source_file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py",
+              "source_owner": "CLIPMLP",
+              "title": "Feed-forward",
+              "view": "ffn"
+            },
+            {
+              "description": "LayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized.",
+              "id": "encoder_0_op_norm",
+              "title": "LayerNorm"
+            },
+            {
+              "description": "Adds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth.",
+              "id": "encoder_0_op_add",
+              "title": "Residual add"
+            }
+          ],
+          "description": "CLIP (768-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.",
+          "detail": {
+            "activation": "quick_gelu",
+            "conditioning_role": [
+              "sequence"
+            ],
+            "denoiser_family": "unet",
+            "ffn": 3072,
+            "gated": false,
+            "hidden": 768,
+            "layers": 12,
+            "max_pos": 77,
+            "name": "CLIP (768-d)",
+            "node_prefix": "encoder_0",
+            "norm": "LayerNorm",
+            "pooled": null,
+            "sub_model": {
+              "altitude": "tower",
+              "component": "text_encoder",
+              "groups": [
+                {
+                  "attention": {
+                    "bias": true,
+                    "cached": null,
+                    "compress_ratio": null,
+                    "conv_kernel_size": null,
+                    "cross_attention": false,
+                    "cross_kv_source": null,
+                    "head_dim": 64,
+                    "hidden": 768,
+                    "index_head_dim": null,
+                    "index_n_heads": null,
+                    "index_topk": null,
+                    "k_norm": null,
+                    "kind": "mha",
+                    "kv_lora_rank": null,
+                    "kv_source_layer": null,
+                    "mask": "causal",
+                    "mrope_section": null,
+                    "no_rope": false,
+                    "num_heads": 12,
+                    "num_kv_heads": 12,
+                    "output_gate": null,
+                    "output_projection": true,
+                    "position_application": "unknown",
+                    "position_kind": "unknown",
+                    "projection_mode": "split_qkv",
+                    "q_lora_rank": null,
+                    "q_norm": null,
+                    "qk_nope_head_dim": null,
+                    "qk_norm": null,
+                    "qk_rope_head_dim": null,
+                    "rope": null,
+                    "rope_3d": false,
+                    "rope_dim": null,
+                    "scores_scaled": true,
+                    "shared": false,
+                    "v_head_dim": null,
+                    "variant": null,
+                    "window_size": null
+                  },
+                  "count": 12,
+                  "evidence": {
+                    "ffn": {
+                      "owner_class": "CLIPMLP",
+                      "source_file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+                    }
+                  },
+                  "ffn": {
+                    "activation": "quick_gelu",
+                    "activation_from_class": false,
+                    "bias": true,
+                    "expert_activation_formula": null,
+                    "expert_intermediate_size": null,
+                    "expert_projection_mode": null,
+                    "gated": false,
+                    "hidden": 768,
+                    "intermediate_size": 3072,
+                    "kind": "dense",
+                    "num_experts": null,
+                    "num_experts_per_tok": null,
+                    "num_shared_experts": null,
+                    "projection_mode": "dense",
+                    "routing": null
+                  },
+                  "layers": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11
+                  ],
+                  "norm": "LayerNorm",
+                  "norm_placement": "pre",
+                  "runs": [
+                    [
+                      0,
+                      11
+                    ]
+                  ],
+                  "tag": ""
+                }
+              ],
+              "hidden": 768,
+              "layers": 12,
+              "max_pos": 77,
+              "norm": "LayerNorm",
+              "schedule": {
+                "period": 1,
+                "runs": [
+                  [
+                    0,
+                    12
+                  ]
+                ],
+                "total": 12
+              },
+              "sub_models": [],
+              "vocab": 49408
+            },
+            "text_dim": 2048,
+            "vocab": 49408
+          },
+          "diffusion_stage": "text_encoder",
+          "id": "encoder_0",
+          "kind": "embedding",
+          "label": "CLIP",
+          "role": "embedding",
+          "title": "CLIP (768-d) text encoder",
+          "view": "text_encoder"
+        },
+        {
+          "children": [
+            {
+              "description": "Maps each token id to a vector.",
+              "facts": [
+                "49,408 vocab",
+                "1,280-d",
+                "max seq 77"
+              ],
+              "id": "encoder_1_op_embed",
+              "title": "Token embedding"
+            },
+            {
+              "children": [
+                {
+                  "description": "The source evidence does not prove the token-mixing mechanism. Known head geometry is retained, but no Q/K/V, score, softmax, cache, or position operation is inferred.",
+                  "facts": [
+                    "1,280 \u2192 1,280"
+                  ],
+                  "id": "encoder_1_attn_block",
+                  "title": "Attention mechanism unresolved"
+                }
+              ],
+              "description": "Each token attends to the others in the prompt, mixing context across the sequence so every position is contextualised.",
+              "detail": {
+                "attention": {
+                  "bias": true,
+                  "cached": null,
+                  "compress_ratio": null,
+                  "conv_kernel_size": null,
+                  "cross_attention": false,
+                  "cross_kv_source": null,
+                  "head_dim": null,
+                  "hidden": 1280,
+                  "index_head_dim": null,
+                  "index_n_heads": null,
+                  "index_topk": null,
+                  "k_norm": null,
+                  "kind": null,
+                  "kv_lora_rank": null,
+                  "kv_source_layer": null,
+                  "mask": "unknown",
+                  "mrope_section": null,
+                  "no_rope": false,
+                  "node_prefix": "encoder_1_attn_",
+                  "num_heads": null,
+                  "num_kv_heads": null,
+                  "output_gate": null,
+                  "output_projection": true,
+                  "position_application": "unknown",
+                  "position_kind": "unknown",
+                  "projection_mode": null,
+                  "q_lora_rank": null,
+                  "q_norm": null,
+                  "qk_nope_head_dim": null,
+                  "qk_norm": null,
+                  "qk_rope_head_dim": null,
+                  "rope": null,
+                  "rope_3d": false,
+                  "rope_dim": null,
+                  "scores_scaled": true,
+                  "shared": false,
+                  "v_head_dim": null,
+                  "variant": null,
+                  "window_size": null
+                }
+              },
+              "facts": [],
+              "id": "encoder_1_op_selfattn",
+              "kind": "attention",
+              "role": "attention",
+              "source_component": "text_encoder_2",
+              "title": "Attention mechanism unresolved",
+              "view": "attention"
+            },
+            {
+              "children": [
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [],
+                  "id": "encoder_1_ffn_up_proj",
+                  "title": "Linear (in)"
+                },
+                {
+                  "description": "Element-wise non-linearity.",
+                  "facts": [],
+                  "id": "encoder_1_ffn_activation",
+                  "title": "Activation"
+                },
+                {
+                  "description": "Linear projection (a learned weight matrix applied to every position).",
+                  "facts": [],
+                  "id": "encoder_1_ffn_down_proj",
+                  "title": "Linear (out)"
+                }
+              ],
+              "description": "Two-layer MLP \u2014 expand, apply the non-linearity, project back.",
+              "detail": {
+                "ffn": {
+                  "activation": null,
+                  "activation_from_class": false,
+                  "bias": true,
+                  "expert_activation_formula": null,
+                  "expert_intermediate_size": null,
+                  "expert_projection_mode": null,
+                  "gated": false,
+                  "hidden": 1280,
+                  "intermediate_size": null,
+                  "kind": "dense",
+                  "num_experts": null,
+                  "num_experts_per_tok": null,
+                  "num_shared_experts": null,
+                  "projection_mode": "dense",
+                  "routing": null
+                },
+                "op_namespace": "encoder_1_ffn_"
+              },
+              "facts": [
+                "activation unresolved"
+              ],
+              "id": "encoder_1_op_ffn",
+              "kind": "ffn",
+              "role": "ffn",
+              "source_component": "text_encoder_2",
+              "source_file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py",
+              "source_owner": "CLIPMLP",
+              "title": "Feed-forward",
+              "view": "ffn"
+            },
+            {
+              "description": "LayerNorm normalizes each token's features before the sublayer (pre-norm). Keeps activation scales stable so the network trains deeply. Both sublayers in every layer are LayerNorm-normalized.",
+              "id": "encoder_1_op_norm",
+              "title": "LayerNorm"
+            },
+            {
+              "description": "Adds the sublayer input back onto its output (x + sublayer(norm(x))). Every attention and feed-forward sublayer is wrapped in this residual so signals and gradients flow cleanly through depth.",
+              "id": "encoder_1_op_add",
+              "title": "Residual add"
+            }
+          ],
+          "description": "CLIP (1,280-d): produces token-level features for the U-net's cross-attention. Frozen; run once and reused every sampling step.",
+          "detail": {
+            "conditioning_role": [
+              "sequence"
+            ],
+            "denoiser_family": "unet",
+            "gated": false,
+            "hidden": 1280,
+            "layers": 32,
+            "max_pos": 77,
+            "name": "CLIP (1,280-d)",
+            "node_prefix": "encoder_1",
+            "norm": "LayerNorm",
+            "pooled": null,
+            "sub_model": {
+              "altitude": "tower",
+              "component": "text_encoder_2",
+              "groups": [
+                {
+                  "attention": {
+                    "bias": true,
+                    "cached": null,
+                    "compress_ratio": null,
+                    "conv_kernel_size": null,
+                    "cross_attention": false,
+                    "cross_kv_source": null,
+                    "head_dim": null,
+                    "hidden": 1280,
+                    "index_head_dim": null,
+                    "index_n_heads": null,
+                    "index_topk": null,
+                    "k_norm": null,
+                    "kind": null,
+                    "kv_lora_rank": null,
+                    "kv_source_layer": null,
+                    "mask": "unknown",
+                    "mrope_section": null,
+                    "no_rope": false,
+                    "num_heads": null,
+                    "num_kv_heads": null,
+                    "output_gate": null,
+                    "output_projection": true,
+                    "position_application": "unknown",
+                    "position_kind": "unknown",
+                    "projection_mode": null,
+                    "q_lora_rank": null,
+                    "q_norm": null,
+                    "qk_nope_head_dim": null,
+                    "qk_norm": null,
+                    "qk_rope_head_dim": null,
+                    "rope": null,
+                    "rope_3d": false,
+                    "rope_dim": null,
+                    "scores_scaled": true,
+                    "shared": false,
+                    "v_head_dim": null,
+                    "variant": null,
+                    "window_size": null
+                  },
+                  "count": 32,
+                  "evidence": {
+                    "ffn": {
+                      "owner_class": "CLIPMLP",
+                      "source_file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+                    }
+                  },
+                  "ffn": {
+                    "activation": null,
+                    "activation_from_class": false,
+                    "bias": true,
+                    "expert_activation_formula": null,
+                    "expert_intermediate_size": null,
+                    "expert_projection_mode": null,
+                    "gated": false,
+                    "hidden": 1280,
+                    "intermediate_size": null,
+                    "kind": "dense",
+                    "num_experts": null,
+                    "num_experts_per_tok": null,
+                    "num_shared_experts": null,
+                    "projection_mode": "dense",
+                    "routing": null
+                  },
+                  "layers": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31
+                  ],
+                  "norm": "LayerNorm",
+                  "norm_placement": "pre",
+                  "runs": [
+                    [
+                      0,
+                      31
+                    ]
+                  ],
+                  "tag": ""
+                }
+              ],
+              "hidden": 1280,
+              "layers": 32,
+              "max_pos": 77,
+              "norm": "LayerNorm",
+              "schedule": {
+                "period": 1,
+                "runs": [
+                  [
+                    0,
+                    32
+                  ]
+                ],
+                "total": 32
+              },
+              "sub_models": [],
+              "vocab": 49408
+            },
+            "text_dim": 2048,
+            "vocab": 49408
+          },
+          "diffusion_stage": "text_encoder",
+          "id": "encoder_1",
+          "kind": "embedding",
+          "label": "CLIP",
+          "role": "embedding",
+          "title": "CLIP (1,280-d) text encoder",
+          "view": "text_encoder"
+        },
+        {
+          "description": "The working latent \u2014 a single slot the loop reads and rewrites each step. It is seeded once from the initial noise (z_T), overwritten every step by the scheduler's output (z_{t-1}), and read by the denoiser as the current z_t. 'z_t' and 'z_{t-1}' are this same slot at consecutive steps, not separate tensors \u2014 the two arrows feeding it are two writers at different times, not a sum.",
+          "facts": [
+            "4 channels"
+          ],
+          "id": "latent",
+          "kind": "latent",
+          "label": "latent",
+          "role": "input",
+          "title": "Latent state (z_t)"
+        },
+        {
+          "children": [
+            {
+              "description": "Input 3\u00d73 convolution: lifts the 4-channel noisy latent to 320 feature channels. Declared by in_channels / block_out_channels[0].",
+              "facts": [
+                "4 \u2192 320 ch"
+              ],
+              "id": "unet_conv_in",
+              "title": "Conv in"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 320,
+                    "temporal": false
+                  },
+                  "id": "unet_down_0__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                },
+                {
+                  "description": "Halves spatial resolution with a stride-2 convolution.",
+                  "id": "unet_down_0__downsample",
+                  "title": "Downsample"
+                }
+              ],
+              "description": "Down-path resolution stage: 2 residual (ResNet) block(s) at 320 channels. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block.",
+              "detail": {
+                "attn": false,
+                "attn_kind": null,
+                "channels": 320,
+                "direction": "down",
+                "resnets": 2,
+                "sample": true,
+                "transformers": 0
+              },
+              "facts": [
+                "320 ch",
+                "2\u00d7 ResNet",
+                "downsample 2\u00d7"
+              ],
+              "id": "unet_down_0",
+              "title": "Down stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 640,
+                    "temporal": false
+                  },
+                  "id": "unet_down_1__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "description": "This layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.",
+                          "id": "opaque_mixer",
+                          "resolved": false,
+                          "title": "Custom attention internals unresolved"
+                        }
+                      ],
+                      "description": "Full bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": false,
+                          "cross_kv_source": null,
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 10,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_down_1__selfattn",
+                      "title": "Self-attention",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).",
+                          "facts": [
+                            "K/V from text (2,048)"
+                          ],
+                          "id": "cross_attention_states",
+                          "title": "Encoded text (K/V)"
+                        }
+                      ],
+                      "description": "Cross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": true,
+                          "cross_kv_source": "encoded text prompt",
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 10,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_down_1__crossattn",
+                      "title": "Cross-attention (text)",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules.",
+                          "id": "block",
+                          "label": "Feed-forward",
+                          "title": "Feed-forward (storage unresolved)"
+                        }
+                      ],
+                      "description": "Position-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.",
+                      "detail": {
+                        "ffn": {
+                          "activation": "geglu",
+                          "activation_from_class": true,
+                          "bias": null,
+                          "expert_activation_formula": null,
+                          "expert_intermediate_size": null,
+                          "expert_projection_mode": null,
+                          "gated": true,
+                          "intermediate_size": null,
+                          "kind": "dense",
+                          "num_experts": null,
+                          "num_experts_per_tok": null,
+                          "num_shared_experts": null,
+                          "projection_mode": null,
+                          "routing": null
+                        }
+                      },
+                      "id": "unet_down_1__ff",
+                      "title": "Feed-forward",
+                      "view": "gated_ffn"
+                    }
+                  ],
+                  "description": "A Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.",
+                  "detail": {
+                    "channels": 640,
+                    "cross_dim": 2048,
+                    "head_dim": 64,
+                    "num_heads": 10,
+                    "prefix": "unet_down_1",
+                    "temporal": false,
+                    "transformers": 2
+                  },
+                  "facts": [
+                    "2\u00d7 layers",
+                    "10 heads"
+                  ],
+                  "id": "unet_down_1__transformer",
+                  "title": "Transformer block",
+                  "view": "unet_transformer"
+                },
+                {
+                  "description": "Halves spatial resolution with a stride-2 convolution.",
+                  "id": "unet_down_1__downsample",
+                  "title": "Downsample"
+                }
+              ],
+              "description": "Down-path resolution stage: 2 residual (ResNet) block(s) at 640 channels, each followed by a 2-layer text cross-attention Transformer2D. Halves the spatial resolution into the next stage. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.",
+              "detail": {
+                "attn": true,
+                "attn_kind": "transformer2d",
+                "channels": 640,
+                "direction": "down",
+                "resnets": 2,
+                "sample": true,
+                "transformers": 2
+              },
+              "facts": [
+                "640 ch",
+                "2\u00d7 ResNet",
+                "2-layer Transformer",
+                "downsample 2\u00d7"
+              ],
+              "id": "unet_down_1",
+              "title": "Down stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 2 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 1280,
+                    "temporal": false
+                  },
+                  "id": "unet_down_2__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "description": "This layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.",
+                          "id": "opaque_mixer",
+                          "resolved": false,
+                          "title": "Custom attention internals unresolved"
+                        }
+                      ],
+                      "description": "Full bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": false,
+                          "cross_kv_source": null,
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_down_2__selfattn",
+                      "title": "Self-attention",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).",
+                          "facts": [
+                            "K/V from text (2,048)"
+                          ],
+                          "id": "cross_attention_states",
+                          "title": "Encoded text (K/V)"
+                        }
+                      ],
+                      "description": "Cross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": true,
+                          "cross_kv_source": "encoded text prompt",
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_down_2__crossattn",
+                      "title": "Cross-attention (text)",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules.",
+                          "id": "block",
+                          "label": "Feed-forward",
+                          "title": "Feed-forward (storage unresolved)"
+                        }
+                      ],
+                      "description": "Position-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.",
+                      "detail": {
+                        "ffn": {
+                          "activation": "geglu",
+                          "activation_from_class": true,
+                          "bias": null,
+                          "expert_activation_formula": null,
+                          "expert_intermediate_size": null,
+                          "expert_projection_mode": null,
+                          "gated": true,
+                          "intermediate_size": null,
+                          "kind": "dense",
+                          "num_experts": null,
+                          "num_experts_per_tok": null,
+                          "num_shared_experts": null,
+                          "projection_mode": null,
+                          "routing": null
+                        }
+                      },
+                      "id": "unet_down_2__ff",
+                      "title": "Feed-forward",
+                      "view": "gated_ffn"
+                    }
+                  ],
+                  "description": "A Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.",
+                  "detail": {
+                    "channels": 1280,
+                    "cross_dim": 2048,
+                    "head_dim": 64,
+                    "num_heads": 20,
+                    "prefix": "unet_down_2",
+                    "temporal": false,
+                    "transformers": 10
+                  },
+                  "facts": [
+                    "10\u00d7 layers",
+                    "20 heads"
+                  ],
+                  "id": "unet_down_2__transformer",
+                  "title": "Transformer block",
+                  "view": "unet_transformer"
+                }
+              ],
+              "description": "Down-path resolution stage: 2 residual (ResNet) block(s) at 1,280 channels, each followed by a 10-layer text cross-attention Transformer2D. The lowest down-path resolution. Declared by down_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.",
+              "detail": {
+                "attn": true,
+                "attn_kind": "transformer2d",
+                "channels": 1280,
+                "direction": "down",
+                "resnets": 2,
+                "sample": false,
+                "transformers": 10
+              },
+              "facts": [
+                "1,280 ch",
+                "2\u00d7 ResNet",
+                "10-layer Transformer"
+              ],
+              "id": "unet_down_2",
+              "title": "Down stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "First ResNet of the bottleneck sandwich: runs before the Transformer2D. GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.",
+                  "detail": {
+                    "channels": 1280,
+                    "temporal": false
+                  },
+                  "id": "unet_mid__resnet_pre",
+                  "title": "ResNet block (pre)",
+                  "view": "unet_resnet"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "description": "This layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.",
+                          "id": "opaque_mixer",
+                          "resolved": false,
+                          "title": "Custom attention internals unresolved"
+                        }
+                      ],
+                      "description": "Full bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": false,
+                          "cross_kv_source": null,
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_mid__selfattn",
+                      "title": "Self-attention",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).",
+                          "facts": [
+                            "K/V from text (2,048)"
+                          ],
+                          "id": "cross_attention_states",
+                          "title": "Encoded text (K/V)"
+                        }
+                      ],
+                      "description": "Cross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": true,
+                          "cross_kv_source": "encoded text prompt",
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_mid__crossattn",
+                      "title": "Cross-attention (text)",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules.",
+                          "id": "block",
+                          "label": "Feed-forward",
+                          "title": "Feed-forward (storage unresolved)"
+                        }
+                      ],
+                      "description": "Position-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.",
+                      "detail": {
+                        "ffn": {
+                          "activation": "geglu",
+                          "activation_from_class": true,
+                          "bias": null,
+                          "expert_activation_formula": null,
+                          "expert_intermediate_size": null,
+                          "expert_projection_mode": null,
+                          "gated": true,
+                          "intermediate_size": null,
+                          "kind": "dense",
+                          "num_experts": null,
+                          "num_experts_per_tok": null,
+                          "num_shared_experts": null,
+                          "projection_mode": null,
+                          "routing": null
+                        }
+                      },
+                      "id": "unet_mid__ff",
+                      "title": "Feed-forward",
+                      "view": "gated_ffn"
+                    }
+                  ],
+                  "description": "A Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.",
+                  "detail": {
+                    "channels": 1280,
+                    "cross_dim": 2048,
+                    "head_dim": 64,
+                    "num_heads": 20,
+                    "prefix": "unet_mid",
+                    "temporal": false,
+                    "transformers": 10
+                  },
+                  "facts": [
+                    "10\u00d7 layers",
+                    "20 heads"
+                  ],
+                  "id": "unet_mid__transformer",
+                  "title": "Transformer block",
+                  "view": "unet_transformer"
+                },
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "Second ResNet of the bottleneck sandwich: runs after the Transformer2D. Same cell as the first \u2014 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add.",
+                  "detail": {
+                    "channels": 1280,
+                    "temporal": false
+                  },
+                  "id": "unet_mid__resnet_post",
+                  "title": "ResNet block (post)",
+                  "view": "unet_resnet"
+                }
+              ],
+              "description": "Bottleneck stage at the lowest resolution: 2 ResNet block(s) at 1,280 channels with a 10-layer text cross-attention Transformer2D between them. Declared by mid_block_type / transformer_layers_per_block.",
+              "detail": {
+                "attn": true,
+                "attn_kind": "transformer2d",
+                "channels": 1280,
+                "direction": null,
+                "resnets": 2,
+                "sample": null,
+                "transformers": 10
+              },
+              "facts": [
+                "1,280 ch",
+                "2\u00d7 ResNet",
+                "10-layer Transformer"
+              ],
+              "id": "unet_mid",
+              "title": "Mid stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 1280,
+                    "temporal": false
+                  },
+                  "id": "unet_up_0__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "description": "This layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.",
+                          "id": "opaque_mixer",
+                          "resolved": false,
+                          "title": "Custom attention internals unresolved"
+                        }
+                      ],
+                      "description": "Full bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": false,
+                          "cross_kv_source": null,
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_up_0__selfattn",
+                      "title": "Self-attention",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).",
+                          "facts": [
+                            "K/V from text (2,048)"
+                          ],
+                          "id": "cross_attention_states",
+                          "title": "Encoded text (K/V)"
+                        }
+                      ],
+                      "description": "Cross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": true,
+                          "cross_kv_source": "encoded text prompt",
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 20,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_up_0__crossattn",
+                      "title": "Cross-attention (text)",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules.",
+                          "id": "block",
+                          "label": "Feed-forward",
+                          "title": "Feed-forward (storage unresolved)"
+                        }
+                      ],
+                      "description": "Position-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.",
+                      "detail": {
+                        "ffn": {
+                          "activation": "geglu",
+                          "activation_from_class": true,
+                          "bias": null,
+                          "expert_activation_formula": null,
+                          "expert_intermediate_size": null,
+                          "expert_projection_mode": null,
+                          "gated": true,
+                          "intermediate_size": null,
+                          "kind": "dense",
+                          "num_experts": null,
+                          "num_experts_per_tok": null,
+                          "num_shared_experts": null,
+                          "projection_mode": null,
+                          "routing": null
+                        }
+                      },
+                      "id": "unet_up_0__ff",
+                      "title": "Feed-forward",
+                      "view": "gated_ffn"
+                    }
+                  ],
+                  "description": "A Transformer2D block \u2014 10 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.",
+                  "detail": {
+                    "channels": 1280,
+                    "cross_dim": 2048,
+                    "head_dim": 64,
+                    "num_heads": 20,
+                    "prefix": "unet_up_0",
+                    "temporal": false,
+                    "transformers": 10
+                  },
+                  "facts": [
+                    "10\u00d7 layers",
+                    "20 heads"
+                  ],
+                  "id": "unet_up_0__transformer",
+                  "title": "Transformer block",
+                  "view": "unet_transformer"
+                },
+                {
+                  "description": "Doubles spatial resolution by nearest-neighbour upsampling then a convolution.",
+                  "id": "unet_up_0__upsample",
+                  "title": "Upsample"
+                }
+              ],
+              "description": "Up-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 1,280 channels, each with a 10-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.",
+              "detail": {
+                "attn": true,
+                "attn_kind": "transformer2d",
+                "channels": 1280,
+                "direction": "up",
+                "resnets": 3,
+                "sample": true,
+                "transformers": 10
+              },
+              "facts": [
+                "1,280 ch",
+                "3\u00d7 ResNet",
+                "10-layer Transformer",
+                "upsample 2\u00d7"
+              ],
+              "id": "unet_up_0",
+              "title": "Up stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 640,
+                    "temporal": false
+                  },
+                  "id": "unet_up_1__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "description": "This layer's mixer type is known, but its internal forward graph was not resolved from source. No Q/K/V projections, softmax, recurrence, or state update are asserted.",
+                          "id": "opaque_mixer",
+                          "resolved": false,
+                          "title": "Custom attention internals unresolved"
+                        }
+                      ],
+                      "description": "Full bidirectional self-attention over the spatial latent tokens at this resolution. Click to open its Q/K/V structure.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": false,
+                          "cross_kv_source": null,
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 10,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_up_1__selfattn",
+                      "title": "Self-attention",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The encoded prompt supplies the keys and values here \u2014 the latent tokens are the queries, this external text sequence is the K/V, which is what makes it cross-attention. The text encoders' features are concatenated to 2048-d (see the 'Encoded text' source in the denoiser view for that concatenation).",
+                          "facts": [
+                            "K/V from text (2,048)"
+                          ],
+                          "id": "cross_attention_states",
+                          "title": "Encoded text (K/V)"
+                        }
+                      ],
+                      "description": "Cross-attention: queries from the latent tokens, keys/values from the encoded text prompt (dim 2048) \u2014 where text conditioning enters the U-net. Click to see the text states feeding K/V.",
+                      "detail": {
+                        "attention": {
+                          "bias": null,
+                          "cached": null,
+                          "compress_ratio": null,
+                          "conv_kernel_size": null,
+                          "cross_attention": true,
+                          "cross_kv_source": "encoded text prompt",
+                          "head_dim": 64,
+                          "index_head_dim": null,
+                          "index_n_heads": null,
+                          "index_topk": null,
+                          "k_norm": null,
+                          "kind": null,
+                          "kv_lora_rank": null,
+                          "kv_source_layer": null,
+                          "mask": "full",
+                          "mrope_section": null,
+                          "no_rope": false,
+                          "num_heads": 10,
+                          "num_kv_heads": null,
+                          "output_gate": null,
+                          "output_projection": null,
+                          "position_application": null,
+                          "position_kind": null,
+                          "projection_mode": null,
+                          "q_lora_rank": null,
+                          "q_norm": null,
+                          "qk_nope_head_dim": null,
+                          "qk_norm": null,
+                          "qk_rope_head_dim": null,
+                          "rope": null,
+                          "rope_3d": false,
+                          "rope_dim": null,
+                          "scores_scaled": null,
+                          "shared": false,
+                          "v_head_dim": null,
+                          "variant": null,
+                          "window_size": null
+                        }
+                      },
+                      "id": "unet_up_1__crossattn",
+                      "title": "Cross-attention (text)",
+                      "view": "attention"
+                    },
+                    {
+                      "children": [
+                        {
+                          "description": "The gated FFN mechanism is proven, but its projection storage is not. The drill stays opaque instead of choosing split, fused, or dense modules.",
+                          "id": "block",
+                          "label": "Feed-forward",
+                          "title": "Feed-forward (storage unresolved)"
+                        }
+                      ],
+                      "description": "Position-wise GEGLU feed-forward sublayer, applied after attention. Its structure is read from the block class the config's block types name, not from a config field.",
+                      "detail": {
+                        "ffn": {
+                          "activation": "geglu",
+                          "activation_from_class": true,
+                          "bias": null,
+                          "expert_activation_formula": null,
+                          "expert_intermediate_size": null,
+                          "expert_projection_mode": null,
+                          "gated": true,
+                          "intermediate_size": null,
+                          "kind": "dense",
+                          "num_experts": null,
+                          "num_experts_per_tok": null,
+                          "num_shared_experts": null,
+                          "projection_mode": null,
+                          "routing": null
+                        }
+                      },
+                      "id": "unet_up_1__ff",
+                      "title": "Feed-forward",
+                      "view": "gated_ffn"
+                    }
+                  ],
+                  "description": "A Transformer2D block \u2014 2 layer(s), each running self-attention \u2192 text cross-attention \u2192 feed-forward. Where text conditioning enters.",
+                  "detail": {
+                    "channels": 640,
+                    "cross_dim": 2048,
+                    "head_dim": 64,
+                    "num_heads": 10,
+                    "prefix": "unet_up_1",
+                    "temporal": false,
+                    "transformers": 2
+                  },
+                  "facts": [
+                    "2\u00d7 layers",
+                    "10 heads"
+                  ],
+                  "id": "unet_up_1__transformer",
+                  "title": "Transformer block",
+                  "view": "unet_transformer"
+                },
+                {
+                  "description": "Doubles spatial resolution by nearest-neighbour upsampling then a convolution.",
+                  "id": "unet_up_1__upsample",
+                  "title": "Upsample"
+                }
+              ],
+              "description": "Up-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 640 channels, each with a 2-layer text cross-attention Transformer2D. Doubles the spatial resolution. Declared by up_block_types / block_out_channels / layers_per_block / transformer_layers_per_block.",
+              "detail": {
+                "attn": true,
+                "attn_kind": "transformer2d",
+                "channels": 640,
+                "direction": "up",
+                "resnets": 3,
+                "sample": true,
+                "transformers": 2
+              },
+              "facts": [
+                "640 ch",
+                "3\u00d7 ResNet",
+                "2-layer Transformer",
+                "upsample 2\u00d7"
+              ],
+              "id": "unet_up_1",
+              "title": "Up stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm1",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv1",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "The linear-projected timestep embedding is added here (ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). This is the mechanism by which a UNet ResNet receives the current noise level \u2014 distinct from DiT/AdaLN, which gates normalization parameters. The projection adjusts the channel width to match the residual branch.",
+                      "id": "unet_op_temb",
+                      "title": "\u2295 Timestep embedding"
+                    },
+                    {
+                      "description": "Group normalization then a SiLU activation, applied before each convolution so the conv sees a well-scaled signal. GroupNorm is fixed in the ResnetBlock2D class; the activation is resolved through the denoiser's act_fn input.",
+                      "id": "unet_op_norm2",
+                      "title": "GroupNorm + SiLU"
+                    },
+                    {
+                      "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours \u2014 the cell runs GroupNorm+SiLU \u2192 Conv 3\u00d73 twice.",
+                      "id": "unet_op_conv2",
+                      "title": "Conv 3\u00d73"
+                    },
+                    {
+                      "description": "Adds the block's raw input back onto the convolved output \u2014 (input_tensor + hidden_states) / output_scale_factor. The bypass goes around the entire cell: norm1, SiLU, conv1, timestep injection, norm2, SiLU, conv2. When in/out channels differ a 1\u00d71 conv adjusts the shortcut (conv_shortcut).",
+                      "id": "unet_op_residual",
+                      "title": "Residual add"
+                    }
+                  ],
+                  "description": "GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 \u2295 timestep emb \u2192 GroupNorm+SiLU \u2192 Conv 3\u00d73 \u2192 residual add (identity shortcut, or 1\u00d71 conv when channels change). The timestep embedding is projected and added after the first conv, injecting the current noise level into the residual branch. 3 per stage (layers_per_block).",
+                  "detail": {
+                    "channels": 320,
+                    "temporal": false
+                  },
+                  "id": "unet_up_2__resnet",
+                  "title": "ResNet block",
+                  "view": "unet_resnet"
+                }
+              ],
+              "description": "Up-path resolution stage: concatenates the skip connection from the matching down stage, then 3 residual (ResNet) block(s) at 320 channels. Declared by up_block_types / block_out_channels / layers_per_block.",
+              "detail": {
+                "attn": false,
+                "attn_kind": null,
+                "channels": 320,
+                "direction": "up",
+                "resnets": 3,
+                "sample": false,
+                "transformers": 0
+              },
+              "facts": [
+                "320 ch",
+                "3\u00d7 ResNet"
+              ],
+              "id": "unet_up_2",
+              "title": "Up stage",
+              "view": "unet_stage"
+            },
+            {
+              "children": [
+                {
+                  "description": "The encoders' per-token features are joined along the feature (channel) axis \u2014 stacked side by side into wider tokens, with no projection, no mixing and no added parameters. Here 768 + 1,280 = 2,048. That combined tensor is the keys/values every cross-attention stage reads. It is the same operation (torch.cat over the feature axis) as the U-net's skip connections \u2014 which is why both use the \u2016 connector, not \u2295.",
+                  "facts": [
+                    "\u2192 2,048-d K/V"
+                  ],
+                  "id": "text_concat_op",
+                  "title": "Concatenate (feature axis)"
+                }
+              ],
+              "description": "The encoded text prompt supplies the keys/values to EVERY cross-attention stage \u2014 the down, mid and up CrossAttn blocks all read the same 2048-d text states, the 2 text encoders' token features concatenated along the feature axis (768 + 1,280 = 2,048). The latent flows through the U vertically; this conditioning enters each cross-attention stage from the side. Click to see how the encoders combine. Declared by cross_attention_dim + the CrossAttn* block types.",
+              "detail": {
+                "cross_attention_dim": 2048,
+                "encoders": [
+                  {
+                    "hidden": 768,
+                    "name": "CLIP"
+                  },
+                  {
+                    "hidden": 1280,
+                    "name": "CLIP"
+                  }
+                ]
+              },
+              "facts": [
+                "K/V dim 2,048"
+              ],
+              "id": "unet_text_cond",
+              "title": "Text conditioning",
+              "view": "encoded_text_concat"
+            },
+            {
+              "description": "Output GroupNorm + SiLU + 3\u00d73 convolution: normalises (conv_norm_out, GroupNorm over 320 channels), activates (conv_act, SiLU \u2014 resolved through the denoiser's act_fn input), then projects back to 4 channels \u2014 the predicted noise (\u03b5\u0302). Declared by out_channels / norm_num_groups.",
+              "facts": [
+                "320 \u2192 4 ch"
+              ],
+              "id": "unet_conv_out",
+              "title": "Conv out"
+            }
+          ],
+          "description": "The network applied at every step: a 3-stage convolutional U-net (down \u2192 mid \u2192 up with skip connections) that takes the latent z_t (+ timestep + text conditioning) and predicts the noise. Each down stage halves the spatial resolution (the latent is 4\u00d7 downscaled at the bottleneck) and each up stage doubles it back; the timestep modulates every ResNet, and text conditioning (dim 2048) enters the cross-attention stages. Click to open its architecture.",
+          "diffusion_stage": "denoiser",
+          "facts": null,
+          "id": "denoiser",
+          "kind": "denoiser",
+          "label": [
+            "U-Net",
+            "Denoiser"
+          ],
+          "role": "attention",
+          "title": "U-Net denoiser"
+        },
+        {
+          "children": [
+            {
+              "description": "The denoiser's predicted noise (\u03b5\u0302) for this timestep, handed to the scheduler each step.",
+              "id": "sch_pred",
+              "title": "Predicted noise"
+            },
+            {
+              "description": "Scales the predicted noise by this timestep's noise level \u03c3_t.",
+              "id": "sch_scale",
+              "title": "\u03c3_t \u00b7 \u03b5\u0302"
+            },
+            {
+              "description": "The latent being denoised \u2014 the loop-carried value the scheduler updates into z_{t-1}.",
+              "id": "sch_zt",
+              "title": "Current latent z_t"
+            },
+            {
+              "description": "Combines the current latent z_t with the scaled prediction to take one denoising step toward z_{t-1} (the \u2295 glyph).",
+              "id": "sch_step",
+              "title": "Combine step"
+            }
+          ],
+          "description": "Euler combines the denoiser's prediction with z_t to produce z_{t-1}, one step toward a clean latent. The loop repeats for N sampling steps (N chosen at inference, typically ~20-50 \u2014 it is not a config field).",
+          "detail": {
+            "scheduler_step": {
+              "scale_desc": "Scales the predicted noise by this timestep's noise level \u03c3_t.",
+              "scale_label": "\u03c3_t \u00b7 \u03b5\u0302",
+              "step_desc": "Removes the scaled noise estimate from the current latent \u2014 one denoising step toward z_0.",
+              "step_label": "z_t \u2212 \u03c3_t\u00b7\u03b5\u0302",
+              "sym": "\u03b5\u0302",
+              "what": "noise"
+            }
+          },
+          "diffusion_stage": "scheduler",
+          "facts": [
+            "epsilon",
+            "1,000 train timesteps",
+            "scaled_linear",
+            "leading"
+          ],
+          "id": "scheduler",
+          "kind": "scheduler",
+          "label": [
+            "Euler"
+          ],
+          "role": "norm",
+          "title": "Scheduler \u2014 Euler",
+          "view": "scheduler_step"
+        },
+        {
+          "children": [
+            {
+              "description": "z_0 after the denoising loop.",
+              "facts": [
+                "4 ch",
+                "latent res"
+              ],
+              "id": "vae_clean_latent",
+              "title": "Clean latent"
+            },
+            {
+              "children": [
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm1",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv1",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm2",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv2",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Adds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth.",
+                  "id": "vae_op_residual",
+                  "title": "Residual add"
+                },
+                {
+                  "description": "Doubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs once after the ResNet stack, stepping the latent toward image size.",
+                  "id": "vae_op_upsample",
+                  "title": "Upsample"
+                }
+              ],
+              "components": [
+                {
+                  "kind": "channels",
+                  "value": 512
+                },
+                {
+                  "count": 3,
+                  "kind": "resnet_stack"
+                },
+                {
+                  "factor": 2,
+                  "kind": "upsample"
+                }
+              ],
+              "description": "VAE decoder resolution stage.",
+              "detail": {
+                "channels": 512,
+                "components": [
+                  {
+                    "kind": "channels",
+                    "value": 512
+                  },
+                  {
+                    "count": 3,
+                    "kind": "resnet_stack"
+                  },
+                  {
+                    "factor": 2,
+                    "kind": "upsample"
+                  }
+                ],
+                "diffusion_part_kind": "up_stage",
+                "resnets": 3,
+                "upsamples": true
+              },
+              "diffusion_part_kind": "up_stage",
+              "facts": [
+                "512 ch",
+                "3\u00d7 ResNet",
+                "\u21912\u00d7 spatial",
+                "UpDecoderBlock2D",
+                "GroupNorm 32 groups"
+              ],
+              "id": "vae_decoder_block_4",
+              "title": "Up stage 4",
+              "view": "vae_decoder_block"
+            },
+            {
+              "children": [
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm1",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv1",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm2",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv2",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Adds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth.",
+                  "id": "vae_op_residual",
+                  "title": "Residual add"
+                },
+                {
+                  "description": "Doubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs once after the ResNet stack, stepping the latent toward image size.",
+                  "id": "vae_op_upsample",
+                  "title": "Upsample"
+                }
+              ],
+              "components": [
+                {
+                  "kind": "channels",
+                  "value": 512
+                },
+                {
+                  "count": 3,
+                  "kind": "resnet_stack"
+                },
+                {
+                  "factor": 2,
+                  "kind": "upsample"
+                }
+              ],
+              "description": "VAE decoder resolution stage.",
+              "detail": {
+                "channels": 512,
+                "components": [
+                  {
+                    "kind": "channels",
+                    "value": 512
+                  },
+                  {
+                    "count": 3,
+                    "kind": "resnet_stack"
+                  },
+                  {
+                    "factor": 2,
+                    "kind": "upsample"
+                  }
+                ],
+                "diffusion_part_kind": "up_stage",
+                "resnets": 3,
+                "upsamples": true
+              },
+              "diffusion_part_kind": "up_stage",
+              "facts": [
+                "512 ch",
+                "3\u00d7 ResNet",
+                "\u21912\u00d7 spatial",
+                "UpDecoderBlock2D",
+                "GroupNorm 32 groups"
+              ],
+              "id": "vae_decoder_block_3",
+              "title": "Up stage 3",
+              "view": "vae_decoder_block"
+            },
+            {
+              "children": [
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm1",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv1",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm2",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv2",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Adds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth.",
+                  "id": "vae_op_residual",
+                  "title": "Residual add"
+                },
+                {
+                  "description": "Doubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs once after the ResNet stack, stepping the latent toward image size.",
+                  "id": "vae_op_upsample",
+                  "title": "Upsample"
+                }
+              ],
+              "components": [
+                {
+                  "kind": "channels",
+                  "value": 256
+                },
+                {
+                  "count": 3,
+                  "kind": "resnet_stack"
+                },
+                {
+                  "factor": 2,
+                  "kind": "upsample"
+                }
+              ],
+              "description": "VAE decoder resolution stage.",
+              "detail": {
+                "channels": 256,
+                "components": [
+                  {
+                    "kind": "channels",
+                    "value": 256
+                  },
+                  {
+                    "count": 3,
+                    "kind": "resnet_stack"
+                  },
+                  {
+                    "factor": 2,
+                    "kind": "upsample"
+                  }
+                ],
+                "diffusion_part_kind": "up_stage",
+                "resnets": 3,
+                "upsamples": true
+              },
+              "diffusion_part_kind": "up_stage",
+              "facts": [
+                "256 ch",
+                "3\u00d7 ResNet",
+                "\u21912\u00d7 spatial",
+                "UpDecoderBlock2D",
+                "GroupNorm 32 groups"
+              ],
+              "id": "vae_decoder_block_2",
+              "title": "Up stage 2",
+              "view": "vae_decoder_block"
+            },
+            {
+              "children": [
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm1",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv1",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Group normalization followed by a SiLU (swish) activation, applied before each convolution in the residual cell. Normalizes feature statistics so the conv sees a well-scaled signal.",
+                  "facts": [
+                    "32 groups"
+                  ],
+                  "id": "vae_op_norm2",
+                  "title": "GroupNorm + SiLU"
+                },
+                {
+                  "description": "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its spatial neighbours. The feature-transforming workhorse of the cell; the stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice.",
+                  "id": "vae_op_conv2",
+                  "title": "Conv 3\u00d73"
+                },
+                {
+                  "description": "Adds the block input back onto the convolved output (an identity skip, or a 1\u00d71 conv when the channel count changes) so the cell learns a residual and gradients flow cleanly through depth.",
+                  "id": "vae_op_residual",
+                  "title": "Residual add"
+                }
+              ],
+              "components": [
+                {
+                  "kind": "channels",
+                  "value": 128
+                },
+                {
+                  "count": 3,
+                  "kind": "resnet_stack"
+                }
+              ],
+              "description": "VAE decoder resolution stage.",
+              "detail": {
+                "channels": 128,
+                "components": [
+                  {
+                    "kind": "channels",
+                    "value": 128
+                  },
+                  {
+                    "count": 3,
+                    "kind": "resnet_stack"
+                  }
+                ],
+                "diffusion_part_kind": "up_stage",
+                "resnets": 3,
+                "upsamples": false
+              },
+              "diffusion_part_kind": "up_stage",
+              "facts": [
+                "128 ch",
+                "3\u00d7 ResNet",
+                "UpDecoderBlock2D",
+                "GroupNorm 32 groups"
+              ],
+              "id": "vae_decoder_block_1",
+              "title": "Up stage 1",
+              "view": "vae_decoder_block"
+            },
+            {
+              "description": "Final convolution maps decoder channels to the output image channels.",
+              "facts": [
+                "conv 3\u00d73",
+                "128 \u2192 3 ch"
+              ],
+              "id": "vae_output_head",
+              "title": "Output image head"
+            },
+            {
+              "description": "The decoded image in pixel space.",
+              "facts": [
+                "RGB",
+                "8\u00d7 upscaled"
+              ],
+              "id": "vae_image",
+              "title": "Image"
+            }
+          ],
+          "description": "Once the loop reaches z_0 (clean latent), the VAE decoder maps it from latent space back to a full-resolution pixel image. Click to open its architecture.",
+          "detail": {
+            "block_out_channels": [
+              128,
+              256,
+              512,
+              512
+            ],
+            "class": "AutoencoderKL",
+            "down_block_types": [
+              "DownEncoderBlock2D",
+              "DownEncoderBlock2D",
+              "DownEncoderBlock2D",
+              "DownEncoderBlock2D"
+            ],
+            "latent_channels": 4,
+            "layers_per_block": 2,
+            "norm_num_groups": 32,
+            "out_channels": 3,
+            "scaling_factor": 0.13025,
+            "up_block_types": [
+              "UpDecoderBlock2D",
+              "UpDecoderBlock2D",
+              "UpDecoderBlock2D",
+              "UpDecoderBlock2D"
+            ]
+          },
+          "diffusion_stage": "vae_decode",
+          "facts": [
+            "latent scale 0.13025"
+          ],
+          "id": "vae_decode",
+          "kind": "output",
+          "label": "VAE decode",
+          "role": "output",
+          "title": "VAE decoder",
+          "view": "vae_decoder"
+        },
+        {
+          "description": "The generated image in pixel space.",
+          "diffusion_stage": "image_output",
+          "id": "image",
+          "kind": "source",
+          "label": "Image",
+          "role": "output",
+          "title": "Output image"
+        }
+      ],
+      "loop_edges": [
+        {
+          "from": "noise",
+          "gap": 4,
+          "label": "z_T \u00b7 once",
+          "route": "spine",
+          "to": "latent",
+          "to_port": "bottom",
+          "when": "once"
+        },
+        {
+          "from": "latent",
+          "gap": 4,
+          "label": "z_t",
+          "label_size": 11,
+          "route": "spine",
+          "to": "denoiser",
+          "to_port": "bottom",
+          "when": "each_step"
+        },
+        {
+          "from": "denoiser",
+          "from_port": "right",
+          "label": "\u03b5\u0302",
+          "route": "eps",
+          "to": "scheduler",
+          "to_port": "left",
+          "when": "each_step"
+        },
+        {
+          "back_edge": true,
+          "from": "scheduler",
+          "from_port": "bottom",
+          "label": "z_t-1 \u00b7 each step",
+          "route": "rail",
+          "to": "latent",
+          "to_port": "right",
+          "when": "each_step"
+        },
+        {
+          "from": "denoiser",
+          "label": "z_0",
+          "label_at": "frame_top",
+          "label_size": 11,
+          "route": "spine",
+          "to": "vae_decode",
+          "to_port": "bottom",
+          "when": "once"
+        },
+        {
+          "from": "vae_decode",
+          "route": "spine",
+          "to": "image",
+          "to_port": "bottom"
+        },
+        {
+          "from": "timestep",
+          "lane_index": 0,
+          "route": "lateral",
+          "to": "denoiser",
+          "to_port": "left",
+          "when": "each_step"
+        },
+        {
+          "from": "encoder_0",
+          "lane_index": 1,
+          "route": "lateral",
+          "to": "denoiser",
+          "to_port": "left",
+          "when": "each_step"
+        },
+        {
+          "from": "encoder_1",
+          "lane_index": 2,
+          "route": "lateral",
+          "to": "denoiser",
+          "to_port": "left",
+          "when": "each_step"
+        },
+        {
+          "from": "prompt",
+          "route": "prompt",
+          "to": "encoder_0"
+        },
+        {
+          "from": "prompt",
+          "route": "prompt",
+          "to": "encoder_1"
+        }
+      ],
+      "loop_region": {
+        "carried": [
+          {
+            "from": "scheduler",
+            "to": "latent"
+          }
+        ],
+        "entry": "noise",
+        "exit": {
+          "from": "denoiser",
+          "tensor": "z_0",
+          "to": "vae_decode"
+        },
+        "members": [
+          "latent",
+          "denoiser",
+          "scheduler"
+        ],
+        "repeat": "until t = 0"
+      },
+      "theme": "teal"
+    },
+    "ship_findings": [
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      },
+      {
+        "check": "config_accessed_unprojected",
+        "message": "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+        "surface": "config_occurrence"
+      }
+    ],
+    "source_provenance": {
+      "components": {
+        "root": {
+          "architecture": "UNet2DConditionModel",
+          "files": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py"
+          ]
+        },
+        "text_encoder": {
+          "architecture": "CLIPTextModel",
+          "files": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+          ]
+        },
+        "text_encoder_2": {
+          "architecture": "CLIPTextModelWithProjection",
+          "files": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+          ]
+        }
+      },
+      "source": "local"
+    },
+    "unet": {
+      "act_declared": true,
+      "act_fn": "silu",
+      "addition_embed_type": "text_time",
+      "block_out_channels": [
+        320,
+        640,
+        1280
+      ],
+      "cross_attention_dim": 2048,
+      "declares_block_types": true,
+      "declares_mid_block_type": true,
+      "down": [
+        {
+          "attn": false,
+          "channels": 320,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 320
+            },
+            {
+              "count": 2,
+              "kind": "resnet_stack"
+            },
+            {
+              "factor": 2,
+              "kind": "downsample"
+            }
+          ],
+          "diffusion_part_kind": "down_stage",
+          "direction": "down",
+          "head_dim": 64,
+          "id": "unet_down_0",
+          "num_heads": 5,
+          "resnets": 2,
+          "sample": true,
+          "stage_type": "DownBlock2D",
+          "transformers": 0
+        },
+        {
+          "attn": true,
+          "attn_kind": "transformer2d",
+          "channels": 640,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 640
+            },
+            {
+              "count": 2,
+              "kind": "resnet_stack"
+            },
+            {
+              "count": 2,
+              "kind": "cross_attention"
+            },
+            {
+              "factor": 2,
+              "kind": "downsample"
+            }
+          ],
+          "diffusion_part_kind": "down_stage",
+          "direction": "down",
+          "head_dim": 64,
+          "id": "unet_down_1",
+          "num_heads": 10,
+          "resnets": 2,
+          "sample": true,
+          "stage_type": "CrossAttnDownBlock2D",
+          "transformers": 2
+        },
+        {
+          "attn": true,
+          "attn_kind": "transformer2d",
+          "channels": 1280,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 1280
+            },
+            {
+              "count": 2,
+              "kind": "resnet_stack"
+            },
+            {
+              "count": 10,
+              "kind": "cross_attention"
+            }
+          ],
+          "diffusion_part_kind": "down_stage",
+          "direction": "down",
+          "head_dim": 64,
+          "id": "unet_down_2",
+          "num_heads": 20,
+          "resnets": 2,
+          "sample": false,
+          "stage_type": "CrossAttnDownBlock2D",
+          "transformers": 10
+        }
+      ],
+      "downscale": 4,
+      "encoder_hid": null,
+      "in_channels": 4,
+      "kv_label": "Encoded text",
+      "kv_modality": "text",
+      "mid": {
+        "attn": true,
+        "attn_kind": "transformer2d",
+        "channels": 1280,
+        "components": [
+          {
+            "kind": "channels",
+            "value": 1280
+          },
+          {
+            "count": 2,
+            "kind": "resnet_stack"
+          },
+          {
+            "count": 10,
+            "kind": "cross_attention"
+          }
+        ],
+        "diffusion_part_kind": "mid_stage",
+        "head_dim": 64,
+        "id": "unet_mid",
+        "num_heads": 20,
+        "resnets": 2,
+        "stage_type": "UNetMidBlock2DCrossAttn",
+        "transformers": 10
+      },
+      "mid_present": true,
+      "out_channels": 4,
+      "temporal": false,
+      "transformer_ffn_act": "geglu",
+      "up": [
+        {
+          "attn": true,
+          "attn_kind": "transformer2d",
+          "channels": 1280,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 1280
+            },
+            {
+              "count": 3,
+              "kind": "resnet_stack"
+            },
+            {
+              "count": 10,
+              "kind": "cross_attention"
+            },
+            {
+              "factor": 2,
+              "kind": "upsample"
+            }
+          ],
+          "diffusion_part_kind": "up_stage",
+          "direction": "up",
+          "head_dim": 64,
+          "id": "unet_up_0",
+          "num_heads": 20,
+          "resnets": 3,
+          "sample": true,
+          "stage_type": "CrossAttnUpBlock2D",
+          "transformers": 10
+        },
+        {
+          "attn": true,
+          "attn_kind": "transformer2d",
+          "channels": 640,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 640
+            },
+            {
+              "count": 3,
+              "kind": "resnet_stack"
+            },
+            {
+              "count": 2,
+              "kind": "cross_attention"
+            },
+            {
+              "factor": 2,
+              "kind": "upsample"
+            }
+          ],
+          "diffusion_part_kind": "up_stage",
+          "direction": "up",
+          "head_dim": 64,
+          "id": "unet_up_1",
+          "num_heads": 10,
+          "resnets": 3,
+          "sample": true,
+          "stage_type": "CrossAttnUpBlock2D",
+          "transformers": 2
+        },
+        {
+          "attn": false,
+          "channels": 320,
+          "components": [
+            {
+              "kind": "channels",
+              "value": 320
+            },
+            {
+              "count": 3,
+              "kind": "resnet_stack"
+            }
+          ],
+          "diffusion_part_kind": "up_stage",
+          "direction": "up",
+          "head_dim": 64,
+          "id": "unet_up_2",
+          "num_heads": 5,
+          "resnets": 3,
+          "sample": false,
+          "stage_type": "UpBlock2D",
+          "transformers": 0
+        }
+      ]
+    }
+  },
+  "final_norm_kind": null,
+  "hidden_size": 1280,
+  "layers": [],
+  "max_position_embeddings": null,
+  "name": "stable-diffusion-xl-base-1.0",
+  "notes": [],
+  "tie_word_embeddings": true,
+  "vocab_size": 0,
+  "warnings": [
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored"
+  ]
+}

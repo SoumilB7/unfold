@@ -1,0 +1,11 @@
+--- installed-modeling-source
++++ scratch-modeling-source
+@@ -367,7 +367,7 @@
+             down_block = get_down_block(
+                 down_block_type,
+                 num_layers=layers_per_block[i],
+-                transformer_layers_per_block=transformer_layers_per_block[i],
++                transformer_layers_per_block=transformer_layers_per_block[i] + 1,
+                 in_channels=input_channel,
+                 out_channels=output_channel,
+                 temb_channels=blocks_time_embed_dim,

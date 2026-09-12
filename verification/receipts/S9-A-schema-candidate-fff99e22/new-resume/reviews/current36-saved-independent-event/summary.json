@@ -1,0 +1,1581 @@
+{
+  "HTML_cause": "All39 raw pages differ only by their exact Diagram uuid4-derived mount ID. Exhaustive replacements and every raw diff retained; zero remaining SVG/geometry/text or payload differences. No page normalized or approved.",
+  "all_models": [
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "25949499d548b0255689648e551cde6f4205fc9eaecc29a5efd71c54beb23157",
+      "render_receipt_local_token_deltas": 9,
+      "slug": "llama-7b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 70,
+        "diagram-ir-before-render.json.gz": 70,
+        "ir-after-render.json.gz": 70,
+        "ir-before-render.json.gz": 70
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "253ea4693e968dd6a54acd41eb56231ab3f0885586a144887be49c64bf947d89",
+      "render_receipt_local_token_deltas": 7,
+      "slug": "bloom"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 24,
+        "diagram-ir-before-render.json.gz": 24,
+        "ir-after-render.json.gz": 24,
+        "ir-before-render.json.gz": 24
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "d63858e96864dfc1c235cbb211e8d06b2b0d4e199baa993233ec7954662ee319",
+      "render_receipt_local_token_deltas": 5,
+      "slug": "musicgen-small"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "0d421a3bb106282e79bd8f598f9e701c0fc5cd0bea700eed303acfc1fdae1580",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "b80ac62dcff3d56b57a1ac640ed30c26b458cb0915edd0f5f466e3f27349c5a5",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "cogvideox-5b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "be424212c6ae675c444134042eafd402f9392fe1f33c44b7b29968c03b8d5f1d",
+      "render_receipt_local_token_deltas": 6,
+      "slug": "command-a-03-2025"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "ccf458fdcd8e8f6c5f94108a914f7a0673b1ebdd3ecee381732cdf8d845829af",
+      "render_receipt_local_token_deltas": 10,
+      "slug": "dbrx-base"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "c4a107f66845674023eb7809bc8236e065e212732250500e9bd540fa403242a4",
+      "render_receipt_local_token_deltas": 4,
+      "slug": "deepseek-coder-v2-lite"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "b00da2c8570823e458daf2f9c00ef2ffc82469ee1fbbb3bc4ea0ef80bf87eab8",
+      "render_receipt_local_token_deltas": 15,
+      "slug": "deepseek-v3"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "39e9af4ee069f793ab732df9bae6a365f8685fe83bf8b261fe1fd6ff5a4acde8",
+      "render_receipt_local_token_deltas": 2,
+      "slug": "deepseek-v4-flash"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "50b23e7fdb5109843d3b6f187811f913bdfabea7f75556d0fa36d5a4f3093f2c",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "flux-2-dev"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "ea238b1be87870c6af90ddf78bf8733d14a35d44463433c9c7d6af2c2764174e",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "f604ba1e76884c38b70d9f69306f7315ae482404538a80b05779ed5bd2188317",
+      "render_receipt_local_token_deltas": 15,
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "169e1f5b82b0487d281a7a877f4031b4a77a01d8604899ce9f9eebae2d4217cf",
+      "render_receipt_local_token_deltas": 10,
+      "slug": "gemma-3n-e2b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "84c4208612f584e2a74639266bd6919c9f0254f22ca088e1e9fdc6332ee1f61b",
+      "render_receipt_local_token_deltas": 16,
+      "slug": "glm-4-5"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "50093ee03166027b785868abcdfe6e62f143ada2e70c23cc5d7ddc6b5248b147",
+      "render_receipt_local_token_deltas": 13,
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "ed50994498e5a4f8c43ed60645910e7802e290586a300107dcfd018dfb713816",
+      "render_receipt_local_token_deltas": 9,
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "713677a1ec2c045eca1d03173c42309c2c1ec03cf4404ab22f5486c55cf4e081",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "hunyuanvideo"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "8f452e81ebae67abbd92b4f5b2d88b8af6f0a207ad4c8e004a1321ce36a6624f",
+      "render_receipt_local_token_deltas": 1,
+      "slug": "jamba-v0-1"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "cda40972dd2bdc50f1e8e05189bee8b0631c66a243881b84656708fcb4c2cf33",
+      "render_receipt_local_token_deltas": 8,
+      "slug": "lfm2-1-2b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "f07aceabc1dc9f27ff314116d00fdbc160ab985dce2d426746e5fccad5e16d07",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "ltx-video"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "9c8085961dad7f3a68c254e0205c92272d489df87bc333a6f7f8eb32e5272577",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "47caad06a0e97d081ff368d2b61149eae1bdc06f36d62e0be251d3e4bf141a4f",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "mochi-1-preview"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "1ffaf5f734d4885885d79588ba343117ca04d60cc15718d40c9714ce7adee195",
+      "render_receipt_local_token_deltas": 1,
+      "slug": "nemotron-h-8b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "c952f9a34c3fa2323b5bc9cf99796a89d6796fda412dbea3f8c63f6fa194a1f7",
+      "render_receipt_local_token_deltas": 11,
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "89796c2f5b067dc61dd5749cee3a8f7cd5e17d0cf990424c21fdeca7e350f19d",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "fc014445ac24579453795b158f060b443235be394e71ba1f55988b2b566f28f0",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "273d01ba74e077bbf13e597151e3e2b18a2a1b80f7f538844d50d9b198358812",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "qwen-image"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "ffd2d0873c0591cc4b6525fc35abf47d9824bb443496be0cd8e5cecd064ce411",
+      "render_receipt_local_token_deltas": 6,
+      "slug": "qwen2-vl-7b-instruct"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "fdf7a945cf17662e7be47c2b9f8d335279d03b1068ffbbe43a9449c97003eb07",
+      "render_receipt_local_token_deltas": 9,
+      "slug": "qwen3-5-27b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "eddd61bd3833dc50ac2c67dfb7e46773cb91a3d130b15d39d67f9cdb50ab8d6d",
+      "render_receipt_local_token_deltas": 9,
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "0324fd0485027c63a2dfb4de5a26cb96b63a557202e7e8feac4de7569b4e97b5",
+      "render_receipt_local_token_deltas": 11,
+      "slug": "qwen3-8b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "f2f5cd97982cd97530cded516b6e280468680053357de14076ad2ce8c15d6fb5",
+      "render_receipt_local_token_deltas": 1,
+      "slug": "qwen3-omni-30b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "21440320f9cef8ab06d595947230240a52dbc3bd380864ff2590a4879d1391ec",
+      "render_receipt_local_token_deltas": 8,
+      "slug": "qwen3-vl-235b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "b3305f80db58f0471400f5832a43d7a46ab3d5e3b2b1d2f68a469ec0817db037",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "7e9cfcbe64430007597670e5cb1ec09048a73e265f98c0df1024c8b681147a80",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "8a972e6cb63429b0de1e269028d38750f1fc9b5a2fc9a4a2ddd7459334e12650",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "stable-diffusion-xl-base-1-0"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "c175f9074d88f769b8fb154ee0da0c88d13f283d53dfa88e07ee0202e3db200e",
+      "render_receipt_local_token_deltas": 11,
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "IR_deltas_by_phase": {
+        "diagram-ir-after-render.json.gz": 0,
+        "diagram-ir-before-render.json.gz": 0,
+        "ir-after-render.json.gz": 0,
+        "ir-before-render.json.gz": 0
+      },
+      "native_delta_count": 0,
+      "raw_html_sha256": "3100a61c23062d472852af3d1cb315cbcc1844d8d6682adb5beeb5c10a04ab04",
+      "render_receipt_local_token_deltas": 0,
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "archive_files_independently_verified_against_raw": 590,
+  "archive_map_sha256": "073125cc0b3c75b745e0602cc93a59429e4b9a2754b37f6922444f2af038a674",
+  "archive_raw_bytes": 71464746,
+  "browser_limit": "Serialized HTML/source inspection and original captured events only; no browser, click, visibility or pixel verdict.",
+  "exact_card_citations": [
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        24,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        25,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        26,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        27,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        28,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        29,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        30,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        31,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        32,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        33,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        34,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        35,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        36,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        37,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        38,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        39,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        40,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        41,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        42,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        43,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        44,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        45,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        46,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        47,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        48,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        49,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        50,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        51,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        52,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        53,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        54,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        55,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        56,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        57,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        58,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        59,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        60,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        61,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        62,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        63,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        64,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        65,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        66,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        67,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        68,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.position_schedule",
+      "path": [
+        "layers",
+        69,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        0,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        1,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        2,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        3,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        4,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        5,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        6,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        7,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        8,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        9,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        10,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        11,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        12,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        13,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        14,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        15,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        16,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        17,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        18,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        19,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        20,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        21,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        22,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    },
+    {
+      "fact_key": "decoder.attention.cross_attention_schedule",
+      "path": [
+        "layers",
+        23,
+        "blocks",
+        1,
+        "source_fact_keys"
+      ],
+      "slug": "musicgen-small"
+    }
+  ],
+  "held_audit_manifest_sha256": "73b2f6836989de7f5c9535a51d545de635db79cf105c5ef3f5b313874f70789a",
+  "held_audit_results": {
+    "capture_census_findings": 0,
+    "class3_records": 0,
+    "element_count": 34191,
+    "html_bytes": 9510603,
+    "metadata_findings": 0,
+    "missing_rendered_paths": 0,
+    "native_delta_keys": 0,
+    "unexpected_rendered_paths": 0,
+    "unknown_envelopes": 8473,
+    "unknown_scalar_addresses": 26222
+  },
+  "lane": {
+    "after": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+    "duration": 145.1393976249965,
+    "log_path": "/private/tmp/unfold-s9a-thirtysixth/current-pages/actual36-pages-presentation-closures.log",
+    "name": "actual36-pages-presentation-closures",
+    "passed": true,
+    "pins_equal": true,
+    "returncode": 0,
+    "scope": "Actual36 capture and presentation findings; no blessing, browser verdict or normalization.",
+    "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc"
+  },
+  "matrix_limit": "94 existing-card citations are not proof of occurrence placement. Actual36 matrix is still running;142 original schedule-related finding closures remain unclaimed by this page audit.",
+  "native_changed_keys": [],
+  "native_values_statuses_claim_kinds_and_proof_summaries_unchanged_all39": true,
+  "no_model_test_or_product_import_runtime_by_auditor": true,
+  "output_approval": false,
+  "raw_HTML_hash_changes": 39,
+  "raw_IR_causes": "Exactly94 added existing-card source_fact_keys lists:70 Bloom attn cards cite the unchanged qualified position_schedule;24 MusicGen cross_attn cards cite the unchanged qualified cross_attention_schedule. No other IR field/value/count/order changed in any of the four captured phases. Every raw leaf retained.",
+  "raw_IR_delta_counts_by_phase": {
+    "diagram-ir-after-render.json.gz": 94,
+    "diagram-ir-before-render.json.gz": 94,
+    "ir-after-render.json.gz": 94,
+    "ir-before-render.json.gz": 94
+  },
+  "raw_receipt_context_token_delta_count": 197,
+  "raw_render_event_delta_cause": "Only original process-local receipt context_token differs across runs. Every raw event delta is retained; no other event/receipt facts, node IDs, projection kind, hash, ordering or membership differs. No local token is reused as proof.",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "source_references": {
+    "model_unfolder/adapters/transformer/parser.py": {
+      "lines": [
+        4340
+      ],
+      "needle": "_repeated_schedule_cards =",
+      "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    "model_unfolder/diagram.py": {
+      "lines": [
+        22
+      ],
+      "needle": "self._mount_id =",
+      "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95"
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "lines": [
+        123
+      ],
+      "needle": "default_spellings =",
+      "sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    }
+  },
+  "sparse_limit": "Fleet contains ordinary declared-count checkpoints. Separate actual36 sparse MusicGen24 and Bloom2 pages are archived/audited by placement; this fleet does not independently exercise those defaults.",
+  "verdict": "PASS_INDEPENDENT_SAVED36_DATA_AND_EXACT_CAUSE_AUDIT_NOT_ACCEPTANCE"
+}

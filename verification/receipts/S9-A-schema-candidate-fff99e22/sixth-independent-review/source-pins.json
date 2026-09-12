@@ -1,0 +1,90 @@
+{
+  "snapshot": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-sixth",
+  "manifest_sha256": "f95cf23659187c6744aaeb5defe4a6bb97d8b479dd63836aacab2ece61ba397b",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/diffusion_root.py",
+      "sha256": "cf1d123b041c187e2f140327f01e29f4cdf98b6cb9294c5b950e79a2c6b481cd",
+      "manifest_sha256": "cf1d123b041c187e2f140327f01e29f4cdf98b6cb9294c5b950e79a2c6b481cd",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py",
+      "sha256": "882809f049fd43e444e3587bdbb0d6fd0091c886c4ac3e937a49e31356ff5fc5",
+      "manifest_sha256": "882809f049fd43e444e3587bdbb0d6fd0091c886c4ac3e937a49e31356ff5fc5",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_block.py",
+      "sha256": "2689d984754b4d90ea20d6eb9927ed15c7e9a078b0af2719f0527e5e733a40d0",
+      "manifest_sha256": "2689d984754b4d90ea20d6eb9927ed15c7e9a078b0af2719f0527e5e733a40d0",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stream.py",
+      "sha256": "ca67df0a69284f4b614994653d922b961c1486c2e2ad6e94dc482a9cfb26ed16",
+      "manifest_sha256": "ca67df0a69284f4b614994653d922b961c1486c2e2ad6e94dc482a9cfb26ed16",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_conditioning.py",
+      "sha256": "3674a4048a7d3ce45b0d4ed49a5a04595234c1d78982288b3652cbca50b4b707",
+      "manifest_sha256": "3674a4048a7d3ce45b0d4ed49a5a04595234c1d78982288b3652cbca50b4b707",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_bookends.py",
+      "sha256": "4f185debe1cf7c270654acfec82677da2d492d0e49073d2d4e79d02823d49dc6",
+      "manifest_sha256": "4f185debe1cf7c270654acfec82677da2d492d0e49073d2d4e79d02823d49dc6",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "57cb8d5f408b950ea71ef72813f43edcce18343bb4e77ee5c5ef386fa3a61d2f",
+      "manifest_sha256": "57cb8d5f408b950ea71ef72813f43edcce18343bb4e77ee5c5ef386fa3a61d2f",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/reader_result.py",
+      "sha256": "18413ab772617e0e9d5fc60880d6bbc5aec51501f2473eac75b6bb002d0de30e",
+      "manifest_sha256": "18413ab772617e0e9d5fc60880d6bbc5aec51501f2473eac75b6bb002d0de30e",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/claim_evidence.py",
+      "sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a",
+      "manifest_sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/ffn_mechanism.py",
+      "sha256": "2685856d2941673799991e7b50ac3805731b2fd8b70d78f35a4868283be31b67",
+      "manifest_sha256": "2685856d2941673799991e7b50ac3805731b2fd8b70d78f35a4868283be31b67",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/schema.py",
+      "sha256": "2e7ebfc4171edd8d57c7ace38b92fc4dbae2f6d2cf7c22f29426606f055d9580",
+      "manifest_sha256": "2e7ebfc4171edd8d57c7ace38b92fc4dbae2f6d2cf7c22f29426606f055d9580",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/config_binding.py",
+      "sha256": "3dfc93e5f318b4fd1d41268fe4855e5a6e538071208eb6a067e12b06d042db0b",
+      "manifest_sha256": "3dfc93e5f318b4fd1d41268fe4855e5a6e538071208eb6a067e12b06d042db0b",
+      "manifest_matches": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/projection_ir.py",
+      "sha256": "678c5a23c67202e0b82b6b13d3895785fced37baf35bb5014e3723e4ee52cdcf",
+      "manifest_sha256": "678c5a23c67202e0b82b6b13d3895785fced37baf35bb5014e3723e4ee52cdcf",
+      "manifest_matches": true
+    },
+    {
+      "path": "tests/test_diffusion_reader_claims.py",
+      "sha256": "327d1eff5e0e147870a721c379919cbc9b6930549a42953280c9cc60c3ab4d93",
+      "manifest_sha256": "327d1eff5e0e147870a721c379919cbc9b6930549a42953280c9cc60c3ab4d93",
+      "manifest_matches": true
+    }
+  ]
+}

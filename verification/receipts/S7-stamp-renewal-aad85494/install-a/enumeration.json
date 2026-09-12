@@ -1,0 +1,66 @@
+{
+ "old_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+ "candidate_sha256": "efe7d97e2504c38d3679e05521f556068284fe638ad9cb83c646cdd196dd8b2c",
+ "entries_before": 388,
+ "entries_after": 385,
+ "deltas": [
+  {
+   "source": "model_unfolder/adapters/diffusor/parser.py",
+   "old": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+   "new": "e92a41d4aa8092e1816fe2258257175a7c97a2752e3cf761b9c707ad5f504783"
+  },
+  {
+   "source": "model_unfolder/adapters/diffusor/unet.py",
+   "old": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+   "new": null
+  },
+  {
+   "source": "model_unfolder/adapters/diffusor/unet_differential.py",
+   "old": "cae9dc7e1f20123924119f3c3b01f974ae933b069ddd7793a76ac69be02fe680",
+   "new": null
+  },
+  {
+   "source": "model_unfolder/everchanging/__init__.py",
+   "old": "868b367ba2c8777d7b3004e3c3fb753b691676f10e7484ce64e32ea6a3783bd8",
+   "new": "d1b52bf0c6a6f2f561ce7837c3410ea2e8babef71f361d50200b715f7d346b36"
+  },
+  {
+   "source": "model_unfolder/everchanging/diffusor/conditioning.yaml",
+   "old": "ebfaf9024ebfc77f05e73349c754a08948cd5dd377c5ea6f9794b5a27ca32fc0",
+   "new": null
+  },
+  {
+   "source": "model_unfolder/evidence/legacy_reader_quarantine.py",
+   "old": "a1342282b81c997619157cde34a5e88bb14bbe24724b6bc252fc80ef42ad8e73",
+   "new": "118a826ee0e7c1cb9fdd4f11b134da09a1da68ac99eadb2b08d1d06611a56d30"
+  },
+  {
+   "source": "model_unfolder/evidence/patterns.py",
+   "old": "1b8ca4250fe9c00ebe3c8977571785072e36ab05c399d0be584d233a9f4d71ee",
+   "new": "5d44b425e143ec74122d650e12a8988e9cae5737bc4d255a00f28bc090aebc05"
+  },
+  {
+   "source": "model_unfolder/evidence/structural_debt.py",
+   "old": "cbdd46e3063df27378ed16a0b870ddc528d350cdd1720b04a0c7a16ad71d4b31",
+   "new": "41a7cc7264fd8cc1bead067dd8d57f61d8fcbfabeb690c130ccbf78460e65c48"
+  },
+  {
+   "source": "model_unfolder/evidence/structural_writes.py",
+   "old": "cd7c443fd88510e00463305b97e0d912252d44a8955aebf6badf22d793ebd745",
+   "new": "20a723380a500c61ee2fa534f4c0c1ed118486297aa2f4c311a84351daa4b612"
+  },
+  {
+   "source": "model_unfolder/renderers/html/block_views/registry.py",
+   "old": "02f5726b5e6a0e39fca6369824b8c7ee4975efa68d288dad99b6a003b659731e",
+   "new": "21b4e0f150a2c1a63b4c3d910062435618e73afcf6f27a66c3f7e4d59e4cfdcb"
+  },
+  {
+   "source": "model_unfolder/renderers/html/block_views/unet.py",
+   "old": "632a25c18fcd9b89eb7a69b3dbf4d537b7de3a62d16347545d2542d9b0296800",
+   "new": "d44603bf1a7bc377b2e1d8722f8297548e58ef0477b6b58b6467143594562d8c"
+  }
+ ],
+ "rows_identical": true,
+ "payloads_identical": true,
+ "non_source_fields_identical": true
+}

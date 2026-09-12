@@ -1,0 +1,34 @@
+{
+  "after_bytes": 4458597,
+  "after_sha256": "8a972e6cb63429b0de1e269028d38750f1fc9b5a2fc9a4a2ddd7459334e12650",
+  "before_bytes": 4458597,
+  "before_sha256": "2d808289df96038ee6dea3af544dd785cbd9f940d8750afc90d61c4d4fbfdb1d",
+  "exact_new_mount_occurrences": 127,
+  "exact_old_mount_occurrences": 127,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-b17b7addcc",
+  "mount_identity_before": "uf-42a3b66ac6",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [
+    [
+      {
+        "after": "uf-b17b7addcc",
+        "after_present": true,
+        "after_type": "str",
+        "before": "uf-42a3b66ac6",
+        "before_present": true,
+        "before_type": "str",
+        "path": [
+          "mount_id"
+        ]
+      }
+    ]
+  ],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 1,
+  "raw_ordered_svg_count_before": 1,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "stable-diffusion-xl-base-1-0",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

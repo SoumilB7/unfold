@@ -1,0 +1,23 @@
+{
+  "authorization": "Explicit Soumil output approval recorded in approval-overlay.json; no push or release.",
+  "baseline_commit": "pending_staged_installation_and_commit",
+  "branch": "audio-composite-support",
+  "command": [
+    "python3",
+    "verification/receipts/S8-final-lanes-fb1f871/run_broad.py",
+    "--commit",
+    "<approved_baseline_commit>",
+    "--output",
+    "/private/tmp/unfold-s8-approved-broad-<approved_baseline_commit>"
+  ],
+  "external_pins": "Existing selected59installedmodelingsource+1cachedtaskconfig before/finally; boundedselectedscope, not all-library immutability.",
+  "pins": {
+    "scripts/verify_commit.py": "5c5af14bb0a74c3f6b0b993a40cebe8f4f048a10a03e21bed51067e93daba84f",
+    "verification/receipts/S8-final-lanes-fb1f871/manifest.json": "6a395f50cb9159276fb5728af3b3e89745fe0aeffbb70070657b879ebf0d7d26",
+    "verification/receipts/S8-final-lanes-fb1f871/run_broad.py": "cfabfc00ac5eb00fcffb91781eb88d1e67e8bb336ccbf7908c40fe85b79ba4a4",
+    "verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe"
+  },
+  "preflight": "Execute unchanged verify_commit._static_command(exact_new_commit, ()) before whole coordinator. Do not substitute a hand-selected file list.",
+  "schedule": "unchanged21focused, authority, collect, static, full, preservation; serial detached coordinator lanes",
+  "status": "PREPARED_NOT_EXECUTED"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/0/document_token"
+  },
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/1/document_token"
+  },
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/2/document_token"
+  },
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/3/document_token"
+  },
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/4/document_token"
+  },
+  {
+    "after": "5edbc68a2561a35b463d9e9474ff36254efab1bc5aa159b5c824b3daa45236bc",
+    "before": "e4e1559513768a6c1950053eafbcf97e33f30f8924a238059de9ea9b5dc4f2cd",
+    "kind": "replace",
+    "path": "/5/document_token"
+  }
+]

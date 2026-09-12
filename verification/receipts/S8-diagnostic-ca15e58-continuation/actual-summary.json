@@ -1,0 +1,193 @@
+{
+  "deepfloyd-second": {
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "conv_in_parameters": [
+      {
+        "dtype": "torch.float32",
+        "name": "weight",
+        "requires_grad": true,
+        "shape": [
+          320,
+          3,
+          3,
+          3
+        ]
+      },
+      {
+        "dtype": "torch.float32",
+        "name": "bias",
+        "requires_grad": true,
+        "shape": [
+          320
+        ]
+      }
+    ],
+    "input": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/deepfloyd-second/input.json",
+    "ir": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/deepfloyd-second/ir.json",
+    "missing_instance_paths_from_ir": [
+      "down_blocks",
+      "up_blocks"
+    ],
+    "modules": 578,
+    "scope": "Installed-version constructor/source reconstruction; no weights or model forward. IR presence alone is not proof of each call connection.",
+    "stage_classes": {
+      "down_blocks.0": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "ResnetDownsampleBlock2D"
+      },
+      "down_blocks.1": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnDownBlock2D"
+      },
+      "down_blocks.2": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnDownBlock2D"
+      },
+      "down_blocks.3": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnDownBlock2D"
+      },
+      "mid_block": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "UNetMidBlock2DSimpleCrossAttn"
+      },
+      "up_blocks.0": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnUpBlock2D"
+      },
+      "up_blocks.1": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnUpBlock2D"
+      },
+      "up_blocks.2": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "SimpleCrossAttnUpBlock2D"
+      },
+      "up_blocks.3": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "ResnetUpsampleBlock2D"
+      }
+    },
+    "summary": {
+      "parameter_count": 1142904966,
+      "parameterized_module_count": 357,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 9,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    }
+  },
+  "encoder-bridge": {
+    "checks": {
+      "label_lint": [],
+      "projection_audit": [],
+      "validate_block_tree": [],
+      "validate_click_coupling": [],
+      "validate_no_dotted_arrows": [],
+      "validate_no_dotted_boundaries": [],
+      "validate_unique_ref_ids": []
+    },
+    "conv_in_parameters": [
+      {
+        "dtype": "torch.float32",
+        "name": "weight",
+        "requires_grad": true,
+        "shape": [
+          320,
+          4,
+          3,
+          3
+        ]
+      },
+      {
+        "dtype": "torch.float32",
+        "name": "bias",
+        "requires_grad": true,
+        "shape": [
+          320
+        ]
+      }
+    ],
+    "input": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/encoder-bridge/input.json",
+    "ir": "/private/tmp/unfold-s8-diagnostic-captures-ca15e58/encoder-bridge/ir.json",
+    "missing_instance_paths_from_ir": [
+      "down_blocks",
+      "up_blocks"
+    ],
+    "modules": 1926,
+    "projection_card": {
+      "description": "Operation established by the exact constructed framework type. Caller connections require their own source proof.",
+      "facts": [
+        "8,390,656 parameters in subtree",
+        "Execution: investigation_missing",
+        "no_recipe_attempted",
+        "bias: 2048",
+        "weight: 2048 \u00d7 4096",
+        "Conditional invocation connected in the source-port drills"
+      ],
+      "id": "instance_encoder_hid_proj",
+      "kind": "linear",
+      "label": "Linear",
+      "role": "constructed",
+      "source_component": "root",
+      "source_fact_keys": [
+        "root.denoiser.constructed_modules",
+        "root.denoiser.constructed_parameter_shapes",
+        "root.denoiser.runtime_primitives",
+        "root.denoiser.primary_state_ports"
+      ],
+      "source_instance_path": "encoder_hid_proj",
+      "source_owner": "Linear",
+      "title": "Linear"
+    },
+    "scope": "Installed-version constructor/source reconstruction; no weights or model forward. IR presence alone is not proof of each call connection.",
+    "stage_classes": {
+      "down_blocks.0": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "DownBlock2D"
+      },
+      "down_blocks.1": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "CrossAttnDownBlock2D"
+      },
+      "down_blocks.2": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "CrossAttnDownBlock2D"
+      },
+      "mid_block": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "UNetMidBlock2DCrossAttn"
+      },
+      "up_blocks.0": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "CrossAttnUpBlock2D"
+      },
+      "up_blocks.1": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "CrossAttnUpBlock2D"
+      },
+      "up_blocks.2": {
+        "module": "diffusers.models.unets.unet_2d_blocks",
+        "qualname": "UpBlock2D"
+      }
+    },
+    "summary": {
+      "parameter_count": 2570608900,
+      "parameterized_module_count": 1049,
+      "population_fact_key": "root.denoiser.constructed_modules",
+      "scope": "denoiser",
+      "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+      "stage_count": 7,
+      "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+    }
+  }
+}

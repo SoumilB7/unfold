@@ -1,0 +1,1650 @@
+[
+  {
+    "logical_path": "bloom/00__architecture.png",
+    "original_bytes": 151278,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/bloom/00__architecture.png",
+    "original_sha256": "d9b617a5088d2d1ecbf5268699fc1610454479688e03d139d40b51aa6e5fc2a0",
+    "stored_path": "files/bloom/00__architecture.png.gzip",
+    "stored_sha256": "1074dff1d8ea2e2be6c71d622d39b4480834045de308d2dbf2902db4c617d4ee"
+  },
+  {
+    "logical_path": "bloom/01__attn.png",
+    "original_bytes": 146846,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/bloom/01__attn.png",
+    "original_sha256": "76e3ab6b4f5038e1b7327d59c0223f90906db6dc10ab86a84494caa72c6aafd8",
+    "stored_path": "files/bloom/01__attn.png.gzip",
+    "stored_sha256": "cfe71e02b1d38e386474865c6653ce3d473ad6521eebdad7ab99563cb4dd91dc"
+  },
+  {
+    "logical_path": "bloom/02__ffn.png",
+    "original_bytes": 35479,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/bloom/02__ffn.png",
+    "original_sha256": "664f7c97d25013f97e8e20f48533616f8e22c0995b3c62b0ddb52e55ffb38405",
+    "stored_path": "files/bloom/02__ffn.png.gzip",
+    "stored_sha256": "b56a24ae07ed3a4ba96e5e45d1076f8f3ecec0a0d72db84fbcc31190f05d444e"
+  },
+  {
+    "logical_path": "bloom/03__architecture__1.png",
+    "original_bytes": 27653,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/bloom/03__architecture__1.png",
+    "original_sha256": "8296b0531466bacfbbe5054310e7e8e0d8ab21fac702c1c76a35d0da9a803d9d",
+    "stored_path": "files/bloom/03__architecture__1.png.gzip",
+    "stored_sha256": "946065ac95ffbcaf511a8df628efcf316608f851b7a882ae13cdd5edaec301ec"
+  },
+  {
+    "logical_path": "bloom/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/bloom/MANIFEST.txt",
+    "original_sha256": "32cea6f5c598d376533d4ab68e90d8a61b5c3baaf76898e31ac8fed1739c1943",
+    "stored_path": "files/bloom/MANIFEST.txt.gzip",
+    "stored_sha256": "5376047960fa735321f05cde74a92b530923e308af25ea9930b2a200612125b3"
+  },
+  {
+    "logical_path": "dbrx-base/00__architecture.png",
+    "original_bytes": 151097,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/00__architecture.png",
+    "original_sha256": "94aa9dae743cc18964a9db8a5d4b6aa1d899e135f94ac12f7c732719ec2fa640",
+    "stored_path": "files/dbrx-base/00__architecture.png.gzip",
+    "stored_sha256": "7bf416a7ef0239dcc6f754d9f58d05e7b7eb5492c67d51d6a6d8fb6b00f1315e"
+  },
+  {
+    "logical_path": "dbrx-base/01__attn.png",
+    "original_bytes": 177921,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/01__attn.png",
+    "original_sha256": "d51a52a512f14f91762ebc95f4103c2403e6f46c833abe0890ce1c02194cb52c",
+    "stored_path": "files/dbrx-base/01__attn.png.gzip",
+    "stored_sha256": "bbc7b85b3367bd23b43c6e33e6671a68f31c35ebbac0c4e63d05956a0e1edd4e"
+  },
+  {
+    "logical_path": "dbrx-base/02__ffn.png",
+    "original_bytes": 48491,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/02__ffn.png",
+    "original_sha256": "c9f7ccc44d825b64356ffd1dfe87d9585a798a545b3654f2f5d6da6570cb81fb",
+    "stored_path": "files/dbrx-base/02__ffn.png.gzip",
+    "stored_sha256": "d4328e7888355112091fcdaf272d6b9cf3ff9ee5a42ba5366a4aa329db25a163"
+  },
+  {
+    "logical_path": "dbrx-base/03__router.png",
+    "original_bytes": 52578,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/03__router.png",
+    "original_sha256": "720a3ed58c95064eb9385a425e3956de978d6c2a33e16213c7192f8b5dc2c1f3",
+    "stored_path": "files/dbrx-base/03__router.png.gzip",
+    "stored_sha256": "216aa1dedf46912d5e76bde76c5412de949d8f44a073b8586b670967d7fd161d"
+  },
+  {
+    "logical_path": "dbrx-base/04__expert_1.png",
+    "original_bytes": 55287,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/04__expert_1.png",
+    "original_sha256": "b7453aa639c7140fc3e0e7b47c5f809aacd21b294928c7c1dd486af5d0104485",
+    "stored_path": "files/dbrx-base/04__expert_1.png.gzip",
+    "stored_sha256": "1432f713ae82486effb1e056960e5da13bfd25d2d3af83c2c29703362f0c73c1"
+  },
+  {
+    "logical_path": "dbrx-base/05__architecture__1.png",
+    "original_bytes": 25570,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/05__architecture__1.png",
+    "original_sha256": "82ee10b52be5f8d1a768563206db2cdd3ab3c13fe633f75c027b60088be53be2",
+    "stored_path": "files/dbrx-base/05__architecture__1.png.gzip",
+    "stored_sha256": "726bde54eabf595268dac91248089de1ba9d57e0111d14b1a3d6fa8efc0029db"
+  },
+  {
+    "logical_path": "dbrx-base/MANIFEST.txt",
+    "original_bytes": 377,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/dbrx-base/MANIFEST.txt",
+    "original_sha256": "14b26ae6defba667e120492c2ae8b7aa75709bdcbd2886409d6b205d65604c72",
+    "stored_path": "files/dbrx-base/MANIFEST.txt.gzip",
+    "stored_sha256": "b1745b8fac4e19edc0bce6dbcc26a727e6d6bb4f9cdf8a29ddb90d389eab13cd"
+  },
+  {
+    "logical_path": "deepseek-v3/00__architecture.png",
+    "original_bytes": 138574,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/00__architecture.png",
+    "original_sha256": "36c4da32f9adffaef0c346000e39f0191e5828dc0b93a3016fcaf0a2e36d8854",
+    "stored_path": "files/deepseek-v3/00__architecture.png.gzip",
+    "stored_sha256": "454c14fc59aaaf4beed3aebe1105c71f499d3033aa32ba4238f450a319f66211"
+  },
+  {
+    "logical_path": "deepseek-v3/01__architecture_v1.png",
+    "original_bytes": 149470,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/01__architecture_v1.png",
+    "original_sha256": "2faee11576ebb31c9c276d83d1c2bba05e0895762595534467d782a5113a1348",
+    "stored_path": "files/deepseek-v3/01__architecture_v1.png.gzip",
+    "stored_sha256": "12c48accd36499d2f5308f8c1329cb4073e907d55d22cf6b0b6aaff220b9e888"
+  },
+  {
+    "logical_path": "deepseek-v3/02__attn.png",
+    "original_bytes": 87235,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/02__attn.png",
+    "original_sha256": "1c9726352a16022de45190648ed324f60a40c902011a1acb3d8874a3e8c09565",
+    "stored_path": "files/deepseek-v3/02__attn.png.gzip",
+    "stored_sha256": "a1fe2b807a533fbbefe5637f21cf69c2d031f9c37489faf29b54c8bf4e870747"
+  },
+  {
+    "logical_path": "deepseek-v3/03__ffn.png",
+    "original_bytes": 51773,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/03__ffn.png",
+    "original_sha256": "7699c00ddf581c3379721725d5c3e02568fd427fb577f75d6044ea1ac1f41c48",
+    "stored_path": "files/deepseek-v3/03__ffn.png.gzip",
+    "stored_sha256": "10f52f0e7a0b4bd3e9a1cf6195b81948dc5338b5fd9ca13ca651e59ae37dc5eb"
+  },
+  {
+    "logical_path": "deepseek-v3/04__ffn__1.png",
+    "original_bytes": 66969,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/04__ffn__1.png",
+    "original_sha256": "6a23b1ea7f50924404945a640c5d5d48cae5eab0ae8ba7b966b2e1bb55cbafe6",
+    "stored_path": "files/deepseek-v3/04__ffn__1.png.gzip",
+    "stored_sha256": "f9f2523da931aef8cee73fa27e982987436783207e1f661c950bab51e960b4cb"
+  },
+  {
+    "logical_path": "deepseek-v3/05__mla_query_path.png",
+    "original_bytes": 61352,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/05__mla_query_path.png",
+    "original_sha256": "ec7d0e2dc16d463d466ae8b7983aec0606213a44f0ac43318cac4eaab1a0503d",
+    "stored_path": "files/deepseek-v3/05__mla_query_path.png.gzip",
+    "stored_sha256": "080f66bbfcb83d0ff43240776da65114bc8e3cc0daa5bcef9f8ee266a8b058ef"
+  },
+  {
+    "logical_path": "deepseek-v3/06__mla_kv_path.png",
+    "original_bytes": 98119,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/06__mla_kv_path.png",
+    "original_sha256": "d6e936affc47ba866e8aae698b5fe291c590bf6cbfa2e8aff4f7746d74d3bdf0",
+    "stored_path": "files/deepseek-v3/06__mla_kv_path.png.gzip",
+    "stored_sha256": "ea4b14bfe15983544b167353bf60f0808cd4843738f33da33a5b65dfd878f692"
+  },
+  {
+    "logical_path": "deepseek-v3/07__router.png",
+    "original_bytes": 78010,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/07__router.png",
+    "original_sha256": "d111e5e2d79dc33630be4410694cdb213b63bfbbb4b78cba972dbf974a8825ef",
+    "stored_path": "files/deepseek-v3/07__router.png.gzip",
+    "stored_sha256": "11a1b075ca90fdc2d4dc5851006145aac7eafa502622f448ad9b67d989dafb24"
+  },
+  {
+    "logical_path": "deepseek-v3/08__expert_1.png",
+    "original_bytes": 62188,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/08__expert_1.png",
+    "original_sha256": "5b770a7aee9a456bb94380771c1dcf4c972581d111f4f22df2f8b0b38fa09399",
+    "stored_path": "files/deepseek-v3/08__expert_1.png.gzip",
+    "stored_sha256": "2bcded59acb04e9d689c81921b106da03d84f04cbf878ddde7f723eed48d3a59"
+  },
+  {
+    "logical_path": "deepseek-v3/09__g_topk.png",
+    "original_bytes": 67677,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/09__g_topk.png",
+    "original_sha256": "760e661abb7e3840a1ee7cffa087244bfcd59e5ade34bc31032d1ae04ceaa063",
+    "stored_path": "files/deepseek-v3/09__g_topk.png.gzip",
+    "stored_sha256": "dabc9ea7c3fbd768590b9a16a806ea6c08054a59635bb77b1b56acb7bed7218c"
+  },
+  {
+    "logical_path": "deepseek-v3/10__architecture__1.png",
+    "original_bytes": 38201,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/10__architecture__1.png",
+    "original_sha256": "2265f37cef09185fcf80bffbf32c824b0bc924f684e5cd2ef3a685eb3444bec9",
+    "stored_path": "files/deepseek-v3/10__architecture__1.png.gzip",
+    "stored_sha256": "fa3ab8c743fe79a3fc3de77a8f01aeb86130f952acc048280356950d83e32465"
+  },
+  {
+    "logical_path": "deepseek-v3/MANIFEST.txt",
+    "original_bytes": 578,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/deepseek-v3/MANIFEST.txt",
+    "original_sha256": "6eb4dbe4d2da270877f208c3c8e88c4feb7afbbde7e0cdd25af7d68c680c7fff",
+    "stored_path": "files/deepseek-v3/MANIFEST.txt.gzip",
+    "stored_sha256": "65eebe7cf8625f6a6d5ee8775fc744a2e5bb87bf9e714659d5c54a1af69031ed"
+  },
+  {
+    "logical_path": "flux-2-dev/00__architecture.png",
+    "original_bytes": 117169,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/00__architecture.png",
+    "original_sha256": "ddd54bfe782a5a42ffdaf7998898e0381826640e08e82f1548d101b7121a3987",
+    "stored_path": "files/flux-2-dev/00__architecture.png.gzip",
+    "stored_sha256": "ba7b2f5c91cfb49461464bcf7526dc85d31afb13da97c88468410ea277b2ecfc"
+  },
+  {
+    "logical_path": "flux-2-dev/01__encoder_0.png",
+    "original_bytes": 90404,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/01__encoder_0.png",
+    "original_sha256": "c92eb83b674796082164f4beabb19aaa8347fb08dc42305920a10ed22af3dd8f",
+    "stored_path": "files/flux-2-dev/01__encoder_0.png.gzip",
+    "stored_sha256": "f24862bb0f5ecac5a1e76b3e6bcae296555d1ee88459515394d9433080b56e8c"
+  },
+  {
+    "logical_path": "flux-2-dev/02__denoiser.png",
+    "original_bytes": 149143,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/02__denoiser.png",
+    "original_sha256": "faeef4aa13b691f2e63b3faa3f65c24341b1f25d7ecb5087f59125c96bf77d57",
+    "stored_path": "files/flux-2-dev/02__denoiser.png.gzip",
+    "stored_sha256": "5bc8b46e82177cac3eaf4b2e78a2bc7e2e5fd90423683288089bcea836c8ec06"
+  },
+  {
+    "logical_path": "flux-2-dev/03__denoiser__1.png",
+    "original_bytes": 139231,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/03__denoiser__1.png",
+    "original_sha256": "84acd03ec061b30c9e23084e7205a553fc6b6973b921bb15b5fbc9ae51a5c456",
+    "stored_path": "files/flux-2-dev/03__denoiser__1.png.gzip",
+    "stored_sha256": "674a8f5c7aefee9b5765a19169370cf45d168b84bbcf5eb4652be63cd2ebf8d7"
+  },
+  {
+    "logical_path": "flux-2-dev/04__scheduler.png",
+    "original_bytes": 52598,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/04__scheduler.png",
+    "original_sha256": "0120c0f1093a1b76d9cdbcc95253697ffa09ff25adca3505e0a22eab169e2fae",
+    "stored_path": "files/flux-2-dev/04__scheduler.png.gzip",
+    "stored_sha256": "d3331c12c2259321b66a3edab2b046bac0eed57305845439899c547951588dc8"
+  },
+  {
+    "logical_path": "flux-2-dev/05__vae_decode.png",
+    "original_bytes": 94347,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/05__vae_decode.png",
+    "original_sha256": "97df98abf287cd5f1c31eb1ef82ca14a41c85826b289f1cb5e1e005972bc083f",
+    "stored_path": "files/flux-2-dev/05__vae_decode.png.gzip",
+    "stored_sha256": "b5f7046304de6d554393ff816f0f8ca419043263f667e343da886a6efdd05814"
+  },
+  {
+    "logical_path": "flux-2-dev/06__attn.png",
+    "original_bytes": 23289,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/06__attn.png",
+    "original_sha256": "888909b186042b0d2098e8abae5f9a5e244cd042cd6db1ecce381c1a43281685",
+    "stored_path": "files/flux-2-dev/06__attn.png.gzip",
+    "stored_sha256": "b0f065bd981ffade1dbdfa4c1f7d10e0c4d3258216dfe09af206d5823a718234"
+  },
+  {
+    "logical_path": "flux-2-dev/07__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/07__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/flux-2-dev/07__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "flux-2-dev/08__encoder_0_op_selfattn.png",
+    "original_bytes": 152980,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/08__encoder_0_op_selfattn.png",
+    "original_sha256": "d7672f4689f21d28c2b88fe3e15707ee27034c76226889082d77ca5faabada19",
+    "stored_path": "files/flux-2-dev/08__encoder_0_op_selfattn.png.gzip",
+    "stored_sha256": "f106fba16a2fa01c274cb73b1d619e91fcacbe600fe0b314f6fe4c93d4ac5cf9"
+  },
+  {
+    "logical_path": "flux-2-dev/09__encoder_0_op_ffn.png",
+    "original_bytes": 51735,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/09__encoder_0_op_ffn.png",
+    "original_sha256": "74d8366780048262686ea043d07b1e6cd562ec50b95166252b1b8f845f46388d",
+    "stored_path": "files/flux-2-dev/09__encoder_0_op_ffn.png.gzip",
+    "stored_sha256": "75223f5ea3a6841905d19c8613ed0390b23f8fb2f10590a8cfb00c7e78a3adff"
+  },
+  {
+    "logical_path": "flux-2-dev/10__vae_mid_block.png",
+    "original_bytes": 35050,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/10__vae_mid_block.png",
+    "original_sha256": "2a715be7c3f144946389606d310b1cf3c155ea511c974e8f33f8e6563cc3b85d",
+    "stored_path": "files/flux-2-dev/10__vae_mid_block.png.gzip",
+    "stored_sha256": "b417fb5b60597ef9d6966e2d657ab37184eb35b4d1254554b3f18689a2924c2c"
+  },
+  {
+    "logical_path": "flux-2-dev/11__vae_decoder_block_4.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/11__vae_decoder_block_4.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/flux-2-dev/11__vae_decoder_block_4.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "flux-2-dev/12__vae_decoder_block_3.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/12__vae_decoder_block_3.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/flux-2-dev/12__vae_decoder_block_3.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "flux-2-dev/13__vae_decoder_block_2.png",
+    "original_bytes": 81161,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/13__vae_decoder_block_2.png",
+    "original_sha256": "ad79772318adf7d734aed08cb3792006bada3b2f2de5cd85da0bdf870f213fb3",
+    "stored_path": "files/flux-2-dev/13__vae_decoder_block_2.png.gzip",
+    "stored_sha256": "f073607de85730e7ddc6a4dc8a932196c135ab5a177627c9be6195b196babef3"
+  },
+  {
+    "logical_path": "flux-2-dev/14__vae_decoder_block_1.png",
+    "original_bytes": 66361,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/14__vae_decoder_block_1.png",
+    "original_sha256": "61e9ef4ef86905e2f5e121536081d6c02c17c954d62a54ca413c25e38043831f",
+    "stored_path": "files/flux-2-dev/14__vae_decoder_block_1.png.gzip",
+    "stored_sha256": "91ff967f052d5c5044ae6f09b8d6c89de789b4158d25ea1868840d6360d96259"
+  },
+  {
+    "logical_path": "flux-2-dev/15__architecture__1.png",
+    "original_bytes": 55768,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/15__architecture__1.png",
+    "original_sha256": "87b237874c8f9740611f76d555ca825a621d865ec2a36e955470aa085526ca97",
+    "stored_path": "files/flux-2-dev/15__architecture__1.png.gzip",
+    "stored_sha256": "425b2f14193cbb6106c02ee8629ad513038a77befe8b83e7236a18aad6e9d5a3"
+  },
+  {
+    "logical_path": "flux-2-dev/MANIFEST.txt",
+    "original_bytes": 696,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/flux-2-dev/MANIFEST.txt",
+    "original_sha256": "b93656a1056c40f924659fe62953097d6acc79503633e2c718870f098064aa90",
+    "stored_path": "files/flux-2-dev/MANIFEST.txt.gzip",
+    "stored_sha256": "92e3e03ab6569efc569f9513ac9f53406e7776cc946a4ba77c9b6f2b72e7dab3"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/00__architecture.png",
+    "original_bytes": 164375,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/00__architecture.png",
+    "original_sha256": "9e225b9bf536d842aee26f166df2642388d4b4285af4b276f932d68cdfc9a7cb",
+    "stored_path": "files/gemma-2-2b-it/00__architecture.png.gzip",
+    "stored_sha256": "650bb7e03e5662d92068814a272333e2ffe31d5536670d8ee180de1687989ead"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/01__architecture_v1.png",
+    "original_bytes": 161819,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/01__architecture_v1.png",
+    "original_sha256": "4cee20d3481d7d84165e4a4eac01c1768ae4cb79a3a9ad3d8ae23ed32c2a31dd",
+    "stored_path": "files/gemma-2-2b-it/01__architecture_v1.png.gzip",
+    "stored_sha256": "8de338212dd95e2cea2ac5d254ceaa176b724680219fc2722d87fa748dfdc955"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/02__attn.png",
+    "original_bytes": 187392,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/02__attn.png",
+    "original_sha256": "29806442abb104193c68fb47ba1a46e2cbc008950c9759ae8af96a3a75a338c2",
+    "stored_path": "files/gemma-2-2b-it/02__attn.png.gzip",
+    "stored_sha256": "5538472fc4fb6e2925116737620cab307d59cc194348c412ff6d656a5d363746"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/03__ffn.png",
+    "original_bytes": 52616,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/03__ffn.png",
+    "original_sha256": "e0ef808835075c2a5a01ac88b3b9e2cb4069e5bbe06e8857a236211b9c58bb26",
+    "stored_path": "files/gemma-2-2b-it/03__ffn.png.gzip",
+    "stored_sha256": "7a3e5acc59eff376b5e9a99d85b48735a898f428b09301043ddb547f23c88364"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/04__attn__1.png",
+    "original_bytes": 172332,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/04__attn__1.png",
+    "original_sha256": "2afaa00b4dccb10eb274dfc1cd5016a0d02a77a6f158f628ce00311ff5b2fc3e",
+    "stored_path": "files/gemma-2-2b-it/04__attn__1.png.gzip",
+    "stored_sha256": "cacb29bc4027d58f73e1255a97295b37e7415c49fbb8849163587c7b9a0db1d8"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/05__architecture__1.png",
+    "original_bytes": 46228,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/05__architecture__1.png",
+    "original_sha256": "5a4a715751925e5f0aa027774ec9de5148f35a08c1ec2637db2ffd4beb32542d",
+    "stored_path": "files/gemma-2-2b-it/05__architecture__1.png.gzip",
+    "stored_sha256": "04627d93a9deaf75775b7ad5becb280bc26f15226529bb6755f81f89c7b8b4b2"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/MANIFEST.txt",
+    "original_bytes": 419,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/MANIFEST.txt",
+    "original_sha256": "3e00fe3354d98591e56985d601ec8a78256233918ef950283a7ba4cfbc3d250e",
+    "stored_path": "files/gemma-2-2b-it/MANIFEST.txt.gzip",
+    "stored_sha256": "2533ed474a68382249970856605d40ab042b94e66feb8a135fce78aa9a6afc67"
+  },
+  {
+    "logical_path": "gemma-2-2b-it/her_eyes_review.md",
+    "original_bytes": 3035,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gemma-2-2b-it/her_eyes_review.md",
+    "original_sha256": "964efab3a1b5c857f1261fb7eee5a2ee87dfcfc15fa19627d531076fe497c8f0",
+    "stored_path": "files/gemma-2-2b-it/her_eyes_review.md.gzip",
+    "stored_sha256": "3be7fa1737c5af0cd54090eb54b07fe737efa389e68501e17e1beea3159beb97"
+  },
+  {
+    "logical_path": "glm-4-5/00__architecture.png",
+    "original_bytes": 140461,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/00__architecture.png",
+    "original_sha256": "72568ae635adb526903b3fdbd97fecdb86563f86f6d1fcb92bb5924a57d80408",
+    "stored_path": "files/glm-4-5/00__architecture.png.gzip",
+    "stored_sha256": "d3dd970cb7f06ce93fd5ef0f12c58f6c5a7b7913d834087995d4132daebb2983"
+  },
+  {
+    "logical_path": "glm-4-5/01__architecture_v1.png",
+    "original_bytes": 151457,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/01__architecture_v1.png",
+    "original_sha256": "e994c3e2957962b7a2ef3a19793237e1513bac0ec4ba9a46e121385bdd577bbd",
+    "stored_path": "files/glm-4-5/01__architecture_v1.png.gzip",
+    "stored_sha256": "8b816f6dd2bfceb5806ee5ab095eba1232b400b790d7c4b37e3ad09866cf2f21"
+  },
+  {
+    "logical_path": "glm-4-5/02__attn.png",
+    "original_bytes": 173842,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/02__attn.png",
+    "original_sha256": "878d62964f1060e0ebabb076a681fd62bbc1274bcda21fa00fc7494c6be78a90",
+    "stored_path": "files/glm-4-5/02__attn.png.gzip",
+    "stored_sha256": "280fd542e743b686d0ed026c6db6d1201fc13da7f99f80f3368707b10d3f2ffb"
+  },
+  {
+    "logical_path": "glm-4-5/03__ffn.png",
+    "original_bytes": 51735,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/03__ffn.png",
+    "original_sha256": "74d8366780048262686ea043d07b1e6cd562ec50b95166252b1b8f845f46388d",
+    "stored_path": "files/glm-4-5/03__ffn.png.gzip",
+    "stored_sha256": "75223f5ea3a6841905d19c8613ed0390b23f8fb2f10590a8cfb00c7e78a3adff"
+  },
+  {
+    "logical_path": "glm-4-5/04__ffn__1.png",
+    "original_bytes": 66860,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/04__ffn__1.png",
+    "original_sha256": "d2e63f22841cf24c3122baa42f66607d4268993c17f9bd627a994570bcfeeee3",
+    "stored_path": "files/glm-4-5/04__ffn__1.png.gzip",
+    "stored_sha256": "6ff1fdbcd7dd8ea711fe25c4bc4fd63a5b5268fb8c73c1fbd4919a1967bcdff6"
+  },
+  {
+    "logical_path": "glm-4-5/05__router.png",
+    "original_bytes": 78010,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/05__router.png",
+    "original_sha256": "d111e5e2d79dc33630be4410694cdb213b63bfbbb4b78cba972dbf974a8825ef",
+    "stored_path": "files/glm-4-5/05__router.png.gzip",
+    "stored_sha256": "11a1b075ca90fdc2d4dc5851006145aac7eafa502622f448ad9b67d989dafb24"
+  },
+  {
+    "logical_path": "glm-4-5/06__expert_1.png",
+    "original_bytes": 62147,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/06__expert_1.png",
+    "original_sha256": "68b81188a7b67f60fd9294c7bc919a2e1b5740ebbfc5696a1ac6d94f7a79acbb",
+    "stored_path": "files/glm-4-5/06__expert_1.png.gzip",
+    "stored_sha256": "32b5c7cbae3c843facf054f4de5b783f4615f0cd8fc2c8e64b1a843fcf718a1f"
+  },
+  {
+    "logical_path": "glm-4-5/07__g_topk.png",
+    "original_bytes": 36115,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/07__g_topk.png",
+    "original_sha256": "998a14890d9b8c91392ed6521edbc637a25aa952474262f9aad7057ff12f6f67",
+    "stored_path": "files/glm-4-5/07__g_topk.png.gzip",
+    "stored_sha256": "7e2764ab3f9d3441c7757bd5071ddf762b2c99de0fe5da60631689e8430a7e92"
+  },
+  {
+    "logical_path": "glm-4-5/08__architecture__1.png",
+    "original_bytes": 50237,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/08__architecture__1.png",
+    "original_sha256": "9a1cd32f9bafa4abd538d6ba1ce195f05701d1dc0be38a745bebc11b8423c855",
+    "stored_path": "files/glm-4-5/08__architecture__1.png.gzip",
+    "stored_sha256": "f741614c39f0572319f068889c78586bf1b9892e31a54d553b983337634c1054"
+  },
+  {
+    "logical_path": "glm-4-5/MANIFEST.txt",
+    "original_bytes": 466,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/MANIFEST.txt",
+    "original_sha256": "d0e68f3efdb7d31f1ec6224f0ba0d00eee1e7741a72466f9ab4dc2100d8067f2",
+    "stored_path": "files/glm-4-5/MANIFEST.txt.gzip",
+    "stored_sha256": "8f883737f47acb173e8cdab6b9765342c482172d9aa5f1acdc0f249cd38b1e2a"
+  },
+  {
+    "logical_path": "glm-4-5/her_eyes_review.md",
+    "original_bytes": 5184,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/glm-4-5/her_eyes_review.md",
+    "original_sha256": "e89b1f7aef104a98bfc05b8206dbe4ff494174d9a6f5616450cfef9dd9322d76",
+    "stored_path": "files/glm-4-5/her_eyes_review.md.gzip",
+    "stored_sha256": "0b8477c87697dec152c884bb3f50b13a4dafba4f3c74cbb146bf19f6e626eb3f"
+  },
+  {
+    "logical_path": "gpt-oss-20b/00__architecture.png",
+    "original_bytes": 151257,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/00__architecture.png",
+    "original_sha256": "1817a5a958bf162fadc9662e4446160e0e7c0b64053ceb3232bcaaefa482d076",
+    "stored_path": "files/gpt-oss-20b/00__architecture.png.gzip",
+    "stored_sha256": "a4042330dee206d43bf1541606e5089f2e7b7ece48fff130d38de54decb0b76a"
+  },
+  {
+    "logical_path": "gpt-oss-20b/01__architecture_v1.png",
+    "original_bytes": 148833,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/01__architecture_v1.png",
+    "original_sha256": "cc92eeb3398cc9ca018c154eb11ce7368f8e7be417741cec9a66d358162008a3",
+    "stored_path": "files/gpt-oss-20b/01__architecture_v1.png.gzip",
+    "stored_sha256": "6926362e499cf340e33799bcc9a59bb073b56577fa4b92bf5482a124e294b21b"
+  },
+  {
+    "logical_path": "gpt-oss-20b/02__attn.png",
+    "original_bytes": 246160,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/02__attn.png",
+    "original_sha256": "5f3a842cf7536507dde70adadab977e02a69e416218406eeeee2bb8ea37b562c",
+    "stored_path": "files/gpt-oss-20b/02__attn.png.gzip",
+    "stored_sha256": "14187f8af306680549018a7854e185ce0a2d1780e56f52689d0bc4f20dc3cc7c"
+  },
+  {
+    "logical_path": "gpt-oss-20b/03__ffn.png",
+    "original_bytes": 49734,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/03__ffn.png",
+    "original_sha256": "779bd7c4db2c8c4ecb04dd87adc326717dc9b25e1caeab2f7dd292e9fce4509a",
+    "stored_path": "files/gpt-oss-20b/03__ffn.png.gzip",
+    "stored_sha256": "98ff6e15352565f1f0a8599174e0ab0b040d3df72d10ce840b4d03d485a61149"
+  },
+  {
+    "logical_path": "gpt-oss-20b/04__attn__1.png",
+    "original_bytes": 231973,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/04__attn__1.png",
+    "original_sha256": "87a24217a41f6f89296de925b202ad15ff3d12d39a22eceb0937adac90775b39",
+    "stored_path": "files/gpt-oss-20b/04__attn__1.png.gzip",
+    "stored_sha256": "a1f9e1041f54959c4743e9d7cef252f46b0bccba886e081f1c2f32b6efda9ebf"
+  },
+  {
+    "logical_path": "gpt-oss-20b/05__router.png",
+    "original_bytes": 39704,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/05__router.png",
+    "original_sha256": "11cbce4bf0b45154c251188415930796c5274117d94a32dbf042ec720891f136",
+    "stored_path": "files/gpt-oss-20b/05__router.png.gzip",
+    "stored_sha256": "fb43578a886c879ff648721168c064ac389525b4d43cbcba696f87e61a54f793"
+  },
+  {
+    "logical_path": "gpt-oss-20b/06__expert_1.png",
+    "original_bytes": 88918,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/06__expert_1.png",
+    "original_sha256": "b428d0ec70b48f8b796b451a8dacf41b03bd61f48efb0504215af04ca43e01ce",
+    "stored_path": "files/gpt-oss-20b/06__expert_1.png.gzip",
+    "stored_sha256": "a87b1702f9be69319522e9e299c29731c338e3bd2de0a93a10dbb2f690332106"
+  },
+  {
+    "logical_path": "gpt-oss-20b/07__architecture__1.png",
+    "original_bytes": 46953,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/07__architecture__1.png",
+    "original_sha256": "17e6b22521de838ae8fc23905ba23eafe63115fcf557a4108b73e6422bb18ddd",
+    "stored_path": "files/gpt-oss-20b/07__architecture__1.png.gzip",
+    "stored_sha256": "559e9967f3f19a3ae2e9c2c1ed138bbdcfda125fa29e925a87d999c341ec7928"
+  },
+  {
+    "logical_path": "gpt-oss-20b/MANIFEST.txt",
+    "original_bytes": 520,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/MANIFEST.txt",
+    "original_sha256": "cfd8f20054db44dcfadc4c59b4c9c034ffcddc89376135aeda026748e9ea6ac8",
+    "stored_path": "files/gpt-oss-20b/MANIFEST.txt.gzip",
+    "stored_sha256": "b6b131e76036ef35940c81e556302a69daf0a8a9544bc1779c9e0800b36c00dc"
+  },
+  {
+    "logical_path": "gpt-oss-20b/her_eyes_review.md",
+    "original_bytes": 3282,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/gpt-oss-20b/her_eyes_review.md",
+    "original_sha256": "6ccaf2146757d9b3d88ca122452000d294ed5f9b8e064dd5ee5b1991c5bc9358",
+    "stored_path": "files/gpt-oss-20b/her_eyes_review.md.gzip",
+    "stored_sha256": "87fd41f3f1fda4449f3c1cd7ce9114b526ff25514da319a26ef7d3f3cae355af"
+  },
+  {
+    "logical_path": "granite-3-0-8b-instruct/00__architecture.png",
+    "original_bytes": 154351,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/granite-3-0-8b-instruct/00__architecture.png",
+    "original_sha256": "36b91c128d7ea08c8b3f69df4f71bc0999fbdc3c2c7e622fca0b3747340c33bd",
+    "stored_path": "files/granite-3-0-8b-instruct/00__architecture.png.gzip",
+    "stored_sha256": "cd57d6d1a01ad7507cf78aa90af000c002589a63e55cdc63341921f31ee4037b"
+  },
+  {
+    "logical_path": "granite-3-0-8b-instruct/01__attn.png",
+    "original_bytes": 155703,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/granite-3-0-8b-instruct/01__attn.png",
+    "original_sha256": "28b954645cff32ddd1552b1bd4df987d1e81762d97e4ff06dd2312bcffd5549c",
+    "stored_path": "files/granite-3-0-8b-instruct/01__attn.png.gzip",
+    "stored_sha256": "53f2cdad5cb853106497f026c0645b03dff667755ae6e06ba440f41ff6bd075a"
+  },
+  {
+    "logical_path": "granite-3-0-8b-instruct/02__ffn.png",
+    "original_bytes": 52230,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/granite-3-0-8b-instruct/02__ffn.png",
+    "original_sha256": "da2fd0e85c4cb48c3f4fa8176e610ae3faaea4fdca2d4f51fa52c5047efa50e9",
+    "stored_path": "files/granite-3-0-8b-instruct/02__ffn.png.gzip",
+    "stored_sha256": "0a4cf5d72ac51e7b91f8f129b49af336e484d50bb3b5bffdc4b7c8785371f2cb"
+  },
+  {
+    "logical_path": "granite-3-0-8b-instruct/03__architecture__1.png",
+    "original_bytes": 26516,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/granite-3-0-8b-instruct/03__architecture__1.png",
+    "original_sha256": "3b9eb629d441b91a6c36c71625886c49f5f41d9005a71b8b29ebf57e6ba42073",
+    "stored_path": "files/granite-3-0-8b-instruct/03__architecture__1.png.gzip",
+    "stored_sha256": "d218c5340e64f72c5a2e813b33123530e4ad0331d9b09ec51dc2674ad2ae845b"
+  },
+  {
+    "logical_path": "granite-3-0-8b-instruct/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/granite-3-0-8b-instruct/MANIFEST.txt",
+    "original_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+    "stored_path": "files/granite-3-0-8b-instruct/MANIFEST.txt.gzip",
+    "stored_sha256": "e6022c2476bf13a4f002f8a61c1dd1c947f7d37b79547e6e7dd0fdfebd4f5c89"
+  },
+  {
+    "logical_path": "hunyuanvideo/00__architecture.png",
+    "original_bytes": 121846,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/00__architecture.png",
+    "original_sha256": "0f5fd6563d3808f2f0020b27fafceffeaf66972f39c8fa10f46e6ad2ffb6aefc",
+    "stored_path": "files/hunyuanvideo/00__architecture.png.gzip",
+    "stored_sha256": "614169d8ac26f716dae91d8b34945033061cf00ebba2f9018cae871cf11cf6c4"
+  },
+  {
+    "logical_path": "hunyuanvideo/01__encoder_0.png",
+    "original_bytes": 90562,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/01__encoder_0.png",
+    "original_sha256": "f7c341ab3cd7c521332bcff321384d518eeb00c243b980b699fc389cb21267f9",
+    "stored_path": "files/hunyuanvideo/01__encoder_0.png.gzip",
+    "stored_sha256": "8cefb125c96e597ffbca943977a8259d719df32a19936a73e64f54afc5fb1711"
+  },
+  {
+    "logical_path": "hunyuanvideo/02__encoder_1.png",
+    "original_bytes": 98118,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/02__encoder_1.png",
+    "original_sha256": "eb8a81eef0b567c490455a3bc831fc3faa97a4fffb05c1a6c867cbf82e15b849",
+    "stored_path": "files/hunyuanvideo/02__encoder_1.png.gzip",
+    "stored_sha256": "18f65cdde550ee26d33c5498691564f7d0d4b644aa65f717779ae034adfc4925"
+  },
+  {
+    "logical_path": "hunyuanvideo/03__denoiser.png",
+    "original_bytes": 148559,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/03__denoiser.png",
+    "original_sha256": "e30edf243cab438888d2eda91c0af79b9b7dcddb23ee0ec6441a4bd8a86c28c8",
+    "stored_path": "files/hunyuanvideo/03__denoiser.png.gzip",
+    "stored_sha256": "d4ef70302a3ec83399af5d5a5c76a72ebd85e6a08d6cacd2e577f25b25d00870"
+  },
+  {
+    "logical_path": "hunyuanvideo/04__denoiser__1.png",
+    "original_bytes": 127706,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/04__denoiser__1.png",
+    "original_sha256": "cd0fc691cbf2dc6773c91d490b3a1663b1b3d7d7c0383a79fb68a5132bef5333",
+    "stored_path": "files/hunyuanvideo/04__denoiser__1.png.gzip",
+    "stored_sha256": "5150d02b421be3ca1ef201a54addd2aa098a5aafcd7080ce30a847a590d4d8d5"
+  },
+  {
+    "logical_path": "hunyuanvideo/05__scheduler.png",
+    "original_bytes": 52598,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/05__scheduler.png",
+    "original_sha256": "0120c0f1093a1b76d9cdbcc95253697ffa09ff25adca3505e0a22eab169e2fae",
+    "stored_path": "files/hunyuanvideo/05__scheduler.png.gzip",
+    "stored_sha256": "d3331c12c2259321b66a3edab2b046bac0eed57305845439899c547951588dc8"
+  },
+  {
+    "logical_path": "hunyuanvideo/06__vae_decode.png",
+    "original_bytes": 81206,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/06__vae_decode.png",
+    "original_sha256": "758948421e498eb1475b876e8520d0f043649b04dedc8ca367138e2116204ac4",
+    "stored_path": "files/hunyuanvideo/06__vae_decode.png.gzip",
+    "stored_sha256": "d5e71360fe42c482440c605ce6834d8ecfe5e48742549cde6d4a6e223e7f8678"
+  },
+  {
+    "logical_path": "hunyuanvideo/07__attn.png",
+    "original_bytes": 23289,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/07__attn.png",
+    "original_sha256": "888909b186042b0d2098e8abae5f9a5e244cd042cd6db1ecce381c1a43281685",
+    "stored_path": "files/hunyuanvideo/07__attn.png.gzip",
+    "stored_sha256": "b0f065bd981ffade1dbdfa4c1f7d10e0c4d3258216dfe09af206d5823a718234"
+  },
+  {
+    "logical_path": "hunyuanvideo/08__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/08__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/hunyuanvideo/08__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "hunyuanvideo/09__ffn__1.png",
+    "original_bytes": 35296,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/09__ffn__1.png",
+    "original_sha256": "02b1337469d41a427e2d11c76e1cd6ca11b3a7f25b7389327ad2272429df5d37",
+    "stored_path": "files/hunyuanvideo/09__ffn__1.png.gzip",
+    "stored_sha256": "353a41601cc5921a0bb308b99419961966493992d72ff7b06b266ec87e3b0160"
+  },
+  {
+    "logical_path": "hunyuanvideo/10__encoder_0_op_selfattn.png",
+    "original_bytes": 160696,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/10__encoder_0_op_selfattn.png",
+    "original_sha256": "9d994cfb1aaca3c58fe6c3427b7b81921f85e9d92a0c42f8d89f22c707bcaced",
+    "stored_path": "files/hunyuanvideo/10__encoder_0_op_selfattn.png.gzip",
+    "stored_sha256": "7da9fc693b7caf2b0fcef4cf91d623fe79aedb0d0ab9fe67f19fea2e70c90487"
+  },
+  {
+    "logical_path": "hunyuanvideo/11__encoder_0_op_ffn.png",
+    "original_bytes": 52230,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/11__encoder_0_op_ffn.png",
+    "original_sha256": "da2fd0e85c4cb48c3f4fa8176e610ae3faaea4fdca2d4f51fa52c5047efa50e9",
+    "stored_path": "files/hunyuanvideo/11__encoder_0_op_ffn.png.gzip",
+    "stored_sha256": "0a4cf5d72ac51e7b91f8f129b49af336e484d50bb3b5bffdc4b7c8785371f2cb"
+  },
+  {
+    "logical_path": "hunyuanvideo/12__encoder_1_op_selfattn.png",
+    "original_bytes": 86504,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/12__encoder_1_op_selfattn.png",
+    "original_sha256": "36109dec31e50131b01545f8666b97006adac2b674c61b28b5018762b1bfbff5",
+    "stored_path": "files/hunyuanvideo/12__encoder_1_op_selfattn.png.gzip",
+    "stored_sha256": "c68bd74d17bf55cd70b7c9e9723a75a9181f044fcbf8f80103a76a4f52ddefc1"
+  },
+  {
+    "logical_path": "hunyuanvideo/13__encoder_1_op_ffn.png",
+    "original_bytes": 37974,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/13__encoder_1_op_ffn.png",
+    "original_sha256": "38a2e06f9aaf6a98b80eb58f7be19c68a89e14b10de91de4c68d99a8f963390f",
+    "stored_path": "files/hunyuanvideo/13__encoder_1_op_ffn.png.gzip",
+    "stored_sha256": "172793ab847c69b9fe10b56518d0a8370de241a69e19daee4b26dbac06516f5e"
+  },
+  {
+    "logical_path": "hunyuanvideo/14__vae_mid_block.png",
+    "original_bytes": 35050,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/14__vae_mid_block.png",
+    "original_sha256": "2a715be7c3f144946389606d310b1cf3c155ea511c974e8f33f8e6563cc3b85d",
+    "stored_path": "files/hunyuanvideo/14__vae_mid_block.png.gzip",
+    "stored_sha256": "b417fb5b60597ef9d6966e2d657ab37184eb35b4d1254554b3f18689a2924c2c"
+  },
+  {
+    "logical_path": "hunyuanvideo/15__vae_decoder_block_4.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/15__vae_decoder_block_4.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/hunyuanvideo/15__vae_decoder_block_4.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "hunyuanvideo/16__vae_decoder_block_3.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/16__vae_decoder_block_3.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/hunyuanvideo/16__vae_decoder_block_3.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "hunyuanvideo/17__vae_decoder_block_2.png",
+    "original_bytes": 81161,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/17__vae_decoder_block_2.png",
+    "original_sha256": "ad79772318adf7d734aed08cb3792006bada3b2f2de5cd85da0bdf870f213fb3",
+    "stored_path": "files/hunyuanvideo/17__vae_decoder_block_2.png.gzip",
+    "stored_sha256": "f073607de85730e7ddc6a4dc8a932196c135ab5a177627c9be6195b196babef3"
+  },
+  {
+    "logical_path": "hunyuanvideo/18__vae_decoder_block_1.png",
+    "original_bytes": 66361,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/18__vae_decoder_block_1.png",
+    "original_sha256": "61e9ef4ef86905e2f5e121536081d6c02c17c954d62a54ca413c25e38043831f",
+    "stored_path": "files/hunyuanvideo/18__vae_decoder_block_1.png.gzip",
+    "stored_sha256": "91ff967f052d5c5044ae6f09b8d6c89de789b4158d25ea1868840d6360d96259"
+  },
+  {
+    "logical_path": "hunyuanvideo/19__architecture__1.png",
+    "original_bytes": 57469,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/19__architecture__1.png",
+    "original_sha256": "918add73d726bc3bc5690b8879ebbceee85351174edd6adcc69c96f3ee0686d7",
+    "stored_path": "files/hunyuanvideo/19__architecture__1.png.gzip",
+    "stored_sha256": "c3aa22a2900f234b9f8317d2eba1f02046d1b94f223bb0f0e36e8c1281569d8e"
+  },
+  {
+    "logical_path": "hunyuanvideo/MANIFEST.txt",
+    "original_bytes": 750,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/hunyuanvideo/MANIFEST.txt",
+    "original_sha256": "dbe323e4b12250bf81fbf44576cfcb9555f8abc58a0cf596dd3361cad16f94eb",
+    "stored_path": "files/hunyuanvideo/MANIFEST.txt.gzip",
+    "stored_sha256": "b868d7baca151d190071dd6609c8635a7dcf4c153b3b632aa9e2fe1f82f387e5"
+  },
+  {
+    "logical_path": "llama-7b/00__architecture.png",
+    "original_bytes": 136264,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/00__architecture.png",
+    "original_sha256": "a6774a6f0ab46ec0f77d6624d87aab950ea04815e087c99d3759feff1ba82d69",
+    "stored_path": "files/llama-7b/00__architecture.png.gzip",
+    "stored_sha256": "801c50e903a2b48b97ad597071ec09e551b4be72e786d7541d5a23904320daef"
+  },
+  {
+    "logical_path": "llama-7b/01__attn.png",
+    "original_bytes": 128056,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/01__attn.png",
+    "original_sha256": "0d8eacb2fb5bab78a3a3ce773e0bae36083ce2f7b92f0edbb3d606346ff22d9d",
+    "stored_path": "files/llama-7b/01__attn.png.gzip",
+    "stored_sha256": "77539b67ddbefbd00640f787a161d2b7f8fe390c0c69426145c2fd184e8c4223"
+  },
+  {
+    "logical_path": "llama-7b/02__ffn.png",
+    "original_bytes": 52230,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/02__ffn.png",
+    "original_sha256": "da2fd0e85c4cb48c3f4fa8176e610ae3faaea4fdca2d4f51fa52c5047efa50e9",
+    "stored_path": "files/llama-7b/02__ffn.png.gzip",
+    "stored_sha256": "0a4cf5d72ac51e7b91f8f129b49af336e484d50bb3b5bffdc4b7c8785371f2cb"
+  },
+  {
+    "logical_path": "llama-7b/03__architecture__1.png",
+    "original_bytes": 25686,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/03__architecture__1.png",
+    "original_sha256": "eeb3850a863aba1c5885867b483ac9f385f88ba8cd9b10146884b5d39d3331c9",
+    "stored_path": "files/llama-7b/03__architecture__1.png.gzip",
+    "stored_sha256": "d4bdd2162da8261b043cec7bc290bd353bc1a8f2788a2c88a006a4fe59074834"
+  },
+  {
+    "logical_path": "llama-7b/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/MANIFEST.txt",
+    "original_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+    "stored_path": "files/llama-7b/MANIFEST.txt.gzip",
+    "stored_sha256": "96862259ae0a4f086cc30cf12bb92abdc09265fc6396422bf6b7361fb67d36c1"
+  },
+  {
+    "logical_path": "llama-7b/her_eyes_review.md",
+    "original_bytes": 2949,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/llama-7b/her_eyes_review.md",
+    "original_sha256": "5395f2c822f9bcddb1b8b2c82a14b7b12836b7db07f66db4965fac886c7e0341",
+    "stored_path": "files/llama-7b/her_eyes_review.md.gzip",
+    "stored_sha256": "7a09283aee2f550772c64f22c677df4433cdc0f369e3e426c73cca0b33111a44"
+  },
+  {
+    "logical_path": "lumina-image-2-0/00__architecture.png",
+    "original_bytes": 116917,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/00__architecture.png",
+    "original_sha256": "20f5b54dcedce7365a484a4fa6caade8b5f94bf78dc43f429c1507595198478f",
+    "stored_path": "files/lumina-image-2-0/00__architecture.png.gzip",
+    "stored_sha256": "a455fdbe7dc6a54e683b2d94ee88146d6cc4fc4e6134aeed9c4e20bcf003dce6"
+  },
+  {
+    "logical_path": "lumina-image-2-0/01__encoder_0.png",
+    "original_bytes": 194826,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/01__encoder_0.png",
+    "original_sha256": "0af5ed01848d614a50ca12ce7910ac574a9f9152aed8506c68f783f7790fb49f",
+    "stored_path": "files/lumina-image-2-0/01__encoder_0.png.gzip",
+    "stored_sha256": "8176089f0cb8d43ed19e5faccc003584bccd0d147d2dda342d53aefdf1752c9d"
+  },
+  {
+    "logical_path": "lumina-image-2-0/02__denoiser.png",
+    "original_bytes": 130305,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/02__denoiser.png",
+    "original_sha256": "e01fc6c8dfe775e426c5e7a6736359a8d17c9020c724b06f7e2e2be2d5e54f42",
+    "stored_path": "files/lumina-image-2-0/02__denoiser.png.gzip",
+    "stored_sha256": "bd8e49e0c569a6ac4ae71e1ab5fd7e63f45e8a57f74eaabdb93311124dc8e48f"
+  },
+  {
+    "logical_path": "lumina-image-2-0/03__scheduler.png",
+    "original_bytes": 52598,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/03__scheduler.png",
+    "original_sha256": "0120c0f1093a1b76d9cdbcc95253697ffa09ff25adca3505e0a22eab169e2fae",
+    "stored_path": "files/lumina-image-2-0/03__scheduler.png.gzip",
+    "stored_sha256": "d3331c12c2259321b66a3edab2b046bac0eed57305845439899c547951588dc8"
+  },
+  {
+    "logical_path": "lumina-image-2-0/04__vae_decode.png",
+    "original_bytes": 81206,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/04__vae_decode.png",
+    "original_sha256": "758948421e498eb1475b876e8520d0f043649b04dedc8ca367138e2116204ac4",
+    "stored_path": "files/lumina-image-2-0/04__vae_decode.png.gzip",
+    "stored_sha256": "d5e71360fe42c482440c605ce6834d8ecfe5e48742549cde6d4a6e223e7f8678"
+  },
+  {
+    "logical_path": "lumina-image-2-0/05__attn.png",
+    "original_bytes": 23289,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/05__attn.png",
+    "original_sha256": "888909b186042b0d2098e8abae5f9a5e244cd042cd6db1ecce381c1a43281685",
+    "stored_path": "files/lumina-image-2-0/05__attn.png.gzip",
+    "stored_sha256": "b0f065bd981ffade1dbdfa4c1f7d10e0c4d3258216dfe09af206d5823a718234"
+  },
+  {
+    "logical_path": "lumina-image-2-0/06__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/06__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/lumina-image-2-0/06__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "lumina-image-2-0/07__encoder_0_g0_op_selfattn.png",
+    "original_bytes": 187392,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/07__encoder_0_g0_op_selfattn.png",
+    "original_sha256": "29806442abb104193c68fb47ba1a46e2cbc008950c9759ae8af96a3a75a338c2",
+    "stored_path": "files/lumina-image-2-0/07__encoder_0_g0_op_selfattn.png.gzip",
+    "stored_sha256": "5538472fc4fb6e2925116737620cab307d59cc194348c412ff6d656a5d363746"
+  },
+  {
+    "logical_path": "lumina-image-2-0/08__encoder_0_g0_op_ffn.png",
+    "original_bytes": 52616,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/08__encoder_0_g0_op_ffn.png",
+    "original_sha256": "e0ef808835075c2a5a01ac88b3b9e2cb4069e5bbe06e8857a236211b9c58bb26",
+    "stored_path": "files/lumina-image-2-0/08__encoder_0_g0_op_ffn.png.gzip",
+    "stored_sha256": "7a3e5acc59eff376b5e9a99d85b48735a898f428b09301043ddb547f23c88364"
+  },
+  {
+    "logical_path": "lumina-image-2-0/09__encoder_0_g1_op_selfattn.png",
+    "original_bytes": 172332,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/09__encoder_0_g1_op_selfattn.png",
+    "original_sha256": "2afaa00b4dccb10eb274dfc1cd5016a0d02a77a6f158f628ce00311ff5b2fc3e",
+    "stored_path": "files/lumina-image-2-0/09__encoder_0_g1_op_selfattn.png.gzip",
+    "stored_sha256": "cacb29bc4027d58f73e1255a97295b37e7415c49fbb8849163587c7b9a0db1d8"
+  },
+  {
+    "logical_path": "lumina-image-2-0/10__vae_mid_block.png",
+    "original_bytes": 35050,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/10__vae_mid_block.png",
+    "original_sha256": "2a715be7c3f144946389606d310b1cf3c155ea511c974e8f33f8e6563cc3b85d",
+    "stored_path": "files/lumina-image-2-0/10__vae_mid_block.png.gzip",
+    "stored_sha256": "b417fb5b60597ef9d6966e2d657ab37184eb35b4d1254554b3f18689a2924c2c"
+  },
+  {
+    "logical_path": "lumina-image-2-0/11__vae_decoder_block_4.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/11__vae_decoder_block_4.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/lumina-image-2-0/11__vae_decoder_block_4.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "lumina-image-2-0/12__vae_decoder_block_3.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/12__vae_decoder_block_3.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/lumina-image-2-0/12__vae_decoder_block_3.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "lumina-image-2-0/13__vae_decoder_block_2.png",
+    "original_bytes": 81161,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/13__vae_decoder_block_2.png",
+    "original_sha256": "ad79772318adf7d734aed08cb3792006bada3b2f2de5cd85da0bdf870f213fb3",
+    "stored_path": "files/lumina-image-2-0/13__vae_decoder_block_2.png.gzip",
+    "stored_sha256": "f073607de85730e7ddc6a4dc8a932196c135ab5a177627c9be6195b196babef3"
+  },
+  {
+    "logical_path": "lumina-image-2-0/14__vae_decoder_block_1.png",
+    "original_bytes": 66361,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/14__vae_decoder_block_1.png",
+    "original_sha256": "61e9ef4ef86905e2f5e121536081d6c02c17c954d62a54ca413c25e38043831f",
+    "stored_path": "files/lumina-image-2-0/14__vae_decoder_block_1.png.gzip",
+    "stored_sha256": "91ff967f052d5c5044ae6f09b8d6c89de789b4158d25ea1868840d6360d96259"
+  },
+  {
+    "logical_path": "lumina-image-2-0/15__architecture__1.png",
+    "original_bytes": 36291,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/15__architecture__1.png",
+    "original_sha256": "63302c302dc7eef7677072b20ea21979314bd1861dabe590af7ebb270b9b6f8b",
+    "stored_path": "files/lumina-image-2-0/15__architecture__1.png.gzip",
+    "stored_sha256": "1b8ee1a1ebf11ea069453314459d2bdd9732b9a3530ec5062fdc565f782b1d4c"
+  },
+  {
+    "logical_path": "lumina-image-2-0/MANIFEST.txt",
+    "original_bytes": 681,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/lumina-image-2-0/MANIFEST.txt",
+    "original_sha256": "c8d31370a79700302934d8d2a03997b33d40bede814bbbf6b7825e9a89459a4d",
+    "stored_path": "files/lumina-image-2-0/MANIFEST.txt.gzip",
+    "stored_sha256": "a00d699908eb927fc70e88c5f2d7f78309dafc79898947882efb42af6b479208"
+  },
+  {
+    "logical_path": "musicgen-small/00__architecture.png",
+    "original_bytes": 190703,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/00__architecture.png",
+    "original_sha256": "3263fc91b60e2e3ca6601ff854415892a2cc2966339aa9825f5ae316ae2c5581",
+    "stored_path": "files/musicgen-small/00__architecture.png.gzip",
+    "stored_sha256": "7197aa22d4ae54750db190426e2a87b4ec309d017a74890fe6fe600eccbcca0d"
+  },
+  {
+    "logical_path": "musicgen-small/01__conditioning_path.png",
+    "original_bytes": 62022,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/01__conditioning_path.png",
+    "original_sha256": "e4f811b8bc7d1397f403b4c415782a102e1ff93bb2855fb2e21ea7ebe1036091",
+    "stored_path": "files/musicgen-small/01__conditioning_path.png.gzip",
+    "stored_sha256": "b5e06fce783c7efbc3db4281e80faf51bf9c5cf89cc0c942092b38a97d2eb9ad"
+  },
+  {
+    "logical_path": "musicgen-small/02__fusion.png",
+    "original_bytes": 68859,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/02__fusion.png",
+    "original_sha256": "31edb5ea5a7acaec80b8b27f9a01abc12c0fa83b272435587ee0ea67437af4d0",
+    "stored_path": "files/musicgen-small/02__fusion.png.gzip",
+    "stored_sha256": "3305ad8ebf82e930f892dc3d23cb24875d374fbb09217c5d1bfed82afcffedc2"
+  },
+  {
+    "logical_path": "musicgen-small/03__attn.png",
+    "original_bytes": 96166,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/03__attn.png",
+    "original_sha256": "20b125051eff985c392ba3988efba0b732ea56dab15366cc504807110113e200",
+    "stored_path": "files/musicgen-small/03__attn.png.gzip",
+    "stored_sha256": "c317daa428796b3eb07b3e4919fa6b370e7a3caf459c39e1562920a06ba070c5"
+  },
+  {
+    "logical_path": "musicgen-small/04__cross_attn.png",
+    "original_bytes": 117672,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/04__cross_attn.png",
+    "original_sha256": "81b1f3ec7773240a2412de7bf52ceefd1ab2dc873fd6eb292f4904245086765a",
+    "stored_path": "files/musicgen-small/04__cross_attn.png.gzip",
+    "stored_sha256": "8ab7517a649bf48467ee65e6439ad2f391481a0906793a6efd6c4656cf1eda9b"
+  },
+  {
+    "logical_path": "musicgen-small/05__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/05__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/musicgen-small/05__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "musicgen-small/06__conditioning_projector.png",
+    "original_bytes": 14535,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/06__conditioning_projector.png",
+    "original_sha256": "2cad8cbcd839fee558db9561bd3ecadb0fb4f81a01b54a257d23fbdb83d643e6",
+    "stored_path": "files/musicgen-small/06__conditioning_projector.png.gzip",
+    "stored_sha256": "62267f078f7856a81d8dd4edd0ce44634acb2f0b46ecb54028cd868d019eddf1"
+  },
+  {
+    "logical_path": "musicgen-small/07__architecture__1.png",
+    "original_bytes": 31509,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/07__architecture__1.png",
+    "original_sha256": "1a3c3db487c59a2e16a584cea5cddede126c7204faac2720e3ffc46f3213fdc7",
+    "stored_path": "files/musicgen-small/07__architecture__1.png.gzip",
+    "stored_sha256": "510554c70113dcbad9121485b3d604ec3fb3d6a79be605db9703c113d97555d8"
+  },
+  {
+    "logical_path": "musicgen-small/MANIFEST.txt",
+    "original_bytes": 470,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/musicgen-small/MANIFEST.txt",
+    "original_sha256": "5906d44a7e6d517d3074b8e19cdacb67a11717fb0b524e8fbbc8e74436bbeca8",
+    "stored_path": "files/musicgen-small/MANIFEST.txt.gzip",
+    "stored_sha256": "54c029a285ab1f12f93ed5fec35a00bb73f6f83a01c491738db2a3496ad85588"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/00__architecture.png",
+    "original_bytes": 140589,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/00__architecture.png",
+    "original_sha256": "d69a7715ba6b16b14c5e4a0b0346d5a74f481fcb3fb24d766a7d582677ecace5",
+    "stored_path": "files/olmo-2-1124-7b/00__architecture.png.gzip",
+    "stored_sha256": "f7f2ef76eea02c014577b0a4543745839de292b1d4f480e8716d3c13656bf0f7"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/01__attn.png",
+    "original_bytes": 144202,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/01__attn.png",
+    "original_sha256": "30e46978599467ad9ff0b08d90f7d9ff0f58795491af1d6166265e262671d850",
+    "stored_path": "files/olmo-2-1124-7b/01__attn.png.gzip",
+    "stored_sha256": "8511b5c571933da046f5fd63af2888eeeb67362e906b4e80e5dd6a882ad8a5db"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/02__ffn.png",
+    "original_bytes": 52230,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/02__ffn.png",
+    "original_sha256": "da2fd0e85c4cb48c3f4fa8176e610ae3faaea4fdca2d4f51fa52c5047efa50e9",
+    "stored_path": "files/olmo-2-1124-7b/02__ffn.png.gzip",
+    "stored_sha256": "0a4cf5d72ac51e7b91f8f129b49af336e484d50bb3b5bffdc4b7c8785371f2cb"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/03__architecture__1.png",
+    "original_bytes": 28898,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/03__architecture__1.png",
+    "original_sha256": "89e989698b389a3c07c95b47cac7c4cfb65503d0e5059b4e2f0fcd73d8620d53",
+    "stored_path": "files/olmo-2-1124-7b/03__architecture__1.png.gzip",
+    "stored_sha256": "77e08e5ca5729a904a67471609cf68e76909aac2a3f65f4752bb70eb9176befd"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/MANIFEST.txt",
+    "original_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+    "stored_path": "files/olmo-2-1124-7b/MANIFEST.txt.gzip",
+    "stored_sha256": "e6022c2476bf13a4f002f8a61c1dd1c947f7d37b79547e6e7dd0fdfebd4f5c89"
+  },
+  {
+    "logical_path": "olmo-2-1124-7b/her_eyes_review.md",
+    "original_bytes": 2894,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/olmo-2-1124-7b/her_eyes_review.md",
+    "original_sha256": "702b78afa074795db1e626632328b38ef33c83da4b6aa4dd7771658cfb8a9a7c",
+    "stored_path": "files/olmo-2-1124-7b/her_eyes_review.md.gzip",
+    "stored_sha256": "81b425df8fb2bbfe309d0b73e633c0d9b3a84d945de6d4ea6e92ec3ca9d96689"
+  },
+  {
+    "logical_path": "prxpixel-t2i/00__architecture.png",
+    "original_bytes": 117938,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/00__architecture.png",
+    "original_sha256": "ba7dd880cc101529b3c31b348f023ba055f83d6fe6f7bf29a6a306ca5b4d39e6",
+    "stored_path": "files/prxpixel-t2i/00__architecture.png.gzip",
+    "stored_sha256": "0a4ddfb27e5ef650cc7522b4d4e35a318a34792ddd2e729d8b933cb38d57c0ba"
+  },
+  {
+    "logical_path": "prxpixel-t2i/01__encoder_0.png",
+    "original_bytes": 97369,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/01__encoder_0.png",
+    "original_sha256": "9d5e2a16f178e854a67ef4ec94d97239d767562f20696c57f9bb4e6381983b54",
+    "stored_path": "files/prxpixel-t2i/01__encoder_0.png.gzip",
+    "stored_sha256": "4eda7b17e20f2ad68c9715b6642413ffbcace0a1a62c1220103def72cdba419f"
+  },
+  {
+    "logical_path": "prxpixel-t2i/02__denoiser.png",
+    "original_bytes": 158103,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/02__denoiser.png",
+    "original_sha256": "b726b4541aa2dbc6678f5183fa59cdb12dae522554aeb35bbbdcc9599ad7b2f6",
+    "stored_path": "files/prxpixel-t2i/02__denoiser.png.gzip",
+    "stored_sha256": "973e06ff83399c1d979e251b35f2c58185a64171666544ba00173c0fd34753d9"
+  },
+  {
+    "logical_path": "prxpixel-t2i/03__scheduler.png",
+    "original_bytes": 52598,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/03__scheduler.png",
+    "original_sha256": "0120c0f1093a1b76d9cdbcc95253697ffa09ff25adca3505e0a22eab169e2fae",
+    "stored_path": "files/prxpixel-t2i/03__scheduler.png.gzip",
+    "stored_sha256": "d3331c12c2259321b66a3edab2b046bac0eed57305845439899c547951588dc8"
+  },
+  {
+    "logical_path": "prxpixel-t2i/04__attn.png",
+    "original_bytes": 39342,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/04__attn.png",
+    "original_sha256": "95f3a659dfdeba9ec1c719715e7d6ba4bd4ff7bfd530dcbf2825e88c2009cef6",
+    "stored_path": "files/prxpixel-t2i/04__attn.png.gzip",
+    "stored_sha256": "1307403dcac873153f6a490a8bbaf5978192f2e6b4c8253ff4b35ef3c5c891b0"
+  },
+  {
+    "logical_path": "prxpixel-t2i/05__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/05__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/prxpixel-t2i/05__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "prxpixel-t2i/06__encoder_0_op_selfattn.png",
+    "original_bytes": 153267,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/06__encoder_0_op_selfattn.png",
+    "original_sha256": "dc147bfd2d8b6af9eab1c46371e5dfa9e8725f6d39007010d2bee98e312f4ca5",
+    "stored_path": "files/prxpixel-t2i/06__encoder_0_op_selfattn.png.gzip",
+    "stored_sha256": "f844e4c330f2f5010507c1fd8bde66c2cb686cbc7a52ef724e0e9682ec636020"
+  },
+  {
+    "logical_path": "prxpixel-t2i/07__encoder_0_op_ffn.png",
+    "original_bytes": 52125,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/07__encoder_0_op_ffn.png",
+    "original_sha256": "6dc989ecd437c7d7e77047c00a3cce4738cacbd0b338c51356b68552d4dcc8c5",
+    "stored_path": "files/prxpixel-t2i/07__encoder_0_op_ffn.png.gzip",
+    "stored_sha256": "b277a8258944f9c4a7b77ef6ca6941d2bd6e3cd5cfb3297f22b896fe5e341e4c"
+  },
+  {
+    "logical_path": "prxpixel-t2i/08__architecture__1.png",
+    "original_bytes": 35209,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/08__architecture__1.png",
+    "original_sha256": "f4ce15b73cc9c14b7e881f6d7fb89f7ab80503a97178a055ef97916089dc029c",
+    "stored_path": "files/prxpixel-t2i/08__architecture__1.png.gzip",
+    "stored_sha256": "8b33307ef9a4e6cdce530ba823a683edcb875d5060fa3f00a1ea2e1ecf7c8996"
+  },
+  {
+    "logical_path": "prxpixel-t2i/MANIFEST.txt",
+    "original_bytes": 453,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/prxpixel-t2i/MANIFEST.txt",
+    "original_sha256": "df433d39080d630a645f6d0e42d80351251cd43852e336cd28f46bfc81626de9",
+    "stored_path": "files/prxpixel-t2i/MANIFEST.txt.gzip",
+    "stored_sha256": "6944d2ef87bddb05cba1dea35a84a7c074d05fd6efff7268a9cf9c7af0347457"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/00__architecture.png",
+    "original_bytes": 141199,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/00__architecture.png",
+    "original_sha256": "6860b81df0b9830e5f1a8a2ba2e9fdfaacfb68838fec3e2f5c5f11aa41b69b06",
+    "stored_path": "files/qwen3-5-27b-text/00__architecture.png.gzip",
+    "stored_sha256": "a1a1d3073c48ed61756d36893f9410b78561e467fa192fc84f84ec5c5b0fb39f"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/01__architecture_v1.png",
+    "original_bytes": 140996,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/01__architecture_v1.png",
+    "original_sha256": "b76beca8dd69cc6955a1737ce99cb474834094d2b4e8e174e1749018260e11ef",
+    "stored_path": "files/qwen3-5-27b-text/01__architecture_v1.png.gzip",
+    "stored_sha256": "a3433fed0a4d0867547a6b22c6f9dfa5a774c5e1efcd754c17836cb3999af16f"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/02__attn.png",
+    "original_bytes": 150756,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/02__attn.png",
+    "original_sha256": "b23f414b11741f2da35d4f08a163ed7c12d0cc5220a8070441dc6372783ca9b7",
+    "stored_path": "files/qwen3-5-27b-text/02__attn.png.gzip",
+    "stored_sha256": "5e1063470dfa8c8b899d216728ebd45ed73c87502cfcd069da025417de35ccd9"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/03__ffn.png",
+    "original_bytes": 51735,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/03__ffn.png",
+    "original_sha256": "74d8366780048262686ea043d07b1e6cd562ec50b95166252b1b8f845f46388d",
+    "stored_path": "files/qwen3-5-27b-text/03__ffn.png.gzip",
+    "stored_sha256": "75223f5ea3a6841905d19c8613ed0390b23f8fb2f10590a8cfb00c7e78a3adff"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/04__attn__1.png",
+    "original_bytes": 196836,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/04__attn__1.png",
+    "original_sha256": "ba787e16bc2222cbd08cfed98635bcd68f6758c429691aac936c1204aa1748fc",
+    "stored_path": "files/qwen3-5-27b-text/04__attn__1.png.gzip",
+    "stored_sha256": "34b01a7b7de60b399c944b2d1261311759a3cd8adf09bf450e20fd172f2ae925"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/05__architecture__1.png",
+    "original_bytes": 62157,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/05__architecture__1.png",
+    "original_sha256": "7cc2e4a66f745b3170d69ff31521d9a678cf72a641e4b0d0d215cd2f076a012a",
+    "stored_path": "files/qwen3-5-27b-text/05__architecture__1.png.gzip",
+    "stored_sha256": "aa312ea351bfa2b532c7c87e951cdcfe57acf80d47fe741fe952e031a57873e5"
+  },
+  {
+    "logical_path": "qwen3-5-27b-text/MANIFEST.txt",
+    "original_bytes": 419,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-5-27b-text/MANIFEST.txt",
+    "original_sha256": "1d336bcff5fd0ffdf7943c6b8264fcd06314fb319b137cfd9e48c0dbe14b9c48",
+    "stored_path": "files/qwen3-5-27b-text/MANIFEST.txt.gzip",
+    "stored_sha256": "098482dacc4b0ff43a8fae92f38551886ee39af545a2c3bb6aabf314b8aab738"
+  },
+  {
+    "logical_path": "qwen3-8b/00__architecture.png",
+    "original_bytes": 141511,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/00__architecture.png",
+    "original_sha256": "96613b0835539327f7e2df4f4f5df72d1aa58c50def4628062e01f40a312223d",
+    "stored_path": "files/qwen3-8b/00__architecture.png.gzip",
+    "stored_sha256": "95fbcb7e17edb489b6fb3fc5eb8e0f89900a54c37d4f3ed06fcd2c1efe6c3c7e"
+  },
+  {
+    "logical_path": "qwen3-8b/01__attn.png",
+    "original_bytes": 173367,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/01__attn.png",
+    "original_sha256": "4b9d70e0d26f05c26f94ba4aa4be5c63dc8e0a9e63f482b24b252057ed721937",
+    "stored_path": "files/qwen3-8b/01__attn.png.gzip",
+    "stored_sha256": "b25fc95ff54d157909c3228473342a4397320d30121b0ac8ca2d2c5c0467b98f"
+  },
+  {
+    "logical_path": "qwen3-8b/02__ffn.png",
+    "original_bytes": 52230,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/02__ffn.png",
+    "original_sha256": "da2fd0e85c4cb48c3f4fa8176e610ae3faaea4fdca2d4f51fa52c5047efa50e9",
+    "stored_path": "files/qwen3-8b/02__ffn.png.gzip",
+    "stored_sha256": "0a4cf5d72ac51e7b91f8f129b49af336e484d50bb3b5bffdc4b7c8785371f2cb"
+  },
+  {
+    "logical_path": "qwen3-8b/03__architecture__1.png",
+    "original_bytes": 30691,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/03__architecture__1.png",
+    "original_sha256": "d60d0a91373bf51d930f295e646b4609ace8d04b81e6f056afceca1684eeb9ce",
+    "stored_path": "files/qwen3-8b/03__architecture__1.png.gzip",
+    "stored_sha256": "c6b5e9cc02fdd399e781be162edc934fbc5058927185950ae40e192a202b7b7f"
+  },
+  {
+    "logical_path": "qwen3-8b/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/MANIFEST.txt",
+    "original_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+    "stored_path": "files/qwen3-8b/MANIFEST.txt.gzip",
+    "stored_sha256": "e6022c2476bf13a4f002f8a61c1dd1c947f7d37b79547e6e7dd0fdfebd4f5c89"
+  },
+  {
+    "logical_path": "qwen3-8b/her_eyes_review.md",
+    "original_bytes": 2749,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/qwen3-8b/her_eyes_review.md",
+    "original_sha256": "1fe489980724b1e8ac5eab4a70bd75d79839d611080660ecb093777253d1ab55",
+    "stored_path": "files/qwen3-8b/her_eyes_review.md.gzip",
+    "stored_sha256": "c69baccd9f31137450a5fdd279105f760babd00363ff24460b7e23b46c43bea2"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/00__architecture.png",
+    "original_bytes": 121127,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/00__architecture.png",
+    "original_sha256": "6c1a33c4df7d9a71c250e0dd7374b088920c364d22df01d5d8c5034efc822308",
+    "stored_path": "files/sana-1600m-1024px-diffusers/00__architecture.png.gzip",
+    "stored_sha256": "b2102c9ae57750cf0b7bfc2649161e3966d3c0525f829fa4212c6a07086d2f6f"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/01__encoder_0.png",
+    "original_bytes": 194826,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/01__encoder_0.png",
+    "original_sha256": "0af5ed01848d614a50ca12ce7910ac574a9f9152aed8506c68f783f7790fb49f",
+    "stored_path": "files/sana-1600m-1024px-diffusers/01__encoder_0.png.gzip",
+    "stored_sha256": "8176089f0cb8d43ed19e5faccc003584bccd0d147d2dda342d53aefdf1752c9d"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/02__denoiser.png",
+    "original_bytes": 181845,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/02__denoiser.png",
+    "original_sha256": "444e70c5dbba336617311fb59f21a61ddf066f3a5b568c06a3298edd954d71df",
+    "stored_path": "files/sana-1600m-1024px-diffusers/02__denoiser.png.gzip",
+    "stored_sha256": "093d3deaba435a94c3a563a89c3453a02b1f55abfcfa3a8fc9cfdb9578ae3050"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/03__scheduler.png",
+    "original_bytes": 52598,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/03__scheduler.png",
+    "original_sha256": "0120c0f1093a1b76d9cdbcc95253697ffa09ff25adca3505e0a22eab169e2fae",
+    "stored_path": "files/sana-1600m-1024px-diffusers/03__scheduler.png.gzip",
+    "stored_sha256": "d3331c12c2259321b66a3edab2b046bac0eed57305845439899c547951588dc8"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/04__vae_decode.png",
+    "original_bytes": 84436,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/04__vae_decode.png",
+    "original_sha256": "6b22967c603e722913d8db3d9b85cf3b32c5ad06ba3bf0776676e117f7042d09",
+    "stored_path": "files/sana-1600m-1024px-diffusers/04__vae_decode.png.gzip",
+    "stored_sha256": "9fb20a2b14d9788f5f71882950aa2102226ae54b513fb00da47901d24d15a1f4"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/05__attn.png",
+    "original_bytes": 23289,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/05__attn.png",
+    "original_sha256": "888909b186042b0d2098e8abae5f9a5e244cd042cd6db1ecce381c1a43281685",
+    "stored_path": "files/sana-1600m-1024px-diffusers/05__attn.png.gzip",
+    "stored_sha256": "b0f065bd981ffade1dbdfa4c1f7d10e0c4d3258216dfe09af206d5823a718234"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/06__cross_attn.png",
+    "original_bytes": 39342,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/06__cross_attn.png",
+    "original_sha256": "95f3a659dfdeba9ec1c719715e7d6ba4bd4ff7bfd530dcbf2825e88c2009cef6",
+    "stored_path": "files/sana-1600m-1024px-diffusers/06__cross_attn.png.gzip",
+    "stored_sha256": "1307403dcac873153f6a490a8bbaf5978192f2e6b4c8253ff4b35ef3c5c891b0"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/07__ffn.png",
+    "original_bytes": 26615,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/07__ffn.png",
+    "original_sha256": "a13a9a16beb0440b2be4ba78bc74cc73a2488e6b33e9de6a1b75ce7a7bf4772f",
+    "stored_path": "files/sana-1600m-1024px-diffusers/07__ffn.png.gzip",
+    "stored_sha256": "45c813cf0ecd70c503b221df3ee00276f8cbf6e28e07d81ed8b704d4aee413be"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/08__encoder_0_g0_op_selfattn.png",
+    "original_bytes": 187392,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/08__encoder_0_g0_op_selfattn.png",
+    "original_sha256": "29806442abb104193c68fb47ba1a46e2cbc008950c9759ae8af96a3a75a338c2",
+    "stored_path": "files/sana-1600m-1024px-diffusers/08__encoder_0_g0_op_selfattn.png.gzip",
+    "stored_sha256": "5538472fc4fb6e2925116737620cab307d59cc194348c412ff6d656a5d363746"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/09__encoder_0_g0_op_ffn.png",
+    "original_bytes": 52616,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/09__encoder_0_g0_op_ffn.png",
+    "original_sha256": "e0ef808835075c2a5a01ac88b3b9e2cb4069e5bbe06e8857a236211b9c58bb26",
+    "stored_path": "files/sana-1600m-1024px-diffusers/09__encoder_0_g0_op_ffn.png.gzip",
+    "stored_sha256": "7a3e5acc59eff376b5e9a99d85b48735a898f428b09301043ddb547f23c88364"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/10__encoder_0_g1_op_selfattn.png",
+    "original_bytes": 172332,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/10__encoder_0_g1_op_selfattn.png",
+    "original_sha256": "2afaa00b4dccb10eb274dfc1cd5016a0d02a77a6f158f628ce00311ff5b2fc3e",
+    "stored_path": "files/sana-1600m-1024px-diffusers/10__encoder_0_g1_op_selfattn.png.gzip",
+    "stored_sha256": "cacb29bc4027d58f73e1255a97295b37e7415c49fbb8849163587c7b9a0db1d8"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/11__architecture__1.png",
+    "original_bytes": 35954,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/11__architecture__1.png",
+    "original_sha256": "70f0fb7bc258223e7b8b85662f5c2cd62b139b12d52a8dcf019c6460a9f05b10",
+    "stored_path": "files/sana-1600m-1024px-diffusers/11__architecture__1.png.gzip",
+    "stored_sha256": "fe1c87411f6b6b46117860d6672846568036aa8c050c17aa8bdcb063b6e5b187"
+  },
+  {
+    "logical_path": "sana-1600m-1024px-diffusers/MANIFEST.txt",
+    "original_bytes": 566,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/sana-1600m-1024px-diffusers/MANIFEST.txt",
+    "original_sha256": "af9e3a5345e3e2b9e480e7a87827c932924c0552115a85772dd642ef294da52b",
+    "stored_path": "files/sana-1600m-1024px-diffusers/MANIFEST.txt.gzip",
+    "stored_sha256": "1148d65df9791d83fe703a3d02881b1eb3f7e52575fd15cf317fca28eed41d59"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/00__architecture.png",
+    "original_bytes": 114991,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/00__architecture.png",
+    "original_sha256": "fc537c772beda03ac2c0f31e4ee75af18972e8d02f75e7a99fdbdf1201f33654",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/00__architecture.png.gzip",
+    "stored_sha256": "b846f9f193dd25b575073a715775d8900dc794d4bfb13857f808a97f9484a86f"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/01__encoder_0.png",
+    "original_bytes": 97721,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/01__encoder_0.png",
+    "original_sha256": "c04be5417cb02ef21a1bd6c818d5a0c3ccb091f89b5f50c7c4dfb5aa5b656afa",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/01__encoder_0.png.gzip",
+    "stored_sha256": "6baafc149261d8a709b488284933eeae50dc861e1aaed658909d1219fd02d097"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/02__encoder_1.png",
+    "original_bytes": 110682,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/02__encoder_1.png",
+    "original_sha256": "6ff0b80a83d0469edcad38d1a971f1796484e30ee0e247b21f083f150fe7ae3a",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/02__encoder_1.png.gzip",
+    "stored_sha256": "d64c6ff60d012a890e49b8d32e550242cf0ca31d7e0793b6bfdb1470b6ea230d"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/03__denoiser.png",
+    "original_bytes": 110780,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/03__denoiser.png",
+    "original_sha256": "140bb05ec082f25f0c0fbc7a710f079ab76bc2068d28a1c47a37e93f17193714",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/03__denoiser.png.gzip",
+    "stored_sha256": "c5e491798976523d8be688ed9c0ce6511b3ba5fc4fa8380bd4fcab37201d13dd"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/04__scheduler.png",
+    "original_bytes": 50449,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/04__scheduler.png",
+    "original_sha256": "56ad4e54953a68c9959c01a1cd7ac5eca8873e9b0388bd2785bb9cc7dd1c78a6",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/04__scheduler.png.gzip",
+    "stored_sha256": "bf85814b60c9e8898a7c7acd4bc8cddcb763636d3aa945150b18a043f4795e2d"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/05__vae_decode.png",
+    "original_bytes": 62302,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/05__vae_decode.png",
+    "original_sha256": "c02bc500ab59c674c7a694d1bf702dfcc95d314ef19dc1de4bb68cb5f22f3eb6",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/05__vae_decode.png.gzip",
+    "stored_sha256": "df4e1a0a2668eea14ec0ca11babad76a1067f04eab331b6a812e351a0f5015ac"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/06__encoder_0_op_selfattn.png",
+    "original_bytes": 86504,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/06__encoder_0_op_selfattn.png",
+    "original_sha256": "36109dec31e50131b01545f8666b97006adac2b674c61b28b5018762b1bfbff5",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/06__encoder_0_op_selfattn.png.gzip",
+    "stored_sha256": "c68bd74d17bf55cd70b7c9e9723a75a9181f044fcbf8f80103a76a4f52ddefc1"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/07__encoder_0_op_ffn.png",
+    "original_bytes": 37974,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/07__encoder_0_op_ffn.png",
+    "original_sha256": "38a2e06f9aaf6a98b80eb58f7be19c68a89e14b10de91de4c68d99a8f963390f",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/07__encoder_0_op_ffn.png.gzip",
+    "stored_sha256": "172793ab847c69b9fe10b56518d0a8370de241a69e19daee4b26dbac06516f5e"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/08__encoder_1_op_selfattn.png",
+    "original_bytes": 23289,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/08__encoder_1_op_selfattn.png",
+    "original_sha256": "888909b186042b0d2098e8abae5f9a5e244cd042cd6db1ecce381c1a43281685",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/08__encoder_1_op_selfattn.png.gzip",
+    "stored_sha256": "b0f065bd981ffade1dbdfa4c1f7d10e0c4d3258216dfe09af206d5823a718234"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/09__encoder_1_op_ffn.png",
+    "original_bytes": 37373,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/09__encoder_1_op_ffn.png",
+    "original_sha256": "2b9cc742bc494193b2bead237c1e0b190045a416cb74ba54ef5b4e49555a8556",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/09__encoder_1_op_ffn.png.gzip",
+    "stored_sha256": "e11af4d46fbb5862a14c75a195ac14c950852f503b09dea96b63da16e04d4bc0"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/10__unet_down_0.png",
+    "original_bytes": 37407,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/10__unet_down_0.png",
+    "original_sha256": "a29dbcf5eef247a7b00e142e108a01c1e08f8a7b638e86c95fa68abd87b21173",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/10__unet_down_0.png.gzip",
+    "stored_sha256": "d7b698cb7a21d8adc9e227ef1f5a233354a7cf94a455961d29ff8bbea068993d"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/11__unet_down_1.png",
+    "original_bytes": 71544,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/11__unet_down_1.png",
+    "original_sha256": "3612d3c18aba20f23be06f5283b696c42238c52c7484290a44fbea2b66b0d5b8",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/11__unet_down_1.png.gzip",
+    "stored_sha256": "ea87ab8c5e3bdbf4f1105c5a6a446f19760fbc04959a8dfdc5f09739bb1765a9"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/12__unet_down_2.png",
+    "original_bytes": 59765,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/12__unet_down_2.png",
+    "original_sha256": "b72471d6505796363f2ff01149fa6cc6fe1aaff39d4fa0dd3476deb375853b0b",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/12__unet_down_2.png.gzip",
+    "stored_sha256": "744527f30cbb6640ece010cc0441d1a34d8ab05fd12a4c92240649bc2f1c2c52"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/13__unet_mid.png",
+    "original_bytes": 65025,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/13__unet_mid.png",
+    "original_sha256": "6ee8b97acef23c58f3e706ce3fe35704778eab38f69bb51544f240add15893b1",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/13__unet_mid.png.gzip",
+    "stored_sha256": "926ed02c76d6807971066b161cd1f36b1dcd594e4578f1091b176a78348dd2b4"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/14__unet_up_0.png",
+    "original_bytes": 70295,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/14__unet_up_0.png",
+    "original_sha256": "7cbdc8e0cc74cc78cc9722b44beaa260de96f21a735843c64d86b424f6f8031c",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/14__unet_up_0.png.gzip",
+    "stored_sha256": "e46d0ce3cb805db1a7d0b86c09e4df3e2a24d9b36216f7964839db17967dfb84"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/15__unet_up_1.png",
+    "original_bytes": 69777,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/15__unet_up_1.png",
+    "original_sha256": "62e480b52e161fccef2ba5a4c5a701d39a758b1ef55c4fd4fbd9c724304f0d5e",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/15__unet_up_1.png.gzip",
+    "stored_sha256": "d45a75603e9823af40cee3564b41aaeaaf265017ca969fb9be7940f698714916"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/16__unet_up_2.png",
+    "original_bytes": 25668,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/16__unet_up_2.png",
+    "original_sha256": "dcd17aba7f37958ab73435f3778d43a0bb223ececc32e1a557994cbf8ffc2f18",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/16__unet_up_2.png.gzip",
+    "stored_sha256": "ad8179fe088c389d24682afcb4daf0f68d67e6e3d2ba3b18eb3d414da9a8091e"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/17__unet_text_cond.png",
+    "original_bytes": 23338,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/17__unet_text_cond.png",
+    "original_sha256": "b356a6ab4e0d0795ffb82a6e5bd1fdf0dc21d39ad25e220a0f46ae03bdce1a93",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/17__unet_text_cond.png.gzip",
+    "stored_sha256": "1577e94453e072a2e6b727c58d379b78f796f739e62d6c6b563ff6f9a1216253"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/18__vae_decoder_block_4.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/18__vae_decoder_block_4.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/18__vae_decoder_block_4.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/19__vae_decoder_block_3.png",
+    "original_bytes": 80763,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/19__vae_decoder_block_3.png",
+    "original_sha256": "fd07add37707dd75a45e6026cc7638269a4c48e163540d1a61cd9c28c8d62c7b",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/19__vae_decoder_block_3.png.gzip",
+    "stored_sha256": "c7cfaa9c1081dd6c0422a68426beeb410a22d29371307322badafb5bd55e5745"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/20__vae_decoder_block_2.png",
+    "original_bytes": 81161,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/20__vae_decoder_block_2.png",
+    "original_sha256": "ad79772318adf7d734aed08cb3792006bada3b2f2de5cd85da0bdf870f213fb3",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/20__vae_decoder_block_2.png.gzip",
+    "stored_sha256": "f073607de85730e7ddc6a4dc8a932196c135ab5a177627c9be6195b196babef3"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/21__vae_decoder_block_1.png",
+    "original_bytes": 66361,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/21__vae_decoder_block_1.png",
+    "original_sha256": "61e9ef4ef86905e2f5e121536081d6c02c17c954d62a54ca413c25e38043831f",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/21__vae_decoder_block_1.png.gzip",
+    "stored_sha256": "91ff967f052d5c5044ae6f09b8d6c89de789b4158d25ea1868840d6360d96259"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/22__unet_down_0__resnet.png",
+    "original_bytes": 75356,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/22__unet_down_0__resnet.png",
+    "original_sha256": "e4d765be0ce507f6d5b02f7df9ec4a53d356db0b466488494dba9ccca74f39e7",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/22__unet_down_0__resnet.png.gzip",
+    "stored_sha256": "370344c4a3c7a99c047294a61d5765ebd6dbf2c9240f85c93a3549f338715e7f"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/23__unet_down_1__resnet.png",
+    "original_bytes": 75317,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/23__unet_down_1__resnet.png",
+    "original_sha256": "f3cdfd5fe245ae8a56d18608240c6acf4d3e11146c1b1c89f615021648026275",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/23__unet_down_1__resnet.png.gzip",
+    "stored_sha256": "aa524fa3384c5f02c57f295c265e5a0e0e5fed9fc939e1e37d092ae72cc20e68"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/24__unet_down_1__transformer.png",
+    "original_bytes": 75071,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/24__unet_down_1__transformer.png",
+    "original_sha256": "405b28776c79407f026a54b96fead1264ec353a9c7ffe1ce07f3a1f51658cd94",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/24__unet_down_1__transformer.png.gzip",
+    "stored_sha256": "64d5f0422986c0e5a2eb3ee945eb2479808fa820d0ec32cdebd053472aced4f5"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/25__unet_down_2__resnet.png",
+    "original_bytes": 75836,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/25__unet_down_2__resnet.png",
+    "original_sha256": "fcc2c4bd1f430141bc731c840087312a4d6f495af782f6836f5814d7fec5cc6a",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/25__unet_down_2__resnet.png.gzip",
+    "stored_sha256": "3fae89c479ec267ea5fd095c50f5071bf7bfe0556e753a790dc4c1d12b863b8e"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/26__unet_down_2__transformer.png",
+    "original_bytes": 75657,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/26__unet_down_2__transformer.png",
+    "original_sha256": "c6c27584b30cb84aab3dbd0f778d4034490b68d9d15193e4ef79703400836546",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/26__unet_down_2__transformer.png.gzip",
+    "stored_sha256": "1c21dc8ddca02b05f677fc0cba3f4fd62833c0b132db8e478eabe978ca07f93b"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/27__unet_down_1__crossattn.png",
+    "original_bytes": 42166,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/27__unet_down_1__crossattn.png",
+    "original_sha256": "92172d80e20d8a466f3cae33f28e4575c91349a2310d2198a0f8beb77e6ab82c",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/27__unet_down_1__crossattn.png.gzip",
+    "stored_sha256": "67e941475bcae3dfae4f3503c0676a3663b1676c79aa585c0579f68427e7d9bb"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/28__unet_down_1__ff.png",
+    "original_bytes": 24143,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/28__unet_down_1__ff.png",
+    "original_sha256": "c28ee8ba8ec3eca3805f5ef41fed3f25dab3b3bf31d117a0d1301ddbc80b9afe",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/28__unet_down_1__ff.png.gzip",
+    "stored_sha256": "789bbdd48db7ab15f1dc44cd20d3915b815ff5eb39cadf0fa8ef2e08b4279874"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/MANIFEST.txt",
+    "original_bytes": 1242,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/MANIFEST.txt",
+    "original_sha256": "7ed124d452b90d194d8d8407efd3290135c2c93294f07de9e3893dd21df34736",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/MANIFEST.txt.gzip",
+    "stored_sha256": "9b4d59522c6567d96a10d69b6a6df91799af085019e13e11d9d728f992d902bd"
+  },
+  {
+    "logical_path": "stable-diffusion-xl-base-1-0/her_eyes_review.md",
+    "original_bytes": 6999,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stable-diffusion-xl-base-1-0/her_eyes_review.md",
+    "original_sha256": "1406b63ba78f241f3ec4cc858f9904e0f71f1b31783f9ae343db62a09bfc8251",
+    "stored_path": "files/stable-diffusion-xl-base-1-0/her_eyes_review.md.gzip",
+    "stored_sha256": "ab36d91ea8f19a97f62892605838f8a48d9b323d516d98e53572170469dd9c23"
+  },
+  {
+    "logical_path": "stablelm-2-1-6b/00__architecture.png",
+    "original_bytes": 140585,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stablelm-2-1-6b/00__architecture.png",
+    "original_sha256": "aea80434f8c57e02c66a6326fcce3b626b3d2931629a02b0327c1df0bc659b45",
+    "stored_path": "files/stablelm-2-1-6b/00__architecture.png.gzip",
+    "stored_sha256": "6143de278fe0b7ade34c8f3fe38aab917ab915ce6152131325797fe316034da8"
+  },
+  {
+    "logical_path": "stablelm-2-1-6b/01__attn.png",
+    "original_bytes": 166690,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stablelm-2-1-6b/01__attn.png",
+    "original_sha256": "91892f28deba947f0df9c4d610e63e2b5e3268cbcab735fff7970e2dfa4a1f4d",
+    "stored_path": "files/stablelm-2-1-6b/01__attn.png.gzip",
+    "stored_sha256": "1f12a54ddcff1313c93b36c5b85d8238445f51dab821cab8a4f795b5acdcf0c4"
+  },
+  {
+    "logical_path": "stablelm-2-1-6b/02__ffn.png",
+    "original_bytes": 52125,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stablelm-2-1-6b/02__ffn.png",
+    "original_sha256": "6dc989ecd437c7d7e77047c00a3cce4738cacbd0b338c51356b68552d4dcc8c5",
+    "stored_path": "files/stablelm-2-1-6b/02__ffn.png.gzip",
+    "stored_sha256": "b277a8258944f9c4a7b77ef6ca6941d2bd6e3cd5cfb3297f22b896fe5e341e4c"
+  },
+  {
+    "logical_path": "stablelm-2-1-6b/03__architecture__1.png",
+    "original_bytes": 32359,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stablelm-2-1-6b/03__architecture__1.png",
+    "original_sha256": "f7853f41e628f96b2ac0b81a8c5cf5bc1b6a2d0f20711fbfe629a233d2094005",
+    "stored_path": "files/stablelm-2-1-6b/03__architecture__1.png.gzip",
+    "stored_sha256": "18a76b967d7afd740a4887d62361a7b7d6ac300099cf0345b45349baff8c14f5"
+  },
+  {
+    "logical_path": "stablelm-2-1-6b/MANIFEST.txt",
+    "original_bytes": 345,
+    "original_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/galleries/stablelm-2-1-6b/MANIFEST.txt",
+    "original_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+    "stored_path": "files/stablelm-2-1-6b/MANIFEST.txt.gzip",
+    "stored_sha256": "96862259ae0a4f086cc30cf12bb92abdc09265fc6396422bf6b7361fb67d36c1"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/layer-count-default-proposal/manifest.json",
+  "manifest_sha256": "fccb4d5f4f94843b25c7e731a2b3587c40f9e2b681d52d40adccce12a94b183f",
+  "checks": [
+    "Exact two-file proposal and supporting document pins verified; before parser matches immutable33. AST parsed only.",
+    "Correction applies only to num_hidden_layers after existing scoped count resolution is absent and lacks a class default. Existing present/alias/null/zero paths return before this fallback; ambiguity cannot be replaced by default.",
+    "Shared resolve_reader_operand uses exact cfg plus selected text path, current PreparedDocument and normal event lifecycle. Candidate accepted only when nonambiguous class_default with actual default premise. Context-only99 and failed preparation cannot supply it.",
+    "No source/config class guess, broad hydration, root-default borrowing or relaxation of source reader/proof constructor introduced. Whole repeated schedule proof still independently checks actual source-bound count/tier/path.",
+    "Original failing sparse MusicGen success test remains unchanged; new unbound, failed-preparation and explicit null/zero controls inspect limited outputs instead of suppressing the obligation."
+  ],
+  "runtime_requirements": [
+    "Existing sparse MusicGen test must retain24 layers, exact class_default schedule proof and final schedule-hash absent_default decision.",
+    "New four negative checks and full affected authority lanes remain required; source review does not assert their runtime result."
+  ],
+  "scope": "Source-only independent review; no product imports, model/test runtime, live edits or output blessing."
+}

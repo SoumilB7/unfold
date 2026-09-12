@@ -1,0 +1,72 @@
+{
+  "actual_source_counterexample": {
+    "distinction": "Same class symbol, distinct constructor sites/kwargs, guards and invocation arguments.",
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/attention.py",
+    "sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+    "sites": [
+      "BasicTransformerBlock.attn1 Attention constructor at line 871",
+      "BasicTransformerBlock.attn2 Attention constructor at line 901"
+    ]
+  },
+  "bounded_duplicate": {
+    "address": "unet_nested_mechanism.py:_classify (340-351)",
+    "calls": [
+      "attention_compute_positive_proof_for_symbol(index, child.symbol)",
+      "ordinary_ffn_mechanism_at_symbol(index, child.symbol)"
+    ],
+    "class_boundaries": [
+      "attention_child.py:551",
+      "ffn_mechanism.py:472"
+    ],
+    "materiality": "Entire _classify is absent from the retained cumulative top100, whose last row is 1.019s. Thus its whole profiled time is below approximately 1.02s; reuse could save only some portion. No measured key census or savings from this review. Root declined implementation for this sub-second profiled area.",
+    "must_stay_occurrence_local": [
+      "framework_attention_lane_positive_proof_in_graph (processor injection/default eligibility/constructor kwargs)",
+      "_canonical_child_import exact call and source-root join",
+      "NestedMechanismEvidence and parent/alternative identities",
+      "per-invocation argument/guard/cutoff tracing",
+      "overlap and unresolved issue rows, order, provenance and reverse validation"
+    ],
+    "possible_scope": "At most one read_unet_nested_mechanisms invocation, exact retained ProgramIndex identity plus full component-qualified SymbolId. Retain None/failed and positive results. No inter-call or persistent cache."
+  },
+  "conclusion": "No newly identified material repeated-preparation removal is justified by this source/profile packet. Keep the existing proof boundaries and prioritize independently measured larger costs.",
+  "decision": "SOURCE_ANALYSIS_ONLY_NO_IMPLEMENTATION_RECOMMENDED",
+  "other_small_preparation": {
+    "address": "unet_nested_mechanism.py:_lineages (285-301)",
+    "description": "Reconstructs a frozen, unguarded callable-local lineage object for each classified invocation. Its preparation depends on exact index/callable, but each trace still depends on expression, span and guard.",
+    "disposition": "Already inside the small _classify envelope; no additional cache or implementation proposed."
+  },
+  "profile": {
+    "cell_inventory_calls": 10,
+    "import_cumulative_seconds": 3.386,
+    "import_resolver_calls": 197,
+    "limits": "Instrumented overlapping cumulative times, not ordinary latency or additive savings. Source now also includes the separately accepted attention-interface unit.",
+    "merge_calls": 13,
+    "merge_cumulative_seconds": 1.466,
+    "nested_cumulative_seconds": 3.241,
+    "path": "/private/tmp/unfold-s81-public-warm-profile-v2/profile-cumulative.txt",
+    "scan_calls": "22/19",
+    "sha256": "d7ba007a21fde4d7a8c4eda8e10a2cf495c0fa5227c8f1bbfc14054c3f7676b5",
+    "top100_cutoff_cumulative_seconds": 1.019
+  },
+  "rejected_inferences": [
+    "Ten cell inventories do not imply ten identical evidence requests; parent and rival construction qualification differs.",
+    "Three recursive _scan_graph restarts at lines 437-448 expand the index. Earlier failed or unresolved results may change and cannot be carried by symbol alone.",
+    "_alternative_roots (367-392) preserves each rival site, exact constructor/factory call, parent, invocation and evolving index; do not collapse to class names.",
+    "resolve_owner_graph (component_owner.py:366 onward) already memoizes exact root/prefix/depth on its immutable index; another graph cache does not remove fresh graph construction here.",
+    "197 resolve_called_import_source calls are exact address checks, while 13 merges extend immutable closure. The counts do not prove duplicate parsing or redundant identical merges.",
+    "_observe_source already uses a bounded full-key LRU over SourceId/text/vocabulary/factory names. The 23 retained misses are not a basis for claiming redundant parsing; this review does not replace the prior full-key analysis.",
+    "Do not memoize called-import filesystem resolution from source spelling alone: component roots, guarded/rival bindings, exact indexed calls, re-exports, symlink/absence behavior and new index closure remain obligations.",
+    "Do not share whole _cell_inventory/_scan_graph results by class or rewrite their occurrence identities post hoc."
+  ],
+  "scope": "Read-only source and retained textual profile analysis; no model, profiler, pytest, source edits, pstats deserialization, or new measurements.",
+  "source_sha256": {
+    "model_unfolder/evidence/attention_child.py": "0c2a221886f927f1e7ae1f7ef912cd23eb90654a148dbfed13dd90f963403b06",
+    "model_unfolder/evidence/attention_lane.py": "e7ce83fe931d424a23e1d39696028d7ca4bfb00ede2f7b83b1958f732ec7c9ca",
+    "model_unfolder/evidence/component_owner.py": "1c6bc27735c9244e5220b19f79c55ae8bc02a44435448664deb59964dd0d39af",
+    "model_unfolder/evidence/diffusion_stream.py": "e65ee6938c69da7a8c1a3c4a58b5973d30d3bcd01b61efa538be3472ed34f253",
+    "model_unfolder/evidence/ffn_mechanism.py": "1d0cf5280ab3c7ff46ef2388f1d4e75a79c059ca4656d6c7f776ded087fe1ee3",
+    "model_unfolder/evidence/import_source.py": "d2128a82390ef569e763e6219f605f9398451cedafa7095b715f8c85c127a59b",
+    "model_unfolder/evidence/program_index.py": "65770b7b8b202c195d699ce8efca36ed1a2f80e8bcd7cfcd9eff1d89fdb0c7a0",
+    "model_unfolder/evidence/unet_nested_mechanism.py": "929c7438d424b6c28410b143627fcecd2589073aa45eab2c7e17ac2126d7d172"
+  }
+}

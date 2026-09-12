@@ -1,0 +1,30 @@
+.............................................................F.......... [ 48%]
+........................................................................ [ 97%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_completed_loop_cannot_choose_one_optional_final_write __________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5554/test_completed_loop_cannot_cho0')
+
+    def test_completed_loop_cannot_choose_one_optional_final_write(tmp_path):
+        found = route(tmp_path, '''
+            state = value
+            for item in saved:
+                if condition:
+                    state = left(item)
+                else:
+                    state = right(item)
+            consume(state)
+        ''').value
+        assert found['kind'] == 'loop_result'
+        assert found['initial_route'] == {'kind': 'formal', 'formal': 'value'}
+>       assert found['iteration_result']['kind'] == 'unresolved'
+E       AssertionError: assert 'loop_result' == 'unresolved'
+E         
+E         - unresolved
+E         + loop_result
+
+tests/test_s8_port_routes.py:166: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s8_port_routes.py::test_completed_loop_cannot_choose_one_optional_final_write
+1 failed, 146 passed in 11.32s

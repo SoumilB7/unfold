@@ -1,0 +1,265 @@
+{
+  "verdict": "PASS_BOUND_COUNT_VALUE_AND_NATIVE_SCHEDULE_TIER; HTML default-chip visibility remains a separate observed gap",
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "source_fingerprint": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "runtime_owner": "root; this reviewer reads saved data only",
+  "duration": 21.512068459000147,
+  "archive_map_sha256": "401b75f8de849b3b9fa2814c5aea0eced9f719e9795e5b11da2de3d6c1a4ec94",
+  "cases": [
+    {
+      "case": "ordinary",
+      "outcome": {
+        "case": "ordinary",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "count_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": true,
+        "provenance": "checkpoint_declared",
+        "selected_path": "decoder.num_hidden_layers",
+        "source_kind": "checkpoint",
+        "state": "present",
+        "value": 24
+      },
+      "has_default_premise": false,
+      "schedule_count": 24,
+      "schedule_tier": "code_and_config",
+      "saved_relation_proof_summary_present": true,
+      "expected_final_hash": "9a03252db7d72224",
+      "actual_deciding_event": {
+        "alias": "num_hidden_layers",
+        "canonical": "num_hidden_layers",
+        "component": "root",
+        "config_path": "decoder.num_hidden_layers",
+        "document_fingerprint": "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f",
+        "document_path": [],
+        "document_token": "44687f43f088fb0c15c2c8b94102a30b61256a86151fdc23e1e74f2deb7d4dd3",
+        "fact_key": "cross_attention_schedule",
+        "fact_owner": "decoder.attention",
+        "intent": "consumed",
+        "mechanism": "cross_attention_schedule",
+        "path_exact": true,
+        "present": true,
+        "provenance": "checkpoint_declared",
+        "reader": "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path",
+        "reason": "",
+        "value_state": "value",
+        "value_status_hash": "9a03252db7d72224"
+      },
+      "actual_html_bytes": 108794,
+      "class_default_chip_nodes": 0,
+      "schedule_key_literal_in_html": false
+    },
+    {
+      "case": "missing_decoder_count",
+      "outcome": {
+        "case": "missing_decoder_count",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "count_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": false,
+        "provenance": "class_default",
+        "selected_path": null,
+        "source_kind": "class_default",
+        "state": "absent",
+        "value": 24
+      },
+      "has_default_premise": true,
+      "schedule_count": 24,
+      "schedule_tier": "class_default",
+      "saved_relation_proof_summary_present": true,
+      "expected_final_hash": "41e56a340c03b3ae",
+      "actual_deciding_event": {
+        "alias": null,
+        "canonical": "num_hidden_layers",
+        "component": "root",
+        "config_path": "decoder.num_hidden_layers",
+        "document_fingerprint": "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93",
+        "document_path": [],
+        "document_token": "ca001f93bf51160d402c4f92c301c42d8c0f0d074b1c8521ed796f4a3edcb531",
+        "fact_key": "cross_attention_schedule",
+        "fact_owner": "decoder.attention",
+        "intent": "absent_default",
+        "mechanism": "cross_attention_schedule",
+        "path_exact": true,
+        "present": false,
+        "provenance": "class_default",
+        "reader": "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path",
+        "reason": "absent from checkpoint \u2014 installed class default 24",
+        "value_state": "missing",
+        "value_status_hash": "41e56a340c03b3ae"
+      },
+      "actual_html_bytes": 108794,
+      "class_default_chip_nodes": 0,
+      "schedule_key_literal_in_html": false
+    },
+    {
+      "case": "explicit_null",
+      "outcome": {
+        "case": "explicit_null",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "count_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": true,
+        "provenance": "checkpoint_declared",
+        "selected_path": "decoder.num_hidden_layers",
+        "source_kind": "checkpoint",
+        "state": "present",
+        "value": null
+      },
+      "has_default_premise": false
+    },
+    {
+      "case": "explicit_zero",
+      "outcome": {
+        "case": "explicit_zero",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "count_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": true,
+        "provenance": "checkpoint_declared",
+        "selected_path": "decoder.num_hidden_layers",
+        "source_kind": "checkpoint",
+        "state": "present",
+        "value": 0
+      },
+      "has_default_premise": false
+    }
+  ],
+  "pins": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/result.json",
+      "sha256": "7f6ff1b73aabfd288b04dcfc4d65ce665483bec007cd6fa72af61376e6dfd7de"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "sha256": "310f50fe76132f84ec7ea75487fc4e212647dca41e88492297661f997365b9e2"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/native-facts.json",
+      "sha256": "5fa20e9950a62558544ba48ec82d8c71f2cccb355a517d3a60909708c62956e4"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/events.json",
+      "sha256": "4b438ac3698cb1ceace874f89e45f8611f8f7180417dadacacdbfb3682366b91"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "sha256": "1cc2f351bc652fefc2bb4c3e14e6f88fb3406c5c28a2b9e811d857727707a38c"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/input.json",
+      "sha256": "c3df161181ad2b4b42ca1d0fd86a077382c34ddbebbf2e285ef6b4ee8fc08c92"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/ordinary/page.html",
+      "sha256": "ea0ec8c5ef4dd9e5317ff5f07ae28deb23e643cb5a4fa3d845cdf86243ba7cb2"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/result.json",
+      "sha256": "a7ed6eb5e72df53b541230976c1316c8cd7e1f1c22699f399b4345492d144697"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/count-resolution-traces.json",
+      "sha256": "75a152d1ba07a77f85bce6d16ada165c216baa13692fa3f780954c4238dbe123"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/native-facts.json",
+      "sha256": "9d00cdc71f2ec8ed4421a5f45ebbd82bfb67679102a094946ac46158bb2d1dde"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/events.json",
+      "sha256": "bb82202b065b65ca545c3e04ef36733424c8b647783f2f8c1a04605625bae8b5"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/prepared-documents.json",
+      "sha256": "d2ab9db44bd0ebcbb646161daac03fcc9db704e4c9581091302e5d2d218f54c1"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/input.json",
+      "sha256": "ac2e047db81f59146003e8e4682bca0447357bb714d8743aff31e4b4f294b990"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/missing_decoder_count/page.html",
+      "sha256": "ff8572c3e717d97644d42b721adb2f3d0fa6f05131642105de8dc3698b4ea47e"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/result.json",
+      "sha256": "7b9241489a1cde41da79dc2df5d7973144c2c44bc66e05cee9a4389271e29573"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/count-resolution-traces.json",
+      "sha256": "50565706d827d1e12c378ab14965f59cba70af436fca2a0ca3c56766a1239b21"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/native-facts.json",
+      "sha256": "af88380392d4daf629e4707b79546d532087fd0b705e4a8b46549dfaee91db9f"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/events.json",
+      "sha256": "32b33d373dccefe8a688dd627c18ed0d3d26501474a0084c53392472c667365b"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/prepared-documents.json",
+      "sha256": "dd3ed851dc7280ce032ace2272f2941d5e47f94c02f79a32cbcb5e341d9fc952"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_null/input.json",
+      "sha256": "de274af5fc545076d001d59ff16a88463fedd5812063b4bbddf89cad6e69320a"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/result.json",
+      "sha256": "24254f98f79c051fec9360e32f33758ed79dc2363cb162c24af0dd8b131925b1"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/count-resolution-traces.json",
+      "sha256": "7aaa70dd1f58404354f876a41342e4b76e10e3b3f85a13a5acddda56805575fa"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/native-facts.json",
+      "sha256": "40f65b8e114443f6579496fc2450b1486a468028ceff4ff3710698cedbff21b9"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/events.json",
+      "sha256": "daeb4c00984fdebe4545194583b0c5b7224c27e1e176983d30df2dd0d49a0887"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/prepared-documents.json",
+      "sha256": "5152419ee64a5a1e6b9f00444d0683c66be2afddf9b793dba68935ed50422de9"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/layer-default-diagnostic/capture/explicit_zero/input.json",
+      "sha256": "f63e0653059c1fcf2f0391be4518ed4a6236b6794b8ff93d5e75ff8fc5a3ade6"
+    }
+  ],
+  "limits": [
+    "Saved proof summaries and exact hash/event joins are checked, not reconstructed process-local proof objects. Root447-focused lane separately validates the native proof.",
+    "Both actual HTML files contain zero uf-chip-class_default nodes; the omitted-count native fact is class_default but no visible class-default chip is established. CSS alone is not a chip. Placement is investigating the existing route; no new renderer/source change or acceptance is made here.",
+    "Explicit null/zero stay typed public failures; omission alone recovers real24 layers. This does not qualify the full142 matrix denominator or bless any output."
+  ]
+}

@@ -1,0 +1,31 @@
+| Witness | Changed canonical surfaces | Changed count | Visual views unchanged |
+|---|---|---:|---:|
+| auraflow-v0-3 | html_meta, ir, ledgers, sable | 4 | 15 |
+| bloom | html_meta, ir, ledgers, sable | 4 | 4 |
+| cogvideox-5b | html_meta, ir, ledgers, sable | 4 | 15 |
+| dbrx-base | html_meta, ir, ledgers, sable | 4 | 6 |
+| deepseek-v3 | html_meta, ir, ledgers, sable | 4 | 11 |
+| flux-2-dev | html_meta, ir, ledgers, sable | 4 | 16 |
+| fluxtransformer2dmodel | html_meta, ir, ledgers, sable | 4 | 20 |
+| gemma-2-2b-it | html_meta, ir, ledgers, sable | 4 | 6 |
+| glm-4-5 | html_meta, ir, ledgers, sable | 4 | 9 |
+| gpt-oss-20b | html_meta, ir, ledgers, sable | 4 | 8 |
+| granite-3-0-8b-instruct | html_meta, ir, ledgers, sable | 4 | 4 |
+| hunyuanvideo | html_meta, ir, ledgers, sable | 4 | 20 |
+| llama-7b | html_meta, ir, ledgers, sable | 4 | 4 |
+| ltx-video | html_meta, ir, ledgers, sable | 4 | 12 |
+| lumina-image-2-0 | html_meta, ir, ledgers, sable | 4 | 16 |
+| mochi-1-preview | html_meta, ir, ledgers, sable | 4 | 9 |
+| musicgen-small | html_meta, ir, ledgers, sable | 4 | 8 |
+| olmo-2-1124-7b | html_meta, ir, ledgers, sable | 4 | 4 |
+| pixart-sigma-xl-2-1024-ms | html_meta, ir, ledgers, sable | 4 | 13 |
+| prxpixel-t2i | html_meta, ir, ledgers, sable | 4 | 9 |
+| qwen-image | html_meta, ir, ledgers, sable | 4 | 13 |
+| qwen2-vl-7b-instruct | html_meta, ir, ledgers, sable | 4 | 11 |
+| qwen3-5-27b-text | html_meta, ir, ledgers, sable | 4 | 6 |
+| qwen3-8b | html_meta, ir, ledgers, sable | 4 | 4 |
+| sana-1600m-1024px-diffusers | html_meta, ir, ledgers, sable | 4 | 12 |
+| stable-diffusion-3-5-large | html_meta, ir, ledgers, sable | 4 | 19 |
+| stable-diffusion-xl-base-1-0 | html_meta, ir, ledgers, sable | 4 | 143 |
+| stablelm-2-1-6b | html_meta, ir, ledgers, sable | 4 | 4 |
+| wan2-2-t2v-a14b-diffusers | html_meta, ir, ledgers, sable | 4 | 12 |

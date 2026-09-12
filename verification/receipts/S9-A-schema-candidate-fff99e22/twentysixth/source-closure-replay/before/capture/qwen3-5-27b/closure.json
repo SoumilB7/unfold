@@ -1,0 +1,127 @@
+{
+  "actual_portable_seal": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+  "baseline_output": {
+    "ir_after_sha256": "8b2531f901c8787129dee86fbd2eae90d66af9da3d352d9cc29e758e4a3ac0f3",
+    "ir_before_sha256": "8b2531f901c8787129dee86fbd2eae90d66af9da3d352d9cc29e758e4a3ac0f3",
+    "page_bytes": 179600,
+    "page_sha256": "709c4a27d1ce6faf1ba5eaa2919e8337cd1bff0197d55fd9bc987abc75306c47",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+  "seconds": 5.238500957999349,
+  "slug": "qwen3-5-27b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "f9d6330bc658363330167f8a8943dff48f040566e1ab0f296eddb2ffb524d367",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_5.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "395439341ea5ba4dd14c103e830383caa75686cfaf6b693dd7efb58622224da6",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_5.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f9d6330bc658363330167f8a8943dff48f040566e1ab0f296eddb2ffb524d367",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_5.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "395439341ea5ba4dd14c103e830383caa75686cfaf6b693dd7efb58622224da6",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_5.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f9d6330bc658363330167f8a8943dff48f040566e1ab0f296eddb2ffb524d367",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_5.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "395439341ea5ba4dd14c103e830383caa75686cfaf6b693dd7efb58622224da6",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_5.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 15,
+  "status": "REPRODUCED"
+}

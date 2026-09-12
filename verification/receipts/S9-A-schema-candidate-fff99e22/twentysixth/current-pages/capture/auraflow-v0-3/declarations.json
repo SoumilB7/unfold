@@ -1,0 +1,831 @@
+{
+  "root.denoiser.diffusion_bookend_operations": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_bookend_operations:3408fa06055f4e3e",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:105:17:105:49",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:105:17:105:61",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:105:17:105:75",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:106:17:106:34",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:412:24:412:53",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:415:32:415:76",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:416:32:418:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:431:55:436:17",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:432:34:432:47",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:433:42:433:63",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:441:37:441:93",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:452:45:454:21",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:453:38:453:60",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:97:17:104:9"
+      ],
+      "fact_id": "root.denoiser.diffusion_bookend_operations",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_bookend_operations",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 97,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 105,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 106,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 412,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 431,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 433,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 416,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 452,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 453,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 441,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "conditioning_input": [],
+      "state_input": [
+        "reshape",
+        "linear",
+        "concat"
+      ],
+      "state_output": [],
+      "temporal_operations": []
+    }
+  },
+  "root.denoiser.diffusion_root_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_root_topology:f54c9aeda5f113e8",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:421:8:436:17",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:443:12:454:21"
+      ],
+      "fact_id": "root.denoiser.diffusion_root_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_root_topology",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 421,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 443,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "repeated_stack"
+  },
+  "root.denoiser.stacks[0].attention[0].diffusion_stream_relation": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].attention[0].diffusion_stream_relation:5d4c8ed524ff7f2f",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:101:251:105",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:71:251:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:82:251:95",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:8:251:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:252:87:254:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:252:8:254:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:253:12:253:33",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:253:39:253:43",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:257:43:261:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:258:26:258:44",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:259:34:259:60",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:267:8:267:48",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:273:8:273:72",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:275:15:275:36",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:275:15:275:51",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:275:38:275:51",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:275:8:275:51"
+      ],
+      "fact_id": "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_stream_relation",
+    "owner": "root.denoiser.stacks[0].attention[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 257,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 251,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 258,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 253,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 259,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 275,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 267,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "dual_state"
+  },
+  "root.denoiser.stacks[0].cell.diffusion_conditioning_applications": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].cell.diffusion_conditioning_applications:f98ba2e4b6caca0d",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:101:251:105",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:71:251:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:82:251:95",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:251:8:251:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:252:87:254:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:252:8:254:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:253:12:253:33",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:253:39:253:43",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:257:43:261:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:264:46:264:54",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:264:46:264:67",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:264:46:264:81",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:264:65:264:66",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:264:8:264:82",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:270:70:270:115",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:270:70:270:80",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:270:70:270:93",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:270:8:270:116",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:270:91:270:92"
+      ],
+      "fact_id": "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_conditioning_applications",
+    "owner": "root.denoiser.stacks[0].cell",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 257,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 251,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 270,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 253,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "attention": [
+        "bare_gate",
+        "bare_gate"
+      ],
+      "cross_attention": [],
+      "ffn": []
+    }
+  },
+  "root.denoiser.stacks[0].diffusion_stack_depth": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].diffusion_stack_depth:af102cebb15945c5",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:345:31:345:59"
+      ],
+      "fact_id": "root.denoiser.stacks[0].diffusion_stack_depth",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_mmdit_layers"
+    ],
+    "key": "diffusion_stack_depth",
+    "owner": "root.denoiser.stacks[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 345,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 4
+  },
+  "root.denoiser.stacks[1].attention[0].diffusion_stream_relation": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[1].attention[0].diffusion_stream_relation:1182b98b3b09e8f4",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:101:181:105",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:71:181:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:82:181:95",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:8:181:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:184:22:184:85",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:184:46:184:64",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:191:8:191:48",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:193:15:193:28",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:193:8:193:28"
+      ],
+      "fact_id": "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_stream_relation",
+    "owner": "root.denoiser.stacks[1].attention[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 184,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 181,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 191,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "single_state"
+  },
+  "root.denoiser.stacks[1].cell.diffusion_conditioning_applications": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[1].cell.diffusion_conditioning_applications:c7489c29923c84a6",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:101:181:105",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:71:181:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:82:181:95",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:181:8:181:106",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:184:22:184:85",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:46:187:54",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:46:187:67",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:46:187:81",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:65:187:66",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:8:187:82",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:189:20:189:42",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:24:190:32",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:24:190:45",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:24:190:57",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:43:190:44",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:8:190:57"
+      ],
+      "fact_id": "root.denoiser.stacks[1].cell.diffusion_conditioning_applications",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_conditioning_applications",
+    "owner": "root.denoiser.stacks[1].cell",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 184,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 181,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 189,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 190,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "attention": [
+        "bare_gate"
+      ],
+      "cross_attention": [],
+      "ffn": [
+        "bare_gate"
+      ]
+    }
+  },
+  "root.denoiser.stacks[1].diffusion_stack_depth": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[1].diffusion_stack_depth:9fcccc3276fdf973",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:355:31:355:64"
+      ],
+      "fact_id": "root.denoiser.stacks[1].diffusion_stack_depth",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_single_dit_layers"
+    ],
+    "key": "diffusion_stack_depth",
+    "owner": "root.denoiser.stacks[1]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 355,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 32
+  },
+  "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "a842d1b332101f8cd11ecb0ef10f37119d25a7ad3d69262a9df3031a64a6054c"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism:5b1770ba13544ece",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:122:24:122:68",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:123:24:123:68",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:124:30:124:74",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:127:12:127:36",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:127:12:127:55",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:127:19:127:35",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:127:39:127:55",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:128:12:128:34",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:129:8:129:16",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:156:20:166:9",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:159:21:159:39",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:160:18:160:37",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:184:22:184:85",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:187:46:187:67",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:189:20:189:42",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:190:24:190:45",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:20:0:20:31",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:27:0:31:1",
+        "source:root:6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b:452:45:454:21"
+      ],
+      "fact_id": "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_ffn_mechanism",
+    "owner": "root.denoiser.stacks[1].ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 452,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 184,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 156,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 159,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 122,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 123,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 124,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 127,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 128,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 20,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 189,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+        "line": 190,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "activation": "silu",
+      "gated": true,
+      "kind": "dense",
+      "projection_mode": "split"
+    }
+  }
+}

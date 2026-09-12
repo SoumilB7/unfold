@@ -1,0 +1,246 @@
+{
+  "status": "READ_ONLY approved-scope inventory; final writer/diff review pending",
+  "authorization": "Soumil yes go ahead, reported by root in this session; existing outputapproval accepted without reasking",
+  "reviewed_dispositions_sha256": "3079f1d52481630127eaab78ec6bc97cce4978b9569601842b3b78a6f8b46e22",
+  "preservation_surfaces_by_witness": {
+    "auraflow-v0-3": [
+      "ledgers"
+    ],
+    "bloom": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "cogvideox-5b": [
+      "ledgers"
+    ],
+    "dbrx-base": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "deepseek-v3": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "flux-2-dev": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "fluxtransformer2dmodel": [
+      "ledgers"
+    ],
+    "gemma-2-2b-it": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "glm-4-5": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "gpt-oss-20b": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "granite-3-0-8b-instruct": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "hunyuanvideo": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "llama-7b": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "ltx-video": [
+      "ledgers"
+    ],
+    "lumina-image-2-0": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "mochi-1-preview": [
+      "ledgers"
+    ],
+    "musicgen-small": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "olmo-2-1124-7b": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "pixart-sigma-xl-2-1024-ms": [
+      "ledgers"
+    ],
+    "prxpixel-t2i": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "qwen-image": [
+      "ledgers"
+    ],
+    "qwen2-vl-7b-instruct": [
+      "ledgers"
+    ],
+    "qwen3-5-27b-text": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "qwen3-8b": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "sana-1600m-1024px-diffusers": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "stable-diffusion-3-5-large": [
+      "ledgers"
+    ],
+    "stable-diffusion-xl-base-1-0": [
+      "ir",
+      "expanded",
+      "params",
+      "html_meta",
+      "ledgers",
+      "views"
+    ],
+    "stablelm-2-1-6b": [
+      "ledgers",
+      "html_meta",
+      "views"
+    ],
+    "wan2-2-t2v-a14b-diffusers": [
+      "ledgers"
+    ]
+  },
+  "changed_corpus_view_witnesses": [
+    "bloom",
+    "dbrx-base",
+    "deepseek-v3",
+    "flux-2-dev",
+    "gemma-2-2b-it",
+    "glm-4-5",
+    "gpt-oss-20b",
+    "granite-3-0-8b-instruct",
+    "hunyuanvideo",
+    "llama-7b",
+    "lumina-image-2-0",
+    "musicgen-small",
+    "olmo-2-1124-7b",
+    "prxpixel-t2i",
+    "qwen3-5-27b-text",
+    "qwen3-8b",
+    "sana-1600m-1024px-diffusers",
+    "stable-diffusion-xl-base-1-0",
+    "stablelm-2-1-6b"
+  ],
+  "ledger_only_no_gallery_change_needed": [
+    "auraflow-v0-3",
+    "cogvideox-5b",
+    "fluxtransformer2dmodel",
+    "ltx-video",
+    "mochi-1-preview",
+    "pixart-sigma-xl-2-1024-ms",
+    "qwen-image",
+    "qwen2-vl-7b-instruct",
+    "stable-diffusion-3-5-large",
+    "wan2-2-t2v-a14b-diffusers"
+  ],
+  "examples": [
+    {
+      "blessed": false,
+      "candidate_bytes": 140072,
+      "candidate_sha256": "f8435adcfc79a794dfaf54a7ca7b07cec4ec96019be6a74bc0c1bcd1c3161a41",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "deepseek-v3.html",
+      "reviewed_sha256": "41bc1d436787830559d654f03af323b4c4f7dbeb597d05881a00cd990b11150f"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 66554,
+      "candidate_sha256": "efde2279a0e7866fef15a920a7f9c0502cf7245152d9df933fe9820e6c0c0626",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "granite-3-0-8b-instruct.html",
+      "reviewed_sha256": "4f62803603a73449725dd0c93d31b690d7b5c815ea85af45e994cfabcc6bf373"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 180511,
+      "candidate_sha256": "f6826af644f0bc5498c29d299a3f401b66ef1310d3e250acda0e34cf28e351bf",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "hunyuanvideo.html",
+      "reviewed_sha256": "ffffb01c4b16146c717fe924c5b615bb39d55b13dbe5e2aeb37fd3c2db4ba53d"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 57319,
+      "candidate_sha256": "12e62abaa4d42c8139103fce15c7aeb98f1b1b48675c75b3b0351876a618091e",
+      "disposition": "canonical-backed restored SVG routes; every non-SVG byte identical",
+      "file": "llama-7b.html",
+      "reviewed_sha256": "499f0f4dd20328c0a3d030049fdbeed4a1afa2013b7bc1158f82d8d1e7a01bea"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 76142,
+      "candidate_sha256": "36fc58700e3a596dc408eab328b12af845d8162094046cd28ff15ae75926e05c",
+      "disposition": "canonical-backed restored SVG routes; cross_attn fit width 850 to 886 follows SVG envelope; all remaining non-SVG bytes identical",
+      "file": "musicgen-small.html",
+      "reviewed_sha256": "386b3ae6078a0e4511daaeeef3e21cb4212a60f29471de8b48d438c825b73856"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 127718,
+      "candidate_sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea",
+      "disposition": "whole HTML byte-identical",
+      "file": "pixart-sigma-xl-2-1024-ms.html",
+      "reviewed_sha256": "2ab8e728897fcfb57d3755fc0a7a7a44943ec56817a85163c5a10e0e114c23ea"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 110825,
+      "candidate_sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d",
+      "disposition": "whole HTML byte-identical",
+      "file": "qwen2-vl-7b-instruct.html",
+      "reviewed_sha256": "3daecd4c607d5f9bb62c167c84e74cf2aff0b221b809840222626f0433ff1f8d"
+    },
+    {
+      "blessed": false,
+      "candidate_bytes": 24310552,
+      "candidate_sha256": "047ded43206adce009b820bda58aa16b8cba67c629f4e4160fd04a58f96dfc22",
+      "disposition": "UNet cutover: separate SDXL fact/output disposition and final-source replay required; not covered by non-UNet route proof",
+      "file": "stable-diffusion-xl-base-1-0.html",
+      "reviewed_sha256": "09e92b1d8c02e3a519617bc7bbc4b8cd64cb73c8e71f8487e9d7e6c7e2ef6a4b"
+    }
+  ],
+  "requirements": [
+    "unchanged executable config/source and witness paths",
+    "independent persisted exact labelled signature verdict through unchanged bless guard",
+    "full corresponding gallery and offline signature/provenfact reproduction",
+    "retain superseded signatures and human gallery sidecars",
+    "exact prior/current proof recall comparison; only named approved changes",
+    "no scratch or sparse/misleading/changed demo artifacts in baseline",
+    "four lazyVAE post-render capture differences never new productIR baselines",
+    "two unchanged examples and original hero remain unchanged",
+    "new approval records retain prior unapproved review artifacts as history",
+    "final current whole green gate remains required"
+  ]
+}

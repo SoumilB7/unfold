@@ -1,0 +1,409 @@
+--- a/model_unfolder/adapters/transformer/parser.py
++++ b/model_unfolder/adapters/transformer/parser.py
+@@ -1396,6 +1396,50 @@
+         if resolution.state == "present" or resolution.source_kind == "class_default":
+             return resolution
+         return None
++
++    def _repeated_schedule_projection(result, key, expected_value):
++        """Bind an existing scalar mechanism's whole repeated schedule.
++
++        Only the actual retained reader's finite projection establishes the
++        repetition count. Consumption cites that final schedule and tier.
++        Unavailable repetition retains its unqualified declaration; a mismatch
++        or foreign proof raises instead of changing values/order to fit it.
++        """
++        from ...evidence.config_access import current_prepared_document
++        from ...evidence.reader_claims import (
++            ReaderProjectionClaimProof, ReaderClaimUnavailable)
++        from ...evidence.receipts import value_status_hash
++        document = current_prepared_document.get()
++        if document is None or not isinstance(document.checkpoint, dict):
++            return None
++        try:
++            proof = ReaderProjectionClaimProof(
++                f"decoder.attention.{key}", result,
++                context.program_index(), document)
++            projection = proof.projection()
++            operand = result.claim_witness.repetition_operand(document)
++        except ReaderClaimUnavailable:
++            return None
++        if value_status_hash(projection.value, projection.status) != \
++                value_status_hash(expected_value, projection.status):
++            raise ValueError("repeated schedule differs from its exact source-bound count/value")
++        resolution = _resolve_exact_config_path(operand.source_path)
++        if resolution is None:
++            raise ValueError("repeated schedule lost its exact count operand")
++        channel = ("class_default" if resolution.source_kind == "class_default"
++                   or resolution.provenance == "class_default" else
++                   "config_declared" if resolution.present else "absent")
++        if (channel != operand.source_kind
++                or _actual_checkpoint_path(operand.source_path, resolution)
++                != operand.checkpoint_path
++                or value_status_hash(resolution.value, "operand")
++                != value_status_hash(operand.value, "operand")):
++            raise ValueError("repeated schedule count value/origin differs from its proof")
++        resolution.consume_decision(
++            reader=result.claim_reader_symbol, fact_owner="decoder.attention",
++            fact_key=key, mechanism=key, status=projection.status,
++            expected_value=projection.value)
++        return projection
+ 
+     def _actual_checkpoint_path(source_path, resolution):
+         """Return the exact supplying checkpoint spelling, or no path.
+@@ -2040,6 +2084,12 @@
+             "position_application": item["position_application"],
+             "rope_dim": item["rope_dim"],
+         } for item in _position_layers)
++        if _position_fact_result is _position_alibi_result:
++            _repeated_projection = _repeated_schedule_projection(
++                _position_fact_result, "position_schedule", _position_fact_value)
++            if _repeated_projection is not None:
++                _position_fact_status = _repeated_projection.status
++                _position_fact_paths = _repeated_projection.config_paths
+         _note_typed_fact(
+             key="position_schedule", owner="decoder.attention",
+             value=_position_fact_value, status=_position_fact_status,
+@@ -4213,6 +4263,11 @@
+             _cross_fact_value = tuple(
+                 "additive_cross" for _ in range(int(num_layers)))
+             _cross_fact_status = "code_proven"
++            _repeated_projection = _repeated_schedule_projection(
++                _additive_result, "cross_attention_schedule", _cross_fact_value)
++            if _repeated_projection is not None:
++                _cross_fact_status = _repeated_projection.status
++                _cross_fact_paths = _repeated_projection.config_paths
+         else:
+             # Declared enc-dec composite whose decoder SOURCE we can't read
+             # (custom package not installed — Parler-TTS): the schedule stays
+@@ -4233,7 +4288,7 @@
+             reader_result=_cross_fact_result,
+             config_paths=_cross_fact_paths,
+             reader=("decoder_replacement_cross_attention_schedule_for_path"
+-                    if _cross_fact_status != "code_proven"
++                    if _cross_fact_result is _replacement_cross_result
+                     else "decoder_cross_attention_all_layers_for_path"),
+             reason=("each decoder layer retains an exact selected block and "
+                     "Q/K/V lineage, or an exact additive dual-attention proof"),
+--- a/model_unfolder/evidence/cross_attention_schedule.py
++++ b/model_unfolder/evidence/cross_attention_schedule.py
+@@ -36,7 +36,7 @@
+     ReaderResult,
+ )
+ 
+-from .reader_claims import (ReaderFactProjection,
++from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                             repeated_count_operand)
+ 
+ 
+@@ -116,17 +116,27 @@
+                 or result.owner != self.evidence.block_occurrence:
+             raise ValueError("additive cross claim belongs to another result or owner")
+ 
+-    def project(self, owner, key, document):
++    def declared_kind(self, owner, key):
+         if (owner, key) != ("decoder.attention", "cross_attention_schedule"):
+             raise ValueError("additive cross cannot author this projection")
+-        count = repeated_count_operand(self.index, self.blocks,
+-                                       self.evidence.block_occurrence, document)
++        return "relation"
++
++    def repetition_operand(self, document):
++        return repeated_count_operand(self.index, self.blocks,
++                                      self.evidence.block_occurrence, document)
++
++    def project(self, owner, key, document):
++        self.declared_kind(owner, key)
++        count = self.repetition_operand(document)
+         return ReaderFactProjection(owner, key, "relation",
+             tuple("additive_cross" for _ in range(count.value)),
+             "class_default" if count.source_kind == "class_default" else "code_and_config",
+             (count.checkpoint_path,) if count.checkpoint_path else ())
+ 
+ 
++@retained_claim_reader(intended_claims=(
++    ("decoder.attention", "cross_attention_schedule", "relation"),
++))
+ def decoder_cross_attention_all_layers_for_path(
+     index: ProgramIndex,
+     bundle: SourceBundle,
+@@ -170,7 +180,7 @@
+             *block.provenance,
+             *census.provenance,
+             *result.provenance,
+-        ))
++        ), claim_witness=AdditiveCrossClaimWitness(index, result.value, block.value))
+ 
+ 
+ def _dual_attention_evidence(index, block_occurrence, block_symbol, candidates):
+--- a/model_unfolder/evidence/position_linear_bias.py
++++ b/model_unfolder/evidence/position_linear_bias.py
+@@ -46,7 +46,7 @@
+     ReaderResult,
+ )
+ 
+-from .reader_claims import (ReaderFactProjection,
++from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                             repeated_count_operand)
+ 
+ 
+@@ -184,18 +184,28 @@
+                 or result.owner != self.evidence.block_occurrence:
+             raise ValueError("ALiBi claim belongs to another result or owner")
+ 
+-    def project(self, owner, key, document):
++    def declared_kind(self, owner, key):
+         if (owner, key) != ("decoder.attention", "position_schedule"):
+             raise ValueError("ALiBi cannot author this projection")
+-        count = repeated_count_operand(self.index, self.blocks,
+-                                       self.evidence.block_occurrence, document)
+-        value = tuple({"position_kind": "alibi", "position_application": "score_bias",
++        return "relation"
++
++    def repetition_operand(self, document):
++        return repeated_count_operand(self.index, self.blocks,
++                                      self.evidence.block_occurrence, document)
++
++    def project(self, owner, key, document):
++        self.declared_kind(owner, key)
++        count = self.repetition_operand(document)
++        value = tuple({"position_kind": "alibi", "position_application": "attention_bias",
+                        "rope_dim": None} for _ in range(count.value))
+         return ReaderFactProjection(owner, key, "relation", value,
+             "class_default" if count.source_kind == "class_default" else "code_and_config",
+             (count.checkpoint_path,) if count.checkpoint_path else ())
+ 
+ 
++@retained_claim_reader(intended_claims=(
++    ("decoder.attention", "position_schedule", "relation"),
++))
+ def decoder_alibi_score_bias_for_path(
+     index: ProgramIndex,
+     bundle: SourceBundle,
+@@ -242,7 +252,13 @@
+         inventory, application)
+         for inventory, application in applications)
+     if len(outcomes) == 1:
+-        return outcomes[0]
++        result = outcomes[0]
++        if result.status != "resolved":
++            return result
++        return ReaderResult.resolved(
++            result.owner, result.value,
++            provenance=(*candidates.provenance, *result.provenance),
++            claim_witness=AlibiClaimWitness(index, result.value, candidates.value))
+     if all(item.status == "resolved" for item in outcomes):
+         identities = {
+             (item.value.producer.callable_symbol,
+--- a/model_unfolder/evidence/reader_claims.py
++++ b/model_unfolder/evidence/reader_claims.py
+@@ -182,6 +182,8 @@
+     Arithmetic/ranges with offsets remain unavailable until explicitly proved.
+     """
+     from .attention import exact_config_path_for_expression
++    if document is None:
++        raise ReaderClaimUnavailable("claim repetition has no prepared document")
+     proofs = tuple(proof for proof in blocks.repeated_child.proofs
+                    if proof.child_occurrence == block_occurrence)
+     if len(proofs) != 1:
+@@ -196,15 +198,18 @@
+             or any(item.name == "range" for item in index.module_bindings_in(callable_symbol.source)) \
+             or any(item.name == "range" and item.context in {"parameter", "store", "del"}
+                    for item in index.identifiers_in(callable_symbol)):
+-        raise ValueError("claim repetition has no supported exact builtin range")
++        raise ReaderClaimUnavailable("claim repetition has no supported exact builtin range")
+     node = blocks.component_root.graph.node_for(container.owner_occurrence)
+     path = exact_config_path_for_expression(
+         index, node, expression.children[1], config_prefix=blocks.config_path)
+     if path is None:
+-        raise ValueError("claim repetition count has no exact source operand")
++        raise ReaderClaimUnavailable("claim repetition count has no exact source operand")
++    resolution = _source_operand_resolution(document.document, path, document, allow_aliases=True)
++    if _operand_channel(resolution) not in {"config_declared", "class_default"}:
++        raise ReaderClaimUnavailable("claim repetition has no exact bound count operand")
+     operand = reader_operand(document, path)
+     if type(operand.value) is not int or operand.value <= 0:
+-        raise ValueError("claim repetition needs a positive integer operand")
++        raise ReaderClaimUnavailable("claim repetition needs a positive integer operand")
+     return operand
+ 
+ # Exact call-local authentication, analogous to prepared-document issuance.
+--- a/tests/test_reader_claims.py
++++ b/tests/test_reader_claims.py
+@@ -308,8 +308,8 @@
+         blocks = decoder_block_candidates_for_config(index, bundle, (), allow_root_stage=True).value
+         witness_type, key = AlibiClaimWitness, "position_schedule"
+     assert result.status == "resolved", result.failures
+-    # These count provenance changes are held for the owner's scope ruling.
+-    assert result.claim_witness is None
++    # The production result now carries the finite repetition witness.
++    assert type(result.claim_witness) is witness_type
+     document = PreparedDocument({"layers": count}, {"layers": count})
+     witness = witness_type(index, result.value, blocks)
+     witness.validate_result(result)
+--- a/tests/test_s9_repeated_schedule_qualification.py
++++ b/tests/test_s9_repeated_schedule_qualification.py
+@@ -0,0 +1,163 @@
++"""Whole schedules bind a real reader and the exact repeated-child count."""
++from dataclasses import replace
++import copy
++import json
++from pathlib import Path
++
++import pytest
++
++from model_unfolder.evidence.claim_evidence import validate_fact_claim
++from model_unfolder.evidence.config_access import bound_document
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
++from model_unfolder.evidence.facts import EvidenceFact, SourceSpan
++from model_unfolder.evidence.reader_claims import (
++    ReaderProjectionClaimProof, qualify_reader_fact,
++)
++from model_unfolder.evidence.receipts import value_status_hash
++from test_support.s9_fixtures.position_linear_bias import _pipeline, _source
++
++
++def _reader_case(tmp_path, family, raw=None):
++    if family == "additive":
++        from model_unfolder.evidence.cross_attention_schedule import decoder_cross_attention_all_layers_for_path
++        from test_support.s9_fixtures.cross_attention_schedule import _SOURCE
++        index, bundle = _pipeline(tmp_path, raw=raw or _SOURCE, architecture="Shell")
++        return index, bundle, decoder_cross_attention_all_layers_for_path, "cross_attention_schedule"
++    from model_unfolder.evidence.position_linear_bias import decoder_alibi_score_bias_for_path
++    index, bundle = _pipeline(tmp_path, raw=raw)
++    return index, bundle, decoder_alibi_score_bias_for_path, "position_schedule"
++
++
++def _fact(result, key, value, status, paths=()):
++    return EvidenceFact(key=key, owner="decoder.attention", value=value,
++        status=status, completeness="complete", config_paths=tuple(".".join(p) for p in paths),
++        source_spans=tuple(dict.fromkeys(SourceSpan(
++            component=span.source.component_key or "root",
++            file=span.source.canonical_path, line=span.line)
++            for origin in result.provenance for span in origin.spans)))
++
++
++@pytest.mark.parametrize("family", ["alibi", "additive"])
++@pytest.mark.parametrize("count", [3, 7])
++@pytest.mark.parametrize("defaulted", [False, True])
++def test_actual_retained_schedule_qualifies_its_exact_count_and_tier(tmp_path, family, count, defaulted):
++    index, bundle, reader, key = _reader_case(tmp_path, family)
++    checkpoint = {} if defaulted else {"layers": count}
++    document = PreparedDocument(copy.deepcopy(checkpoint), copy.deepcopy(checkpoint),
++        class_overlay={"layers": count} if defaulted else {})
++    with bound_document(DocumentBinding("root", (), document)):
++        result = reader(index, bundle, (), allow_root_stage=True)
++        assert result.status == "resolved", result.failures
++        proof = ReaderProjectionClaimProof(f"decoder.attention.{key}", result, index, document)
++        projected = proof.projection()
++        assert len(projected.value) == count
++        assert projected.status == ("class_default" if defaulted else "code_and_config")
++        assert projected.config_paths == (() if defaulted else (("layers",),))
++        fact = qualify_reader_fact(_fact(result, key, projected.value,
++            projected.status, projected.config_paths), result, index, document)
++        validate_fact_claim(fact, fact.claim_evidence)
++        assert fact.claim_kind == "relation"
++        assert fact.claim_readers == (result.claim_reader_symbol,)
++        assert fact.claim_document_token
++        if family == "alibi":
++            assert all(row == {"position_kind": "alibi", "position_application": "attention_bias",
++                               "rope_dim": None} for row in fact.value)
++        else:
++            assert fact.value == ("additive_cross",) * count
++        # Same mechanism or a known count does not authorize another schedule/tier/path.
++        for mutation in ({"value": fact.value[:-1]}, {"status": "code_proven"},
++                         {"config_paths": ("foreign_count",)}):
++            with pytest.raises(ValueError):
++                validate_fact_claim(replace(fact, **mutation), fact.claim_evidence)
++        with pytest.raises(ValueError, match="actual result"):
++            ReaderProjectionClaimProof(fact.ledger_key(), replace(result), index, document)
++        other = PreparedDocument(copy.deepcopy(checkpoint), copy.deepcopy(checkpoint),
++            class_overlay={"layers": count} if defaulted else {})
++        with pytest.raises(ValueError, match="prepared document"):
++            ReaderProjectionClaimProof(fact.ledger_key(), result, index, other)
++
++
++@pytest.mark.parametrize("family", ["alibi", "additive"])
++def test_unbound_schedule_reader_declares_kind_without_count_proof(tmp_path, family):
++    index, bundle, reader, key = _reader_case(tmp_path, family)
++    result = reader(index, bundle, (), allow_root_stage=True)
++    assert result.status == "resolved"
++    value = (("additive_cross",) * 3 if family == "additive" else
++             tuple({"position_kind": "alibi", "position_application": "attention_bias",
++                    "rope_dim": None} for _ in range(3)))
++    fact = qualify_reader_fact(_fact(result, key, value, "code_proven"), result, index, None)
++    assert fact.claim_kind == "relation"
++    assert fact.claim_evidence is None and not fact.claim_document_token
++    with pytest.raises(ValueError, match="prepared document"):
++        ReaderProjectionClaimProof(fact.ledger_key(), result, index, None)
++
++
++@pytest.mark.parametrize("mutation", ["missing", "arithmetic", "shadow", "conflicting_count"])
++def test_unavailable_repetition_never_qualifies_an_existing_schedule(tmp_path, mutation):
++    raw = _source()
++    if mutation == "arithmetic":
++        raw = raw.replace("range(config.layers)", "range(config.layers + 1)")
++    if mutation == "shadow":
++        raw += "\nrange = lambda count: (0,)\n"
++    index, bundle, reader, key = _reader_case(tmp_path, "alibi", raw)
++    checkpoint = {} if mutation == "missing" else {"layers": 0 if mutation == "conflicting_count" else 3}
++    document = PreparedDocument(copy.deepcopy(checkpoint), copy.deepcopy(checkpoint))
++    with bound_document(DocumentBinding("root", (), document)):
++        result = reader(index, bundle, (), allow_root_stage=True)
++        assert result.status == "resolved", result.failures
++        value = tuple({"position_kind": "alibi", "position_application": "attention_bias",
++                       "rope_dim": None} for _ in range(3))
++        fact = qualify_reader_fact(_fact(result, key, value, "code_proven"), result, index, document)
++        assert fact.value == value and fact.claim_kind == "relation"
++        assert fact.claim_evidence is None and not fact.claim_document_token
++        assert fact.unknown_reason is None  # no manufactured exhaustion/class3
++
++
++@pytest.mark.parametrize("slug,key,count,path", [
++    ("bloom", "position_schedule", 70, "n_layer"),
++    ("musicgen-small", "cross_attention_schedule", 24, "decoder.num_hidden_layers"),
++])
++def test_actual_corpus_schedule_count_supplies_fact_and_consumption_hash(slug, key, count, path):
++    from model_unfolder import config_to_ir
++    from model_unfolder.evidence.context import ParseContext
++    cfg = json.loads((Path(__file__).parent / "sable_test_corpus" / (slug + ".json")).read_text())["config"]
++    context = ParseContext.build(cfg)
++    ir = config_to_ir(cfg, parse_context=context)
++    assert len(ir.layers) == count
++    fact = context.facts.typed[f"decoder.attention.{key}"]
++    assert fact.status == "code_and_config" and fact.config_paths == (path,)
++    assert fact.claim_kind == "relation" and fact.claim_evidence is not None
++    validate_fact_claim(fact, fact.claim_evidence)
++    assert len(fact.value) == count
++    if key == "position_schedule":
++        assert all(layer.attention.position_kind == "alibi" and
++                   layer.attention.position_application == "attention_bias" for layer in ir.layers)
++    else:
++        assert fact.value == ("additive_cross",) * count
++    decisions = [event for event in context.config_access.events
++                 if event.intent == "consumed" and event.fact_owner == "decoder.attention"
++                 and event.fact_key == key and event.mechanism == key]
++    assert len(decisions) == 1
++    assert decisions[0].config_path == path
++    assert decisions[0].value_status_hash == value_status_hash(fact.value, fact.status)
++
++
++def test_actual_nested_class_default_count_keeps_the_schedule_and_weaker_tier():
++    from model_unfolder import config_to_ir
++    from model_unfolder.evidence.context import ParseContext
++    cfg = json.loads((Path(__file__).parent / "sable_test_corpus" / "musicgen-small.json").read_text())["config"]
++    assert cfg["decoder"].pop("num_hidden_layers") == 24
++    context = ParseContext.build(cfg)
++    ir = config_to_ir(cfg, parse_context=context)
++    fact = context.facts.typed["decoder.attention.cross_attention_schedule"]
++    assert len(ir.layers) == 24 and fact.value == ("additive_cross",) * 24
++    assert fact.status == "class_default" and fact.config_paths == ()
++    validate_fact_claim(fact, fact.claim_evidence)
++    decisions = [event for event in context.config_access.events
++                 if event.intent == "absent_default" and event.fact_owner == "decoder.attention"
++                 and event.fact_key == "cross_attention_schedule"
++                 and event.mechanism == "cross_attention_schedule"]
++    assert len(decisions) == 1
++    assert decisions[0].config_path == "decoder.num_hidden_layers"
++    assert decisions[0].provenance == "class_default" and not decisions[0].present
++    assert decisions[0].value_status_hash == value_status_hash(fact.value, fact.status)

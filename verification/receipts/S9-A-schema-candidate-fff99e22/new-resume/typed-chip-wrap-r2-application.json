@@ -1,0 +1,11 @@
+{
+  "source_only": true,
+  "path": "model_unfolder/renderers/html/styles.py",
+  "before": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+  "after": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+  "independent_verdicts": {
+    "reviews/typed-chip-wrap-r2-independent-event-verdict.json": "1559331fd6508d8f2525833d12f2fdd7cbdcbecac51c2fbee1b20cf80b00db9c",
+    "reviews/typed-chip-wrap-browser-r3-independent-event-verdict.json": "4f5c169d6a96e971db1a23845ced6c3757ae19f6b43891163e57b3cb209c8c01"
+  },
+  "outputs_blessed": false
+}

@@ -1,0 +1,181 @@
+{
+  "all_exact": true,
+  "bindings": [
+    {
+      "binding": "C",
+      "current_ast_sha256": "b57ce7df12d19f3f0abb3f87812935ae0df2e784be9a227a3fd9135d9b4542e8",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "b57ce7df12d19f3f0abb3f87812935ae0df2e784be9a227a3fd9135d9b4542e8"
+    },
+    {
+      "binding": "FONT_MONO",
+      "current_ast_sha256": "5ed4185864a3542705dbd13dfa953255599328ab93354bff9dedb0a8c95ac368",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "5ed4185864a3542705dbd13dfa953255599328ab93354bff9dedb0a8c95ac368"
+    },
+    {
+      "binding": "GAP",
+      "current_ast_sha256": "de78f4e1d05472c9bc47de3236be13801910b1ca796c6fe4ab1b0ab3ec5c07f9",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "de78f4e1d05472c9bc47de3236be13801910b1ca796c6fe4ab1b0ab3ec5c07f9"
+    },
+    {
+      "binding": "Parallel",
+      "current_ast_sha256": "bf2af5b94464be97143bde6536bf80b29bacd0d885a203539a126e1a2f747e04",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "bf2af5b94464be97143bde6536bf80b29bacd0d885a203539a126e1a2f747e04"
+    },
+    {
+      "binding": "_BRANCH_GAP",
+      "current_ast_sha256": "dfe199f071ba2ce6162eb9a00ddb2f0d505e305907681cb7fb3865f668a4b7e4",
+      "exact_ast_equal": true,
+      "kind": "Assign",
+      "old_ast_sha256": "dfe199f071ba2ce6162eb9a00ddb2f0d505e305907681cb7fb3865f668a4b7e4"
+    },
+    {
+      "binding": "_BRANCH_STUB",
+      "current_ast_sha256": "6d1799457a98c2b07f1ec3759a42c55ac12312da96ae47024cee069af5c13b18",
+      "exact_ast_equal": true,
+      "kind": "Assign",
+      "old_ast_sha256": "6d1799457a98c2b07f1ec3759a42c55ac12312da96ae47024cee069af5c13b18"
+    },
+    {
+      "binding": "_INTRA_GAP",
+      "current_ast_sha256": "832a2f741280664471bee5d42b6b4f649e9ab4183cb9d89fa9d5748589148648",
+      "exact_ast_equal": true,
+      "kind": "Assign",
+      "old_ast_sha256": "832a2f741280664471bee5d42b6b4f649e9ab4183cb9d89fa9d5748589148648"
+    },
+    {
+      "binding": "_branch_dot",
+      "current_ast_sha256": "8b44a09561aca9ceef05528b7026c842da39d3f5ddbeb241a1051a3c484a9ddb",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "8b44a09561aca9ceef05528b7026c842da39d3f5ddbeb241a1051a3c484a9ddb"
+    },
+    {
+      "binding": "_cache_io_ports",
+      "current_ast_sha256": "85174870032aa99a29b27e34314677b5db0bf896611bc5235840caac30220700",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "85174870032aa99a29b27e34314677b5db0bf896611bc5235840caac30220700"
+    },
+    {
+      "binding": "_draw_node",
+      "current_ast_sha256": "21a7842e025a61cbc627a5b13d6721cfdee2b3e6b5671c63abd426fc983c2762",
+      "exact_ast_equal": true,
+      "kind": "FunctionDef",
+      "old_ast_sha256": "21a7842e025a61cbc627a5b13d6721cfdee2b3e6b5671c63abd426fc983c2762"
+    },
+    {
+      "binding": "_draw_side_sources",
+      "current_ast_sha256": "7fbadebd5d8f46ee1d9f7e8a637446647130ee0cf08894438da2e24dea899005",
+      "exact_ast_equal": true,
+      "kind": "FunctionDef",
+      "old_ast_sha256": "7fbadebd5d8f46ee1d9f7e8a637446647130ee0cf08894438da2e24dea899005"
+    },
+    {
+      "binding": "_elbow_hv",
+      "current_ast_sha256": "21b8259fd9bd87cfa3612f48177eea9b256701e2bd08dc8ba3b96ba8962025f9",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "21b8259fd9bd87cfa3612f48177eea9b256701e2bd08dc8ba3b96ba8962025f9"
+    },
+    {
+      "binding": "_elbow_vh",
+      "current_ast_sha256": "40b01ec2b95108c7d408277027a613cbad0162c5fdc726cbf1b873181dcc0f6c",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "40b01ec2b95108c7d408277027a613cbad0162c5fdc726cbf1b873181dcc0f6c"
+    },
+    {
+      "binding": "_ext_source_extra",
+      "current_ast_sha256": "c00ea907f519cd369912f619bf61e9daf762bc37a2825800f3a601547714e965",
+      "exact_ast_equal": true,
+      "kind": "FunctionDef",
+      "old_ast_sha256": "c00ea907f519cd369912f619bf61e9daf762bc37a2825800f3a601547714e965"
+    },
+    {
+      "binding": "_formula_block",
+      "current_ast_sha256": "7556661e5fccf8c2a02089410fa16013d14768eee90980d37c327132e321388f",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "7556661e5fccf8c2a02089410fa16013d14768eee90980d37c327132e321388f"
+    },
+    {
+      "binding": "_geom",
+      "current_ast_sha256": "f98d47c24b58d90dc76188bdc54cc8159047c5bca6bae95b5939617110c6733a",
+      "exact_ast_equal": true,
+      "kind": "FunctionDef",
+      "old_ast_sha256": "f98d47c24b58d90dc76188bdc54cc8159047c5bca6bae95b5939617110c6733a"
+    },
+    {
+      "binding": "_lane_draw_order",
+      "current_ast_sha256": "60f3b8b51fb86b65a5f066d847abdccdcae35432b079b2d91037416f3327c51f",
+      "exact_ast_equal": true,
+      "kind": "FunctionDef",
+      "old_ast_sha256": "60f3b8b51fb86b65a5f066d847abdccdcae35432b079b2d91037416f3327c51f"
+    },
+    {
+      "binding": "_merge_up_route",
+      "current_ast_sha256": "678a89de4093cc738848f77179cc7d4106866cd72843fa3caf436351e7abaa65",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "678a89de4093cc738848f77179cc7d4106866cd72843fa3caf436351e7abaa65"
+    },
+    {
+      "binding": "_plus_block",
+      "current_ast_sha256": "073c343a07620ee697121f711b2bc60a3c70630c53afbf1b29d2c393fde48b75",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "073c343a07620ee697121f711b2bc60a3c70630c53afbf1b29d2c393fde48b75"
+    },
+    {
+      "binding": "_rect_block",
+      "current_ast_sha256": "4b93cde1f1c33ad4a0ce316c2aa8b7a0c56f87fa496d10af9a200eacafd78802",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "4b93cde1f1c33ad4a0ce316c2aa8b7a0c56f87fa496d10af9a200eacafd78802"
+    },
+    {
+      "binding": "_svg_tag",
+      "current_ast_sha256": "ee9a28f5910442ff4c7a3ae23dcedb09b030b93fda0724f754776c6295fddf5b",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "ee9a28f5910442ff4c7a3ae23dcedb09b030b93fda0724f754776c6295fddf5b"
+    },
+    {
+      "binding": "_svg_text",
+      "current_ast_sha256": "4eb683ff6e12a7629f2d5fefaae59a8587b8a901ba76ce8fb2116056c80d27c7",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "4eb683ff6e12a7629f2d5fefaae59a8587b8a901ba76ce8fb2116056c80d27c7"
+    },
+    {
+      "binding": "_v_line",
+      "current_ast_sha256": "bac7fa12298845d5e9a9fb93e83cc216d7a1017c712a7fea23eb31c3e3f2ef41",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "bac7fa12298845d5e9a9fb93e83cc216d7a1017c712a7fea23eb31c3e3f2ef41"
+    },
+    {
+      "binding": "_v_seg",
+      "current_ast_sha256": "84e0a34bb69db5df0b28c94a925b61f31bcf450e0966d29f810e0593ec922c9e",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "84e0a34bb69db5df0b28c94a925b61f31bcf450e0966d29f810e0593ec922c9e"
+    },
+    {
+      "binding": "point",
+      "current_ast_sha256": "826c4353e15a2775a539603ebfe898ab41070de65ded9cb33ee36c8972607c1d",
+      "exact_ast_equal": true,
+      "kind": "ImportFrom",
+      "old_ast_sha256": "826c4353e15a2775a539603ebfe898ab41070de65ded9cb33ee36c8972607c1d"
+    }
+  ],
+  "scope": "Transitive same-module functions/classes/constants/import bindings referenced by accepted _draw_parallel; import names are compared individually. Source AST identity is a diagnostic compatibility check, not new model-mechanism evidence."
+}

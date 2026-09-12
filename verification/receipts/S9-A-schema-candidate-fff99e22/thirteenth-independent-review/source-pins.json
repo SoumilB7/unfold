@@ -1,0 +1,10 @@
+{
+  "root": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirteenth",
+  "manifest_sha256": "2acaaad227f467c085326de997792455cfca5a4c4c9c20061d764388848b274c",
+  "files": {
+    "model_unfolder/evidence/config_access.py": "3f3251d6b301ddc5aa235829b8cb500d7bd841e85d931ce96b34ee07bd6caaba",
+    "tests/test_config_access.py": "9bfc08a00d4b6a15436228f4b3867eae7fd2962590eaa54257835933fc99748a",
+    "model_unfolder/evidence/activation_registry.py": "910b5959b4580021b6b44590a2cff937d7ac1cb1971af97376b1315ed5f2f53f",
+    "tests/test_reader_claims.py": "9d0501e9d652cd0c85a0aea265a02fcb7a02c38ea1b4cfac70748fd5f48a1d13"
+  }
+}

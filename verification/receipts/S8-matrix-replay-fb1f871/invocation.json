@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "/private/tmp/unfold-s8-focused-fb1f871/verification/receipts/S8-final-matrix-7168440/sdxl-replay/replay.py",
+    "/private/tmp/unfold-s8-focused-fb1f871",
+    "/private/tmp/unfold-s8-matrix-replay-fb1f871"
+  ],
+  "script_sha256": "96e898b41992efc7c2bd9ddded21bfa2e02cac4753e304185e79819bc90f6bc8",
+  "historical_executed_script": "exact716 saved-evidence replay source unchanged",
+  "commit": "fb1f871",
+  "production_equal_779739b": true
+}

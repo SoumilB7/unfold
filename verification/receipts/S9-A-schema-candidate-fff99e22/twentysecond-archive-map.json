@@ -1,0 +1,928 @@
+{
+  "directories": [
+    {
+      "archived": "twentysecond/matrix",
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix"
+    },
+    {
+      "archived": "twentysecond/matrix/models",
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models"
+    },
+    {
+      "archived": "twentysecond/matrix/observations",
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations"
+    },
+    {
+      "archived": "twentysecond/matrix/relations",
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations"
+    },
+    {
+      "archived": "twentysecond/matrix-lane",
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix-lane"
+    },
+    {
+      "archived": "twentysecond/qualification",
+      "original": "/private/tmp/unfold-s9a-twentysecond/qualification"
+    },
+    {
+      "archived": "twentysecond-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source"
+    },
+    {
+      "archived": "twentysecond-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source/model_unfolder"
+    },
+    {
+      "archived": "twentysecond-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "twentysecond-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "twentysecond/audit-matrix.py",
+      "bytes": 2802,
+      "original": "/private/tmp/unfold-s9a-twentysecond/audit-matrix.py",
+      "sha256": "c3f55e140cf437e92cc038119731fd6b4a2fdb93c55596b409378758b761881b"
+    },
+    {
+      "archived": "twentysecond/census.py",
+      "bytes": 5081,
+      "original": "/private/tmp/unfold-s9a-twentysecond/census.py",
+      "sha256": "e5a806d8fc803e5d852b2e78a89bd1ad35e3ebb5161e050611addb3080e04067"
+    },
+    {
+      "archived": "twentysecond/generate-matrix.py",
+      "bytes": 547,
+      "original": "/private/tmp/unfold-s9a-twentysecond/generate-matrix.py",
+      "sha256": "84daa2c8d8126f63d295703005bedc057300d18ff9e2010b82dccf930bb2985a"
+    },
+    {
+      "archived": "twentysecond/handoff-1.json",
+      "bytes": 482,
+      "original": "/private/tmp/unfold-s9a-twentysecond/handoff-1.json",
+      "sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f"
+    },
+    {
+      "archived": "twentysecond/handoff-2.json",
+      "bytes": 644,
+      "original": "/private/tmp/unfold-s9a-twentysecond/handoff-2.json",
+      "sha256": "a0a8f04765616ae58a78ade389050849e2c33177f1ecf400a5066fc3ba66c09b"
+    },
+    {
+      "archived": "twentysecond/matrix/README.md",
+      "bytes": 7430,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/README.md",
+      "sha256": "54408cff6f401e5d28965897b9c1395b2f441b3181ec2e299af2f2bb45b09d4e"
+    },
+    {
+      "archived": "twentysecond/matrix/matrix.json",
+      "bytes": 201656,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/matrix.json",
+      "sha256": "923c27290b38de38e79fb3e1f81378f025b42cd3d31fb8528e07582b4383bca2"
+    },
+    {
+      "archived": "twentysecond/matrix/models/auraflow-v0-3.json.gz",
+      "bytes": 36917,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/auraflow-v0-3.json.gz",
+      "sha256": "df7f93f585b92351eb68dd895de031c7b42992b1d33ea537ff2ad220f1acd076"
+    },
+    {
+      "archived": "twentysecond/matrix/models/bloom.json.gz",
+      "bytes": 42903,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/bloom.json.gz",
+      "sha256": "3f055778349407e0334d6725d35090f9baf3e703ad82417a311856749d381206"
+    },
+    {
+      "archived": "twentysecond/matrix/models/cogvideox-5b.json.gz",
+      "bytes": 41267,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/cogvideox-5b.json.gz",
+      "sha256": "15203302d067cfae8c8dc193d2209059bf7a125fe81cb16149c6c2ad3fecdd40"
+    },
+    {
+      "archived": "twentysecond/matrix/models/command-a-03-2025.json.gz",
+      "bytes": 163887,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/command-a-03-2025.json.gz",
+      "sha256": "e1a9a2c5c55b1ce5134b2f3171686939bb3cdd7693999ce088f3372c82b859bf"
+    },
+    {
+      "archived": "twentysecond/matrix/models/dbrx-base.json.gz",
+      "bytes": 182537,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/dbrx-base.json.gz",
+      "sha256": "91fe7e5491353ee15e576776f705a5ad11603d479923e2b9b5562676c74a1971"
+    },
+    {
+      "archived": "twentysecond/matrix/models/deepseek-coder-v2-lite.json.gz",
+      "bytes": 48193,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/deepseek-coder-v2-lite.json.gz",
+      "sha256": "ed481c522cac54b05781c1d2eed91a1de4ae2d9893527c19dffeab34d65fdffc"
+    },
+    {
+      "archived": "twentysecond/matrix/models/deepseek-v3.json.gz",
+      "bytes": 382384,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/deepseek-v3.json.gz",
+      "sha256": "6c03afaf58a11b49a1316163497daf1623a76a8075bf5a5ced7d595c7855f472"
+    },
+    {
+      "archived": "twentysecond/matrix/models/deepseek-v4-flash.json.gz",
+      "bytes": 54750,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/deepseek-v4-flash.json.gz",
+      "sha256": "36593b06872db25cc30559ff371d5174f92c0e49b7c02f9d1cdf8038f5363347"
+    },
+    {
+      "archived": "twentysecond/matrix/models/flux-2-dev.json.gz",
+      "bytes": 30652,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/flux-2-dev.json.gz",
+      "sha256": "f8eedefbd5e2195ecee6ca14557c4afe9e7f9020b5161d85ee68b623656fc70b"
+    },
+    {
+      "archived": "twentysecond/matrix/models/fluxtransformer2dmodel.json.gz",
+      "bytes": 38922,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/fluxtransformer2dmodel.json.gz",
+      "sha256": "32aacbcc9aac677b697321ebbfcc3055a8154508d9273b6d6b37eee7abcf9c83"
+    },
+    {
+      "archived": "twentysecond/matrix/models/gemma-2-2b-it.json.gz",
+      "bytes": 127894,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/gemma-2-2b-it.json.gz",
+      "sha256": "d6aff29a4f4cb8d272be5c61d5a59aa18c97cb70e6ea0fafaaf1462de8429563"
+    },
+    {
+      "archived": "twentysecond/matrix/models/gemma-3n-e2b.json.gz",
+      "bytes": 71320,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/gemma-3n-e2b.json.gz",
+      "sha256": "9b7f95d5828282426b384207b1b96d4b262d4e43d539289472f0f3e076bd918f"
+    },
+    {
+      "archived": "twentysecond/matrix/models/glm-4-5.json.gz",
+      "bytes": 592324,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/glm-4-5.json.gz",
+      "sha256": "1328ab460ddb7734a068dd40b6c04039e30bff5f5cbd1347d759a1f8f58ff3bd"
+    },
+    {
+      "archived": "twentysecond/matrix/models/gpt-oss-20b.json.gz",
+      "bytes": 124437,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/gpt-oss-20b.json.gz",
+      "sha256": "f70861e0cef1ec45bc4eb13efe41b2acbd35e161d5cc7e4f9d5cc1fec9e1ae06"
+    },
+    {
+      "archived": "twentysecond/matrix/models/granite-3-0-8b-instruct.json.gz",
+      "bytes": 185957,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/granite-3-0-8b-instruct.json.gz",
+      "sha256": "25512fd33724abf292b0967687a2bd2dfd75861721420f0aa26151f2da4622f8"
+    },
+    {
+      "archived": "twentysecond/matrix/models/hunyuanvideo.json.gz",
+      "bytes": 54594,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/hunyuanvideo.json.gz",
+      "sha256": "e59a4e66c7a847843bdea79ab01c515611530e9dd908a9494c720e03d8e060e2"
+    },
+    {
+      "archived": "twentysecond/matrix/models/jamba-v0-1.json.gz",
+      "bytes": 14765,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/jamba-v0-1.json.gz",
+      "sha256": "451a95082068ec674bc948b6e118d24d33ed73ffa8e355c9f8e07a81c5553341"
+    },
+    {
+      "archived": "twentysecond/matrix/models/lfm2-1-2b.json.gz",
+      "bytes": 35719,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/lfm2-1-2b.json.gz",
+      "sha256": "7e9cd4c9c077a79cbabf760543ab9c63598cfddb9697ca7701878c637a86d8cf"
+    },
+    {
+      "archived": "twentysecond/matrix/models/llama-7b.json.gz",
+      "bytes": 135747,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/llama-7b.json.gz",
+      "sha256": "8582479273ad8bd856c700fe3b22d60ae8962b70bee86bd8e0917f64be04b106"
+    },
+    {
+      "archived": "twentysecond/matrix/models/ltx-video.json.gz",
+      "bytes": 24051,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/ltx-video.json.gz",
+      "sha256": "0b3b301339574d629b3407ca54d60bbee1a1b50bd22bbe344190b0db722c7eae"
+    },
+    {
+      "archived": "twentysecond/matrix/models/lumina-image-2-0.json.gz",
+      "bytes": 30076,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/lumina-image-2-0.json.gz",
+      "sha256": "1d209414614f88aaf6c6de5a8900a7d43fcf2eb342e7eb1df048cea57c01fac3"
+    },
+    {
+      "archived": "twentysecond/matrix/models/mochi-1-preview.json.gz",
+      "bytes": 60910,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/mochi-1-preview.json.gz",
+      "sha256": "9e02d9feaac00419cfa2c182a38c472c4f08e3930639b7834611172207be54ab"
+    },
+    {
+      "archived": "twentysecond/matrix/models/musicgen-small.json.gz",
+      "bytes": 25335,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/musicgen-small.json.gz",
+      "sha256": "42920f6b483977dd9353563fa39842a0cd53f69bb4454aeb40a6abfaafc6c808"
+    },
+    {
+      "archived": "twentysecond/matrix/models/nemotron-h-8b.json.gz",
+      "bytes": 15932,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/nemotron-h-8b.json.gz",
+      "sha256": "89dd8b4de06878e473fc39c16bf6b8beb4e4bfe6a4242d0c9a7f037bcd3173a0"
+    },
+    {
+      "archived": "twentysecond/matrix/models/olmo-2-1124-7b.json.gz",
+      "bytes": 155165,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/olmo-2-1124-7b.json.gz",
+      "sha256": "aaa4563bfc7b8bdfebf922d5ce6bbd1defc5410ab9b4f71326859a3b544d131a"
+    },
+    {
+      "archived": "twentysecond/matrix/models/pixart-sigma-xl-2-1024-ms.json.gz",
+      "bytes": 27637,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/pixart-sigma-xl-2-1024-ms.json.gz",
+      "sha256": "40349a88f3aaebab42d2096651f1808954e6c61a3f091e716482cf1557d79926"
+    },
+    {
+      "archived": "twentysecond/matrix/models/prxpixel-t2i.json.gz",
+      "bytes": 25290,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/prxpixel-t2i.json.gz",
+      "sha256": "12a5fe5fcf36da7e5f0d5b506e727a0d776670c1b621fb45c036eac4e2cacd33"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen-image.json.gz",
+      "bytes": 64585,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen-image.json.gz",
+      "sha256": "22f12e414414491627775a7af03359db0bde06a7a4eef94aff4acfffba9eb8a6"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen2-vl-7b-instruct.json.gz",
+      "bytes": 78639,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen2-vl-7b-instruct.json.gz",
+      "sha256": "3787fddfedaeb965297f19f28c34db814170f94bef34275e68632c280094f81c"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen3-5-27b-text.json.gz",
+      "bytes": 200647,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen3-5-27b-text.json.gz",
+      "sha256": "8bc73d7bce62462cd3e514e997a14dcfa9eba2795c348927ce59a0c25f08078b"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen3-5-27b.json.gz",
+      "bytes": 33593,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen3-5-27b.json.gz",
+      "sha256": "0f54c91ae2f67bb59783c9d75b12a8cb40dc9fc5262d54e655abe4bdc47d0ce9"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen3-8b.json.gz",
+      "bytes": 176604,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen3-8b.json.gz",
+      "sha256": "45d0aede3824d7970bfeff0da03cbb2d76a4f9ca81052e280be1be60dc63eed4"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen3-omni-30b.json.gz",
+      "bytes": 60171,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen3-omni-30b.json.gz",
+      "sha256": "942b79a3755a990c2bc32f40d9c050c2f54a13811e2760dad296813b38a56bc9"
+    },
+    {
+      "archived": "twentysecond/matrix/models/qwen3-vl-235b.json.gz",
+      "bytes": 37521,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/qwen3-vl-235b.json.gz",
+      "sha256": "cf1eaf909636d647f083f051c4c0b5a9e85a1b46856950d5bdb6ed5601c289d0"
+    },
+    {
+      "archived": "twentysecond/matrix/models/sana-1600m-1024px-diffusers.json.gz",
+      "bytes": 28179,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/sana-1600m-1024px-diffusers.json.gz",
+      "sha256": "efba4a8695370011dc360e11c6e7981e71913d68bf2960a49cef9af1ed7580a3"
+    },
+    {
+      "archived": "twentysecond/matrix/models/stable-diffusion-3-5-large.json.gz",
+      "bytes": 47875,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/stable-diffusion-3-5-large.json.gz",
+      "sha256": "be0f216ffcadf98be279d9f34e44383a782f4da5773e191512660787bf04b6b5"
+    },
+    {
+      "archived": "twentysecond/matrix/models/stable-diffusion-xl-base-1-0.json.gz",
+      "bytes": 832402,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/stable-diffusion-xl-base-1-0.json.gz",
+      "sha256": "1dd2680d701f13ff05b4e4484ce6e99ea3245f01b59ff08c4a972fdad6ac9d39"
+    },
+    {
+      "archived": "twentysecond/matrix/models/stablelm-2-1-6b.json.gz",
+      "bytes": 137182,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/stablelm-2-1-6b.json.gz",
+      "sha256": "39ee4d7380d706564c1a7005fd99c2d38408abaac651f895149dc0bb84ef2aea"
+    },
+    {
+      "archived": "twentysecond/matrix/models/wan2-2-t2v-a14b-diffusers.json.gz",
+      "bytes": 30182,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/models/wan2-2-t2v-a14b-diffusers.json.gz",
+      "sha256": "eab8729baf0d6de885509d7f1b2dfc6ba9e723bf697b0cff8936196a65ca597f"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/auraflow-v0-3.json.gz",
+      "bytes": 2908,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/auraflow-v0-3.json.gz",
+      "sha256": "7b3913a52a4a982c32c3474bf4573ebad3b27f24f2e9e540e24ede25a3a61727"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/bloom.json.gz",
+      "bytes": 12248,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/bloom.json.gz",
+      "sha256": "890bf4a2aaf45d9730f5c0f3934ef999ed52fce9ac94fbc2ed136722ff96a053"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/cogvideox-5b.json.gz",
+      "bytes": 3326,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/cogvideox-5b.json.gz",
+      "sha256": "df0e5a8976d71f7d1dc4cb268fea6327c4fb4635d174464342bc2662ac4a2770"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/command-a-03-2025.json.gz",
+      "bytes": 11473,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/command-a-03-2025.json.gz",
+      "sha256": "df7a09848ef870eda0e557b275009b71502f3819dcc0777470d39c510adf553a"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/dbrx-base.json.gz",
+      "bytes": 2916,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/dbrx-base.json.gz",
+      "sha256": "854a62a1d0872a5b6e5454c5badc921d73d21b430285217bdca28e512ea71172"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/deepseek-coder-v2-lite.json.gz",
+      "bytes": 9105,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/deepseek-coder-v2-lite.json.gz",
+      "sha256": "9eaaa3c01f7d5520edb98933379e2ec00bb0f2c330ab05cf06a84f196e518cb1"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/deepseek-v3.json.gz",
+      "bytes": 20448,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/deepseek-v3.json.gz",
+      "sha256": "610c78cbfb00def06c5597c2784f6fc02a3e6627bcf84b04ad9dd1d25eaa4c58"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/deepseek-v4-flash.json.gz",
+      "bytes": 34960,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/deepseek-v4-flash.json.gz",
+      "sha256": "8bb275e8a50305dc41ebcce45f4ea5f05af3d16091fbaaed14ab743549c64896"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/flux-2-dev.json.gz",
+      "bytes": 3067,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/flux-2-dev.json.gz",
+      "sha256": "1e91389bc141518f69980786dd5de0e99c2457cf6a4751f6a8715b3ec398fe42"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/fluxtransformer2dmodel.json.gz",
+      "bytes": 3550,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/fluxtransformer2dmodel.json.gz",
+      "sha256": "2b18569c851b27d3cf2c56e3ffddaf06a7f67ebfbd99d1acd15abc6e76f3d02a"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/gemma-2-2b-it.json.gz",
+      "bytes": 8935,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/gemma-2-2b-it.json.gz",
+      "sha256": "8a6647292fb944578bc911e3f435d166c113633ca349a20b3a9ef038a9556dd7"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/gemma-3n-e2b.json.gz",
+      "bytes": 17084,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/gemma-3n-e2b.json.gz",
+      "sha256": "12c7302971c4546dea4d4481a72d520e842c6ce3849d2210044b57269b58f057"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/glm-4-5.json.gz",
+      "bytes": 26494,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/glm-4-5.json.gz",
+      "sha256": "3df3b8abaf7404691f66f7b1178627ab28a4e3350a8f040ab0eca5f6128f0049"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/gpt-oss-20b.json.gz",
+      "bytes": 10534,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/gpt-oss-20b.json.gz",
+      "sha256": "18aaf4b5d1472db6bce122e66ec283826a078d00458f42e17dbd0bc852c4bf64"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/granite-3-0-8b-instruct.json.gz",
+      "bytes": 10175,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/granite-3-0-8b-instruct.json.gz",
+      "sha256": "201af3d6cef8dda32fd47c72f5e4654fcf08eeddb435450a79d484d170f22828"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/hunyuanvideo.json.gz",
+      "bytes": 3867,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/hunyuanvideo.json.gz",
+      "sha256": "0db31600cbee64e49cbb33f2e3c784594ffe37bcf8d7138400cd389bb242a0e7"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/jamba-v0-1.json.gz",
+      "bytes": 11386,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/jamba-v0-1.json.gz",
+      "sha256": "c6ddb93bd49f895b6827af06ad881a284aa659aeb9cd56d19051df6c56410308"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/lfm2-1-2b.json.gz",
+      "bytes": 5767,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/lfm2-1-2b.json.gz",
+      "sha256": "a53722d27d07e9768afef66a6bc26a43557923f132c6dc286bdac01e7d934b16"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/llama-7b.json.gz",
+      "bytes": 8584,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/llama-7b.json.gz",
+      "sha256": "03185d866c843c336f9cc0c77291c2e5628277afecd0db538940f192350c28c4"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/ltx-video.json.gz",
+      "bytes": 3760,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/ltx-video.json.gz",
+      "sha256": "30cfda4252f86d51deb3f08d74214dbf351969058037f0637a27eca42a93b999"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/lumina-image-2-0.json.gz",
+      "bytes": 3484,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/lumina-image-2-0.json.gz",
+      "sha256": "3b0890e4f675ee13a7733c23e005f71d09330bc8e29b2c031b6b79c7eddfbdbe"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/mochi-1-preview.json.gz",
+      "bytes": 3593,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/mochi-1-preview.json.gz",
+      "sha256": "cd55f3ab471b118b0cd77050d518bd84a6149138f2096e3b085c0aef0212548e"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/musicgen-small.json.gz",
+      "bytes": 3069,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/musicgen-small.json.gz",
+      "sha256": "99c0f2f23736a50843bc37c9347383b45afa9949ffc5f3ab9f0b8d70debd168f"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/nemotron-h-8b.json.gz",
+      "bytes": 8955,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/nemotron-h-8b.json.gz",
+      "sha256": "a127e7adedfe0c77159660cfa5c5f1990a59bbb6bdfd2a83c096561197e3f593"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/olmo-2-1124-7b.json.gz",
+      "bytes": 9428,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/olmo-2-1124-7b.json.gz",
+      "sha256": "ce23da99fceb66c9af7c6bf9a9eeb846190cd62ac1e4cfb419de0bfde899648f"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/pixart-sigma-xl-2-1024-ms.json.gz",
+      "bytes": 751,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/pixart-sigma-xl-2-1024-ms.json.gz",
+      "sha256": "ee206d9651fa8a3e367aaa39a2aa2061af84262199c568970ad81c84f4ee0f07"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/prxpixel-t2i.json.gz",
+      "bytes": 10150,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/prxpixel-t2i.json.gz",
+      "sha256": "fe26340c719e7101ceb462242ddc9095be0de0bfa9229c12d0d810f9c4ac56b7"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen-image.json.gz",
+      "bytes": 3612,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen-image.json.gz",
+      "sha256": "f770d6112a9ae0e3f6ff4dc6766b48f2248731f523e41bb5add842df504df494"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen2-vl-7b-instruct.json.gz",
+      "bytes": 8590,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen2-vl-7b-instruct.json.gz",
+      "sha256": "cf87f84f0f4f73b3000c2dd7611311c6ca0ca61ac544a2cbefe05458fc50737e"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen3-5-27b-text.json.gz",
+      "bytes": 37746,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen3-5-27b-text.json.gz",
+      "sha256": "a6d9378e6f99e7e4589f1b4339af5f8baf0b9b662f4cc6e4ea23545f9d89b377"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen3-5-27b.json.gz",
+      "bytes": 38415,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen3-5-27b.json.gz",
+      "sha256": "6bc80e871e92ab085e125944bb41e26f77560988e5b20ac8dcec477068246130"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen3-8b.json.gz",
+      "bytes": 10170,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen3-8b.json.gz",
+      "sha256": "420d3b0341b7e1c0bad0ba92eaa0394617a63cf66dc5f58b8c45083217317294"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen3-omni-30b.json.gz",
+      "bytes": 745,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen3-omni-30b.json.gz",
+      "sha256": "c9600633af739db82eda77faf9143301eae4cc8c056e01bf9a60e948cf3887a1"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/qwen3-vl-235b.json.gz",
+      "bytes": 26035,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/qwen3-vl-235b.json.gz",
+      "sha256": "6cf2bc63da90ededcf332216bbd3107b5ad0416355fa0080e184921895409058"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/sana-1600m-1024px-diffusers.json.gz",
+      "bytes": 3728,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/sana-1600m-1024px-diffusers.json.gz",
+      "sha256": "3a228c057097e18cbdf5f4abee283a87a507d66d136e0d5792ca69feb72c0fd1"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/stable-diffusion-3-5-large.json.gz",
+      "bytes": 3162,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/stable-diffusion-3-5-large.json.gz",
+      "sha256": "edb52aef8c62dd29c71c302f7b109551f497e9174bd40a855d1f378162c72644"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/stable-diffusion-xl-base-1-0.json.gz",
+      "bytes": 3737,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/stable-diffusion-xl-base-1-0.json.gz",
+      "sha256": "f6301d9ba3c785ceb770929f0dd2941cb7aa36c0fb40c673859ddb2b980c4f45"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/stablelm-2-1-6b.json.gz",
+      "bytes": 7442,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/stablelm-2-1-6b.json.gz",
+      "sha256": "ac02978e083e82cd119c6d8d343b4bb87d10f6e6861751269a6824b0ac35e61d"
+    },
+    {
+      "archived": "twentysecond/matrix/observations/wan2-2-t2v-a14b-diffusers.json.gz",
+      "bytes": 3315,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/observations/wan2-2-t2v-a14b-diffusers.json.gz",
+      "sha256": "cdca4c3186e614f21029b4bdd7fee8e8c6b20ffd377e0fae604837e4e7f98040"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/auraflow-v0-3.json.gz",
+      "bytes": 212,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/auraflow-v0-3.json.gz",
+      "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/bloom.json.gz",
+      "bytes": 6891,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/bloom.json.gz",
+      "sha256": "987f4afbd9edd9f85db6498e136c8ebc971ac80616a8a12a3c8a2046883132ad"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/cogvideox-5b.json.gz",
+      "bytes": 215,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/cogvideox-5b.json.gz",
+      "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/command-a-03-2025.json.gz",
+      "bytes": 6598,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/command-a-03-2025.json.gz",
+      "sha256": "dbd36c31bd4f70f0c9ce1d21221d3d29376d1ddd07edcd02d9fda9fcac17af71"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/dbrx-base.json.gz",
+      "bytes": 236,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/dbrx-base.json.gz",
+      "sha256": "4efe6fdfb473b4eccd213e31625548f18a8f57d847fd7d3e159f476625e33888"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/deepseek-coder-v2-lite.json.gz",
+      "bytes": 5273,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/deepseek-coder-v2-lite.json.gz",
+      "sha256": "9bd57442381b9cf44e690fb30441a34a7f06b1b13a753cfbd02045d57b7add7f"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/deepseek-v3.json.gz",
+      "bytes": 6486,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/deepseek-v3.json.gz",
+      "sha256": "100ea9bd421c6b67330c29733b575c541d43db4c1ce66104ced0d0ce39331dba"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/deepseek-v4-flash.json.gz",
+      "bytes": 7101,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/deepseek-v4-flash.json.gz",
+      "sha256": "89879129859d0e8f3aa78273f9bc550d2f6f3b2a300744e070cb69ca33264b66"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/flux-2-dev.json.gz",
+      "bytes": 212,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/flux-2-dev.json.gz",
+      "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/fluxtransformer2dmodel.json.gz",
+      "bytes": 235,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/fluxtransformer2dmodel.json.gz",
+      "sha256": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/gemma-2-2b-it.json.gz",
+      "bytes": 5271,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/gemma-2-2b-it.json.gz",
+      "sha256": "b2953bec36d556647c748084524d3f436268141980571895c396b3eb2b5e4e56"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/gemma-3n-e2b.json.gz",
+      "bytes": 14952,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/gemma-3n-e2b.json.gz",
+      "sha256": "9e71df60965ff0d923f9d8173e8722c25366c26b863e9546069781abefe014c7"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/glm-4-5.json.gz",
+      "bytes": 8193,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/glm-4-5.json.gz",
+      "sha256": "8b12a6a0e9f9b2247e5f290a470200cf8bb4a3dd961b0f25c2c8d4157c585c83"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/gpt-oss-20b.json.gz",
+      "bytes": 5291,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/gpt-oss-20b.json.gz",
+      "sha256": "b885d0c4b645bfe90f82f39bfd665f922955c0f9e500419a79c95298087cabfb"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/granite-3-0-8b-instruct.json.gz",
+      "bytes": 5813,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/granite-3-0-8b-instruct.json.gz",
+      "sha256": "dac025ffca6621cf33ed447e9192e81fdc4018afb8cb0d8e6f99282dd0b970f0"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/hunyuanvideo.json.gz",
+      "bytes": 212,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/hunyuanvideo.json.gz",
+      "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/jamba-v0-1.json.gz",
+      "bytes": 5646,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/jamba-v0-1.json.gz",
+      "sha256": "66958d0b969bc2458e72034e35e9f7f273845bbc8c57913ada97a924a9fc462c"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/lfm2-1-2b.json.gz",
+      "bytes": 4114,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/lfm2-1-2b.json.gz",
+      "sha256": "9eb5cbbc417cbbfa7b34823441375a050a1f233f84d24f3e81953cd0423b86df"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/llama-7b.json.gz",
+      "bytes": 5513,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/llama-7b.json.gz",
+      "sha256": "ef4305dc4ad66bacbe99e62d5e8bdca6a9fa0602c58fe58770c2b1c2f89060b9"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/ltx-video.json.gz",
+      "bytes": 358,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/ltx-video.json.gz",
+      "sha256": "b3b76bb6f250d4b1d926708cc36dc33e6091d2e3ea4058f9e7c5485795b03608"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/lumina-image-2-0.json.gz",
+      "bytes": 215,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/lumina-image-2-0.json.gz",
+      "sha256": "744d6fc9f0a0dce13732045dcb5c18cbeae1d855467fd58fb1bec2304de145a8"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/mochi-1-preview.json.gz",
+      "bytes": 215,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/mochi-1-preview.json.gz",
+      "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/musicgen-small.json.gz",
+      "bytes": 231,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/musicgen-small.json.gz",
+      "sha256": "3b425d3b65fe33d1977951d63ff0d8c88b16659a5710cb152f33ffa94b391b3c"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/nemotron-h-8b.json.gz",
+      "bytes": 6154,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/nemotron-h-8b.json.gz",
+      "sha256": "a248dce9e74cd73e5a304242388f8d67ad6395d0d642263fda19cece546eca2d"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/olmo-2-1124-7b.json.gz",
+      "bytes": 5491,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/olmo-2-1124-7b.json.gz",
+      "sha256": "267207a25d3959f16ab26dec08d8add1491c7f3e60ceeeb4890a4f57480a6b3e"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/pixart-sigma-xl-2-1024-ms.json.gz",
+      "bytes": 204,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/pixart-sigma-xl-2-1024-ms.json.gz",
+      "sha256": "a93689857654acff60b823d1debdba84d4e32b6c76fe7109a05d5d28bd07e94e"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/prxpixel-t2i.json.gz",
+      "bytes": 19794,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/prxpixel-t2i.json.gz",
+      "sha256": "1da5cd8ca4ef10ba1575c293da5cfbb1c625f4ce5daf8b4b9693658f34cc3c61"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen-image.json.gz",
+      "bytes": 235,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen-image.json.gz",
+      "sha256": "97645e8d7f8aaa8fbf75517222ec0c17847850310e55c0b4919b46452094a15e"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen2-vl-7b-instruct.json.gz",
+      "bytes": 5951,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen2-vl-7b-instruct.json.gz",
+      "sha256": "a849f66fb5182495d18ea29f6d69ea10063c984f057ba775e54380ac49e31e80"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen3-5-27b-text.json.gz",
+      "bytes": 6820,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen3-5-27b-text.json.gz",
+      "sha256": "282741e11f64a0f60b9656205da67c2950883370f8facfc696721256c9e2ea29"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen3-5-27b.json.gz",
+      "bytes": 7247,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen3-5-27b.json.gz",
+      "sha256": "22691471af6b86340bf2c9a02da4f89f53f9f505596a88545bef4a0578c3f1e2"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen3-8b.json.gz",
+      "bytes": 5625,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen3-8b.json.gz",
+      "sha256": "5210a06ac100df79e3189c0c1bf4dda4f8f6988f8e83fe2a119f0a0a54f5fe7f"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen3-omni-30b.json.gz",
+      "bytes": 204,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen3-omni-30b.json.gz",
+      "sha256": "a93689857654acff60b823d1debdba84d4e32b6c76fe7109a05d5d28bd07e94e"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/qwen3-vl-235b.json.gz",
+      "bytes": 8911,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/qwen3-vl-235b.json.gz",
+      "sha256": "0fb1ac3383ef8aae589b43bf2fb2438fd98528c32c241a623566d6bf377ccecc"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/sana-1600m-1024px-diffusers.json.gz",
+      "bytes": 231,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/sana-1600m-1024px-diffusers.json.gz",
+      "sha256": "41d6aa25d3020b487f478b790a68a906b75402da901855cf1a8955378e8864c4"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/stable-diffusion-3-5-large.json.gz",
+      "bytes": 212,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/stable-diffusion-3-5-large.json.gz",
+      "sha256": "dfd7fe2db4183ca0caf3eab37c6552a2202b92ec166a1139b4d304f809824aed"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/stable-diffusion-xl-base-1-0.json.gz",
+      "bytes": 210,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/stable-diffusion-xl-base-1-0.json.gz",
+      "sha256": "09daad03a0e4e00a63754ab0b89fcd6939ab90dc463bb64458111495efbcb79f"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/stablelm-2-1-6b.json.gz",
+      "bytes": 5370,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/stablelm-2-1-6b.json.gz",
+      "sha256": "93a5d91d6f70f735188d45ff395daa0c556f58cbf7d10b06a8afca6e48dbccff"
+    },
+    {
+      "archived": "twentysecond/matrix/relations/wan2-2-t2v-a14b-diffusers.json.gz",
+      "bytes": 215,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/relations/wan2-2-t2v-a14b-diffusers.json.gz",
+      "sha256": "9c81619ab1bdcac78c94186f26a7d228c9fda135e9ed6a8341c5748d84cddb7f"
+    },
+    {
+      "archived": "twentysecond/matrix/targets.json",
+      "bytes": 6720,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix/targets.json",
+      "sha256": "3e84fb0a83061d664ab05483a64c8225031b8461ea11dba2a317a01fbec82805"
+    },
+    {
+      "archived": "twentysecond/matrix-delta-inventory.json",
+      "bytes": 2240951,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix-delta-inventory.json",
+      "sha256": "797ac9a621785c8884c55b211c67d80348bd5f5e11536223cfaa776dbb53b9f3"
+    },
+    {
+      "archived": "twentysecond/matrix-lane/result.json",
+      "bytes": 534,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix-lane/result.json",
+      "sha256": "ee7074e1a02d8fd26a63441352320253e82e10bf4a1a80b0e3a63dd1e23a6629"
+    },
+    {
+      "archived": "twentysecond/matrix-lane/s7-matrix-candidate.log",
+      "bytes": 2220,
+      "original": "/private/tmp/unfold-s9a-twentysecond/matrix-lane/s7-matrix-candidate.log",
+      "sha256": "bfbd270a01d32d5377a1796009a02b71e4e507eebd9a6afbb4805e339c3c87c6"
+    },
+    {
+      "archived": "twentysecond/qualification/result.json",
+      "bytes": 540,
+      "original": "/private/tmp/unfold-s9a-twentysecond/qualification/result.json",
+      "sha256": "d39ff29c1dec3de68c9e8e54e2ebcaf29f39a39ae23b52aaedcc9382ab2e9b30"
+    },
+    {
+      "archived": "twentysecond/qualification/schema-proof-metadata.log",
+      "bytes": 421,
+      "original": "/private/tmp/unfold-s9a-twentysecond/qualification/schema-proof-metadata.log",
+      "sha256": "09556e888cd770e797e1dd322bd2446c89404172026d866c33b7dac68f280901"
+    },
+    {
+      "archived": "twentysecond/run-broader.py",
+      "bytes": 2773,
+      "original": "/private/tmp/unfold-s9a-twentysecond/run-broader.py",
+      "sha256": "752429bd308dc84748dac10a33a1f9db38508ef9b2d4a9adb5a488dcf381b7b1"
+    },
+    {
+      "archived": "twentysecond/run-census.py",
+      "bytes": 997,
+      "original": "/private/tmp/unfold-s9a-twentysecond/run-census.py",
+      "sha256": "01c6ced258f1fde364c92f51897b1944f3f93df9cc6c24c38f9077ace643f8c7"
+    },
+    {
+      "archived": "twentysecond/run-matrix.py",
+      "bytes": 1014,
+      "original": "/private/tmp/unfold-s9a-twentysecond/run-matrix.py",
+      "sha256": "653d94100f13ec7d4aeefad7439f3b04af6b7784b144dd8b07cc32bf91fe2f71"
+    },
+    {
+      "archived": "twentysecond/run-sparse.py",
+      "bytes": 1625,
+      "original": "/private/tmp/unfold-s9a-twentysecond/run-sparse.py",
+      "sha256": "29f124e352f12a916965cceb2e79101cddb90e4c7c4db26375e8e97ec47f2637"
+    },
+    {
+      "archived": "twentysecond/run.py",
+      "bytes": 1350,
+      "original": "/private/tmp/unfold-s9a-twentysecond/run.py",
+      "sha256": "3a93d5580adfb47579b505e214861982bd1a745b38a359a51701e32af68b819f"
+    },
+    {
+      "archived": "twentysecond/scope.json",
+      "bytes": 570,
+      "original": "/private/tmp/unfold-s9a-twentysecond/scope.json",
+      "sha256": "a80b5885d5a5cae61864ed99e845221a1486f369a466949f32613e5874ca2439"
+    },
+    {
+      "archived": "twentysecond/source-manifest.json",
+      "bytes": 17034,
+      "original": "/private/tmp/unfold-s9a-twentysecond/source-manifest.json",
+      "sha256": "ccbbd6160a99be7a8102e2a70da3a6b3f54e334398104f5e7d4950bf141ffa51"
+    },
+    {
+      "archived": "twentysecond-independent-review/generate_s7_shadow-reviewed.py",
+      "bytes": 56808,
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/generate_s7_shadow-reviewed.py",
+      "sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c"
+    },
+    {
+      "archived": "twentysecond-independent-review/manifest.json",
+      "bytes": 482,
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/manifest.json",
+      "sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f"
+    },
+    {
+      "archived": "twentysecond-independent-review/source/model_unfolder/evidence/claim_evidence.py",
+      "bytes": 20160,
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source/model_unfolder/evidence/claim_evidence.py",
+      "sha256": "5cda8903f32cf8084db611bf5e3f67b4522370b26c5f7ab3c6e5d47a5c9e49b8"
+    },
+    {
+      "archived": "twentysecond-independent-review/source/tests/test_s7_reconciliation.py",
+      "bytes": 58913,
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/source/tests/test_s7_reconciliation.py",
+      "sha256": "a36b888defdda5604908adb5f2dc4c946543b6d24eaab7a7cd99d4c9a67573e5"
+    },
+    {
+      "archived": "twentysecond-independent-review/verdict.json",
+      "bytes": 1836,
+      "original": "/private/tmp/unfold-s9a-independent-s7-proof-preservation-review/verdict.json",
+      "sha256": "9b9dcc49aa1796746d53e4ebc4afbe90ab5c07591949a665ff3bbdfb9ce6c669"
+    }
+  ],
+  "scope": "Released twentysecond candidate and twentysecond D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "twentysecond/changed-sources.tar.gz",
+      "archive_sha256": "1899a7b619d771a6d02f56d17131d5bd986568aa23d0021ccd69c3d5f93034be",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 116,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysecond",
+      "manifest_sha256": "ccbbd6160a99be7a8102e2a70da3a6b3f54e334398104f5e7d4950bf141ffa51",
+      "phase": "twentysecond",
+      "uncompressed_bytes": 4015885
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 7649806,
+    "copied_files": 142,
+    "source_files": 116
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

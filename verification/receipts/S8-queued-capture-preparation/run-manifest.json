@@ -1,0 +1,138 @@
+{
+  "commands_serial": [
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_diffusion.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "{PREP}/inputs/sdxl-invalid-original.json",
+        "--output",
+        "{CAMPAIGN}/sdxl-invalid-original",
+        "--expect-construction",
+        "failed"
+      ],
+      "case": "sdxl-invalid-original"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_diffusion.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "{PREP}/inputs/sdxl-corrected-shared.json",
+        "--output",
+        "{CAMPAIGN}/sdxl-corrected-shared",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "sdxl-corrected-shared"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_diffusion.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "{PREP}/inputs/svd-exact.json",
+        "--output",
+        "{CAMPAIGN}/svd-exact",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "svd-exact"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_diffusion.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "{PREP}/inputs/encoder-bridge.json",
+        "--output",
+        "{CAMPAIGN}/encoder-bridge",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "encoder-bridge"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_diffusion.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--input",
+        "{PREP}/inputs/deepfloyd-second.json",
+        "--output",
+        "{CAMPAIGN}/deepfloyd-second",
+        "--expect-construction",
+        "ok"
+      ],
+      "case": "deepfloyd-second"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_bloom.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--output",
+        "{CAMPAIGN}/bloom",
+        "--native"
+      ],
+      "case": "bloom"
+    },
+    {
+      "argv": [
+        "python3",
+        "{PREP}/scripts/capture_examples.py",
+        "--checkout",
+        "{FINAL_CHECKOUT}",
+        "--source-manifest",
+        "{CAMPAIGN}/source-manifest.json",
+        "--output",
+        "{CAMPAIGN}/examples"
+      ],
+      "case": "examples"
+    }
+  ],
+  "execution": "require_escalated outer exec; nested construction sandbox remains enabled. No pytest or other model lane overlaps. Capture each command stdout/stderr and return code to a fresh adjacent log/result file. Stop on concrete failure; preserve output.",
+  "final_commit": null,
+  "historical_unexecuted_preparation": "historical-unexecuted-v1",
+  "input_sha256": {
+    "inputs/deepfloyd-second.json": "d18fab14bf405165701be9fb0082178d7daec3a62684d2c61e123eb894c57742",
+    "inputs/encoder-bridge.json": "289bb879dc56e92df32f0f0978fe81a186c24b9dd18dd786bd3d658c52c2708c",
+    "inputs/manifest.json": "a0959126ffb89b9566791c20fa1fd4f4060bbc97bb63b1001ccf3d2c17ce4bc9",
+    "inputs/sdxl-corrected-shared.json": "a31b37f5f171046310f4166a9e455bde59df688e334637bd4e1ce1ff7be40531",
+    "inputs/sdxl-invalid-original.json": "eff4727d835c900fb2d3a8146298a76fba7ec0c8a82efdac84cddc622dddfcef",
+    "inputs/svd-exact.json": "94fb7fc5ef8274e4f17cba9513ed011dd9d618ee9f3b20436dae9791f2b1b509"
+  },
+  "no_blessing": true,
+  "outputs": "Actual input/request/inventory/source/qualified-fact archives/IR/render-input/HTML/events/checks. Bloom and examples include exact existing preservation comparator sidecars.",
+  "script_sha256": {
+    "scripts/capture_bloom.py": "7baaba22c86f5330f9dc6fc6e84a1592d9ac050235263801b8c5ab5220c4fbd9",
+    "scripts/capture_common.py": "e6c19b155ae05f503eb1623ad7cbcbb51f70fb25e5ad4c8ba54bc891920d80cd",
+    "scripts/capture_diffusion.py": "2928a4401618179618897ffd62470e2ec1c254e2b664619e50da490f7da3d5f0",
+    "scripts/capture_examples.py": "88ea817e48f7956ff2810d63ddb4edc7d104959909a58d3b9789ebf4cec864e5",
+    "scripts/prepare_inputs.py": "3a177cea5ea9d01651a222c5c3cc3f736e5bf656f7235bfe9802a9d4b06dc326"
+  },
+  "source_pin_rule": "Executor supplies immutable final checkout after current actual FFN lane. Capture model_unfolder/physics/scripts .py/.yaml/.yml hash manifest before first command; every process asserts exact before/after equality. Comparator and corpus separately pinned. Never silently replace this manifest.",
+  "status": "PREPARED_NOT_EXECUTED"
+}

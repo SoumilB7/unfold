@@ -1,0 +1,227 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/context-defaults.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/context-defaults.json",
+      "sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+      "bytes": 5
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/count-resolution-traces.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/count-resolution-traces.json",
+      "sha256": "50565706d827d1e12c378ab14965f59cba70af436fca2a0ca3c56766a1239b21",
+      "bytes": 918
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/events.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/events.json",
+      "sha256": "387b5bf4f4222a95442573efbeb8a7a9ef9c0d0a092d9ad40f0e9226d7990814",
+      "bytes": 1299
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/input.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/input.json",
+      "sha256": "de274af5fc545076d001d59ff16a88463fedd5812063b4bbddf89cad6e69320a",
+      "bytes": 1131
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/native-facts.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/native-facts.json",
+      "sha256": "af88380392d4daf629e4707b79546d532087fd0b705e4a8b46549dfaee91db9f",
+      "bytes": 32486
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/prepared-documents.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/prepared-documents.json",
+      "sha256": "dd3ed851dc7280ce032ace2272f2941d5e47f94c02f79a32cbcb5e341d9fc952",
+      "bytes": 3905
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_null/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_null/result.json",
+      "sha256": "7b9241489a1cde41da79dc2df5d7973144c2c44bc66e05cee9a4389271e29573",
+      "bytes": 389
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/context-defaults.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/context-defaults.json",
+      "sha256": "72b9fe52c02a407e4e6ce1d7442995ae2d7bea6cbfb9f04e74f7605728fb6baf",
+      "bytes": 6874
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/count-resolution-traces.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/count-resolution-traces.json",
+      "sha256": "7aaa70dd1f58404354f876a41342e4b76e10e3b3f85a13a5acddda56805575fa",
+      "bytes": 912
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/events.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/events.json",
+      "sha256": "b3a64bafc1de4a3cf89ce17c4ab74b9bde75d3cc285f432b00e6fb6424f093e6",
+      "bytes": 1283
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/input.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/input.json",
+      "sha256": "f63e0653059c1fcf2f0391be4518ed4a6236b6794b8ff93d5e75ff8fc5a3ade6",
+      "bytes": 1128
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/native-facts.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/native-facts.json",
+      "sha256": "40f65b8e114443f6579496fc2450b1486a468028ceff4ff3710698cedbff21b9",
+      "bytes": 32486
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/prepared-documents.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/prepared-documents.json",
+      "sha256": "5152419ee64a5a1e6b9f00444d0683c66be2afddf9b793dba68935ed50422de9",
+      "bytes": 11565
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/explicit_zero/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/explicit_zero/result.json",
+      "sha256": "24254f98f79c051fec9360e32f33758ed79dc2363cb162c24af0dd8b131925b1",
+      "bytes": 389
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/context-defaults.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/context-defaults.json",
+      "sha256": "c5fb975e1f6d8aed6291760316eedece954347ca0b79a57fa45c4e703fcedcc5",
+      "bytes": 6910
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/count-resolution-traces.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/count-resolution-traces.json",
+      "sha256": "75a152d1ba07a77f85bce6d16ada165c216baa13692fa3f780954c4238dbe123",
+      "bytes": 856
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/events.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/events.json",
+      "sha256": "33a22de0046cf7c03d51f375d08e8699fe3b62aff2bd6b1de26142d566a0f29c",
+      "bytes": 3547
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/input.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/input.json",
+      "sha256": "ac2e047db81f59146003e8e4682bca0447357bb714d8743aff31e4b4f294b990",
+      "bytes": 1100
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/ir.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/ir.json",
+      "sha256": "f217f46a443d9e51a6c2c8896a8ef982f69eb6dc0bfb489dd4805380a97e4af8",
+      "bytes": 893042
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/native-facts.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/native-facts.json",
+      "sha256": "9d00cdc71f2ec8ed4421a5f45ebbd82bfb67679102a094946ac46158bb2d1dde",
+      "bytes": 39594
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/page.html",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/page.html",
+      "sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a",
+      "bytes": 109420
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/prepared-documents.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/prepared-documents.json",
+      "sha256": "d2ab9db44bd0ebcbb646161daac03fcc9db704e4c9581091302e5d2d218f54c1",
+      "bytes": 11515
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/missing_decoder_count/result.json",
+      "sha256": "a7ed6eb5e72df53b541230976c1316c8cd7e1f1c22699f399b4345492d144697",
+      "bytes": 92
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/context-defaults.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/context-defaults.json",
+      "sha256": "3427330d840fb0dbac83af9958ebc8e4380e8b119955b51226ad128764130a53",
+      "bytes": 6875
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "sha256": "310f50fe76132f84ec7ea75487fc4e212647dca41e88492297661f997365b9e2",
+      "bytes": 914
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/events.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/events.json",
+      "sha256": "60922da91eeee1bdc29804ba550297db04731c8e38b6840003093b288ace9bad",
+      "bytes": 4080
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/input.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/input.json",
+      "sha256": "c3df161181ad2b4b42ca1d0fd86a077382c34ddbebbf2e285ef6b4ee8fc08c92",
+      "bytes": 1129
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/ir.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/ir.json",
+      "sha256": "8fe66054802056edc5dac79a357515d7c40a437bc840a6313db3a02d2031f4c7",
+      "bytes": 800347
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/native-facts.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/native-facts.json",
+      "sha256": "5fa20e9950a62558544ba48ec82d8c71f2cccb355a517d3a60909708c62956e4",
+      "bytes": 39602
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/page.html",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/page.html",
+      "sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f",
+      "bytes": 108794
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "sha256": "1cc2f351bc652fefc2bb4c3e14e6f88fb3406c5c28a2b9e811d857727707a38c",
+      "bytes": 11567
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/ordinary/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/ordinary/result.json",
+      "sha256": "7f6ff1b73aabfd288b04dcfc4d65ce665483bec007cd6fa72af61376e6dfd7de",
+      "bytes": 79
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/capture/result.json",
+      "sha256": "83d08b01817b5873712351422010b690af2b88039d3aa7a031c72e3d5a9aca1d",
+      "bytes": 1194
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/layer-default-diagnostic.log",
+      "archive": "thirtysixth/layer-default-diagnostic/layer-default-diagnostic.log",
+      "sha256": "8d897c43e648945054f261be8f30e98128d376dd27c8d544587df9ef1d94ac5f",
+      "bytes": 1215
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/result.json",
+      "archive": "thirtysixth/layer-default-diagnostic/result.json",
+      "sha256": "aadcb4826cef943e4778b924b0a381d48fc2d7a88d3d76f6d910d9437c7e707d",
+      "bytes": 557
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic.py",
+      "archive": "thirtysixth/layer-default-diagnostic/layer-default-diagnostic.py",
+      "sha256": "683797f63e77fc6c3edac096c57c5ae6e9f0ae8d94e0468a5f414a40e2d6e2de",
+      "bytes": 3684
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/run-layer-default-diagnostic.py",
+      "archive": "thirtysixth/layer-default-diagnostic/run-layer-default-diagnostic.py",
+      "sha256": "e147392337ea464a8a77d64cae1c548d1981a6e0092a7a76dba75bdafd678061",
+      "bytes": 1085
+    }
+  ],
+  "authority": "Exact saved root diagnostic bytes; no regeneration or approval."
+}

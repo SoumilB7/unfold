@@ -1,0 +1,25 @@
+{
+  "checkpoint": "36935453403ed792272f90cc84eda37972bb1165",
+  "verdict": "ACCEPT within bounded source-authority and prior-finding correction scope; not S8 completion",
+  "tracked_fingerprint_before": "c5bdcec5339ab33ace89a4d9a3b29a060ab14fd30db0a6bdcdaf4fac2734f96b",
+  "tracked_fingerprint_after": "c5bdcec5339ab33ace89a4d9a3b29a060ab14fd30db0a6bdcdaf4fac2734f96b",
+  "clean_checkout": true,
+  "commands_exit_codes": {
+    "replay_primary.py": 0,
+    "replay_routes.py": 0,
+    "replay_report.py": 0,
+    "report_controls.py": 0,
+    "replay_bindings.py": 0,
+    "replay_container.py": 0,
+    "replay_root_source.py": 0
+  },
+  "primary_and_report_result_assertions": "PASS",
+  "r5_unchanged_paths": [
+    "model_unfolder/evidence/unet_claims.py",
+    "model_unfolder/evidence/runtime_source.py",
+    "model_unfolder/evidence/unet_cell_connections.py",
+    "physics/framework_primitives.py"
+  ],
+  "pytest_run": false,
+  "model_run": false
+}

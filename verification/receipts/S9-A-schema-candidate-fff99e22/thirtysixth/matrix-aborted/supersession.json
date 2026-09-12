@@ -1,0 +1,25 @@
+{
+  "intentional_supersession": true,
+  "reason": "Final source gains independently reviewed typed-chip CSS; complete matrix must be generated at final37 source. Preserve36 partial outputs; no completed36 verdict.",
+  "generator_pid": 18554,
+  "generator_command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
+    "/private/tmp/unfold-s9a-thirtysixth/generate-matrix.py"
+  ],
+  "descendants": [
+    {
+      "pid": 26017,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
+        "-m",
+        "physics.relation_observation",
+        "--worker",
+        "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s7-relation-0ggoa2u8/request.json",
+        "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s7-relation-0ggoa2u8/recipe.json",
+        "model.layers",
+        "/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s7-relation-0ggoa2u8/result.json"
+      ]
+    }
+  ],
+  "time_unix": 1789220150.427795
+}

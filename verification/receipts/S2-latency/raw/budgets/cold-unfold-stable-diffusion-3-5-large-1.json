@@ -1,0 +1,29 @@
+{
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+  "ir_sha256": "e08885616f462bfef4267cf34c3e6239c65c535b923cfe2786497b04050b203b",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.3424524581059813,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.9030610420741141,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.2789696669206023,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    5.48876953125,
+    4.99072265625,
+    4.154296875
+  ],
+  "mode": "cold-unfold",
+  "name": "stable-diffusion-3-5-large",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 3.9425469590350986
+}

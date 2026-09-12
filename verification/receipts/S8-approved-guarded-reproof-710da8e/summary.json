@@ -1,0 +1,320 @@
+{
+  "status": "PASS",
+  "scope": "19 actual mandatory offline reproductions from guarded staged bless; no live baseline changes during this phase",
+  "actual_offline_reproductions": 19,
+  "all_pin_checks_pass": true,
+  "source_files_unchanged_during_packaging": true,
+  "excluded_active_phase": "expected-generation directory/log and changing stage outputs",
+  "execution_input_pins": {
+    "execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/approval-overlay.json": "773bf421a0df9c8541b9e44b5255ab177a5f93f826bac6d483f28ab13f7146fb",
+    "execution-inputs/verification/receipts/S8-approved-baseline-preparation-710da8e/bless_one.py": "ac7cd7b4117203bfaf02b176c00eadb8a551e7f028a918414b67139ae645d211",
+    "execution-inputs/verification/receipts/S8-approved-gallery-preparation-710da8e/input-manifest.json": "4d827363a5b06b83ef03057b236a3a13e64d233c525d39954bf5258653d4ebf5",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/bloom.json": "cadbca93101f5c18b4fe8cc00624d37b449a6a6af371314b8271dae72c9928e6",
+    "execution-inputs/verification/receipts/S8-final-lanes-fb1f871/selected-external-inputs.json": "4e1152bc601fedf22bf75c5948f4a9559c15a86033804063bee293b2195f5fbe",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/dbrx-base.json": "77c7cbeb42f250bcaa2a24dabc588c4c5cfac093c14ad0d4367c14235e875a87",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/deepseek-v3.json": "4f918f6735ab4a0f5eaf19eb0748398409836861bace098065b949563ccd799f",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/flux-2-dev.json": "9a723b885ef856ebaa313b130c9cb889944b5e21036e5bfa684c2d38ae7e4b17",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gemma-2-2b-it.json": "87f9097c39cfa7ca064ad5cd972b734e1c1543446c0423b8e62dc75d724f2801",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/glm-4-5.json": "538106b6fa07717cc682223dc1689ca1ba73453a4e739483d9ce8466fcaf31d1",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/gpt-oss-20b.json": "f6b199d7055c20c4e8a7c18e9b8433d439c18213e4283166e717c70c38778f54",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/granite-3-0-8b-instruct.json": "fb95e9b300b6df0833e54dade0617402bb6771f2d216d86d4112f3bb3b5375be",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/hunyuanvideo.json": "2c24005d6e79852bffa0bcb08267691bbf90db76c94a869f9b8669214171d43a",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/llama-7b.json": "8f8703f4607cd534a942864894d9903aa6dadedf8f6929c1f561c4177a44ca9b",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/lumina-image-2-0.json": "8069028e73d61ae28bea4bef90fa33d20f0d4707b3d599237f0a7e0d003a30b4",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/musicgen-small.json": "769f73bef574535bedd3f48a365f15354361492cff5a68bff337d7c64ca16f5d",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/olmo-2-1124-7b.json": "826478b629b59af7021933964ba7b825d9a9b0e96a879bb03bb157c4460d11ec",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/prxpixel-t2i.json": "cdaac1dc0e3eea8c269c057888d770c58563f994c81a67a558b171dfdd71ad4d",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-5-27b-text.json": "8d82411245e5f70b221d1bfb18df3cf824a60517a794bb3891db780fded510c9",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/qwen3-8b.json": "5ff927a894c93957ae63d43e7a256dd4c4afff739eeb02afa2338fbf04dc35e9",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/sana-1600m-1024px-diffusers.json": "89080212ec7ba997948356a3df3d03c745b7d273086efe201ce06d1d33965384",
+    "execution-inputs/verification/receipts/S8-approved-sdxl-independent-710da8e/verdict.json": "f526f8756ccc99de1a0f6c11eab11ab49211b3c8d15ec7d3d643abc674a2db66",
+    "execution-inputs/verification/receipts/S8-approved-geometry-owner/verdicts/stablelm-2-1-6b.json": "499fd6174afb6b15845ae3b9ac60d2d81e346c5b8d0702dae03e134dbe8e5554"
+  },
+  "models": [
+    {
+      "slug": "bloom",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 22.454,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "6c61e9f02ef6027909778977c13a643fe4409500dc9f25c4f55e5c869bfa20ed",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "dbrx-base",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.481,
+      "gallery_pngs": 6,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "431b5de7e2324cfbae037490b1f6aea2f49c8d5fa8024dc96e7ae620ecea6198",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "deepseek-v3",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.905,
+      "gallery_pngs": 11,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "4b7a3198ced614bce864bf66b5fe20391c675fa42789b4b87803fc4ec932938a",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "flux-2-dev",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 31.409,
+      "gallery_pngs": 16,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "2e9e8c1b0d770b1f116b700583a3ca02bc2f1c5555902c65452e5d2e3639eee1",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.523,
+      "gallery_pngs": 6,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "2d58811274c013c4bc3a55b90e90ca28d82c4c597fd3c638c6c9f068b30bbe17",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "glm-4-5",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.858,
+      "gallery_pngs": 9,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "6970cafc9df862f5e02d5561613c1584c33e9a4930b6ef63693e21dafece02ae",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 22.606,
+      "gallery_pngs": 8,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "d9bb7c661cdbbaedc95570c6ca6a3839bcad0116cf61f306ad4225544b48051b",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.538,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "8bb0932ed17ef75a74d3de47524f0dbcc958662afbf326035b64876e6e6e7cc2",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "hunyuanvideo",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 28.253,
+      "gallery_pngs": 20,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "5d25d67278ca5aee96ce737a40cdf714a10edd680aba1641868d0dabd1f2493b",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "llama-7b",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 23.945,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "cb7a5ed6b1a16b8294fee81ad3cecba5ce95eac32762449b6e98b16b636cd05b",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 29.764,
+      "gallery_pngs": 16,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "b1fbe046c8de7d18a87ae11644eb46de868fc9e0b0c3f0684a852b79b9f85913",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "musicgen-small",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 27.99,
+      "gallery_pngs": 8,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "4696ddfebd65307df87acf601bfca6d5547c03b7e7ccda95c6d7142e55c3073c",
+      "log_sha256": "b11fdf54306527106b2e3a47c624afb57ba33a2cb45f7c0680dc3036f571e885"
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 27.683,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "fb9d220f8cfe977decf4197e1c0ec53926088441a9c7ea67a2116106b2724480",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 30.054,
+      "gallery_pngs": 9,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "d62a430347fe66fedb75f2a4e1acf8f7fd01cd066a2b444815f449d5dcb0c33f",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 30.208,
+      "gallery_pngs": 6,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "409704e8e4546a1795c23b1f3e8ba784d7b38a28be0bd518127d8b27c3d90d71",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "qwen3-8b",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 30.589,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "a33cf28c53d2c8047490fbf4351849d2b1fcf75e05f3a23537a2f2dc09a6b770",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 34.551,
+      "gallery_pngs": 12,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "587cfebd0d016d2ed8c7a169ba813bf73da6cc9d5e802d39f496286f77f55856",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 259.216,
+      "gallery_pngs": 143,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "fe91306c2c4ba30c4dd553091ee145b9a2bd4ab89102e8636a8d9cf7731a47d9",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "status": "GUARDED_STAGED_BLESS_PASS",
+      "actual_offline_reproductions": 1,
+      "elapsed_seconds": 21.741,
+      "gallery_pngs": 4,
+      "live_baseline_mutated": false,
+      "pin_checks": {
+        "external_equal": true,
+        "inputs_equal": true,
+        "source_equal": true
+      },
+      "result_sha256": "947348808fe36ffa55186d2c66a69e8c4aef771200c45019d302b39ae5394346",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

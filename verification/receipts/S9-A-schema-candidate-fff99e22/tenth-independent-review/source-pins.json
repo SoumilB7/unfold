@@ -1,0 +1,42 @@
+{
+  "snapshot": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-tenth",
+  "manifest_sha256": "27d645f7825161bfc8eae47c9163f9b643e40aeca7747b561183c164b24c0515",
+  "files": {
+    "model_unfolder/evidence/activation_registry.py": {
+      "sha256": "10b2b7767ea1c7d1eeb1099c386c02045e4eeae21d0cb70aa9e4bc9750e92d2a",
+      "manifest_sha256": "10b2b7767ea1c7d1eeb1099c386c02045e4eeae21d0cb70aa9e4bc9750e92d2a"
+    },
+    "model_unfolder/evidence/activation_semantics.py": {
+      "sha256": "f16de418337671f1a80b72a917af73237b70038c64a30fe9b786f06020602fd1",
+      "manifest_sha256": null
+    },
+    "model_unfolder/evidence/ffn_mechanism.py": {
+      "sha256": "0fce12757a98becc51f089b7d09a9c8d23eb25c905eb76cd2981ec9a62d78f98",
+      "manifest_sha256": "0fce12757a98becc51f089b7d09a9c8d23eb25c905eb76cd2981ec9a62d78f98"
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "sha256": "a414c0cc42c5831d56223341e08aba927be90569b64f9b66067db2abde4c7258",
+      "manifest_sha256": "a414c0cc42c5831d56223341e08aba927be90569b64f9b66067db2abde4c7258"
+    },
+    "model_unfolder/evidence/attention.py": {
+      "sha256": "579a6c04b508c6c88bd7b66344ff73a1a542d1ea217d9e904958995570d766e4",
+      "manifest_sha256": "579a6c04b508c6c88bd7b66344ff73a1a542d1ea217d9e904958995570d766e4"
+    },
+    "model_unfolder/evidence/program_index.py": {
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+      "manifest_sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    "tests/test_reader_claims.py": {
+      "sha256": "7ceaeb6fa096fb4fe787617bebbae0535ef3fefc798a45b7c501c1a8f675b885",
+      "manifest_sha256": "7ceaeb6fa096fb4fe787617bebbae0535ef3fefc798a45b7c501c1a8f675b885"
+    },
+    "model_unfolder/adapters/transformer/parser.py": {
+      "sha256": "9e35ed1815d223b4e059413d1470ebcb4a1a67eb996c327128723636c2e3d00b",
+      "manifest_sha256": "9e35ed1815d223b4e059413d1470ebcb4a1a67eb996c327128723636c2e3d00b"
+    }
+  },
+  "separately_accepted_p1_unchanged": {
+    "model_unfolder/evidence/position_fixed.py": "8360cbe7d9ab1c574ed5c0a57fa5f3302bdb0662579364b9f45e68a1967697bc",
+    "tests/test_s9_input_position_claims.py": "6315b23d2e440e045342c6dcb46d22dc5adc6fd1fe48b1b8f4fd86f84e5fdbee"
+  }
+}

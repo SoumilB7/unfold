@@ -1,0 +1,15 @@
+{
+  "decision": "ACCEPT_LOSSLESS_ARCHIVE",
+  "map_sha256": "5ef6dde9e4471ca843dbecfe147c13f43296dbc123b81ea82ef85003ac0dae70",
+  "streams": 348,
+  "decoded_bytes": 102042912,
+  "all_stream_sizes_hashes_and_paths_verified": true,
+  "source_paths_equal_count": 348,
+  "source_paths_absent": [],
+  "source_paths_changed_since_archive": [],
+  "elapsed_seconds": 1.7355187498033047,
+  "limits": [
+    "Current mutable source differences are reported separately; archive remains bound to recorded historical bytes",
+    "No renderer, model, tests, or browser executed"
+  ]
+}

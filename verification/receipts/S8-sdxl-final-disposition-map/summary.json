@@ -1,0 +1,11 @@
+{
+  "rows": 2004,
+  "original_rows_preserved": true,
+  "dispositions": {
+    "accepted_visible_config_accounting_limit": 772,
+    "accepted_bounded_aggregate_preservation": 28,
+    "evidence_mapped_pending_final_owner_disposition": 1202,
+    "accepted_bounded_integrity": 2
+  },
+  "blessed": false
+}

@@ -1,0 +1,20 @@
+{
+  "checkpoint": "9fe08684f53feafed01735d328586ca369905772",
+  "clean_checkout": true,
+  "reviewed_sha256": {
+    "model_unfolder/evidence/local_port_routes.py": "ad7b0be5b8d6145835315813479dd1b66f33b0ccc4184f02e7546b16c8e7a307",
+    "model_unfolder/evidence/unet_primary_ports.py": "38c008ecda1d82b44e1ca4478b4de8cde143f9e94ed17739c7982acf6d38c265",
+    "model_unfolder/evidence/registry.py": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+    "model_unfolder/evidence/reconciliation.py": "0a9c925498801b713fbe287e9b9a4689393f58efd2ddea57e787ed5b25555d68",
+    "model_unfolder/adapters/diffusor/unet_projection.py": "129e45cff869a044146eb8aafc7fb440840de3ecfcf6cb3712078de84a8576bd",
+    "model_unfolder/renderers/html/block_views/unet.py": "d40f62a55770153b28fb44d4224008bf135fd28b8cd5f2bd0de30346d213204d"
+  },
+  "exit_codes": {
+    "replay_qualification.py": 0,
+    "replay_ifexp.py": 0,
+    "replay_operator.py": 0
+  },
+  "verdict": "RETURN conditional-expression branch-local write; registration/qualification/archive/operator controls PASS",
+  "pytest_run": false,
+  "model_run": false
+}

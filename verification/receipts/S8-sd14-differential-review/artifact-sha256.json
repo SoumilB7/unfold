@@ -1,0 +1,11 @@
+{
+  "summary.json": "b8f75162223cf6ed286d70f073c1cf292ee745c940a01dfda0ae8a35b8c3a45f",
+  "claim-preservation-and-demotions.json": "9975a20f057e959cffdf0a0a466341efff90bb34e912e2dcc54537929cba627c",
+  "claim_mapping.py": "64a2acdbe0e9cd8ac351da6f94d80fcbdaee595c1938f5b46b9b317a21d6d6b0",
+  "per-output-review.json.gz": "7a419db1676939ac444098bc7204930af4482196eb877b72fa65ebf37082d88d",
+  "README.md": "30203505ddd09a914a02202fac238a9af6789383e059b1c13fa414194c0c6c36",
+  "replay.py": "b378e6f7a54e361af61a5b26abcf5b7ee46bb508d7e6058db62087cf0f9af462",
+  "svg-inventory.json": "90b4c6ff06eb733220733d1fa788aceb1dd0ab2460a74e70b433515078b31ad3",
+  "removal_provenance.py": "0e5dcb3a45fa9b05deb1e88426d974d5957fdc1b555e0de334df21e1e2895e2b",
+  "named-removals.json": "1bfc1cfc87b5339e0e413a009a6d7dc75495f6ee306aba9dc659d5775d54d100"
+}

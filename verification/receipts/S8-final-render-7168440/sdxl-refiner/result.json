@@ -1,0 +1,29 @@
+{
+  "base_case": "/private/tmp/unfold-s8-context-phase-5227e9c/sdxl-refiner",
+  "blessed": false,
+  "canonical_facts_unchanged": true,
+  "case": "sdxl-refiner",
+  "checkout": "/private/tmp/unfold-s8-final-verification-7168440",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "commit": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "elapsed_seconds": 17.967,
+  "event_deltas": "event-deltas.json",
+  "fact_case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-refiner/ordinary",
+  "historical_model_source_run_preserved": true,
+  "html_sha256": "f34f5e5f253cda344ac7e39ee33f35ab3b102cb5dab63b790fdfe0487834ac7a",
+  "ir_deltas": "ir-deltas.json",
+  "no_model_or_execution": true,
+  "prior_html_sha256": "69c51a29bc62027cda19d8912d3f5543a50cfd766e7e24ce312d0472816996b2",
+  "quantities_exact": true,
+  "status": "PASS",
+  "summary_proof_dir": "/private/tmp/unfold-s8-summary-proofs-7168440-resume/sdxl-refiner",
+  "svg_deltas": []
+}

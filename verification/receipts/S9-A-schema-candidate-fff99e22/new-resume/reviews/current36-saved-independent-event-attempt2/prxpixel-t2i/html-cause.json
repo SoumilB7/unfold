@@ -1,0 +1,19 @@
+{
+  "after_bytes": 119832,
+  "after_sha256": "fc014445ac24579453795b158f060b443235be394e71ba1f55988b2b566f28f0",
+  "before_bytes": 119832,
+  "before_sha256": "0ade1332291087929124db5f4f55c09ee9d01791c11ef1a3e7f1b793d8145d3a",
+  "exact_new_mount_occurrences": 228,
+  "exact_old_mount_occurrences": 228,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-5270d6431f",
+  "mount_identity_before": "uf-a2be6516f4",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 9,
+  "raw_ordered_svg_count_before": 9,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "prxpixel-t2i",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

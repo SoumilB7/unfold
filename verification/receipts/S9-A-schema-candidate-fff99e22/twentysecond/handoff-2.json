@@ -1,0 +1,8 @@
+{
+  "status": "SOURCE_ONLY_RUNTIME_PENDING",
+  "path": "tests/test_diffusion_config_binding.py",
+  "before_sha256": "8f428160221a38f0ea9efde9f4303c5cb4fb639f1ad443aaed6a8a060d9c080e",
+  "sha256": "115e657bb196db5829e2366b6524c4033b2dc2b578e80d6be8a70dcc85640ce8",
+  "raw_failure_log": "/private/tmp/unfold-s9a-twentyfirst/qualification/schema-proof-metadata.log",
+  "changes": "Three missing-evidence controls now explicitly lack a proved literal default; every original refusal assertion retained. Added actual registered kernel default class_default/absent occurrence positive; depth and mixed-head positives already passed in new module."
+}

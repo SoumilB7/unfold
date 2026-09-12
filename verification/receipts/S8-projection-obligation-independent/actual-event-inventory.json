@@ -1,0 +1,370 @@
+{
+  "artifact": "verification/receipts/S8-final-render-7168440/sdxl-ordinary/render-events.json.gz",
+  "rows": [
+    {
+      "events": 4,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__0__downsamplers__0"
+        ],
+        "component": "root",
+        "drawn_ops": [],
+        "facts_projected": [
+          "root.denoiser.spatial_mechanisms"
+        ],
+        "node_ids": [
+          "instance_down_blocks__0__downsamplers__0"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "Downsample2D",
+        "variant": "",
+        "view": "card_fact_lines"
+      },
+      "leaf": "spatial_mechanisms",
+      "owner": "root.denoiser",
+      "views": [
+        "card_fact_lines"
+      ]
+    },
+    {
+      "events": 375,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__0__resnets__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "activation",
+          "conv",
+          "norm"
+        ],
+        "facts_projected": [
+          "root.denoiser.cell_arithmetic",
+          "root.denoiser.cell_connections",
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.runtime_primitives"
+        ],
+        "node_ids": [
+          "instance_down_blocks__0__resnets__0__call_0",
+          "instance_down_blocks__0__resnets__0__call_1",
+          "instance_down_blocks__0__resnets__0__call_6"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "ResnetBlock2D",
+        "variant": "",
+        "view": "runtime_cell_connections"
+      },
+      "leaf": "cell_arithmetic",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_cell_conditioning",
+        "runtime_cell_connections",
+        "runtime_cell_return",
+        "runtime_port_route"
+      ]
+    },
+    {
+      "events": 60,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "port",
+          "source"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.context_connections"
+        ],
+        "node_ids": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2__context_argument",
+          "unet_context_0"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "Attention",
+        "variant": "",
+        "view": "runtime_context_connection"
+      },
+      "leaf": "context_connections",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_context_connection"
+      ]
+    },
+    {
+      "events": 74,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__0__resnets__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "activation",
+          "conv",
+          "norm"
+        ],
+        "facts_projected": [
+          "root.denoiser.cell_arithmetic",
+          "root.denoiser.cell_connections",
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.runtime_primitives"
+        ],
+        "node_ids": [
+          "instance_down_blocks__0__resnets__0__call_0",
+          "instance_down_blocks__0__resnets__0__call_1",
+          "instance_down_blocks__0__resnets__0__call_6"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "ResnetBlock2D",
+        "variant": "",
+        "view": "runtime_cell_connections"
+      },
+      "leaf": "cell_connections",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_cell_conditioning",
+        "runtime_cell_connections",
+        "runtime_cell_return"
+      ]
+    },
+    {
+      "events": 74,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__0__resnets__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "activation",
+          "conv",
+          "norm"
+        ],
+        "facts_projected": [
+          "root.denoiser.cell_arithmetic",
+          "root.denoiser.cell_connections",
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.runtime_primitives"
+        ],
+        "node_ids": [
+          "instance_down_blocks__0__resnets__0__call_0",
+          "instance_down_blocks__0__resnets__0__call_1",
+          "instance_down_blocks__0__resnets__0__call_6"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "ResnetBlock2D",
+        "variant": "",
+        "view": "runtime_cell_connections"
+      },
+      "leaf": "runtime_primitives",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_cell_conditioning",
+        "runtime_cell_connections",
+        "runtime_cell_return"
+      ]
+    },
+    {
+      "events": 18,
+      "example_event": {
+        "block_path": [
+          "instance_up_blocks__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "concat",
+          "opaque"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.constructed_stage_relations",
+          "root.denoiser.primary_state_ports",
+          "root.denoiser.stage_join_connections"
+        ],
+        "node_ids": [
+          "instance_up_blocks__0__join_0",
+          "instance_up_blocks__0__join_0_operand_0",
+          "instance_up_blocks__0__join_0_operand_1",
+          "instance_up_blocks__0__resnets"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "CrossAttnUpBlock2D",
+        "variant": "",
+        "view": "runtime_stage_connections"
+      },
+      "leaf": "stage_join_connections",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_port_route",
+        "runtime_stage_connections"
+      ]
+    },
+    {
+      "events": 70,
+      "example_event": {
+        "block_path": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff"
+        ],
+        "component": "root",
+        "drawn_ops": [],
+        "facts_projected": [
+          "root.denoiser.ffn_mechanisms"
+        ],
+        "node_ids": [
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation",
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+          "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "FeedForward",
+        "variant": "",
+        "view": "runtime_ffn_fact"
+      },
+      "leaf": "ffn_mechanisms",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_ffn_fact"
+      ]
+    },
+    {
+      "events": 2003,
+      "example_event": {
+        "block_path": [
+          "instance_up_blocks__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "concat",
+          "opaque"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.constructed_stage_relations",
+          "root.denoiser.primary_state_ports",
+          "root.denoiser.stage_join_connections"
+        ],
+        "node_ids": [
+          "instance_up_blocks__0__join_0",
+          "instance_up_blocks__0__join_0_operand_0",
+          "instance_up_blocks__0__join_0_operand_1",
+          "instance_up_blocks__0__resnets"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "CrossAttnUpBlock2D",
+        "variant": "",
+        "view": "runtime_stage_connections"
+      },
+      "leaf": "primary_state_ports",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_port_route",
+        "runtime_stage_connections"
+      ]
+    },
+    {
+      "events": 3,
+      "example_event": {
+        "block_path": [
+          "instance_up_blocks__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "concat",
+          "opaque"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.constructed_stage_relations",
+          "root.denoiser.primary_state_ports",
+          "root.denoiser.stage_join_connections"
+        ],
+        "node_ids": [
+          "instance_up_blocks__0__join_0",
+          "instance_up_blocks__0__join_0_operand_0",
+          "instance_up_blocks__0__join_0_operand_1",
+          "instance_up_blocks__0__resnets"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "CrossAttnUpBlock2D",
+        "variant": "",
+        "view": "runtime_stage_connections"
+      },
+      "leaf": "constructed_stage_relations",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_stage_connections"
+      ]
+    },
+    {
+      "events": 139,
+      "example_event": {
+        "block_path": [
+          "instance_up_blocks__0"
+        ],
+        "component": "root",
+        "drawn_ops": [
+          "concat",
+          "opaque"
+        ],
+        "facts_projected": [
+          "root.denoiser.constructed_modules",
+          "root.denoiser.constructed_parameter_shapes",
+          "root.denoiser.constructed_stage_relations",
+          "root.denoiser.primary_state_ports",
+          "root.denoiser.stage_join_connections"
+        ],
+        "node_ids": [
+          "instance_up_blocks__0__join_0",
+          "instance_up_blocks__0__join_0_operand_0",
+          "instance_up_blocks__0__join_0_operand_1",
+          "instance_up_blocks__0__resnets"
+        ],
+        "receipts": [],
+        "source_file": "",
+        "source_line": null,
+        "source_owner": "CrossAttnUpBlock2D",
+        "variant": "",
+        "view": "runtime_stage_connections"
+      },
+      "leaf": "constructed_modules",
+      "owner": "root.denoiser",
+      "views": [
+        "runtime_cell_conditioning",
+        "runtime_cell_connections",
+        "runtime_cell_return",
+        "runtime_context_connection",
+        "runtime_port_route",
+        "runtime_stage_connections"
+      ]
+    }
+  ],
+  "sha256": "10f22226d993f9b38c4760e1aa7bf757177f19cf59221e48de83afcb4f95500c"
+}

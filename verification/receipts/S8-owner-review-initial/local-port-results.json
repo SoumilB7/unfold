@@ -1,0 +1,93 @@
+{
+  "checkout_head": "349c02d2fcc41139ed770a1fe72233da4d5f6250",
+  "results": {
+    "carried_local": {
+      "route": {
+        "formal": "seed",
+        "kind": "formal"
+      },
+      "source": "class Cell:\n def forward(self, seed, items):\n  state = seed\n  for item in items:\n   consume(state)\n   state = update(item)\n"
+    },
+    "guarded_assignment_control": {
+      "route": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "formal": "seed",
+              "kind": "formal"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "result_slot": []
+      },
+      "source": "class Cell:\n def forward(self, seed, flag):\n  state = seed\n  if flag:\n   state = replace(seed)\n   return consume(state)\n  return state\n"
+    },
+    "loop_target_overwrites_formal": {
+      "route": {
+        "formal": "state",
+        "kind": "formal"
+      },
+      "source": "class Cell:\n def forward(self, state, items):\n  for state in items:\n   consume(state)\n"
+    },
+    "opaque_call_control": {
+      "route": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "formal": "seed",
+              "kind": "formal"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "result_slot": []
+      },
+      "source": "class Cell:\n def forward(self, seed):\n  result = helper(seed)\n  consume(result)\n"
+    },
+    "ordinary_alias_control": {
+      "route": {
+        "formal": "seed",
+        "kind": "formal"
+      },
+      "source": "class Cell:\n def forward(self, seed):\n  state = seed\n  consume(state)\n"
+    },
+    "starred_unpack": {
+      "route": {
+        "arguments": [
+          {
+            "port": "0",
+            "route": {
+              "formal": "seed",
+              "kind": "formal"
+            }
+          }
+        ],
+        "kind": "call_result",
+        "mechanism": "unresolved",
+        "reason": "call argument and result wiring proven; internal computation not established",
+        "result_slot": [
+          2
+        ]
+      },
+      "source": "class Cell:\n def forward(self, seed):\n  first, *middle, last = helper(seed)\n  consume(last)\n"
+    },
+    "with_target_overwrites_formal": {
+      "route": {
+        "formal": "seed",
+        "kind": "formal"
+      },
+      "source": "class Cell:\n def forward(self, seed):\n  with manager() as seed:\n   consume(seed)\n"
+    }
+  },
+  "reviewed_source": "model_unfolder/evidence/local_port_routes.py",
+  "scope": "working reader source identified by hash; not an immutable whole-tree verdict",
+  "source_sha256_after": "d901282e6abebf9494406e3e99871fb5f7718d8e94a949445fd02c7528965943",
+  "source_sha256_before": "d901282e6abebf9494406e3e99871fb5f7718d8e94a949445fd02c7528965943"
+}

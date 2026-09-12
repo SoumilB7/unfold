@@ -1,0 +1,16 @@
+{
+  "scope": "Fix two newly introduced raw scalar consume calls via existing typed decisions. No raw-consume debt threshold increase. Existing wrapper fallback stays on its original frozen legacy site. Consumption event fields remain exact, including the legacy empty tie mechanism.",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "3af5ad5b56d7b53ba9acac6f97217b556abc4d64fafde62ecbc76e485a166502",
+      "sha256": "c3377e0a603b49c1a5baad0c676f316512b764c4701af9ab851db237b4c167a3"
+    }
+  ],
+  "required_runtime": [
+    "tests/test_u2_r2_raw_consume_debt.py",
+    "tests/test_s9_limited_document.py",
+    "tests/test_config_access.py",
+    "ordinary/sparse scalar event parity"
+  ]
+}

@@ -1,0 +1,1 @@
+Independent36 saved-data audit prepared before capture. Immediate reference is executed34;35 never ran a fleet. Same finite schema/native/HTML checks; differences enumerated without normalization, equality assumption or blessing. No model/test/browser imports. Matrix32 remains historical.

@@ -1,0 +1,1870 @@
+{
+  "actual": {
+    "body_closures": [
+      {
+        "closed": true,
+        "method": "UNet2DConditionModel.forward"
+      },
+      {
+        "closed": true,
+        "method": "UNet2DConditionModel.process_encoder_hidden_states"
+      },
+      {
+        "closed": true,
+        "method": "UNet2DConditionModel.get_aug_embed"
+      },
+      {
+        "closed": true,
+        "method": "UNet2DConditionModel.get_class_embed"
+      },
+      {
+        "closed": true,
+        "method": "UNet2DConditionModel.get_time_embed"
+      }
+    ],
+    "iteration_calls": [
+      {
+        "container": "down_blocks",
+        "kind": "unresolved",
+        "loop_line": 1051,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "up_blocks",
+        "kind": "unresolved",
+        "loop_line": 1051,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "down_blocks",
+        "kind": "iteration",
+        "loop_line": 1138,
+        "parent_stable": true,
+        "reason": "",
+        "slots": [
+          {
+            "index": 0,
+            "kind": "constructed",
+            "name": "0",
+            "occurrence_path": "down_blocks.0"
+          },
+          {
+            "index": 1,
+            "kind": "constructed",
+            "name": "1",
+            "occurrence_path": "down_blocks.1"
+          },
+          {
+            "index": 2,
+            "kind": "constructed",
+            "name": "2",
+            "occurrence_path": "down_blocks.2"
+          }
+        ],
+        "targets": [
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1145,
+            "path": "down_blocks.0",
+            "slot_index": 0
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1145,
+            "path": "down_blocks.1",
+            "slot_index": 1
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1145,
+            "path": "down_blocks.2",
+            "slot_index": 2
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1155,
+            "path": "down_blocks.0",
+            "slot_index": 0
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1155,
+            "path": "down_blocks.1",
+            "slot_index": 1
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1155,
+            "path": "down_blocks.2",
+            "slot_index": 2
+          }
+        ]
+      },
+      {
+        "container": "up_blocks",
+        "kind": "unresolved",
+        "loop_line": 1138,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "down_blocks",
+        "kind": "unresolved",
+        "loop_line": 1164,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "up_blocks",
+        "kind": "unresolved",
+        "loop_line": 1164,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "down_blocks",
+        "kind": "unresolved",
+        "loop_line": 1198,
+        "parent_stable": true,
+        "reason": "iterable_or_target_is_outside_direct_modulelist_alphabet",
+        "slots": [],
+        "targets": []
+      },
+      {
+        "container": "up_blocks",
+        "kind": "iteration",
+        "loop_line": 1198,
+        "parent_stable": true,
+        "reason": "",
+        "slots": [
+          {
+            "index": 0,
+            "kind": "constructed",
+            "name": "0",
+            "occurrence_path": "up_blocks.0"
+          },
+          {
+            "index": 1,
+            "kind": "constructed",
+            "name": "1",
+            "occurrence_path": "up_blocks.1"
+          },
+          {
+            "index": 2,
+            "kind": "constructed",
+            "name": "2",
+            "occurrence_path": "up_blocks.2"
+          }
+        ],
+        "targets": [
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1210,
+            "path": "up_blocks.0",
+            "slot_index": 0
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1210,
+            "path": "up_blocks.1",
+            "slot_index": 1
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "if"
+            ],
+            "line": 1210,
+            "path": "up_blocks.2",
+            "slot_index": 2
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1221,
+            "path": "up_blocks.0",
+            "slot_index": 0
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1221,
+            "path": "up_blocks.1",
+            "slot_index": 1
+          },
+          {
+            "guard_kinds": [
+              "for",
+              "else"
+            ],
+            "line": 1221,
+            "path": "up_blocks.2",
+            "slot_index": 2
+          }
+        ]
+      }
+    ],
+    "stability_computations": [
+      {
+        "line": 1083,
+        "member": "get_time_embed",
+        "result": true
+      },
+      {
+        "line": 1084,
+        "member": "time_embedding",
+        "result": true
+      },
+      {
+        "line": 1086,
+        "member": "get_class_embed",
+        "result": true
+      },
+      {
+        "line": 1093,
+        "member": "get_aug_embed",
+        "result": true
+      },
+      {
+        "line": 1105,
+        "member": "process_encoder_hidden_states",
+        "result": true
+      },
+      {
+        "line": 1110,
+        "member": "conv_in",
+        "result": true
+      },
+      {
+        "line": 1175,
+        "member": "mid_block",
+        "result": true
+      },
+      {
+        "line": 1184,
+        "member": "mid_block",
+        "result": true
+      },
+      {
+        "line": 1230,
+        "member": "conv_norm_out",
+        "result": true
+      },
+      {
+        "line": 1231,
+        "member": "conv_act",
+        "result": true
+      },
+      {
+        "line": 1232,
+        "member": "conv_out",
+        "result": true
+      },
+      {
+        "line": 1055,
+        "member": "down_blocks",
+        "result": true
+      },
+      {
+        "line": 1055,
+        "member": "up_blocks",
+        "result": true
+      },
+      {
+        "line": 1159,
+        "member": "down_blocks",
+        "result": true
+      },
+      {
+        "line": 1159,
+        "member": "up_blocks",
+        "result": true
+      },
+      {
+        "line": 1168,
+        "member": "down_blocks",
+        "result": true
+      },
+      {
+        "line": 1168,
+        "member": "up_blocks",
+        "result": true
+      },
+      {
+        "line": 1226,
+        "member": "down_blocks",
+        "result": true
+      },
+      {
+        "line": 1226,
+        "member": "up_blocks",
+        "result": true
+      },
+      {
+        "line": 897,
+        "member": "add_embedding",
+        "result": true
+      },
+      {
+        "line": 907,
+        "member": "add_embedding",
+        "result": true
+      },
+      {
+        "line": 920,
+        "member": "add_time_proj",
+        "result": true
+      },
+      {
+        "line": 924,
+        "member": "add_embedding",
+        "result": true
+      },
+      {
+        "line": 932,
+        "member": "add_embedding",
+        "result": true
+      },
+      {
+        "line": 941,
+        "member": "add_embedding",
+        "result": true
+      },
+      {
+        "line": 883,
+        "member": "time_proj",
+        "result": true
+      },
+      {
+        "line": 869,
+        "member": "time_proj",
+        "result": true
+      }
+    ],
+    "targets": [
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [],
+        "line": 1084,
+        "targets": [
+          "time_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [],
+        "line": 1110,
+        "targets": [
+          "conv_in"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if",
+          "if"
+        ],
+        "line": 1175,
+        "targets": [
+          "mid_block"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if",
+          "else"
+        ],
+        "line": 1184,
+        "targets": [
+          "mid_block"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if"
+        ],
+        "line": 1230,
+        "targets": [
+          "conv_norm_out"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if"
+        ],
+        "line": 1231,
+        "targets": [
+          "conv_act"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [],
+        "line": 1232,
+        "targets": [
+          "conv_out"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "kind": "per_iteration",
+            "loop_source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1138:8:1159:49",
+            "reason": "This call selects the recorded slot on that iteration; guard choices are unresolved",
+            "slots": [
+              {
+                "index": 0,
+                "kind": "constructed",
+                "path": "down_blocks.0"
+              },
+              {
+                "index": 1,
+                "kind": "constructed",
+                "path": "down_blocks.1"
+              },
+              {
+                "index": 2,
+                "kind": "constructed",
+                "path": "down_blocks.2"
+              }
+            ]
+          }
+        ],
+        "guard_kinds": [
+          "for",
+          "if"
+        ],
+        "line": 1145,
+        "targets": [
+          "down_blocks.0",
+          "down_blocks.1",
+          "down_blocks.2"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "kind": "per_iteration",
+            "loop_source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1138:8:1159:49",
+            "reason": "This call selects the recorded slot on that iteration; guard choices are unresolved",
+            "slots": [
+              {
+                "index": 0,
+                "kind": "constructed",
+                "path": "down_blocks.0"
+              },
+              {
+                "index": 1,
+                "kind": "constructed",
+                "path": "down_blocks.1"
+              },
+              {
+                "index": 2,
+                "kind": "constructed",
+                "path": "down_blocks.2"
+              }
+            ]
+          }
+        ],
+        "guard_kinds": [
+          "for",
+          "else"
+        ],
+        "line": 1155,
+        "targets": [
+          "down_blocks.0",
+          "down_blocks.1",
+          "down_blocks.2"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "kind": "per_iteration",
+            "loop_source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1198:8:1226:17",
+            "reason": "This call selects the recorded slot on that iteration; guard choices are unresolved",
+            "slots": [
+              {
+                "index": 0,
+                "kind": "constructed",
+                "path": "up_blocks.0"
+              },
+              {
+                "index": 1,
+                "kind": "constructed",
+                "path": "up_blocks.1"
+              },
+              {
+                "index": 2,
+                "kind": "constructed",
+                "path": "up_blocks.2"
+              }
+            ]
+          }
+        ],
+        "guard_kinds": [
+          "for",
+          "if"
+        ],
+        "line": 1210,
+        "targets": [
+          "up_blocks.0",
+          "up_blocks.1",
+          "up_blocks.2"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "kind": "per_iteration",
+            "loop_source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1198:8:1226:17",
+            "reason": "This call selects the recorded slot on that iteration; guard choices are unresolved",
+            "slots": [
+              {
+                "index": 0,
+                "kind": "constructed",
+                "path": "up_blocks.0"
+              },
+              {
+                "index": 1,
+                "kind": "constructed",
+                "path": "up_blocks.1"
+              },
+              {
+                "index": 2,
+                "kind": "constructed",
+                "path": "up_blocks.2"
+              }
+            ]
+          }
+        ],
+        "guard_kinds": [
+          "for",
+          "else"
+        ],
+        "line": 1221,
+        "targets": [
+          "up_blocks.0",
+          "up_blocks.1",
+          "up_blocks.2"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if"
+        ],
+        "line": 897,
+        "targets": [
+          "add_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "else",
+          "if"
+        ],
+        "line": 907,
+        "targets": [
+          "add_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "else",
+          "else",
+          "if"
+        ],
+        "line": 920,
+        "targets": [
+          "add_time_proj"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "else",
+          "else",
+          "if"
+        ],
+        "line": 924,
+        "targets": [
+          "add_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "else",
+          "else",
+          "else",
+          "if"
+        ],
+        "line": 932,
+        "targets": [
+          "add_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "else",
+          "else",
+          "else",
+          "else",
+          "if"
+        ],
+        "line": 941,
+        "targets": [
+          "add_embedding"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [
+          "if",
+          "if"
+        ],
+        "line": 883,
+        "targets": [
+          "time_proj"
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+          },
+          {
+            "branch": false,
+            "predicate": "USE_PEFT_BACKEND",
+            "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+            "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "branch": false,
+            "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "branch": false,
+            "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+            "reason": "Optional root call has no closed target/effects; its source body is excluded",
+            "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          },
+          {
+            "excluded_guard_path": [
+              {
+                "kind": "if",
+                "predicate": "is_in_config and not is_attribute",
+                "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+              }
+            ],
+            "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+          }
+        ],
+        "guard_kinds": [],
+        "line": 869,
+        "targets": [
+          "time_proj"
+        ]
+      }
+    ],
+    "wrapper": "conditional_wrapper"
+  },
+  "checkout": "/private/tmp/unfold-s8-invocation-review",
+  "hashes": {
+    "model_unfolder/evidence/program_index.py": "54379ba1c4187f65654e4153f25794cee0e1a17121ab4fad819a0ef37b5b5a11",
+    "model_unfolder/evidence/unet_call_binding.py": "f6a1d4c1b179eb81de2f4315f7c885be5a03be648bf845b846d19648dc882bad",
+    "model_unfolder/evidence/unet_cell_connections.py": "2ac9cbe708cefb91091e509172d163dd65cd60a96b5cbc47c1765feefd544682",
+    "model_unfolder/evidence/unet_iteration_binding.py": "f189e12531b06fc916703fb45882510e81aa1cba6406ee7428e36252e3266412",
+    "model_unfolder/evidence/unet_lookup_closure.py": "a43f6f5403c3f3701608a65d88c173006e00f20ea46ca1e78eebe977e308d39d",
+    "model_unfolder/evidence/unet_wrapper_binding.py": "4a0e43969738928db5ff1965616acb733a362fb195a3eb4e0b1a56b8fae482eb"
+  },
+  "seven_controls": {
+    "test_boolean_guards_preserve_conditional_targets_without_hiding_effects": "PASS",
+    "test_canonical_length_needs_its_own_witness": "PASS",
+    "test_container_alias_escape_writes_and_dynamic_lookup_are_refused": "PASS",
+    "test_direct_and_enumerated_slots_are_conditional_and_keep_none": "PASS",
+    "test_empty_container_and_conditional_lookup_are_not_execution_claims": "PASS",
+    "test_local_rebinding_nested_targets_and_after_loop_calls_are_refused": "PASS",
+    "test_missing_parent_iterator_and_shadowed_enumerate_are_refused": "PASS"
+  },
+  "synthetic": {
+    "mutation": {
+      "body_closures": [
+        {
+          "closed": false,
+          "method": "Cell.forward"
+        }
+      ],
+      "iteration_calls": [],
+      "source": "import torch.nn as nn\nclass Cell(nn.Module):\n    def __init__(self):\n        super().__init__()\n        shared=nn.Identity()\n        self.stages=nn.ModuleList([shared,shared,None])\n    def helper(self):\n        self.stages=nn.ModuleList([])\n    def forward(self,sample):\n        self.helper()\n        for index,block in enumerate(self.stages):\n            if block is not None:\n                sample=block(sample)\n        return sample\n",
+      "stability_computations": [],
+      "targets": [],
+      "wrapper": "direct"
+    },
+    "ordinary_alias_none": {
+      "body_closures": [
+        {
+          "closed": true,
+          "method": "Cell.forward"
+        }
+      ],
+      "iteration_calls": [
+        {
+          "container": "stages",
+          "kind": "iteration",
+          "loop_line": 10,
+          "parent_stable": true,
+          "reason": "",
+          "slots": [
+            {
+              "index": 0,
+              "kind": "constructed",
+              "name": "0",
+              "occurrence_path": "stages.0"
+            },
+            {
+              "index": 1,
+              "kind": "constructed",
+              "name": "1",
+              "occurrence_path": "stages.1"
+            },
+            {
+              "index": 2,
+              "kind": "none",
+              "name": "2",
+              "occurrence_path": null
+            }
+          ],
+          "targets": [
+            {
+              "guard_kinds": [
+                "for",
+                "if"
+              ],
+              "line": 12,
+              "path": "stages.0",
+              "slot_index": 0
+            },
+            {
+              "guard_kinds": [
+                "for",
+                "if"
+              ],
+              "line": 12,
+              "path": "stages.1",
+              "slot_index": 1
+            }
+          ]
+        }
+      ],
+      "source": "import torch.nn as nn\nclass Cell(nn.Module):\n    def __init__(self):\n        super().__init__()\n        shared=nn.Identity()\n        self.stages=nn.ModuleList([shared,shared,None])\n    def helper(self):\n        self.stages=nn.ModuleList([])\n    def forward(self,sample):\n        for index,block in enumerate(self.stages):\n            if block is not None:\n                sample=block(sample)\n        return sample\n",
+      "stability_computations": [
+        {
+          "line": 12,
+          "member": "stages",
+          "result": true
+        }
+      ],
+      "targets": [
+        {
+          "conditions": [
+            {
+              "kind": "per_iteration",
+              "loop_source": "sha256:356617fa074ba31ec3373eae392726573cc5fa7dbc29f720ba4eb92fd639c933:10:8:12:36",
+              "reason": "This call selects the recorded slot on that iteration; guard choices are unresolved",
+              "slots": [
+                {
+                  "index": 0,
+                  "kind": "constructed",
+                  "path": "stages.0"
+                },
+                {
+                  "index": 1,
+                  "kind": "constructed",
+                  "path": "stages.1"
+                },
+                {
+                  "index": 2,
+                  "kind": "none",
+                  "path": null
+                }
+              ]
+            }
+          ],
+          "guard_kinds": [
+            "for",
+            "if"
+          ],
+          "line": 12,
+          "targets": [
+            "stages.0",
+            "stages.1"
+          ]
+        }
+      ],
+      "wrapper": "direct"
+    }
+  }
+}

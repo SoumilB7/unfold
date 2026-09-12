@@ -1,0 +1,289 @@
+{
+  "compatible_else_delegation": {
+    "actual_false_branches": {
+      "events": [
+        "delegated"
+      ],
+      "value": 7
+    },
+    "calls": [
+      {
+        "callee": "before",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 12,
+            "test": "enabled"
+          }
+        ]
+      },
+      {
+        "callee": "captured",
+        "guards": [
+          {
+            "kind": "else",
+            "span_line": 12,
+            "test": null
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "branch": false,
+        "predicate": "enabled",
+        "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+        "source": "sha256:9fd93fb519c913327809008e359f296497821f2d7d1fd81e432356cb66b5c517:12:11:12:18"
+      }
+    ],
+    "kind": "conditional_wrapper",
+    "reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        if enabled:\n            before(owner)\n        else:\n            return captured(owner, value)\n    return wrapper\n",
+    "tries": [],
+    "unsupported": []
+  },
+  "conditional_finally_positive": {
+    "actual_false_branches": {
+      "events": [
+        "delegated"
+      ],
+      "value": 7
+    },
+    "calls": [
+      {
+        "callee": "before",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 12,
+            "test": "enabled"
+          }
+        ]
+      },
+      {
+        "callee": "captured",
+        "guards": []
+      },
+      {
+        "callee": "before",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 17,
+            "test": "enabled"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "branch": false,
+        "predicate": "enabled",
+        "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+        "source": "sha256:7621809868f4813bc6bc07613920c936fa365e36187bdac531eaa09d1fa3de86:12:11:12:18"
+      },
+      {
+        "branch": false,
+        "predicate": "enabled",
+        "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+        "source": "sha256:7621809868f4813bc6bc07613920c936fa365e36187bdac531eaa09d1fa3de86:17:15:17:22"
+      }
+    ],
+    "kind": "conditional_wrapper",
+    "reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        if enabled:\n            before(owner)\n        try:\n            return captured(owner, value)\n        finally:\n            if enabled:\n                before(owner)\n    return wrapper\n",
+    "tries": [
+      {
+        "body": 15,
+        "finally": 17,
+        "handler_targets": []
+      }
+    ],
+    "unsupported": [
+      "try"
+    ]
+  },
+  "contradictory_delegation": {
+    "actual_false_branches": {
+      "events": [],
+      "value": null
+    },
+    "calls": [
+      {
+        "callee": "before",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 12,
+            "test": "enabled"
+          }
+        ]
+      },
+      {
+        "callee": "captured",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 12,
+            "test": "enabled"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "branch": false,
+        "predicate": "enabled",
+        "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+        "source": "sha256:a0dff53fadd4396189a1d4eae136851396a9ff9f251144b3d46f563159dc1fad:12:11:12:18"
+      }
+    ],
+    "kind": "conditional_wrapper",
+    "reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        if enabled:\n            before(owner)\n            return captured(owner, value)\n    return wrapper\n",
+    "tries": [],
+    "unsupported": []
+  },
+  "finally_effect": {
+    "actual_false_branches": {
+      "events": [
+        "delegated",
+        "parent_exposed"
+      ],
+      "value": 7
+    },
+    "calls": [
+      {
+        "callee": "captured",
+        "guards": []
+      },
+      {
+        "callee": "before",
+        "guards": []
+      }
+    ],
+    "conditions": [],
+    "kind": "unresolved",
+    "reason": "unconditional wrapper call can expose or mutate the parent",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            return captured(owner, value)\n        finally:\n            before(owner)\n    return wrapper\n",
+    "tries": [
+      {
+        "body": 13,
+        "finally": 15,
+        "handler_targets": []
+      }
+    ],
+    "unsupported": [
+      "try"
+    ]
+  },
+  "finally_return": {
+    "actual_false_branches": {
+      "events": [
+        "delegated"
+      ],
+      "value": 9
+    },
+    "calls": [
+      {
+        "callee": "captured",
+        "guards": []
+      }
+    ],
+    "conditions": [],
+    "kind": "unresolved",
+    "reason": "wrapper finally can replace delegation control or return",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            return captured(owner, value)\n        finally:\n            return 9\n    return wrapper\n",
+    "tries": [
+      {
+        "body": 13,
+        "finally": 15,
+        "handler_targets": []
+      }
+    ],
+    "unsupported": [
+      "try"
+    ]
+  },
+  "handler_target": {
+    "actual_false_branches": {
+      "events": [
+        "delegated"
+      ],
+      "value": 7
+    },
+    "calls": [
+      {
+        "callee": "missing",
+        "guards": []
+      },
+      {
+        "callee": "captured",
+        "guards": []
+      }
+    ],
+    "conditions": [],
+    "kind": "unresolved",
+    "reason": "invoked wrapper has unaccounted source control (try); clause boundaries and bound targets require a neutral source observation",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            missing()\n        except Exception as owner:\n            return captured(owner, value)\n    return wrapper\n",
+    "tries": [
+      {
+        "body": 13,
+        "finally": null,
+        "handler_targets": [
+          "owner"
+        ]
+      }
+    ],
+    "unsupported": [
+      "try"
+    ]
+  },
+  "hashes": {
+    "program_index.py": "54379ba1c4187f65654e4153f25794cee0e1a17121ab4fad819a0ef37b5b5a11",
+    "unet_call_binding.py": "2f7680f28a73f0e1249570e68c4e2092950ee0fe325dadbf145171324ba43448",
+    "unet_wrapper_binding.py": "f8789d6e63fbd8ca347be402cf8370788b3ddb4792d47f5baa5387bff1ce4b97"
+  },
+  "nested_else_exposure": {
+    "actual_false_branches": {
+      "events": [
+        "delegated"
+      ],
+      "value": 7
+    },
+    "calls": [
+      {
+        "callee": "before",
+        "guards": [
+          {
+            "kind": "if",
+            "span_line": 12,
+            "test": "outer"
+          },
+          {
+            "kind": "else",
+            "span_line": 13,
+            "test": null
+          }
+        ]
+      },
+      {
+        "callee": "captured",
+        "guards": []
+      }
+    ],
+    "conditions": [
+      {
+        "branch": false,
+        "predicate": "outer",
+        "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+        "source": "sha256:dd6a7315049b885fbcdaa121b185ebb4dd6adf410a13ca71e6c3d26071f8524a:12:11:12:16"
+      }
+    ],
+    "kind": "conditional_wrapper",
+    "reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved",
+    "source": "events=[]\nenabled=False\nouter=False\ndef before(owner):\n    events.append(\"parent_exposed\")\nclass Cell:\n    def forward(owner, value):\n        events.append(\"delegated\")\n        return value\ndef wrap(captured):\n    def wrapper(owner, value):\n        if outer:\n            if enabled:\n                pass\n            else:\n                before(owner)\n        return captured(owner, value)\n    return wrapper\n",
+    "tries": [],
+    "unsupported": []
+  }
+}

@@ -1,0 +1,383 @@
+{
+  "production": {
+    "added": 6543,
+    "deleted": 67,
+    "files": 45,
+    "rows": [
+      {
+        "added": 22,
+        "deleted": 1,
+        "path": "model_unfolder/adapters/diffusor/blocks.py"
+      },
+      {
+        "added": 48,
+        "deleted": 12,
+        "path": "model_unfolder/adapters/diffusor/parser.py"
+      },
+      {
+        "added": 87,
+        "deleted": 0,
+        "path": "model_unfolder/adapters/diffusor/unet_cutover.py"
+      },
+      {
+        "added": 20,
+        "deleted": 0,
+        "path": "model_unfolder/adapters/diffusor/unet_differential.py"
+      },
+      {
+        "added": 500,
+        "deleted": 0,
+        "path": "model_unfolder/adapters/diffusor/unet_projection.py"
+      },
+      {
+        "added": 2,
+        "deleted": 0,
+        "path": "model_unfolder/block_schema.py"
+      },
+      {
+        "added": 2,
+        "deleted": 0,
+        "path": "model_unfolder/diagram.py"
+      },
+      {
+        "added": 17,
+        "deleted": 1,
+        "path": "model_unfolder/evidence/claim_evidence.py"
+      },
+      {
+        "added": 45,
+        "deleted": 9,
+        "path": "model_unfolder/evidence/context.py"
+      },
+      {
+        "added": 783,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/execution_recipe.py"
+      },
+      {
+        "added": 14,
+        "deleted": 1,
+        "path": "model_unfolder/evidence/import_source.py"
+      },
+      {
+        "added": 117,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/instance_population_claim.py"
+      },
+      {
+        "added": 87,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/instance_shape_claim.py"
+      },
+      {
+        "added": 334,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/local_port_routes.py"
+      },
+      {
+        "added": 36,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/primitive_semantics.py"
+      },
+      {
+        "added": 108,
+        "deleted": 1,
+        "path": "model_unfolder/evidence/program_index.py"
+      },
+      {
+        "added": 58,
+        "deleted": 5,
+        "path": "model_unfolder/evidence/reconciliation.py"
+      },
+      {
+        "added": 146,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/registry.py"
+      },
+      {
+        "added": 60,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/runtime_inventory.py"
+      },
+      {
+        "added": 193,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/runtime_source.py"
+      },
+      {
+        "added": 250,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_call_binding.py"
+      },
+      {
+        "added": 330,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_cell_connections.py"
+      },
+      {
+        "added": 118,
+        "deleted": 1,
+        "path": "model_unfolder/evidence/unet_cell_mechanism.py"
+      },
+      {
+        "added": 541,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_claims.py"
+      },
+      {
+        "added": 199,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_iteration_binding.py"
+      },
+      {
+        "added": 466,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_lookup_closure.py"
+      },
+      {
+        "added": 133,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_nested_mechanism.py"
+      },
+      {
+        "added": 194,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_primary_ports.py"
+      },
+      {
+        "added": 100,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_runtime.py"
+      },
+      {
+        "added": 45,
+        "deleted": 9,
+        "path": "model_unfolder/evidence/unet_selected_constructor.py"
+      },
+      {
+        "added": 16,
+        "deleted": 3,
+        "path": "model_unfolder/evidence/unet_stage_cells.py"
+      },
+      {
+        "added": 133,
+        "deleted": 0,
+        "path": "model_unfolder/evidence/unet_wrapper_binding.py"
+      },
+      {
+        "added": 2,
+        "deleted": 0,
+        "path": "model_unfolder/expanded/loop.py"
+      },
+      {
+        "added": 7,
+        "deleted": 0,
+        "path": "model_unfolder/params.py"
+      },
+      {
+        "added": 12,
+        "deleted": 0,
+        "path": "model_unfolder/parser.py"
+      },
+      {
+        "added": 14,
+        "deleted": 0,
+        "path": "model_unfolder/renderers/html/block_views/registry.py"
+      },
+      {
+        "added": 384,
+        "deleted": 13,
+        "path": "model_unfolder/renderers/html/block_views/unet.py"
+      },
+      {
+        "added": 12,
+        "deleted": 1,
+        "path": "model_unfolder/renderers/html/graph.py"
+      },
+      {
+        "added": 43,
+        "deleted": 6,
+        "path": "model_unfolder/renderers/html/graph_engine.py"
+      },
+      {
+        "added": 10,
+        "deleted": 0,
+        "path": "model_unfolder/renderers/html/sections.py"
+      },
+      {
+        "added": 37,
+        "deleted": 0,
+        "path": "model_unfolder/renderers/html/views_diffusion.py"
+      },
+      {
+        "added": 596,
+        "deleted": 0,
+        "path": "physics/attribute_bindings.py"
+      },
+      {
+        "added": 42,
+        "deleted": 0,
+        "path": "physics/framework_primitives.py"
+      },
+      {
+        "added": 91,
+        "deleted": 4,
+        "path": "physics/instance_inventory.py"
+      },
+      {
+        "added": 89,
+        "deleted": 0,
+        "path": "physics/source_override.py"
+      }
+    ]
+  },
+  "scripts": {
+    "added": 1204,
+    "deleted": 622,
+    "files": 5,
+    "rows": [
+      {
+        "added": 387,
+        "deleted": 0,
+        "path": "scripts/demonstrate_s8_unet.py"
+      },
+      {
+        "added": 10,
+        "deleted": 622,
+        "path": "scripts/generate_s7_shadow.py"
+      },
+      {
+        "added": 591,
+        "deleted": 0,
+        "path": "scripts/report_s8_demonstration.py"
+      },
+      {
+        "added": 127,
+        "deleted": 0,
+        "path": "scripts/rerender_s8_demonstration.py"
+      },
+      {
+        "added": 89,
+        "deleted": 0,
+        "path": "scripts/verify_s8_unet_family.py"
+      }
+    ]
+  },
+  "tests": {
+    "added": 2635,
+    "deleted": 8,
+    "files": 22,
+    "rows": [
+      {
+        "added": 27,
+        "deleted": 0,
+        "path": "tests/test_opgraph.py"
+      },
+      {
+        "added": 20,
+        "deleted": 4,
+        "path": "tests/test_s6_physics.py"
+      },
+      {
+        "added": 8,
+        "deleted": 4,
+        "path": "tests/test_s7_artifacts.py"
+      },
+      {
+        "added": 34,
+        "deleted": 0,
+        "path": "tests/test_s7_reconciliation.py"
+      },
+      {
+        "added": 504,
+        "deleted": 0,
+        "path": "tests/test_s8_attribute_bindings.py"
+      },
+      {
+        "added": 133,
+        "deleted": 0,
+        "path": "tests/test_s8_call_port_layout.py"
+      },
+      {
+        "added": 73,
+        "deleted": 0,
+        "path": "tests/test_s8_cell_connections.py"
+      },
+      {
+        "added": 61,
+        "deleted": 0,
+        "path": "tests/test_s8_component_scope.py"
+      },
+      {
+        "added": 32,
+        "deleted": 0,
+        "path": "tests/test_s8_constructor_bindings.py"
+      },
+      {
+        "added": 37,
+        "deleted": 0,
+        "path": "tests/test_s8_framework_primitives.py"
+      },
+      {
+        "added": 134,
+        "deleted": 0,
+        "path": "tests/test_s8_iteration_binding.py"
+      },
+      {
+        "added": 283,
+        "deleted": 0,
+        "path": "tests/test_s8_lookup_closure.py"
+      },
+      {
+        "added": 230,
+        "deleted": 0,
+        "path": "tests/test_s8_port_routes.py"
+      },
+      {
+        "added": 241,
+        "deleted": 0,
+        "path": "tests/test_s8_primary_ports.py"
+      },
+      {
+        "added": 115,
+        "deleted": 0,
+        "path": "tests/test_s8_retained_source_index.py"
+      },
+      {
+        "added": 206,
+        "deleted": 0,
+        "path": "tests/test_s8_runtime_source.py"
+      },
+      {
+        "added": 114,
+        "deleted": 0,
+        "path": "tests/test_s8_source_override.py"
+      },
+      {
+        "added": 196,
+        "deleted": 0,
+        "path": "tests/test_s8_try_observation.py"
+      },
+      {
+        "added": 43,
+        "deleted": 0,
+        "path": "tests/test_s8_unet_routing.py"
+      },
+      {
+        "added": 77,
+        "deleted": 0,
+        "path": "tests/test_s8_wrapper_binding.py"
+      },
+      {
+        "added": 13,
+        "deleted": 0,
+        "path": "tests/test_unet_nested_mechanism.py"
+      },
+      {
+        "added": 54,
+        "deleted": 0,
+        "path": "tests/test_unet_stage_cells.py"
+      }
+    ]
+  }
+}

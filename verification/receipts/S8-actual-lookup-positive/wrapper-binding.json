@@ -1,0 +1,181 @@
+{
+  "conditions": [
+    {
+      "branch": false,
+      "predicate": "USE_PEFT_BACKEND",
+      "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+      "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+    },
+    {
+      "branch": false,
+      "predicate": "USE_PEFT_BACKEND",
+      "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+      "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+    }
+  ],
+  "function": {
+    "canonical_builtins": [
+      "enumerate",
+      "getattr",
+      "hasattr",
+      "len",
+      "super"
+    ],
+    "closure_names": [],
+    "closure_values": [],
+    "code_matches_source": true,
+    "code_sha256": "8bc5b16effdab35aef8fd057997529ec9ddba234feb7668f694eedfd6087c043",
+    "first_line": 980,
+    "module": "diffusers.models.unets.unet_2d_condition",
+    "qualname": "UNet2DConditionModel.forward",
+    "source_file": "unet_2d_condition.py",
+    "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  },
+  "kind": "conditional_wrapper",
+  "reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved",
+  "spans": [
+    {
+      "col": 4,
+      "end_col": 51,
+      "end_line": 1237,
+      "line": 981,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+        "component_key": "root",
+        "content_fingerprint": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 8,
+      "end_col": 57,
+      "end_line": 320,
+      "line": 293,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 12,
+      "end_col": 51,
+      "end_line": 311,
+      "line": 310,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 15,
+      "end_col": 31,
+      "end_line": 310,
+      "line": 310,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 16,
+      "end_col": 51,
+      "end_line": 311,
+      "line": 311,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 12,
+      "end_col": 57,
+      "end_line": 320,
+      "line": 313,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 16,
+      "end_col": 29,
+      "end_line": 316,
+      "line": 315,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 25,
+      "end_col": 58,
+      "end_line": 315,
+      "line": 315,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 16,
+      "end_col": 57,
+      "end_line": 320,
+      "line": 319,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 19,
+      "end_col": 35,
+      "end_line": 319,
+      "line": 319,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    },
+    {
+      "col": 20,
+      "end_col": 57,
+      "end_line": 320,
+      "line": 320,
+      "source": {
+        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/utils/peft_utils.py",
+        "component_key": "root",
+        "content_fingerprint": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+        "external": false,
+        "external_provenance": ""
+      }
+    }
+  ]
+}

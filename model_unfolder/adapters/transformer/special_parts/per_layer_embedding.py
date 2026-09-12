@@ -20,7 +20,7 @@ def per_layer_embedding_blocks(
     hidden_size: int,
     embedding_dim: int,
     *,
-    activation: str = "gelu",
+    activation: str | None = None,
     block_id: str = DEFAULT_BLOCK_ID,
     add_id: str = DEFAULT_ADD_ID,
     pathway_id: str = DEFAULT_PATHWAY_ID,
@@ -43,7 +43,7 @@ def per_layer_embedding_blocks(
     feeds = feeds or add_id
     hidden = _fmt(hidden_size)
     emb = _fmt(embedding_dim)
-    act_name = _activation_label(activation)
+    act_name = _activation_label(activation) if activation else "Activation"
     ids = _child_ids(block_id)
 
     children = [
@@ -84,9 +84,9 @@ def per_layer_embedding_blocks(
         },
         {
             "id": ids["norm"],
-            "label": "RMSNorm",
+            "label": "Normalization",
             "title": "Post-PLE norm",
-            "description": f"RMSNorm; dim {hidden}",
+            "description": f"Source-proven normalization; dim {hidden}",
         },
     ]
 
@@ -156,6 +156,7 @@ def per_layer_embedding_pathway(
         ),
         "feeds": "every_layer",
         "tap_block": ids["multiply"],
+        "detail": {"hidden": embedding_dim, "vocab": vocab_size},
         "construction": [
             {
                 "id": f"{block_id}_lookup",
@@ -192,11 +193,6 @@ def per_layer_embedding_extras(
 ) -> dict:
     """Return top-level IR extras for a reusable PLE pathway."""
     return {
-        "per_layer_embeddings": {
-            "hidden": embedding_dim,
-            "vocab": vocab_size,
-            "pathway_id": pathway_id,
-        },
         "external_pathways": [
             per_layer_embedding_pathway(
                 hidden_size,

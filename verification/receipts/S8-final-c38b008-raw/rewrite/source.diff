@@ -1,0 +1,20 @@
+--- installed-modeling-source
++++ scratch-modeling-source
+@@ -364,7 +364,7 @@
+             output_channel = block_out_channels[i]
+             is_final_block = i == len(block_out_channels) - 1
+ 
+-            down_block = get_down_block(
++            selected_down_stage = get_down_block(
+                 down_block_type,
+                 num_layers=layers_per_block[i],
+                 transformer_layers_per_block=transformer_layers_per_block[i],
+@@ -390,7 +390,7 @@
+                 attention_head_dim=attention_head_dim[i] if attention_head_dim[i] is not None else output_channel,
+                 dropout=dropout,
+             )
+-            self.down_blocks.append(down_block)
++            self.down_blocks.append(selected_down_stage)
+ 
+         # mid
+         self.mid_block = get_mid_block(

@@ -1,0 +1,24 @@
+{
+  "added_primitive_events": 481,
+  "blessed": false,
+  "case": "sd14-ordinary",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "elapsed_seconds": 3.592,
+  "exact_ir_warning_parameter_input": true,
+  "html_sha256": "c647b578c95d03ba2f268aa9624509411cbde790de5b8fb529844d3261936385",
+  "no_model_or_pytest": true,
+  "old_event_sequence_unchanged": true,
+  "prior_html_sha256": "c647b578c95d03ba2f268aa9624509411cbde790de5b8fb529844d3261936385",
+  "production_commit": "736fdab",
+  "raw_html_equal": true,
+  "source_case": "/private/tmp/unfold-s8-typed-phase-7168440/sd14-ordinary",
+  "status": "PASS"
+}

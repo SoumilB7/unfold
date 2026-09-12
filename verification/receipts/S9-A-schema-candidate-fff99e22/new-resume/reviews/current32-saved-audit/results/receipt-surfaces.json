@@ -1,0 +1,6349 @@
+{
+  "all_receipts": [
+    {
+      "slug": "bloom",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "alibi_bias",
+        "alibi_offsets",
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_split",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "score_bias_add",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "alibi_bias",
+        "alibi_offsets",
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_split",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "score_bias_add",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "85f2d9c6229e99af",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "7d50e6e457de4bbd",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "ad1ed8780524d172",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "3c4a50286ab0d351",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "bloom",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "4b8f95e5c2634ad689467bb215971af4",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "2da68d653b2a3f52",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_rope",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_rope",
+        "q_split",
+        "qkv_clip",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.qkv_clip",
+        "fact_key": "qkv_clip",
+        "fact_value_status_hash": "a709716e5da4415e",
+        "mechanism": "attention_qkv_clip",
+        "node_ids": [
+          "qkv_clip"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qkv_clip",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_rope",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_rope",
+        "q_split",
+        "qkv_clip",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_rope",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_rope",
+        "q_split",
+        "qkv_clip",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_rope",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_rope",
+        "q_split",
+        "qkv_clip",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "657a971b949c3109",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_rope",
+        "k_split",
+        "kv_cache",
+        "o_proj",
+        "q_rope",
+        "q_split",
+        "qkv_clip",
+        "qkv_proj",
+        "region_out",
+        "scaled_scores",
+        "v_split"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "03879859f1d67d47",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "29e9ffe6d4a5575d",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "25edcdbe3c7e877c",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "4d40dcdb43feee06",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "3dc119386575c958",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "9bffadf726aa42e6899d152ee0c1174c",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "340dfc7bbed19019",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "mla_kv_path",
+        "mla_query_path",
+        "o_proj",
+        "region_out",
+        "scaled_scores"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-query",
+      "block_path": [
+        "mla_query_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_q",
+        "mla_q_concat",
+        "mla_q_nope",
+        "mla_q_rope",
+        "mla_q_rope_apply",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_q_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_query_path_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-query",
+      "block_path": [
+        "mla_query_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_q",
+        "mla_q_concat",
+        "mla_q_nope",
+        "mla_q_rope",
+        "mla_q_rope_apply",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "dc939dadd9cb30c9",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_q_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_query_path_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-kv",
+      "block_path": [
+        "mla_kv_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_k_merge",
+        "mla_k_nope",
+        "mla_k_rope",
+        "mla_k_rope_apply",
+        "mla_kv_down",
+        "mla_kv_up",
+        "mla_latent",
+        "mla_v",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_k_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_kv_cache_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-kv",
+      "block_path": [
+        "mla_kv_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_k_merge",
+        "mla_k_nope",
+        "mla_k_rope",
+        "mla_k_rope_apply",
+        "mla_kv_down",
+        "mla_kv_up",
+        "mla_latent",
+        "mla_v",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "dc939dadd9cb30c9",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_k_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_kv_cache_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "mla_kv_path",
+        "mla_query_path",
+        "o_proj",
+        "region_out",
+        "scaled_scores"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-query",
+      "block_path": [
+        "mla_query_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_q",
+        "mla_q_concat",
+        "mla_q_nope",
+        "mla_q_rope",
+        "mla_q_rope_apply",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_q_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_query_path_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-query",
+      "block_path": [
+        "mla_query_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_q",
+        "mla_q_concat",
+        "mla_q_nope",
+        "mla_q_rope",
+        "mla_q_rope_apply",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "dc939dadd9cb30c9",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_q_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_query_path_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-kv",
+      "block_path": [
+        "mla_kv_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_k_merge",
+        "mla_k_nope",
+        "mla_k_rope",
+        "mla_k_rope_apply",
+        "mla_kv_down",
+        "mla_kv_up",
+        "mla_latent",
+        "mla_v",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_k_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_kv_cache_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "mla-kv",
+      "block_path": [
+        "mla_kv_path"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "mla_k_merge",
+        "mla_k_nope",
+        "mla_k_rope",
+        "mla_k_rope_apply",
+        "mla_kv_down",
+        "mla_kv_up",
+        "mla_latent",
+        "mla_v",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "dc939dadd9cb30c9",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "mla_k_rope_apply"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_mla_kv_cache_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "c9ae4581a63a99b6",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "7725e941c9773abd",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "b9566eaf448f54ef",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "920eb5a71463c06a",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "5cf58e5142474c16b379567423fa6328",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a5a4a8f9582e727b",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.logit_softcap",
+        "fact_key": "logit_softcap",
+        "fact_value_status_hash": "c9cc4898ee97e069",
+        "mechanism": "attention_logit_softcap",
+        "node_ids": [
+          "attn_softcap"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "attn_softcap",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "6f8aee9beb40ac24",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "1892a2d4b841b53c",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.logit_softcap",
+        "fact_key": "logit_softcap",
+        "fact_value_status_hash": "c9cc4898ee97e069",
+        "mechanism": "attention_logit_softcap",
+        "node_ids": [
+          "attn_softcap"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "attn_softcap",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "6f8aee9beb40ac24",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "1892a2d4b841b53c",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "d449e1e73f0f2412",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "6848c362e8451259",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "44b3e72ffca808db",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "4d2e1a5142bd1b7f",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "30e6f97e61542821",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "d207872c40327258",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "dea87ed36f054517",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "099e23c50e168c7e",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "d207872c40327258",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "dea87ed36f054517",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "099e23c50e168c7e",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "bd8c4f9f0a737396",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "64e0449185909e12",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "f72a1ee436ee9a06",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "30bc92c7e93687e8",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "ea556db9399355ce",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "a2121ec3b62742dcb0a4878c7140881a",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "70d5d3a3d9409f7c",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "0bafbbe58285183c",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "2cef510edcbca1cf",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "0bafbbe58285183c",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "sink_concat",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "2cef510edcbca1cf",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "ca6fcc8ee394729a",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "7df2b3ee7334238b",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "a55ee23466110fe2",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "5db067e3292e0714",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "47090859adf44d36affb0d46a021247b",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "d7d039361b0ff49a",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "0d66b180e8c6c930",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "29e9ffe6d4a5575d",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "25edcdbe3c7e877c",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "4d40dcdb43feee06",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "254451bfe9e7250d",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "76dead8d7a194e309a6c6ca61d70deda",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "6f8aee9beb40ac24",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "9787accbb0ae34c0",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "61f6df5c5123ba18",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "b558ebc2063408fd",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "db7d4c151cc72744",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "43c8dac4496c036b",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "784c2798483742519bfa70adc8466a63",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "view": "architecture",
+      "block_path": [],
+      "event_node_ids": [
+        "embed",
+        "lm_head",
+        "position_add",
+        "position_embed",
+        "position_ids",
+        "tok_text"
+      ],
+      "receipt": {
+        "context_token": "9281d505b3c34ef380000707042096c3",
+        "fact_id": "decoder.input.position_addition",
+        "fact_key": "position_addition",
+        "fact_value_status_hash": "42da9e1daadc8625",
+        "mechanism": "position_addition",
+        "node_ids": [
+          "position_ids",
+          "position_embed",
+          "position_add"
+        ],
+        "output_hash": null,
+        "owner": "decoder.input",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_architecture_view",
+        "structural_target": "position_addition",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "view": "architecture",
+      "block_path": [],
+      "event_node_ids": [
+        "embed",
+        "lm_head",
+        "position_add",
+        "position_embed",
+        "position_ids",
+        "tok_text"
+      ],
+      "receipt": {
+        "context_token": "9281d505b3c34ef380000707042096c3",
+        "fact_id": "decoder.codebook_streams",
+        "fact_key": "codebook_streams",
+        "fact_value_status_hash": "bd83fc0433c8e460",
+        "mechanism": "codebook_streams",
+        "node_ids": [
+          "tok_text",
+          "embed",
+          "lm_head"
+        ],
+        "output_hash": null,
+        "owner": "decoder",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_architecture_view",
+        "structural_target": "codebook_streams",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9281d505b3c34ef380000707042096c3",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "a55ee23466110fe2",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "9281d505b3c34ef380000707042096c3",
+        "fact_id": "decoder.attention.cross_attention_schedule",
+        "fact_key": "cross_attention_schedule",
+        "fact_value_status_hash": "c463ac4e2460cd47",
+        "mechanism": "cross_attention_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "cross_attention_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "9281d505b3c34ef380000707042096c3",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "3fa611cc3552302b",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "ecd7a1dc351d8b5b",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "5531d919e129f3f3",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "61f6df5c5123ba18",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "b558ebc2063408fd",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "db7d4c151cc72744",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "0f20227eeb0cb82c",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "43c8dac4496c036b",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "fe397caa5f514e5b8c81d28c5033a2af",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "o_proj",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0",
+        "vision_projector_op1",
+        "vision_projector_op2",
+        "vision_projector_op3",
+        "vision_projector_op4"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "8d012b96bf7eef95",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "ops_video_projector",
+      "block_path": [
+        "video_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "video_projector_op0",
+        "video_projector_op1",
+        "video_projector_op2",
+        "video_projector_op3",
+        "video_projector_op4"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "root.video.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "8d012b96bf7eef95",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "video_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.video",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "video_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "91b664d60090f985",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "f7068aede382c33d",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "0317feefb5fa2fb2",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "gated-delta",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "delta_beta",
+        "delta_beta_proj",
+        "delta_conv",
+        "delta_decay",
+        "delta_decay_proj",
+        "delta_gated_norm",
+        "delta_out_proj",
+        "delta_qkv_proj",
+        "delta_qkv_split",
+        "delta_rule",
+        "delta_z_proj",
+        "hidden",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.gated_delta_geometry",
+        "fact_key": "gated_delta_geometry",
+        "fact_value_status_hash": "d230287aebb3f810",
+        "mechanism": "gated_delta_geometry",
+        "node_ids": [
+          "delta_conv",
+          "delta_rule"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "gated_delta_geometry",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.output_gate",
+        "fact_key": "output_gate",
+        "fact_value_status_hash": "604bfdb6d2775406",
+        "mechanism": "attention_output_gate",
+        "node_ids": [
+          "q_gate_split",
+          "attn_output_gate",
+          "attn_output_mul"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_gate",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "20e1ae7171e7375b",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "4d97d9d860d94ee9",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "c830107068d37eb7",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "b24bb2124da34a6aa88fae87c674c1da",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "70d5d3a3d9409f7c",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "dea87ed36f054517",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "f86e1e2107ac1ae2",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "5f1d9302327fb7d0",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "3da20b9b5e3ac798",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "b39232b5833c8819",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "530c48581e78c779",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "4c195557b0f3244f",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "b16ed68e138d4aa4a9038b5cc2d6883a",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "df40488d7e9f5dfc",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "1e4d3f6a64bb7d05",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "fbb540406780be43",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "7e2dbd0386b0d2b9",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "9e247a66f77179da",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "a55ee23466110fe2",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "2659a35a59c588b5",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "c84bf71a71839ec8",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "803e138594d04491945e0e753fc72fab",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "o_proj",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "o_proj",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "8fbe9354b1016b5b",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "659529e97d592706",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "c830107068d37eb7",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "74a0d61264f54b1b917a22bd088300a8",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "9a0fe67a26d8db65",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "f692720ea399460e8ed436bb16c7ec96",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "cad2baa622cdec12",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "f692720ea399460e8ed436bb16c7ec96",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "c6e6ab03d968e430",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "f692720ea399460e8ed436bb16c7ec96",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "8f063e56700ff2d9",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "f692720ea399460e8ed436bb16c7ec96",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "0ae32072b7b54d7ebafff78010fc2972",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "cc6581fc61debf11",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "0ae32072b7b54d7ebafff78010fc2972",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "architecture",
+      "block_path": [],
+      "event_node_ids": [
+        "ple"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "decoder.per_layer_embedding_pathway",
+        "fact_key": "per_layer_embedding_pathway",
+        "fact_value_status_hash": "a82f9088dcdd3066",
+        "mechanism": "per_layer_embedding_pathway",
+        "node_ids": [
+          "ple"
+        ],
+        "output_hash": null,
+        "owner": "decoder",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_architecture_view",
+        "structural_target": "per_layer_embedding_pathway",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_in_features",
+        "fact_key": "projector_in_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_in_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "architecture",
+      "block_path": [],
+      "event_node_ids": [
+        "ple"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "decoder.per_layer_embedding_pathway",
+        "fact_key": "per_layer_embedding_pathway",
+        "fact_value_status_hash": "a82f9088dcdd3066",
+        "mechanism": "per_layer_embedding_pathway",
+        "node_ids": [
+          "ple"
+        ],
+        "output_hash": null,
+        "owner": "decoder",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_architecture_view",
+        "structural_target": "per_layer_embedding_pathway",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_in_features",
+        "fact_key": "projector_in_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_in_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "5959fa9ded8ca791",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "decoder.attention.kv_sharing_schedule",
+        "fact_key": "kv_sharing_schedule",
+        "fact_value_status_hash": "95b8fe71cbe81b38",
+        "mechanism": "kv_sharing_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "kv_sharing_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "2ca47e14d153d186",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "jamba-v0-1",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "3162e2baaa9d4de0b65cc9c58178850a",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_key": "rope_theta",
+        "fact_value_status_hash": "12f00bc2597719e6",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_theta",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_key": "rope_initialization",
+        "fact_value_status_hash": "80b76f3745f33b5e",
+        "mechanism": "position_frequency_initialization",
+        "node_ids": [
+          "q_rope",
+          "k_rope"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "rope_initialization",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "3ab0f33d4a4515aa",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_key": "position_schedule",
+        "fact_value_status_hash": "35f4b4244822e510",
+        "mechanism": "position_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "position_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "03dcaa77a1097327",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "d1d8d8a97b6e425199f7a0f1bbd74c8b",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "3db5cebb4ad64cfc8ae987e490bf0986",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "gated-delta",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "delta_beta",
+        "delta_beta_proj",
+        "delta_conv",
+        "delta_decay",
+        "delta_decay_proj",
+        "delta_gated_norm",
+        "delta_out_proj",
+        "delta_qkv_proj",
+        "delta_qkv_split",
+        "delta_rule",
+        "delta_z_proj",
+        "hidden",
+        "region_out"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.gated_delta_geometry",
+        "fact_key": "gated_delta_geometry",
+        "fact_value_status_hash": "d230287aebb3f810",
+        "mechanism": "gated_delta_geometry",
+        "node_ids": [
+          "delta_conv",
+          "delta_rule"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "gated_delta_geometry",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.output_gate",
+        "fact_key": "output_gate",
+        "fact_value_status_hash": "604bfdb6d2775406",
+        "mechanism": "attention_output_gate",
+        "node_ids": [
+          "q_gate_split",
+          "attn_output_gate",
+          "attn_output_mul"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_gate",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_output_gate",
+        "attn_output_mul",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_gate_split",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "20e1ae7171e7375b",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "4d97d9d860d94ee9",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "c830107068d37eb7",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "a574c58831b4457b9d6949c106906347",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "70d5d3a3d9409f7c",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "5ca2cd8264074d13a3c4b4fdaaecbbfc",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.qk_norm",
+        "fact_key": "qk_norm",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "qk_norm_gate",
+        "node_ids": [
+          "q_norm",
+          "k_norm"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "qk_norm",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.cached",
+        "fact_key": "cached",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_cache_update",
+        "node_ids": [
+          "kv_cache"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "cached",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_norm",
+        "k_proj",
+        "kv_cache",
+        "o_proj",
+        "q_norm",
+        "q_proj",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.output_projection",
+        "fact_key": "output_projection",
+        "fact_value_status_hash": "7f3e293636cd0a7c",
+        "mechanism": "attention_output_projection",
+        "node_ids": [
+          "o_proj"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "output_projection",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_key": "mask_schedule",
+        "fact_value_status_hash": "9073f5fcacbb7a94",
+        "mechanism": "mask_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mask_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_key": "mixer_schedule",
+        "fact_value_status_hash": "1b825ff6356e8f13",
+        "mechanism": "mixer_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "mixer_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.attention.qk_norm_schedule",
+        "fact_key": "qk_norm_schedule",
+        "fact_value_status_hash": "4e26dbc5da48687d",
+        "mechanism": "qk_norm_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "qk_norm_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "layer_map",
+      "block_path": [],
+      "event_node_ids": [
+        "layer_map"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_key": "ffn_schedule",
+        "fact_value_status_hash": "c07e45074c6aa3ac",
+        "mechanism": "ffn_schedule",
+        "node_ids": [
+          "layer_map"
+        ],
+        "output_hash": null,
+        "owner": "decoder.ffn",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.views._build_layer_map",
+        "structural_target": "ffn_schedule",
+        "surface": "html"
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "view": "stats_banner",
+      "block_path": [],
+      "event_node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipt": {
+        "context_token": "3ca038587e4b41f88b0b538b0eb873d3",
+        "fact_id": "model.hidden_size",
+        "fact_key": "hidden_size",
+        "fact_value_status_hash": "67951bb3d9db1731",
+        "mechanism": "model_hidden_size_value",
+        "node_ids": [
+          "stats_hidden_size"
+        ],
+        "output_hash": null,
+        "owner": "model",
+        "projection_kind": "field",
+        "projector_symbol": "renderers.html.sections._stats_banner",
+        "structural_target": "stats_banner.hidden_size",
+        "surface": "html"
+      }
+    }
+  ],
+  "six_card_rows": [
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0",
+        "vision_projector_op1",
+        "vision_projector_op2",
+        "vision_projector_op3",
+        "vision_projector_op4"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "8d012b96bf7eef95",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "view": "ops_video_projector",
+      "block_path": [
+        "video_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "video_projector_op0",
+        "video_projector_op1",
+        "video_projector_op2",
+        "video_projector_op3",
+        "video_projector_op4"
+      ],
+      "receipt": {
+        "context_token": "90403df798e741ad90af6e616df2cc19",
+        "fact_id": "root.video.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "8d012b96bf7eef95",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "video_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.video",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "video_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_in_features",
+        "fact_key": "projector_in_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_in_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_in_features",
+        "fact_key": "projector_in_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_in_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "view": "ops_vision_projector",
+      "block_path": [
+        "vision_projector"
+      ],
+      "event_node_ids": [
+        "hidden",
+        "region_out",
+        "vision_projector_op0"
+      ],
+      "receipt": {
+        "context_token": "6b33f4406cbe418d8ce53aa4d345d760",
+        "fact_id": "root.vision.projector_out_features",
+        "fact_key": "projector_out_features",
+        "fact_value_status_hash": "9d8a9a9c663b34e7",
+        "mechanism": "projector_out_width",
+        "node_ids": [
+          "vision_projector"
+        ],
+        "output_hash": null,
+        "owner": "root.vision",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.declared_ops.build_declared_ops_view",
+        "structural_target": "vision_projector",
+        "surface": "card"
+      }
+    }
+  ],
+  "softcap_rows": [
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.logit_softcap",
+        "fact_key": "logit_softcap",
+        "fact_value_status_hash": "c9cc4898ee97e069",
+        "mechanism": "attention_logit_softcap",
+        "node_ids": [
+          "attn_softcap"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "attn_softcap",
+        "surface": "opgraph"
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "view": "gqa-attn",
+      "block_path": [
+        "attn"
+      ],
+      "event_node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipt": {
+        "context_token": "750fe10a501743e4bf67dadbd3e4a4d9",
+        "fact_id": "decoder.attention.logit_softcap",
+        "fact_key": "logit_softcap",
+        "fact_value_status_hash": "c9cc4898ee97e069",
+        "mechanism": "attention_logit_softcap",
+        "node_ids": [
+          "attn_softcap"
+        ],
+        "output_hash": null,
+        "owner": "decoder.attention",
+        "projection_kind": "op",
+        "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+        "structural_target": "attn_softcap",
+        "surface": "opgraph"
+      }
+    }
+  ],
+  "card_contract": "Card identities are the actual enclosing projector block, not graph node identities. receipts.py defines node_ids within the named surface; declared_ops.py emits surface=card for block rid. No opgraph subset rule is applied across surfaces."
+}

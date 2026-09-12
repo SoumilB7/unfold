@@ -1,0 +1,615 @@
+{
+  "root.denoiser.diffusion_bookend_geometry": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_bookend_geometry:9eb1cb807681262a",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:697:22:697:65",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:697:32:697:46",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:761:14:761:48"
+      ],
+      "fact_id": "root.denoiser.diffusion_bookend_geometry",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "context_in_dim"
+    ],
+    "key": "diffusion_bookend_geometry",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 697,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 761,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      {
+        "application_role": "conditioning_input",
+        "dimension_role": "input_width",
+        "operation_kind": "linear",
+        "value": 2048
+      }
+    ]
+  },
+  "root.denoiser.diffusion_bookend_operations": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_bookend_operations:950260256deac2d4",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:514:12:514:76",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:514:38:514:56",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:515:12:515:26",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:761:14:761:48",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:765:14:765:30",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:787:22:793:17",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:788:34:788:37",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:789:42:789:45",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:790:25:790:28",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:796:14:796:40",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:801:8:801:54"
+      ],
+      "fact_id": "root.denoiser.diffusion_bookend_operations",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_bookend_operations",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 761,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 787,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 789,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 765,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 790,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 788,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 514,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 515,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 796,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 801,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "conditioning_input": [
+        "linear"
+      ],
+      "state_input": [
+        "linear"
+      ],
+      "state_output": [
+        "norm",
+        "elementwise",
+        "linear"
+      ],
+      "temporal_operations": []
+    }
+  },
+  "root.denoiser.diffusion_root_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_root_topology:f54c9aeda5f113e8",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:776:8:793:17"
+      ],
+      "fact_id": "root.denoiser.diffusion_root_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_root_topology",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 776,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "repeated_stack"
+  },
+  "root.denoiser.stacks[0].attention[0].diffusion_stream_relation": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].attention[0].diffusion_stream_relation:00ffcf838efc09b8",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:28:459:49",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:44:459:48",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:8:459:49",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:460:44:460:52",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:460:8:460:52",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:28:463:79",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:28:463:92",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:29:463:30",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:29:463:43",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:33:463:43",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:47:463:79",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:65:463:78",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:82:463:92",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:8:463:92",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:465:19:470:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:466:26:466:43",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:467:34:467:55",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:475:8:475:118",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:476:15:476:28",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:476:8:476:28"
+      ],
+      "fact_id": "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_stream_relation",
+    "owner": "root.denoiser.stacks[0].attention[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 465,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 463,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 459,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 460,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 466,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 467,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 476,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 475,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "contextual_single_state"
+  },
+  "root.denoiser.stacks[0].cell.diffusion_conditioning_applications": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].cell.diffusion_conditioning_applications:9573f14cc6f9ea01",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:28:459:49",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:44:459:48",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:459:8:459:49",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:460:44:460:52",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:460:8:460:52",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:465:19:470:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:472:40:472:49",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:472:40:472:60",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:472:8:472:60"
+      ],
+      "fact_id": "root.denoiser.stacks[0].cell.diffusion_conditioning_applications",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_conditioning.read_diffusion_conditioning_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_conditioning_applications",
+    "owner": "root.denoiser.stacks[0].cell",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 465,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 472,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 459,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 460,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "attention": [
+        "bare_gate"
+      ],
+      "cross_attention": [],
+      "ffn": []
+    }
+  },
+  "root.denoiser.stacks[0].cell.diffusion_norm_mechanism": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].cell.diffusion_norm_mechanism:4dcb3749bc66e61e",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:171:22:178:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:18:0:18:20",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:192:0:249:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:23:0:23:54",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:350:14:350:47",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:350:14:350:76",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:350:23:350:46",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:405:28:405:89",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:408:25:416:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:415:22:415:41",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:415:22:415:43",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:419:40:419:101",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:463:47:463:79",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:465:19:470:9",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:474:30:474:74",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:475:101:475:116",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:475:52:475:117",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:475:67:475:98",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:475:80:475:97",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:787:22:793:17"
+      ],
+      "fact_id": "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_norm_mechanism",
+    "owner": "root.denoiser.stacks[0].cell",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 787,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 465,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 408,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 192,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 171,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 23,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 463,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 405,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 18,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 474,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 419,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 475,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "layernorm"
+  },
+  "root.denoiser.stacks[0].diffusion_stack_depth": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "095ed2dd8d34b0d23880d777526668407753a00b4c5fa551c8e248e4fda3dc17"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].diffusion_stack_depth:9fc8d78c04e1d09e",
+        "source:root:9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f:706:31:706:36"
+      ],
+      "fact_id": "root.denoiser.stacks[0].diffusion_stack_depth",
+      "fact_status": "",
+      "index_fingerprints": [
+        "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "depth"
+    ],
+    "key": "diffusion_stack_depth",
+    "owner": "root.denoiser.stacks[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+        "line": 706,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 24
+  }
+}

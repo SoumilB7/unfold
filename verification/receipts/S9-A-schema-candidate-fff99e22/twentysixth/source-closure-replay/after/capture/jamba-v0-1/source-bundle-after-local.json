@@ -1,0 +1,34 @@
+{
+  "bundle": {
+    "architecture": "JambaForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "JambaForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/jamba/modeling_jamba.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "jamba"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/jamba/modeling_jamba.py"
+    ],
+    "import_roots": {},
+    "model_id": "ai21labs/Jamba-v0.1",
+    "model_type": "jamba",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/jamba/configuration_jamba.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

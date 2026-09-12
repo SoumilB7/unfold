@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "f0f8c9fe801905b296591ac73f8899be37832e1c62fce38e0584610a5f49dd34"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "c749275911f7575e5319953a7073eb0dcf52ce02681e88e4d4823749eaa5b90d"
+    },
+    {
+      "path": "expected-generation-sources.json",
+      "sha256": "8e79f35bee71cd5379f7dc10069ecab76b472249f927c775c1b1906122e11505"
+    },
+    {
+      "path": "generation-source-law.py.txt",
+      "sha256": "cbb31d6624395a69fb46a96df7bdb1716a1dc2988a55a7ffad5f3f24dba9a896"
+    },
+    {
+      "path": "prepared-contract.json",
+      "sha256": "f2e3e7cfdf510060795121e3e2dcfc88f7f123a995711ecc3bb6fb5a9af70976"
+    }
+  ],
+  "scope": "Held hardened37 matrix saved-data audit; no runtime; independent source review pending"
+}

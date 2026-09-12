@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "8ab56ea4f4f256e8fd022d75ef715aed5ebca6913933270ef9464f45ed9c518d",
+  "input": "tests/unseen_model_configs/command-a-03-2025.json",
+  "input_sha256": "6a56c1d2c171197959088403e1fe4113aae079b70eca57a43ed1e2ae3b0af300",
+  "resolved_class": {
+    "module": "transformers.models.cohere2.modeling_cohere2",
+    "qualname": "Cohere2ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

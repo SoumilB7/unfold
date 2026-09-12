@@ -1,0 +1,33 @@
+{
+  "status": "PROPOSAL_ONLY_NOT_LIVE_APPLIED_NOT_EXECUTED",
+  "base_source_manifest_sha256": "153982d5541dbd6aa50c2bdfe3dee2fa9c4b92b93f7c26d11c203de1dc1d1a01",
+  "files": [
+    {
+      "path": "model_unfolder/renderers/html/block_views/attention.py",
+      "before_sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "proposed_sha256": "a14e54916470208eb44dcbe012e72d0677a9f488fb508c18161817ad074a9377"
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "proposed_sha256": "56e39a520de7f2d1eaf858502fd12e119c2b51f98f1bbcefcdd7f0275498d3d1"
+    }
+  ],
+  "scope": "S9-A: positive softcap facts may remain unprojected, never emit receipt or facts_projected without the actual unprefixed canonical tanh activation in the graph. All three existing attention fact callers use same finite guard. No graph/drawing creation, reader/schema/proof/IR/value mutation.",
+  "finding": "Explicit17 synthetic remains opaque with valid native applied_function fact and consumed operand; drawing remains unfulfilled debt. Real Gemma keeps its two genuine op receipts.",
+  "controls": [
+    "unchanged existing missing operand/explicitNone/no_mechanism controls",
+    "positive synthetic native fact and consumption retained while graph receipt/facts key absent",
+    "canonical missing-node, wrong-kind, wrong-function poison; all receipt node IDs must belong to event",
+    "all three actual attention drill callers exclude absent softcap operation",
+    "existing realGemma two receipts and obligation join plus node-subset check"
+  ],
+  "runtime": "Root-owned, not executed; static syntax only.",
+  "artifacts": {
+    "before/model_unfolder/renderers/html/block_views/attention.py": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+    "before/tests/test_attention_softcap.py": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+    "changes.patch": "8ba72c632acc0ceb7d2e51584c6f17409451759103d1545c73155f069b8d9029",
+    "proposed/model_unfolder/renderers/html/block_views/attention.py": "a14e54916470208eb44dcbe012e72d0677a9f488fb508c18161817ad074a9377",
+    "proposed/tests/test_attention_softcap.py": "56e39a520de7f2d1eaf858502fd12e119c2b51f98f1bbcefcdd7f0275498d3d1"
+  }
+}

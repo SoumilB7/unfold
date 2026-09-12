@@ -1,0 +1,53 @@
+{
+  "decision": "ALL_SCOPED_HISTORICAL_ARTIFACTS_INELIGIBLE_AS_CAPABILITY2_SEEDS",
+  "target_groups": 47,
+  "unique_targets": 39,
+  "cohorts": {
+    "S6_pilot": 8,
+    "S7_shadow": 39
+  },
+  "eligible_target_groups": 0,
+  "artifact_count": 106,
+  "stored_bytes": 19486600,
+  "decoded_bytes": 160464091,
+  "all_inputs_and_contract_source_unchanged": true,
+  "contract_source_sha256": {
+    "physics/result_cache.py": "56a08a7c386d9ac241c04c722bf1fe23c67b7fa7b1110b547d69bd12b53bd34d",
+    "physics/cache_dependencies.py": "e4aa8e759f166cbb1dfb7027e56ec1887a72277851f7c2e8a20a6111d65e3c76",
+    "physics/instance_inventory.py": "6eebad2f2042314f87aeb538f2cd6d5fc4b19249ce672430f1dff83b83618b54",
+    "physics/execution_observation.py": "67a25149d5f6883d4c685fa1e6c14f1c03ca4e68f3170fa0ea6b0f2b53a94922",
+    "scripts/generate_s7_shadow.py": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c"
+  },
+  "targets_sha256": "3e84fb0a83061d664ab05483a64c8225031b8461ea11dba2a317a01fbec82805",
+  "limits": [
+    "No cache importer, cache writes, worker execution, new model parse, or network lookup.",
+    "S6/S7 records retain useful historical positive evidence and explicit recipes; seed ineligibility does not erase their existing evidence status.",
+    "Seven-axis provenance environments and source fingerprints do not supply full hashed effective environment or capture-time dependency/search closure.",
+    "Present S7 input bytes/config hashes are checked as addresses, not used to invent historical request flags or dependency manifests.",
+    "A fresh actual supported capture may create a capability2 entry; missing historical envelope cannot be reconstructed by filling current values.",
+    "No final cold/warm/public-budget claim."
+  ],
+  "current_S7_input_hashes_rechecked_equal": 39,
+  "S6_observation_statuses": {
+    "ok": 9,
+    "failed": 2
+  },
+  "S7_observation_attempt_statuses": {
+    "ok": 22,
+    "failed": 19
+  },
+  "S7_final_statuses": {
+    "ok": 22,
+    "failed": 17
+  },
+  "nonfinite_inputs": {
+    "S6": [
+      "pixart-sigma-xl-2-1024-ms"
+    ],
+    "S7": [
+      "nemotron-h-8b",
+      "pixart-sigma-xl-2-1024-ms",
+      "sana-1600m-1024px-diffusers"
+    ]
+  }
+}

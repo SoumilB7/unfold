@@ -1,0 +1,203 @@
+--- r1/README.md
++++ r2/README.md
+@@ -8,12 +8,17 @@
+ 
+ Each obligation joins by exact component, native owner/key, config path, canonical field, actual spelling, decision mechanism, document path, document seal and value/status hash. There must be exactly one native target and one matching live consumed event. The resulting outer obligation must equal the saved actual32 obligation at the exact index. Duplicate/missing joins, mismatched values, stale source/input bytes or observation side effects invalidate the packet. Final totals must be exactly 15 inputs / 105 obligations / 80 targets. Root input is parsed exactly once per selected witness; there are no per-model hooks.
+ 
+-The unchanged current32 capture contract supplies all source membership, negative deletion, exact active resolved-class/input/inventory/matrix and script pins. This proposal additionally brackets its own files, actual32 saved inputs/IR/addresses/closures and the prior 147-row audit. The standard verify_commit serial lane brackets source and protected artifacts. Observation outputs use a fresh scratch directory only. Raw root IR is retained and must equal the prior actual32 page input without normalization. No pages are republished, no active baseline is written and no output is approved.
++The unchanged current32 capture contract supplies all source membership, negative deletion, exact active resolved-class/input/inventory/matrix and script pins. This proposal additionally brackets its own files, actual32 saved inputs/IR/addresses/closures and the prior 147-row audit. The standard verify_commit serial lane brackets source and protected artifacts. Observation outputs use a fresh scratch directory only. Root IR must equal the prior actual32 page input through the same existing JSON serialization on both sides. Every live Python type and live-versus-saved-JSON difference is retained separately; no product field is removed or altered. No pages are republished, no active baseline is written and no output is approved.
+ 
+ Root-only command after independent source review and completion of the running matrix:
+ 
+ ```sh
+-python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-native-observation32-proposal/run-observation.py --source-manifest-sha256 d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e
++python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-native-observation32-proposal-r2/run-observation.py --source-manifest-sha256 d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e
+ ```
+ 
+-Output: /private/tmp/unfold-s9a-thirtysecond/child-native-observation. Existing output directories are refused. Preparation performed only stdlib source parsing and saved-data reads; no product import, model execution or tests were run. Original actual32 capture and prior audit files remain untouched.
++Output: /private/tmp/unfold-s9a-thirtysecond/child-native-observation-r2. Existing output directories are refused. Preparation performed only stdlib source parsing and saved-data reads; no product import, model execution or tests were run. Original actual32 capture and prior audit files remain untouched.
++
++
++R2 correction: R1 compared live to_dict() structures to JSON-roundtripped snapshots, which cannot distinguish a tuple/list representation difference from mutation. Its 15 saved root IR JSON documents have zero exhaustive deltas against actual32. All 20 child callbacks failed before publishing their local snapshots, so R1 does not establish an exact child tuple path or a closed native join. R1 remains RED, archived byte-for-byte under thirtysecond/child-native-observation-r1 (manifest 6c9af369cc51fc452d83a815357fe0e4f28ed94e20a486d90db50ad32330dd32; 65 files / 52,398,547 raw bytes, every archive member hash verified).
++
++R2 makes detached deepcopy snapshots of actual live records, child IR and the original returned spec. Before and after comparisons retain exact Python types. Snapshots and every delta are written before a mutation failure can be raised. The native fact mapping additionally requires the exact same original fact objects. A separate diagnostic enumerates all type/value effects of JSON serialization; it cannot waive any live mutation or serialized output delta. The root comparison likewise retains live Python type inventory and full live-versus-JSON differences, and compares both outputs through their already established JSON pipeline. Native proofs are never copied or reconstructed. No R2 model runtime has been performed.
+--- r1/observe.py
++++ r2/observe.py
+@@ -1,6 +1,7 @@
+ """Observe actual child native ledgers inside their existing bound scope, once."""
+ from pathlib import Path
+ import argparse
++import copy
+ import dataclasses
+ import functools
+ import gc
+@@ -22,6 +23,57 @@
+ 
+ def uncompressed(path):
+     return json.loads(gzip.decompress(path.read_bytes()))
++
++
++
++def type_inventory(value, path=''):
++    """Retain actual Python types beside unchanged JSON values, diagnostics only."""
++    rows = [{'path': path, 'python_type': type(value).__name__}]
++    if isinstance(value, dict):
++        for key, item in value.items():
++            segment = str(key).replace('~', '~0').replace('/', '~1')
++            rows.append({'path': path + '/' + segment, 'mapping_key_type': type(key).__name__})
++            rows.extend(type_inventory(item, path + '/' + segment))
++    elif isinstance(value, (list, tuple)):
++        for i, item in enumerate(value):
++            rows.extend(type_inventory(item, path + '/' + str(i)))
++    return rows
++
++
++def snapshot(value):
++    return {'json_value': jsoncopy(value), 'python_types': type_inventory(value)}
++
++
++def full_deltas(before, after, path=''):
++    """Exhaustive actual type/value/path changes; no skipped fields or remapping."""
++    rows = []
++    if type(before) is not type(after):
++        rows.append({'path': path, 'kind': 'type_changed',
++                     'before_type': type(before).__name__, 'after_type': type(after).__name__,
++                     'before': jsoncopy(before), 'after': jsoncopy(after)})
++        if not (isinstance(before, (list, tuple)) and isinstance(after, (list, tuple))):
++            return rows
++    if isinstance(before, dict) and isinstance(after, dict):
++        for key in sorted(set(before) | set(after), key=lambda key: (type(key).__name__, repr(key))):
++            q = path + '/' + str(key).replace('~', '~0').replace('/', '~1')
++            if key not in before or key not in after:
++                rows.append({'path': q, 'kind': 'added' if key not in before else 'deleted',
++                             'before': jsoncopy(before[key]) if key in before else None,
++                             'after': jsoncopy(after[key]) if key in after else None})
++            else:
++                rows.extend(full_deltas(before[key], after[key], q))
++    elif isinstance(before, (list, tuple)) and isinstance(after, (list, tuple)):
++        for i in range(max(len(before), len(after))):
++            q = path + '/' + str(i)
++            if i >= len(before) or i >= len(after):
++                rows.append({'path': q, 'kind': 'added' if i >= len(before) else 'deleted',
++                             'before': jsoncopy(before[i]) if i < len(before) else None,
++                             'after': jsoncopy(after[i]) if i < len(after) else None})
++            else:
++                rows.extend(full_deltas(before[i], after[i], q))
++    elif before != after:
++        rows.append({'path': path, 'kind': 'value_changed', 'before': before, 'after': after})
++    return rows
+ 
+ 
+ def main():
+@@ -88,9 +140,15 @@
+             active_events = tuple(active.events)
+             own_events = tuple(child_context.config_access.events)
+             native = dict(child_context.facts.typed)
+-            records = jsoncopy(child_context.facts.to_dict())
+-            child_ir_before = jsoncopy(child_ir.to_dict())
+-            result_before = jsoncopy(returned)
++            records = copy.deepcopy(child_context.facts.to_dict())
++            child_ir_before = copy.deepcopy(child_ir.to_dict())
++            result_before = copy.deepcopy(returned)
++            live_before = {'records': records, 'child_ir': child_ir_before, 'projector_return': result_before}
++            snapshot_dir = dest / 'child-observations' / ('call-%03d' % len(calls))
++            snapshot_dir.mkdir(parents=True, exist_ok=False)
++            save(snapshot_dir / 'before.json', snapshot(live_before))
++            save(snapshot_dir / 'json-serialization-type-deltas.json',
++                 full_deltas(live_before, jsoncopy(live_before)))
+             current_index = child_context.program_index()
+             declarations = {}
+             for key, fact in native.items():
+@@ -166,14 +224,22 @@
+                               'local_native_key': key, 'native_value_status_hash': actual_hash,
+                               'event': dataclasses.asdict(event),
+                               'proof_validation': declarations[key]['existing_proof_validation']})
+-            # Observation cannot append access events or modify native facts, IR,
+-            # preparation, return content, or the retained current index.
++            # Compare type-preserving detached snapshots, never live tuples
++            # against lists reconstructed from JSON. Persist all actual deltas
++            # BEFORE raising so a failing observation keeps its diagnostic data.
++            live_after = {'records': copy.deepcopy(child_context.facts.to_dict()),
++                          'child_ir': copy.deepcopy(child_ir.to_dict()),
++                          'projector_return': copy.deepcopy(returned)}
++            live_deltas = full_deltas(live_before, live_after)
++            save(snapshot_dir / 'after.json', snapshot(live_after))
++            save(snapshot_dir / 'live-before-after-deltas.json', live_deltas)
+             if tuple(active.events) != active_events or tuple(child_context.config_access.events) != own_events:
+                 raise ValueError('proof observation modified consumption ledger')
+-            if child_context.facts.typed != native or child_context.facts.to_dict() != records:
+-                raise ValueError('proof observation modified native facts')
+-            if child_ir.to_dict() != child_ir_before or returned != result_before:
+-                raise ValueError('proof observation modified product result')
++            if set(child_context.facts.typed) != set(native) or any(
++                    child_context.facts.typed[key] is not fact for key, fact in native.items()):
++                raise ValueError('proof observation replaced native fact objects')
++            if live_deltas:
++                raise ValueError('proof observation changed live native facts, IR, or return; exact deltas retained')
+             if child_context.program_index() is not current_index:
+                 raise ValueError('proof observation changed child source index')
+             captures.append(jsoncopy({
+@@ -187,6 +253,8 @@
+                 'source_bundle_local': dataclasses.asdict(child_context.source_bundle),
+                 'portable_source_index_fingerprint': portable_source_index_fingerprint(current_index),
+                 'records': records, 'native_declarations': declarations,
++                'live_snapshot_directory': snapshot_dir.relative_to(dest).as_posix(),
++                'live_snapshot_delta_count': len(live_deltas),
+                 'untyped_record_keys': sorted(set(records) - set(native)),
+                 'active_ledger_is_child_ledger': active is child_context.config_access,
+                 'active_ledger_events_local': [dataclasses.asdict(e) for e in active_events],
+@@ -235,9 +303,18 @@
+                 actual = ir_record['extras']['config_access']['projection_obligations'][wanted['index']]
+                 if actual != wanted['obligation']:
+                     errors.append({'kind': 'actual_root_obligation_changed', 'index': wanted['index'], 'actual': actual})
+-            equal_ir = ir_record == baseline_ir
++            # Both sides use the EXISTING saved JSON representation. Also
++            # retain every live-vs-JSON type difference separately; no
++            # canonicalizer, key deletion, UUID replacement, or filtering.
++            root_live_vs_saved = full_deltas(ir_record, baseline_ir)
++            root_serialized = jsoncopy(ir_record)
++            root_deltas = full_deltas(baseline_ir, root_serialized)
++            save(dest / 'root-live-python-types.json', type_inventory(ir_record))
++            save(dest / 'root-live-vs-saved-json-deltas.json', root_live_vs_saved)
++            save(dest / 'root-saved-json-deltas.json', root_deltas)
++            equal_ir = not root_deltas
+             if not equal_ir:
+-                errors.append({'kind': 'raw_root_ir_differs_from_actual32_saved_page_input',
++                errors.append({'kind': 'serialized_root_ir_differs_from_actual32_saved_page_input',
+                                'policy': 'Retain both raw IRs; no normalization or acceptance inferred.'})
+             save(dest / 'root-ir.json', ir_record)
+         else:
+@@ -250,11 +327,12 @@
+                   'joined_targets': len({r['qualified_key'] for r in joins}),
+                   'existing_proof_validation': {k: sum(r['proof_validation'] == k for r in joins)
+                        for k in ('VALIDATED', 'MISSING_UNCHANGED')},
+-                  'raw_root_ir_equal_saved_actual32': equal_ir,
++                  'serialized_root_ir_equal_saved_actual32': equal_ir,
++                  'root_comparison_representation': 'Both sides: existing JSON serialization; all live Python types/deltas retained separately',
+                   'errors': errors, 'product_error': product_error,
+                   'seconds': time.monotonic() - started}
+         save(dest / 'result.json', record)
+-        record['artifact_sha256'] = {p.name: sha(p) for p in sorted(dest.iterdir()) if p.is_file()}
++        record['artifact_sha256'] = {p.relative_to(dest).as_posix(): sha(p) for p in sorted(dest.rglob('*')) if p.is_file()}
+         results.append(record)
+         print(json.dumps({'slug': slug, 'passed': record['passed'], 'joins': len(joins)}), flush=True)
+         del context
+--- r1/plan.json
++++ r2/plan.json
+@@ -8,11 +8,15 @@
+   },
+   "original_capture": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current32-capture-template",
+   "original_capture_manifest_sha256": "4ef2ede9abbd8333cb598381a389b751baf8af500d84f6da14f431a5b6594dea",
+-  "output_root": "/private/tmp/unfold-s9a-thirtysecond/child-native-observation",
++  "output_root": "/private/tmp/unfold-s9a-thirtysecond/child-native-observation-r2",
++  "prior_red_proposal_manifest_sha256": "5517a4bb518045f5e92f54b3ba61b2eb833ae0ecce59198b47f800f0198700d2",
++  "revision": "R2: exact live type-preserving mutation checks and same-existing-JSON-pipeline root comparison; R1 preserved RED",
+   "runtime": "root only, serial after matrix, each input parsed once",
+   "saved_inputs": {
+     "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/nested147-current32-audit/all147-rows.json": "cb1eece3659feeaf5163b2f400fe05a728517a8f344788f1e87054db1d4665fa",
+     "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/nested147-current32-audit/manifest.json": "bdd336bdbe613006ce6e8d19f5ee770bf1b80a27d4b7b864b1f2a7cd934f5989",
++    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/thirtysecond/child-native-observation-r1/manifest.json": "6c9af369cc51fc452d83a815357fe0e4f28ed94e20a486d90db50ad32330dd32",
++    "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/thirtysecond/child-native-observation-r1/saved-ir-deltas.json": "80d615efd8512968683b8efcc8bf26015d9a3cbdd0297a2b60785303f6e3aaef",
+     "/private/tmp/unfold-s9a-thirtysecond/current-pages/capture/auraflow-v0-3/address-evidence.json": "cba307a8f13b42c286e23e70a8f2da315c9f82f2dccd38440a389d50218e3f26",
+     "/private/tmp/unfold-s9a-thirtysecond/current-pages/capture/auraflow-v0-3/input.json": "0faef033042a3539fe40aca27ceefd3dc547a6608780cdc3ce0632b3f49fbeb9",
+     "/private/tmp/unfold-s9a-thirtysecond/current-pages/capture/auraflow-v0-3/ir-before-render.json.gz": "9b593d0301ac833c983fa95c3970c048ba8ae54255fc137c86125f458b868c00",

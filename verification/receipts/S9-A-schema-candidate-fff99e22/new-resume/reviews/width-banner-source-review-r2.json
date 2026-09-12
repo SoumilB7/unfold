@@ -1,0 +1,34 @@
+{
+  "verdict": "PASS_BOUNDED_SOURCE_REVIEW",
+  "reviewer": "placement_executor",
+  "reviewed_manifest_sha256": "3f1b60021aecd56489bdd7b09e39f7b4d4c88a276d27d60cffface35afc00dc9",
+  "hash_checks": [
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "sha256": "3654ac39df7ff32da5cf7bbba715ba1557b926c00eda5d7c799c86dd59015fa7",
+      "held_matches": true,
+      "live_matches": true
+    }
+  ],
+  "prior_review": "width-banner-source-review-r1.json",
+  "r1_closed": "The exact stats_banner/model.hidden_size pair no longer enters occurrence-candidate collection. Missing fact-key validation still runs first, original event/receipt survives, and canonical source_instance_path positives are collected independently before the exclusion.",
+  "accepted_tests_source": [
+    "Actual qualified source-default fact is proven to reach a real source-root static claim, so the original class/span trap is exercised.",
+    "Actual emitted banner event plus matching typed root inventory cannot create rendered/grouped placement; the scalar receipt remains in the original event.",
+    "Unknown cited keys still reject before the boundary.",
+    "Explicit canonical root block remains rendered with qualified or unstamped fact, and the latter retains its exact R4 finding."
+  ],
+  "limits": [
+    "Finite stats-banner scalar exclusion only; no claim that other legacy source-span joins are migrated.",
+    "Source/hash inspection only by reviewer; root owns test/model execution and actual artifact enumeration.",
+    "No output blessing or architecture/proof upgrade approval."
+  ],
+  "blocking_findings": [],
+  "output_approval": false
+}

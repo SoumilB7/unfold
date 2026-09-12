@@ -1,0 +1,156 @@
+{
+  "scope": "Exact independent seventh RETURN; D1/D2 and bounded norm/width source acceptance, E1 returned; no runtime or output approval",
+  "files": [
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/review.md",
+      "archived": "seventh-independent-review/review.md",
+      "bytes": 4759,
+      "sha256": "af8d79421bcdd35b85bbf366590051c30b7eed8b655cde89e7a7089c5e40ee43"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "archived": "seventh-independent-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 36007,
+      "sha256": "3dfc93e5f318b4fd1d41268fe4855e5a6e538071208eb6a067e12b06d042db0b"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "archived": "seventh-independent-review/source/model_unfolder/adapters/diffusor/projection_ir.py",
+      "bytes": 69133,
+      "sha256": "678c5a23c67202e0b82b6b13d3895785fced37baf35bb5014e3723e4ee52cdcf"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/adapters/diffusor/schema.py",
+      "archived": "seventh-independent-review/source/model_unfolder/adapters/diffusor/schema.py",
+      "bytes": 20983,
+      "sha256": "2e7ebfc4171edd8d57c7ace38b92fc4dbae2f6d2cf7c22f29426606f055d9580"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/claim_evidence.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/claim_evidence.py",
+      "bytes": 19641,
+      "sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/decoder_norm.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/decoder_norm.py",
+      "bytes": 28692,
+      "sha256": "e7d45d7bfa61fc206cc08a2ca9d6cdd3ada15e6914e78b9ea25ec4781eaa5ea8"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_block.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_block.py",
+      "bytes": 34184,
+      "sha256": "11ce8a5183153f9bbbcc662e0b14488e42bef8e802e7dfc8cebeeb471d4fe310"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_bookends.py",
+      "bytes": 31653,
+      "sha256": "4937bbfc9ae6a372e53721ff994794768a2f0b8035d64158b4ace2d44f958848"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_conditioning.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_conditioning.py",
+      "bytes": 29011,
+      "sha256": "10e8886d802ab091355edefb04a6d944af5e836a8673173b324597c2ad1afd9b"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_root.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_root.py",
+      "bytes": 23638,
+      "sha256": "cf1d123b041c187e2f140327f01e29f4cdf98b6cb9294c5b950e79a2c6b481cd"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 45113,
+      "sha256": "834257317f37206307c569c66c8ae14c5f14cc71a06c326529b328c75047c32b"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/diffusion_stream.py",
+      "bytes": 73016,
+      "sha256": "40a8db41ad74ab46bc40c9cfcee1e6d3f67221f3105fce19d5c8034e821271d7"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/document.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/document.py",
+      "bytes": 18663,
+      "sha256": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/embedding_bookend.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/embedding_bookend.py",
+      "bytes": 13804,
+      "sha256": "11c2f5187a59e25c3df1695aeb36c08e6efd23a1c9ece81d524a5db133ffad58"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/expert_storage.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/expert_storage.py",
+      "bytes": 66066,
+      "sha256": "0656261dae855dcd35f35ea45e465da023cb973d845e9a55ec28a5d096999cb2"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/expert_width.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/expert_width.py",
+      "bytes": 28826,
+      "sha256": "1f02db0fb6e75f269c6552591c4e7e04a407022bba5efc0489b330ebf4952b81"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/ffn_width.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/ffn_width.py",
+      "bytes": 12581,
+      "sha256": "003ea2ebc78a5316d290123435a025db46ac13c3345814bcdd4a6312ab74bab3"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/reader_claims.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 27817,
+      "sha256": "e363aaac3efe29f57267115969202a862abb67db7d89b7eb32a5957b5e7a0949"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/model_unfolder/evidence/reader_result.py",
+      "archived": "seventh-independent-review/source/model_unfolder/evidence/reader_result.py",
+      "bytes": 12211,
+      "sha256": "18413ab772617e0e9d5fc60880d6bbc5aec51501f2473eac75b6bb002d0de30e"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/tests/test_diffusion_reader_claims.py",
+      "archived": "seventh-independent-review/source/tests/test_diffusion_reader_claims.py",
+      "bytes": 9783,
+      "sha256": "d7fc82bb3bb78792b8bb46ee942c3bf69a3d7a92be9bbe2805dd239a8201ef14"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/tests/test_expert_storage.py",
+      "archived": "seventh-independent-review/source/tests/test_expert_storage.py",
+      "bytes": 24801,
+      "sha256": "01a86aec93cef73fc44e968b34a8e70c905958a583b74596e7d243bff128519b"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/tests/test_reader_claims.py",
+      "archived": "seventh-independent-review/source/tests/test_reader_claims.py",
+      "bytes": 29178,
+      "sha256": "71748b9e6149aca0f0ea153354f4812fac34ea8e3b5a203644b271d02dcdb2fa"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source/tests/test_s9_norm_claims.py",
+      "archived": "seventh-independent-review/source/tests/test_s9_norm_claims.py",
+      "bytes": 7294,
+      "sha256": "a37d0fb5c4e6efccd9de09aaba7f7f045c4f055c95b012ef0b14f03a3b12ba63"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/source-pins.json",
+      "archived": "seventh-independent-review/source-pins.json",
+      "bytes": 6240,
+      "sha256": "b921bc52e75115c608b1760de71f25e13496ae30ed8226492079f8b2aa41f923"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-independent-seventh-review/verdict.json",
+      "archived": "seventh-independent-review/verdict.json",
+      "bytes": 952,
+      "sha256": "981fcd19e89388055fb500f75fbe6dd8f09a25655bfbb3e5762ed00222f54403"
+    }
+  ],
+  "all_original_and_copy_bytes_equal": true
+}

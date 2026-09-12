@@ -1,0 +1,33 @@
+........................................................................ [ 45%]
+........................................................................ [ 90%]
+........F.......                                                         [100%]
+=================================== FAILURES ===================================
+_____________ test_every_registry_drawable_fact_is_actually_drawn ______________
+
+    def test_every_registry_drawable_fact_is_actually_drawn():
+        """Projection obligation: a registered fact that DECLARES a drawable surface
+        must be drawn on it — the registry's obligation is real, not decorative."""
+        unmet = []
+        for name, definition in REGISTRY.items():
+            for surface in definition.projections:
+                drawn = _SURFACE_DRAWN.get(surface)
+                if drawn is not None and name not in drawn:
+                    unmet.append(f"{name}: registry promises {surface} but it is not drawn there")
+>       assert not unmet, "unmet projection obligations:\n" + "\n".join(unmet)
+E       AssertionError: unmet projection obligations:
+E         spatial_mechanisms: registry promises architecture_view but it is not drawn there
+E         cell_arithmetic: registry promises architecture_view but it is not drawn there
+E         context_connections: registry promises architecture_view but it is not drawn there
+E         cell_connections: registry promises architecture_view but it is not drawn there
+E         runtime_primitives: registry promises architecture_view but it is not drawn there
+E         stage_join_connections: registry promises architecture_view but it is not drawn there
+E         ffn_mechanisms: registry promises architecture_view but it is not drawn there
+E         primary_state_ports: registry promises architecture_view but it is not drawn there
+E         constructed_stage_relations: registry promises architecture_view but it is not drawn there
+E         constructed_modules: registry promises architecture_view but it is not drawn there
+E       assert not ['spatial_mechanisms: registry promises architecture_view but it is not drawn there', 'cell_arithmetic: registry promi...t it is not drawn there', 'stage_join_connections: registry promises architecture_view but it is not drawn there', ...]
+
+tests/test_projection_obligations.py:128: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn
+1 failed, 159 passed in 67.61s (0:01:07)

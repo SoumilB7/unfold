@@ -1,0 +1,27 @@
+# Config-declared DECODER-NESS evidence (U2 mask default-kill).
+#
+# The attention mask's DIRECTION (causal vs bidirectional) follows from
+# whether the drawn stack is an autoregressive decoder.  That is declared by
+# the config itself through this GENERAL vocabulary — never asserted from a
+# dataclass default and never guessed from a per-model table:
+#
+#   * ``is_decoder: true``  — the config's own flag (checked in the parser);
+#   * an ``architectures[]`` entry whose class-role SUFFIX names a causal-LM
+#     head (the config's own declaration of the generative task);
+#   * a decoder-only *generation wrapper* suffix (VLMs such as
+#     Qwen2-VL / LLaVA) — counts ONLY when the config does NOT declare
+#     ``is_encoder_decoder`` (T5/Whisper/MusicGen wrappers carry that flag);
+#   * a composite ``decoder=main`` slot (MusicGen) — the drawn stack IS the
+#     declared decoder component (resolved via composite_slots.yaml).
+#
+# When none of these declare decoder-ness and no schedule decides the mask,
+# the mask is a typed "unknown" (pale chip), never an asserted "causal".
+#
+# Block style (one `- item` per line) so the built-in loader works without PyYAML.
+
+causal_lm_suffixes:
+  - ForCausalLM
+  - LMHeadModel
+
+wrapper_generation_suffixes:
+  - ForConditionalGeneration

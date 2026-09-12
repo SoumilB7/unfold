@@ -1,0 +1,45 @@
+import ast,copy,hashlib,json,subprocess
+from pathlib import Path
+root=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg')
+out=root/'verification/receipts/S8-archive-lint-correction-4df71c8';out.mkdir(exist_ok=True)
+changes={
+ 'verification/receipts/S8-final-coverage-7168440/unfold-s8-coverage-capture.py':{'hashlib'},
+ 'verification/receipts/S8-final-render-7168440/unfold-s8-typed-delta-audit.py':{'re','hashlib','gzip'},
+ 'verification/receipts/S8-final-render-7168440/unfold-s8-typed-persist.py':{'html'},
+}
+rows=[]
+for rel,names in changes.items():
+ p=root/rel;before=subprocess.check_output(['git','show','4df71c8:'+rel],cwd=root);assert p.read_bytes()==before
+ archive=p.with_suffix('.executed.py.txt');archive.write_bytes(before)
+ oldtree=ast.parse(before);newtree=copy.deepcopy(oldtree);removed=[]
+ for node in newtree.body:
+  if isinstance(node,ast.Import):
+   removed.extend(a.name for a in node.names if a.name in names)
+   node.names=[a for a in node.names if a.name not in names]
+ newtree.body=[n for n in newtree.body if not isinstance(n,ast.Import) or n.names]
+ assert set(removed)==names and len(removed)==len(names)
+ text=before.decode();lines=text.splitlines(keepends=True)
+ for node in oldtree.body:
+  if isinstance(node,ast.Import) and any(a.name in names for a in node.names):
+   assert node.lineno==node.end_lineno and all(a.asname is None for a in node.names)
+   kept=[a.name for a in node.names if a.name not in names]
+   lines[node.lineno-1]='import '+','.join(kept)+'\n' if kept else ''
+ after=''.join(lines).encode();assert ast.dump(ast.parse(after),include_attributes=False)==ast.dump(newtree,include_attributes=False)
+ p.write_bytes(after)
+ rows.append({'original_path':rel,'original_executed_sha256':hashlib.sha256(before).hexdigest(),'historical_archive':str(archive.relative_to(root)),'historical_archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'cleaned_runnable_path':rel,'cleaned_sha256':hashlib.sha256(after).hexdigest(),'removed_unused_standard_library_imports':sorted(names),'ast_otherwise_equal':True,'cleaned_copy_executed_in_historical_campaign':False})
+render=root/'verification/receipts/S8-final-render-7168440';idx=render/'artifact-sha256.json';oldidx=idx.read_bytes();(render/'artifact-sha256.executed-4df71c8.json').write_bytes(oldidx)
+for entry in rows:
+ if entry['original_path'].startswith(str(render.relative_to(root))):
+  key=Path(entry['original_path']).name;assert json.loads(oldidx)[key]==entry['original_executed_sha256']
+for dirname in ('S8-final-render-7168440','S8-final-coverage-7168440'):
+ p=root/'verification/receipts'/dirname/'README.md';s=p.read_text();s+='\nArchived script packaging: exact historical executed bytes are retained as `.executed.py.txt` beside the maintained `.py` replay copies. The latter remove only named unused standard-library imports and were not the scripts executed in the recorded campaign. Original path/hash → archive/current copy mapping and exact AST comparison are in S8-archive-lint-correction-4df71c8. The final-render original artifact index is preserved verbatim as artifact-sha256.executed-4df71c8.json; the current index pins current packaging without restamping historical execution.\n';p.write_text(s)
+idx.write_text(json.dumps({str(p.relative_to(render)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(render.rglob('*')) if p.is_file() and p!=idx},indent=2,sort_keys=True)+'\n')
+(out/'source-map.json').write_text(json.dumps(rows,indent=2)+'\n');(out/'original-render-index.json').write_bytes(oldidx)
+(out/'README.md').write_text('''# Archived replay script lint correction
+
+The original4df71c8 broad gate genuinely failed static lint on five unused imports in three archived scripts; full/preservation were correctly missing. This correction removes only those named standard-library import aliases from maintained runnable `.py` copies. Every exact executed source remains beside it as `.executed.py.txt`; original execution hashes and original final-render artifact index are preserved verbatim. source-map.json resolves historical filenames to those exact archives and separately pins the cleaned copies, which are not claimed to have executed in any historical campaign.
+
+AST comparison proves no other statement, expression, import alias or source behavior changed. The unchanged static gate is rerun against all21 changed Python files from the failed commit. No production source, audit policy, baseline, test behavior or model output is altered. The next complete serial coordinator remains required.
+''')
+(out/'correction.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps(rows,indent=2))

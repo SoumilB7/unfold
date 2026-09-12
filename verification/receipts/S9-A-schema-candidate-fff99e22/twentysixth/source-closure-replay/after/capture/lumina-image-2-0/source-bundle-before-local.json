@@ -1,0 +1,49 @@
+{
+  "bundle": {
+    "architecture": "Lumina2Transformer2DModel",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Lumina2Transformer2DModel",
+      "text_encoder": "Gemma2Model"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_lumina2.py"
+      ],
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+      ]
+    },
+    "component_model_types": {
+      "text_encoder": "gemma2"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_lumina2.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+    ],
+    "import_roots": {
+      "root": [
+        {
+          "package": "diffusers",
+          "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+        }
+      ]
+    },
+    "model_id": "Alpha-VLLM/Lumina-Image-2.0",
+    "model_type": null,
+    "pipeline_components": [
+      "text_encoder"
+    ],
+    "source": "local",
+    "supporting_files": {
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/configuration_gemma2.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

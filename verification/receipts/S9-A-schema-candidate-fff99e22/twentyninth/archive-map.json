@@ -1,0 +1,56 @@
+{
+  "status": "RETURNED_SOURCE_AND_RUNTIME",
+  "targeted": "299 passed / 6 failed; six child-default positives remain unresolved",
+  "source_return": "scalar banner must not count constructor occurrence as rendered",
+  "no_bless": true,
+  "files": [
+    {
+      "path": "changed-sources.tar.gz",
+      "sha256": "7b3223a4f13ef06bfeb651b913d39b7eda274abbd3d331909437a2dfefeb7964"
+    },
+    {
+      "path": "composition.json",
+      "sha256": "b2b7dd74753b0181b94b5d5a36bd74a6c09b44ded6c82bb760a1bb275cbccbef"
+    },
+    {
+      "path": "qualification/correction-focus.log",
+      "sha256": "74fd9d8873d2d2032957a95ce930ed749e8131decc5a02e053780fde63fba572"
+    },
+    {
+      "path": "qualification/result.json",
+      "sha256": "c6b4c6ef09a1cd6aa2683ad20c0747dc1711cca0ae4c14a921cd97f273b87022"
+    },
+    {
+      "path": "qualification/scope.json",
+      "sha256": "08b3c7c6fcc8495e64c231794403e1c5f4b15cbca475d6675eb644605266f9bf"
+    },
+    {
+      "path": "qualification-r2/correction-focus.log",
+      "sha256": "c8622c7803233ae7842a417815514f95ed73671f089c79fb6e4ab64a333ccb5b"
+    },
+    {
+      "path": "qualification-r2/result.json",
+      "sha256": "aa6193b89b4eb12b862866580ca3f240a86f074145014b09440caf8ef70ba072"
+    },
+    {
+      "path": "qualification-r2/scope.json",
+      "sha256": "4d727f2dafc6dbf96cdd2e205a089cdeb74ccc0beb8277368830a5b729633093"
+    },
+    {
+      "path": "run-r2.py",
+      "sha256": "cc251f650ad83c780e46c17f5a2a73918a87dc272dc1eaaa3a5df884d28b6f78"
+    },
+    {
+      "path": "run.py",
+      "sha256": "dc855a7edc4a1c604155e8e3e5e6602988bc686c2b0e5082869ccf6dde2ac3cf"
+    },
+    {
+      "path": "s10-receipt-inputs.json",
+      "sha256": "69ecc79834ee454d81c884dc4373d0c2cbde739bf84bd7421471e1394ed609f1"
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "defb490e5960b19770a9174efa3caf9a85e75a6ff800bcd2684a2b7092cab0e7"
+    }
+  ]
+}

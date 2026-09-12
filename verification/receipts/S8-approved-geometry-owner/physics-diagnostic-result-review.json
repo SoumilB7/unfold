@@ -1,0 +1,58 @@
+{
+  "all_before_finally_pins_equal": true,
+  "decision": "ACCEPT isolated unchanged control results; no historical cause or whole green claim.",
+  "limits": [
+    "Samples do not measure a true peak.",
+    "Original broad-run memory samples and UNet typed failures remain unavailable.",
+    "No evidence from these diagnostics warrants modifying model facts, test limits, or memory enforcement."
+  ],
+  "next_action": "Use documented existing --workers 2 setting for a fresh whole coordinator with unchanged source, targets, assertions and serial lanes, once independent actual telemetry review accepts.",
+  "results": {
+    "memory": {
+      "failure": {
+        "detail": "process-tree RSS 1110507520 exceeded 1073741824 bytes",
+        "kind": "MemoryLimitExceeded",
+        "stage": "construct"
+      },
+      "max_sampled_rss": 1110507520,
+      "memory_limit": 1073741824,
+      "original_termination": "memory:1110507520",
+      "request": {
+        "config": {
+          "bytes": 3221225472,
+          "chunk_bytes": 67108864
+        },
+        "memory_limit_bytes": 1073741824,
+        "timeout_seconds": 30
+      },
+      "returncode": -9,
+      "sample_count": 57,
+      "status": "failed",
+      "stdout_tail_length": 0,
+      "supervisor_seconds": 1.9377340828068554,
+      "timeout": 30,
+      "wrapper_seconds": 3.72547800000757
+    },
+    "noisy": {
+      "failure": null,
+      "max_sampled_rss": 222822400,
+      "memory_limit": 8589934592,
+      "original_termination": null,
+      "request": {
+        "config": {
+          "characters": 1048576
+        },
+        "memory_limit_bytes": 8589934592,
+        "timeout_seconds": 10
+      },
+      "returncode": 0,
+      "sample_count": 96,
+      "status": "ok",
+      "stdout_tail_length": 65536,
+      "supervisor_seconds": 3.114632667042315,
+      "timeout": 10,
+      "wrapper_seconds": 5.081138583831489
+    }
+  },
+  "reviewer": "root"
+}

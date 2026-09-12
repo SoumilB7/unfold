@@ -8,6 +8,7 @@ def build_norm(layer: dict, hidden: int | None, group_path: str) -> dict[str, An
     return {
         "kind":             layer.get("norm_kind"),
         "placement":        layer.get("norm_placement"),
+        "parallel_input_count": layer.get("parallel_norm_count"),
         "normalized_shape": hidden,
         "trace":            {"ir_path": f"{group_path}.norm_kind"},
     }

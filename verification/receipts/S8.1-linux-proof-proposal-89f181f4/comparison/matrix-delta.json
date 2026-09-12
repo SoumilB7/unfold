@@ -1,0 +1,42 @@
+[
+  {
+    "path": "$.artifacts.models/stable-diffusion-xl-base-1-0.json.gz",
+    "before": "886a13ba0f4740d73094cf68395e9e90b3add24da3d0e3dc2901303ff8adfd26",
+    "after": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd"
+  },
+  {
+    "path": "$.logical_artifacts.models/stable-diffusion-xl-base-1-0.json.gz",
+    "before": "af5c5a198db3bb221255c4ba524df7b70cf9074f4b5a405e6d254b56d09aa5c4",
+    "after": "f2b1d7d4c85f4fa9cdf88e87548c241ea6f8f13e13ad1da5f2b81f7b18e8ee10"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/claim_evidence.py",
+    "before": "ed4bc4ce0c70adc5b0bb63d8777d31763fb70aceba417d896e1747f1316e9cfe",
+    "after": "aa47c42df0bf15ef794719f89abff199a5d78cf5413dc78ec6219231f5f2a969"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/instance_population_claim.py",
+    "before": "23d3fa2ad281172119d9221624fb509e5fb699414ff5932716c0254f780e8cd4",
+    "after": "0a579faab86c3464e40e1fd31888d54179481df0c15da2660acaee079a04f9d7"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/program_index.py",
+    "before": "65770b7b8b202c195d699ce8efca36ed1a2f80e8bcd7cfcd9eff1d89fdb0c7a0",
+    "after": "3b3bdda9cc95f84a78324de723c421e2ed3f735ca037dd4fe564ffac74293da5"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/unet_cell_connections.py",
+    "before": "26ba4d7c79a25bdac37f24413423ab1f66d5f2505571307ccbce4e870ca17f72",
+    "after": "90f604be3d534e3a320ae98dfbe455a78f8d6c2275ead9a4dbef0e17bb0ef074"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/unet_claims.py",
+    "before": "70afe7bb3b77f33581dd508dc6a32b85fb36f9e9b42e1adeee155c00124c6395",
+    "after": "dbfd704a11ac41b1722c621acdb606ab217b0be435b7a2eee67005e0de1c5169"
+  },
+  {
+    "path": "$.sources.model_unfolder/evidence/unet_primary_ports.py",
+    "before": "b5d5c5ca183173290f807b09d70403b2f801fe457caff969f3055e8e5af59d54",
+    "after": "275ca8446917f3ba934146610d8a68d8ab62ff1d30a15ba3e92d64330c3466cc"
+  }
+]

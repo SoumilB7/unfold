@@ -1,0 +1,145 @@
+--- a/model_unfolder/adapters/transformer/parser.py
++++ b/model_unfolder/adapters/transformer/parser.py
+@@ -1224,15 +1224,25 @@
+         # The existing layer-count slot also accepts its exact prepared class
+         # default when the rest of this child is already shaped. This does not
+         # activate broad hydration or let a context-local candidate author it.
+-        if field == "num_hidden_layers" and resolution.state == "absent" \
+-                and resolution.source_kind != "class_default":
++        if field == "num_hidden_layers" and resolution.state == "absent":
+             from ...evidence.reader_claims import resolve_reader_operand
+-            prepared_default = resolve_reader_operand(
+-                cfg, (*_text_path, field), allow_aliases=True)
+-            if prepared_default is not None and not prepared_default.ambiguous \
+-                    and prepared_default.source_kind == "class_default" \
+-                    and prepared_default.default_premise is not None:
+-                return prepared_default
++            from ...evidence.receipts import value_status_hash
++            prepared_defaults = []
++            # Syntax aliases name distinct exact constructor-default addresses.
++            # Keep the supplying premise on that address; never move its value
++            # onto the canonical spelling or select between conflicting defaults.
++            for spelling in names:
++                prepared_default = resolve_reader_operand(
++                    cfg, (*_text_path, spelling), allow_aliases=True)
++                if prepared_default is not None and not prepared_default.ambiguous \
++                        and prepared_default.source_kind == "class_default" \
++                        and prepared_default.default_premise is not None:
++                    prepared_defaults.append(prepared_default)
++            if prepared_defaults:
++                if len({value_status_hash(item.value, "operand")
++                        for item in prepared_defaults}) != 1:
++                    raise ValueError("conflicting prepared class defaults for layer-count aliases")
++                return prepared_defaults[0]
+         return resolution
+ 
+     def _ignore_unselected_alias_spellings(canonical, exact_paths, reason):
+--- a/tests/test_s9_layer_count_alias_defaults.py
++++ b/tests/test_s9_layer_count_alias_defaults.py
+@@ -0,0 +1,106 @@
++"""Supported alias defaults retain their exact prepared layer-count address."""
++import copy
++import json
++from pathlib import Path
++
++import pytest
++
++from model_unfolder import config_to_ir
++from model_unfolder.adapters.transformer.parser import parse
++from model_unfolder.evidence.claim_evidence import validate_fact_claim
++from model_unfolder.evidence.config_access import bound_document, capture_events
++from model_unfolder.evidence.context import ParseContext
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
++from model_unfolder.evidence.receipts import value_status_hash
++
++
++def _bloom():
++    return json.loads((Path(__file__).parent / "sable_test_corpus" / "bloom.json").read_text())["config"]
++
++
++def test_actual_sparse_bloom_uses_constructor_alias_default_and_exact_schedule_hash():
++    cfg = _bloom()
++    assert cfg.pop("n_layer") == 70
++    context = ParseContext.build(cfg)
++    ir = config_to_ir(cfg, parse_context=context)
++    assert len(ir.layers) == 2
++    fact = context.facts.typed["decoder.attention.position_schedule"]
++    assert len(fact.value) == 2 and fact.status == "class_default"
++    assert fact.config_paths == ()
++    validate_fact_claim(fact, fact.claim_evidence)
++    counts = [e for e in context.config_access.events
++              if e.fact_key == "num_layers" and e.intent == "absent_default"]
++    assert len(counts) == 1 and counts[0].config_path == "n_layer"
++    assert counts[0].provenance == "class_default" and not counts[0].present
++    schedules = [e for e in context.config_access.events
++                 if e.fact_key == "position_schedule" and e.mechanism == "position_schedule"
++                 and e.intent == "absent_default"]
++    assert len(schedules) == 1 and schedules[0].config_path == "n_layer"
++    assert schedules[0].value_status_hash == value_status_hash(fact.value, fact.status)
++
++
++def test_actual_sparse_gpt2_uses_same_alias_slot_without_model_dispatch():
++    cfg = {"model_type": "gpt2", "architectures": ["GPT2LMHeadModel"],
++           "n_embd": 64, "n_head": 4, "vocab_size": 100}
++    context = ParseContext.build(cfg)
++    ir = config_to_ir(cfg, parse_context=context)
++    assert len(ir.layers) == 12
++    counts = [e for e in context.config_access.events
++              if e.fact_key == "num_layers" and e.intent == "absent_default"]
++    assert len(counts) == 1 and counts[0].config_path == "n_layer"
++    assert counts[0].provenance == "class_default" and not counts[0].present
++
++
++@pytest.mark.parametrize("overlay, expected", [
++    ({"n_layer": 2, "num_hidden_layers": 3}, None),
++    ({"n_layer": 2, "num_hidden_layers": 2}, 2),
++    ({"invented_layers": 99}, 0),
++])
++def test_alias_default_conflicts_are_rejected_equal_defaults_retain_address(overlay, expected):
++    cfg = _bloom()
++    cfg.pop("n_layer")
++    context = ParseContext.build(cfg)
++    document = PreparedDocument(cfg, copy.deepcopy(cfg), class_overlay=overlay)
++    with capture_events(context.config_access), bound_document(DocumentBinding("root", (), document)):
++        if expected is None:
++            with pytest.raises(ValueError, match="conflicting prepared class defaults"):
++                parse(cfg, context=context)
++            assert not any(e.fact_key == "num_layers" and e.provenance == "class_default"
++                           for e in context.config_access.events)
++        else:
++            ir = parse(cfg, context=context)
++            assert len(ir.layers) == expected
++            counts = [e for e in context.config_access.events
++                      if e.fact_key == "num_layers" and e.provenance == "class_default"]
++            if expected:
++                assert len(counts) == 1 and counts[0].config_path == "num_hidden_layers"
++            else:
++                assert counts == []
++
++
++@pytest.mark.parametrize("value", [None, 0])
++def test_present_alias_null_or_zero_never_falls_through_to_default(value):
++    cfg = _bloom()
++    cfg["n_layer"] = value
++    context = ParseContext.build(cfg)
++    document = PreparedDocument(cfg, copy.deepcopy(cfg),
++        class_overlay={"num_hidden_layers": 99, "n_layer": 2})
++    with capture_events(context.config_access), bound_document(DocumentBinding("root", (), document)):
++        ir = parse(cfg, context=context)
++    assert len(ir.layers) == 0
++    assert not any(e.fact_key == "num_layers" and e.provenance == "class_default"
++                   for e in context.config_access.events)
++
++
++def test_conflicting_present_aliases_never_choose_prepared_default():
++    cfg = _bloom()
++    cfg.update(n_layer=2, num_hidden_layers=3)
++    context = ParseContext.build(cfg)
++    document = PreparedDocument(cfg, copy.deepcopy(cfg), class_overlay={"n_layer": 99})
++    with capture_events(context.config_access), bound_document(DocumentBinding("root", (), document)):
++        ir = parse(cfg, context=context)
++    assert len(ir.layers) == 0
++    assert any(e.canonical == "num_hidden_layers" and e.intent == "ambiguous"
++               for e in context.config_access.events)
++    assert not any(e.fact_key == "num_layers" and e.provenance == "class_default"
++                   for e in context.config_access.events)

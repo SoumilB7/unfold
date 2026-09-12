@@ -1,0 +1,21 @@
+{
+  "outputs": {
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/llama-before36.png": "46a1d6a2d974b43cbe3b44aedf1ecc2ceb090201206e0812b8cb69dbb0bb45ed",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/llama-actual37.png": "aa79cc3d53fb93d9f347b809e2114105431ea070d8e48ddbdf25d03dd768f781",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/sdxl-before36.png": "c56613b7e191210b0fa0012851cf96f39f7be1e8781d6db5cadddd192189f5d5",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/sdxl-actual37.png": "ee339339b4768d17ec6ef7ee34c8282aac20dbbfdcbf72e20102e7c1d263810a",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/bloom-ordinary-before36.png": "e9bc605276e320426ea130c7e52f60796e0cadc90e738d7dbe15adc35c765d25",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/bloom-ordinary-actual37.png": "e9bc605276e320426ea130c7e52f60796e0cadc90e738d7dbe15adc35c765d25",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/bloom-sparse-before36.png": "94616d6aace515fad16ec4972afbd291ec2e0061302eb631e399678aec7fd30a",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/bloom-sparse-actual37.png": "2c9f0ea515d69f1301c9a14e4391bae0963811b90eb4fa8e7b8b372f596c2068",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/musicgen-ordinary-before36.png": "2c080d97231813be367ba883dcd5108b8bc0fe08405eb9b94fcdf92a9ebbbcc7",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/musicgen-ordinary-actual37.png": "2c080d97231813be367ba883dcd5108b8bc0fe08405eb9b94fcdf92a9ebbbcc7",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/musicgen-sparse-before36.png": "72d6eda523aea2607793e0dae5ec468daaaec80a2e770df9433940fb452d5fbc",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/musicgen-sparse-actual37.png": "169834ae64540bc22167bf0f475a0375422240b2e9f646f3492156d1c354d831",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/sdxl-nested.png": "a2292e8d84e5a8f7e26e7a57e2e2aa64e84612194dc98070b45112f16cd1b759",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/four-style-probe.png": "67e06de902a755397e39a8ec4f3223317a7725c3423b8fc2d69873c3c2a4ee55",
+    "z-docs/12-design/S9-schema/browser-thirtyseventh/index.html": "37fcef6e3ed2abd115b7323edc8347b37db23e0bcd604ba46aba1c22a70b2d4c",
+    "z-docs/12-design/S9-schema/current-thirtyseventh.html": "5049b512f763e0e1927385d7fb609ffb280c32d4dad171fe8d20123e8eb4874d"
+  },
+  "decision_before_sha256": "19ac4484a75c2fdbcc0e4a4e0676cc425eca72660ff255f48c7da919f08abe85"
+}

@@ -1,0 +1,734 @@
+[
+  {
+    "after": "hidden_act",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/config_audit/unread/0",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config_field_audit",
+    "before": "config_accessed_unprojected",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/0/check",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "unread config field 'hidden_act' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+    "before": "config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/0/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "model",
+    "before": "config_occurrence",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/0/surface",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/1/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/2/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/3/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/4/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/5/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/6/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/7/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/8/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/9/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/10/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/11/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/12/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/13/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/14/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/15/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/16/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/17/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/18/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/19/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/20/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/21/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/22/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/23/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/24/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/25/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/26/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/27/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/28/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/29/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/30/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/31/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/32/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/33/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/34/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/35/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/36/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/37/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/38/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/39/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/40/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/41/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/42/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/43/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/44/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config_accessed_unprojected",
+    "before": "config_standing_unconsumed",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/45/check",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/45/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before": "root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/46/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config_standing_unconsumed",
+    "before": "config_audit_incomplete",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/47/check",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before": "root.denoiser",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/47/message",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "config_occurrence",
+    "before": "model",
+    "disposition": "blocking_finding",
+    "path": "/extras/ship_findings/47/surface",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": {
+      "check": "config_audit_incomplete",
+      "message": "root.denoiser",
+      "surface": "model"
+    },
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/extras/ship_findings/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_field_audit evidence unresolved: unread config field 'hidden_act' \u2014 bind it to exact source-backed evidence, register exact owner/path debt, or scoped-ignore it with a non-architectural reason",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/2",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'act_fn' (spelled 'act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/3",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type' (spelled 'addition_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/4",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_embed_type_num_heads' (spelled 'addition_embed_type_num_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/5",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'addition_time_embed_dim' (spelled 'addition_time_embed_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/6",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'attention_head_dim' (spelled 'attention_head_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/7",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'block_out_channels' (spelled 'block_out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/8",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'center_input_sample' (spelled 'center_input_sample') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/9",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embed_type' (spelled 'class_embed_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/10",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'class_embeddings_concat' (spelled 'class_embeddings_concat') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/11",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_in_kernel' (spelled 'conv_in_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/12",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'conv_out_kernel' (spelled 'conv_out_kernel') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/13",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_dim' (spelled 'cross_attention_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/14",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'cross_attention_norm' (spelled 'cross_attention_norm') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/15",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'down_block_types' (spelled 'down_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/16",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'downsample_padding' (spelled 'downsample_padding') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/17",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'dual_cross_attention' (spelled 'dual_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/18",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim' (spelled 'encoder_hid_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/19",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'encoder_hid_dim_type' (spelled 'encoder_hid_dim_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/20",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'flip_sin_to_cos' (spelled 'flip_sin_to_cos') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/21",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'freq_shift' (spelled 'freq_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/22",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'in_channels' (spelled 'in_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/23",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'layers_per_block' (spelled 'layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/24",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_only_cross_attention' (spelled 'mid_block_only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/25",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_scale_factor' (spelled 'mid_block_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/26",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'mid_block_type' (spelled 'mid_block_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/27",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_eps' (spelled 'norm_eps') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/28",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'norm_num_groups' (spelled 'norm_num_groups') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/29",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_attention_heads' (spelled 'num_attention_heads') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/30",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'num_class_embeds' (spelled 'num_class_embeds') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/31",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'only_cross_attention' (spelled 'only_cross_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/32",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'out_channels' (spelled 'out_channels') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/33",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'projection_class_embeddings_input_dim' (spelled 'projection_class_embeddings_input_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/34",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_out_scale_factor' (spelled 'resnet_out_scale_factor') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/35",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_skip_time_act' (spelled 'resnet_skip_time_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/36",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'resnet_time_scale_shift' (spelled 'resnet_time_scale_shift') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/37",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'sample_size' (spelled 'sample_size') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/38",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_cond_proj_dim' (spelled 'time_cond_proj_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/39",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_act_fn' (spelled 'time_embedding_act_fn') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/40",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_dim' (spelled 'time_embedding_dim') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/41",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'time_embedding_type' (spelled 'time_embedding_type') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/42",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'timestep_post_act' (spelled 'timestep_post_act') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/43",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'transformer_layers_per_block' (spelled 'transformer_layers_per_block') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/44",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'up_block_types' (spelled 'up_block_types') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/45",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'upcast_attention' (spelled 'upcast_attention') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "disposition": "blocking_finding",
+    "path": "/warnings/46",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_accessed_unprojected evidence unresolved: config occurrence root.denoiser:'use_linear_projection' (spelled 'use_linear_projection') was accessed but never consumed into a spec field \u2014 it drove a branch or was discarded; wire it to a spec/ledger fact, or record it inspected-only / scoped-ignored",
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "path": "/warnings/47",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:act_fn (as act_fn) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "disposition": "blocking_finding",
+    "path": "/warnings/48",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_standing_unconsumed evidence unresolved: root.denoiser:norm_eps (as norm_eps) \u2014 accessed but neither consumed, scoped-ignored, nor exact pending debt",
+    "before": "Unresolved evidence \u2014 config_audit_incomplete evidence unresolved: root.denoiser",
+    "disposition": "blocking_finding",
+    "path": "/warnings/49",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  },
+  {
+    "after": "Unresolved evidence \u2014 config_audit_incomplete evidence unresolved: root.denoiser",
+    "disposition": "blocking_finding",
+    "operation": "added",
+    "path": "/warnings/50",
+    "reason": "Output delta awaits evidence-level review; this report never self-approves it."
+  }
+]

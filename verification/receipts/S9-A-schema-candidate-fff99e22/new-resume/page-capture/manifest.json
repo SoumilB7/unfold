@@ -1,0 +1,45 @@
+{
+  "scope": "Prepared source only. Root reviews and executes serially after frozen26 matrix; no model/product imports or runtime by executor.",
+  "files": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/page-capture/census.py",
+      "sha256": "6a4d6aa243a0c83a4406e749804c2fe93d0fedeb6013cd5d9295c3d56d40ce2a",
+      "bytes": 9252,
+      "archived24_sha256": "12bb6cf776a553fa3c38b5a0352b367caaf93c5dc1b7dac2cf9f735a57625994"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/page-capture/run-census.py",
+      "sha256": "647d3349dd9d41ea3ce22cae7c5ff556c15db016fb3c22a58dc73f602d3b17b3",
+      "bytes": 1994,
+      "archived24_sha256": "ba2cddb045d895d795e54477afaada8e9d6935ae1e828c214d4e15d5bbb0ee8c"
+    }
+  ],
+  "input_authority": "Active verification/s7/matrix.json supplies exact39 target addresses; matching active model artifact resolved_class.qualname re-points actual ParseContext root class exactly as archived24 did. No old historical fact-citation count dependency.",
+  "captured_outputs": [
+    "each input and active source/inventory hashes",
+    "source bundle",
+    "full current declarations and each available proof validated against actual fact",
+    "legacy-compatible facts",
+    "IR before render and after render",
+    "actual standalone HTML gzip and immediate per-family schema-twentysixth HTML publication",
+    "per-model CAPTURED/FAILED result with open proof and declaration lists"
+  ],
+  "claims_not_made": [
+    "S7 matrix exit",
+    "proof completeness for declaration-only facts",
+    "output approval or re-bless",
+    "browser visual acceptance",
+    "latency result"
+  ],
+  "guardrails": [
+    "immutable worktree basename required",
+    "new output directory required",
+    "existing phase model pages not overwritten",
+    "protected source/artifact fingerprints bracketed by existing _run_lane",
+    "external script source hash before/after",
+    "active S7 matrix bytes unchanged",
+    "all models attempted; nonzero exit for any failure"
+  ],
+  "suggested_command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/page-capture/run-census.py --tree .claude/worktrees/verify-s9-a-twentysixth --output-root /private/tmp/unfold-s9a-twentysixth/current-pages --pages-root ../z-docs/12-design",
+  "source_validation": "Both scripts parse under stdlib ast; no runtime performed."
+}

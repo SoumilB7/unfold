@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "28eac3822fe1fb37b376ad0c6918f4382800e475390e4058d25c1355790b5fca",
+  "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+  "input_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+  "resolved_class": {
+    "module": "transformers.models.qwen2_vl.modeling_qwen2_vl",
+    "qualname": "Qwen2VLForConditionalGeneration"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

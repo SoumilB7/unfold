@@ -1,0 +1,22 @@
+[
+  "verification/receipts/S8.1-portable-closure-60bd385e/README.md",
+  "verification/receipts/S8.1-portable-closure-60bd385e/checks/coverage.log",
+  "verification/receipts/S8.1-portable-closure-60bd385e/checks/progress.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/checks/result.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/checks/s7-stamp.log",
+  "verification/receipts/S8.1-portable-closure-60bd385e/committed_checks.py",
+  "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/committed_checks.py",
+  "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/record_install.py",
+  "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/recorder-source-review.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/driver-review/review.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/manifest.json",
+  "verification/receipts/S8.1-portable-closure-60bd385e/record_closure.py",
+  "verification/receipts/S8.1-portable-install-113d159f/README.md",
+  "verification/receipts/S8.1-portable-install-113d159f/committed_checks.py",
+  "verification/receipts/S8.1-portable-install-113d159f/install.executed.py",
+  "verification/receipts/S8.1-portable-install-113d159f/manifest.executed.json",
+  "verification/receipts/S8.1-portable-install-113d159f/manifest.json",
+  "verification/receipts/S8.1-portable-install-113d159f/owner-ruling-at-install.md",
+  "verification/receipts/S8.1-portable-install-113d159f/record_install.py",
+  "verification/receipts/S8.1-portable-install-113d159f/result.json"
+]

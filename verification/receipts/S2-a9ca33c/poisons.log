@@ -1,0 +1,175 @@
+.FF.FFF                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_source_line_table_is_built_once_and_get_source_segment_is_never_called __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1048ea780>
+
+    def test_source_line_table_is_built_once_and_get_source_segment_is_never_called(
+            monkeypatch):
+        calls = 0
+        real_split = program_index._split_source_lines
+
+        def counted(text):
+            nonlocal calls
+            calls += 1
+            return real_split(text)
+
+        monkeypatch.setattr(program_index, "_split_source_lines", counted)
+        monkeypatch.setattr(
+            ast, "get_source_segment",
+            lambda *_a, **_k: (_ for _ in ()).throw(
+                AssertionError("quadratic source splitting returned")))
+        walker, _tree = _walker(
+            "class Model:\n"
+            "    def __init__(self, config):\n"
+            "        self.layers = ModuleList([Block(config) for _ in range(4)])\n"
+            "    def forward(self, x):\n"
+            "        return self.layers[0](x)\n")
+>       walker.run()
+
+tests/test_s2_latency.py:79:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+model_unfolder/evidence/program_index.py:1384: in run
+    self._class(node, scope="")
+model_unfolder/evidence/program_index.py:1509: in _class
+    self._callable(stmt, owner=sym, scope=qual)
+model_unfolder/evidence/program_index.py:1521: in _callable
+    self._visit_stmts(node.body, guard=(), scan=scan)
+model_unfolder/evidence/program_index.py:1582: in _visit_stmts
+    self._stmt(stmt, guard, scan)
+model_unfolder/evidence/program_index.py:1607: in _stmt
+    self._assign(stmt, guard, scan)
+model_unfolder/evidence/program_index.py:1769: in _assign
+    scan.owner, scan.enclosing, self._expr(value),
+                                ^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/program_index.py:2388: in _expr
+    seg = self._seg(node)
+          ^^^^^^^^^^^^^^^
+model_unfolder/evidence/program_index.py:2361: in _seg
+    return ast.get_source_segment(self.text, node) or ""
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_s2_latency.py:71: in <lambda>
+    lambda *_a, **_k: (_ for _ in ()).throw(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <tuple_iterator object at 0x1046d7790>
+
+>   lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("quadratic source splitting returned")))
+E       AssertionError: quadratic source splitting returned
+
+tests/test_s2_latency.py:71: AssertionError
+___________ test_component_root_memo_is_index_local_and_prefix_exact ___________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-4743/test_component_root_memo_is_in0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1048eaae0>
+
+    def test_component_root_memo_is_index_local_and_prefix_exact(tmp_path, monkeypatch):
+        index, bundle = _root_fixture(tmp_path)
+        calls = 0
+        real = component_owner.resolve_owner_graph
+
+        def counted(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            return real(*args, **kwargs)
+
+        monkeypatch.setattr(component_owner, "resolve_owner_graph", counted)
+        first = component_owner.resolve_component_root(index, bundle, "root")
+        second = component_owner.resolve_component_root(index, bundle, "root")
+>       assert second is first and calls == 1
+E       AssertionError: assert (ComponentRootResolution(status='resolved', component_key='root', declared_architecture='Model', occurrence=OwnerOccurr...site=None, via_field='', via_kind='root', children=(), unresolved=()), conflicts=()), candidates=(), parse_failures=()) is ComponentRootResolution(status='resolved', component_key='root', declared_architecture='Model', occurrence=OwnerOccurr...site=None, via_field='', via_kind='root', children=(), unresolved=()), conflicts=()), candidates=(), parse_failures=()))
+
+tests/test_s2_latency.py:110: AssertionError
+______ test_decoder_candidate_memo_separates_bundle_and_selector_identity ______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-4743/test_decoder_candidate_memo_se0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1048eafc0>
+
+    def test_decoder_candidate_memo_separates_bundle_and_selector_identity(
+            tmp_path, monkeypatch):
+        index, bundle = _root_fixture(tmp_path)
+        calls = 0
+        sentinel = object()
+
+        def counted(*_args, **_kwargs):
+            nonlocal calls
+            calls += 1
+            return sentinel
+
+        monkeypatch.setattr(
+            decoder_block, "_decoder_block_candidates_for_config_uncached", counted)
+        select_a = lambda _path: None
+        select_b = lambda _path: None
+        assert decoder_block.decoder_block_candidates_for_config(
+            index, bundle, (), allow_root_stage=True,
+            config_selector=select_a) is sentinel
+        assert decoder_block.decoder_block_candidates_for_config(
+            index, bundle, (), allow_root_stage=True,
+            config_selector=select_a) is sentinel
+>       assert calls == 1
+E       assert 2 == 1
+
+tests/test_s2_latency.py:151: AssertionError
+______ test_everchanging_parse_is_content_keyed_and_results_are_isolated _______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-4743/test_everchanging_parse_is_con0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x104a70230>
+
+    def test_everchanging_parse_is_content_keyed_and_results_are_isolated(
+            tmp_path, monkeypatch):
+        import yaml
+
+        root = tmp_path / "everchanging"
+        domain = root / "test"
+        domain.mkdir(parents=True)
+        path = domain / "vocab.yaml"
+        path.write_text("items: [one, two]\n")
+        old_mtime = path.stat().st_mtime_ns
+        calls = 0
+        real = yaml.safe_load
+
+        def counted(text):
+            nonlocal calls
+            calls += 1
+            return real(text)
+
+        monkeypatch.setattr(everchanging, "_DIR", root)
+        monkeypatch.setattr(yaml, "safe_load", counted)
+        everchanging.clear_load_cache()
+        first = everchanging.load("test", "vocab")
+        second = everchanging.load("test", "vocab")
+>       assert calls == 1 and first == second
+E       assert (2 == 1)
+
+tests/test_s2_latency.py:189: AssertionError
+___ test_latency_budgets_are_numeric_and_derived_from_the_recorded_baseline ____
+
+    def test_latency_budgets_are_numeric_and_derived_from_the_recorded_baseline():
+        document = json.loads(_BUDGETS.read_text(encoding="utf-8"))
+        assert document["schema_version"] == 1
+        assert document["library_imports_in_budget"] is False
+        for key in ("program_index_after_imports", "end_to_end_cold"):
+            record = document[key]
+            assert set(record["samples_seconds"]) == _REQUIRED_TARGETS
+            assert all(len(samples) == 3
+                       for samples in record["samples_seconds"].values())
+            medians = {
+                target: statistics.median(samples)
+                for target, samples in record["samples_seconds"].items()
+            }
+            assert medians == record["medians_seconds"]
+            measured_max = max(medians.values())
+            budget = record["budget_seconds"]
+            assert isinstance(budget, (int, float)) and not isinstance(budget, bool)
+>           assert measured_max < budget <= measured_max * 1.5
+E           assert 4.198 < 1.0
+
+tests/test_s2_latency.py:216: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s2_latency.py::test_source_line_table_is_built_once_and_get_source_segment_is_never_called
+FAILED tests/test_s2_latency.py::test_component_root_memo_is_index_local_and_prefix_exact
+FAILED tests/test_s2_latency.py::test_decoder_candidate_memo_separates_bundle_and_selector_identity
+FAILED tests/test_s2_latency.py::test_everchanging_parse_is_content_keyed_and_results_are_isolated
+FAILED tests/test_s2_latency.py::test_latency_budgets_are_numeric_and_derived_from_the_recorded_baseline
+5 failed, 2 passed in 0.26s

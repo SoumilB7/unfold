@@ -1,0 +1,26 @@
+{
+  "model_unfolder/adapters/diffusor/parser.py": {
+    "final5227": "96c4f809fcc971d566a9ad2d19d73d2b784127ddd494d3415ea7f66f138cba9b",
+    "original96": "2da1f1dc41eaec94cf2defa7fc6a35df8dd7a645eaa77ea08bfdacd2dfcb1758"
+  },
+  "model_unfolder/adapters/diffusor/unet_cutover.py": {
+    "final5227": "b832cfbc52d399fc7b60079ab6fbb84e87b0ed4c3d262a7f904a7b9f2dfd5c8e",
+    "original96": "c5fd32202221461c99ec312c35d0c448d2f4a2646ad70c0ea5a8bb57740750e9"
+  },
+  "model_unfolder/adapters/diffusor/unet_projection.py": {
+    "final5227": "08ab9f29b10678785dcc5a2f89c43b5a7cae5ac3597ab3b828a06eee6bbb4584",
+    "original96": "e3e955c0a025f8c7d780d4385e0d8f19bab438cb507a1f2f3871f3dbe4d1176c"
+  },
+  "model_unfolder/evidence/context.py": {
+    "final5227": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+    "original96": "eeff3eb8c1da9a36b2314e5e3ebeece778d5e817121b616df0dc7f528f60e09f"
+  },
+  "model_unfolder/renderers/html/block_views/unet.py": {
+    "final5227": "751155e32f10715b10c6fc04406542ad47e627f3200bb6c143d8b1fd507b91fa",
+    "original96": "9d052fa81bb50af0ae0db4f825486cd242b08c68cfa71b1b69afcf73136403f7"
+  },
+  "scripts/generate_s7_shadow.py": {
+    "final5227": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+    "original96": "d4f484c0d7d234ad686aa77833c449f0ff913069e8ff81b795a295f8083f23f6"
+  }
+}

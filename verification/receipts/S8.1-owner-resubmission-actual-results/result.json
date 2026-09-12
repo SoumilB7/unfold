@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "03b9eb40e30c7af6dd6ea2e50c4858edaee766b694b084d8720ddce66b6d9f87",
+  "artifact_map_sha256": "77a3d20ab5bc716525bfc8ec856e3dfe4693be0ade3ddc7e83c160760b874923",
+  "checks": [
+    "physical restoration",
+    "every original byte equal",
+    "raw and stored hashes/sizes",
+    "exact source file/directory membership",
+    "exact physical storage membership",
+    "unchanged executed tool and released plan"
+  ],
+  "directories": 250,
+  "elapsed_artifact_seconds": 34.63706258405,
+  "limitation": "Packaging does not alter any raw measurement, assertion, failure, or owner approval state.",
+  "plan_sha256": "614dee0224ae631d16451b75f8194e5a8bd046c91610b3ed482e05b46e038868",
+  "raw_bytes": 1054352479,
+  "status": "PASS_ARCHIVE_INTEGRITY_ONLY",
+  "stored_bytes": 35323644,
+  "streams": 1826,
+  "unique_raw_bytes": 420150203,
+  "unique_streams": 1038
+}

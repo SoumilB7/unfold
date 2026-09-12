@@ -1,0 +1,32 @@
+{
+  "calls": 2722,
+  "classes": 157,
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/musicgen-small.json",
+  "index_fingerprint": "ef03e8388554000cf5071dfc6e955902ced64c6ad9c72f26ad75ffb59113bc23",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 1.2307137078605592,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 1.101877750363201,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 1.2781544579192996,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    7.6533203125,
+    5.15185546875,
+    4.1142578125
+  ],
+  "mode": "program-index",
+  "name": "musicgen-small",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "seconds": 0.961493041832,
+  "source_nodes": 14
+}

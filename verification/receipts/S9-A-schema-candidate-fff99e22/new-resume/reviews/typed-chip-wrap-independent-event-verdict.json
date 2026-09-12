@@ -1,0 +1,17 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_BROWSER_AND_CURRENT_GENERATION_PENDING",
+  "proposal_manifest_sha256": "da92c41973cd615901b03f7ae431619d3b6eefc090be08b9107d529b39dee18c",
+  "source_before_sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+  "source_after_sha256": "8019b75e1d9349dc0b238e62c2f65f57c93c0431dfba033e321a004614967eb3",
+  "exact_change": "Eight-line insertion after the existing uf-fact nowrap rule, restricted to the four existing typed chip classes.",
+  "checks": [
+    "Full before and proposed source hashes match manifest and exact36/live-before. No other source bytes change.",
+    "Later same-specificity typed selectors override inherited nowrap with normal wrapping; overflow-wrap:anywhere handles unbroken identifiers.",
+    "Border-box max-width100% and min-width0 constrain flex chips to their actual card parent while preserving padding/borders. No overflow:hidden, ellipsis, line clamp, clipping, max-height or text mutation.",
+    "Four semantic chip classes keep their existing separate color, border and radius definitions. Ordinary uf-fact styling and every native value, proof, IR, receipt, graph, SVG and JavaScript producer remain unchanged."
+  ],
+  "limits": [
+    "Source reasoning is not browser visibility proof. Verify real644px and narrow cards, full text identity, actual no horizontal overflow and four style distinctions in browser; retain before/after screenshots.",
+    "Prepared CSS-inserted saved pages demonstrate this exact isolated rule. Final current-source pages and preservation outputs still require root generation and owner approval."
+  ]
+}

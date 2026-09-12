@@ -1,0 +1,33 @@
+{
+  "verdict": "PASS exact36 source composition/accounting only; runtime pending, no matrix or unit acceptance",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "source_archive_map_sha256": "c44770a19680deedd8029175d077f07b8b5d7e1f29e66920833c9cd73282ea9d",
+  "manifest_paths": 199,
+  "archive_members": 196,
+  "changes_vs35": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "after_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a",
+      "added": 6,
+      "deleted": 17
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "after_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be",
+      "added": 20,
+      "deleted": 0
+    },
+    {
+      "path": "tests/test_s9_shared_alias_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "6635e585ee23d1758eafa6949c13a4880c756a8994a51a80552703374c46a01d",
+      "added": 101,
+      "deleted": 0
+    }
+  ],
+  "other_python_changes": 0,
+  "semantic_review_limit": "Shared alias-default R2 independent semantic review by event:47504324733161506e63a20532529b8d635a9d2ad58034433d3f1c6c1add934c. This author accounting review supplies no self-issued semantic approval.",
+  "runtime_record_separate": "Focused36 root lane in progress at preparation; actual34 pages do not imply35 results."
+}

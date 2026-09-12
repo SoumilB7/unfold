@@ -1,0 +1,27 @@
+# Syntactic vocabulary for the U3 ProgramIndex walker (evidence/program_index.py).
+# The walker OBSERVES source; the few framework-syntactic tokens it must
+# recognize (the config-object binding, the activation dispatch idioms, the
+# container classes) are DATA here, never hardcoded in the walker — a new config
+# dialect or container idiom is a YAML edit.  Flow style so the file parses
+# without PyYAML.  Every entry is a flat token LIST (never a class -> fact
+# mapping), so this vocabulary carries no identity table.
+
+# Bare Name bindings that denote the config object: ``config.hidden_size`` /
+# ``config["hidden_size"]``.  ``self.config`` is recognized structurally (an
+# Attribute whose attr is one of these on ``self``), not listed here.
+config_roots: [config, text_config, vision_config, audio_config]
+
+# Subscript dispatch tables keyed by a config field: ``ACT2FN[config.hidden_act]``
+# -> a config read with form ``act2fn``.
+activation_dispatch: [ACT2FN, ACT2CLS]
+
+# Call forms that take a config field as their activation selector:
+# ``get_activation(config.hidden_act)`` -> a config read with form
+# ``get_activation``.
+activation_calls: [get_activation]
+
+# Container constructors whose ELEMENTS are the real per-slot construction sites
+# (``self.layers = nn.ModuleList([Block(config) for i in range(n)])``).  The
+# container KIND is derived by lowercasing the class name (ModuleList ->
+# modulelist), so this stays a flat list, not a class->fact identity table.
+container_classes: [ModuleList, Sequential, ModuleDict]

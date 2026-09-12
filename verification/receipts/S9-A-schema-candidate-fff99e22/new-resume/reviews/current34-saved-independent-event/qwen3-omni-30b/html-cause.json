@@ -1,0 +1,19 @@
+{
+  "after_bytes": 142583,
+  "after_sha256": "0f4456eaf3454c85a2f86c3c2559704fa06eaa0a896c890a016f750eeabbcf26",
+  "before_bytes": 142583,
+  "before_sha256": "f8284457c5f19f9b5fe328b50bae7f9a5ad33e1638cd8d982c059bc74afeebf9",
+  "exact_new_mount_occurrences": 187,
+  "exact_old_mount_occurrences": 187,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-7d79dc8eb1",
+  "mount_identity_before": "uf-c459e670dd",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 11,
+  "raw_ordered_svg_count_before": 11,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "qwen3-omni-30b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

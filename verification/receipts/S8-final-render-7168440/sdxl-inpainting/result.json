@@ -1,0 +1,29 @@
+{
+  "base_case": "/private/tmp/unfold-s8-context-phase-5227e9c/sdxl-inpainting",
+  "blessed": false,
+  "canonical_facts_unchanged": true,
+  "case": "sdxl-inpainting",
+  "checkout": "/private/tmp/unfold-s8-final-verification-7168440",
+  "checks": {
+    "label_lint": [],
+    "projection_audit": [],
+    "validate_block_tree": [],
+    "validate_click_coupling": [],
+    "validate_no_dotted_arrows": [],
+    "validate_no_dotted_boundaries": [],
+    "validate_unique_ref_ids": []
+  },
+  "commit": "7168440c81a3e79b1e220437e2f9fa77e25bc296",
+  "elapsed_seconds": 22.139,
+  "event_deltas": "event-deltas.json",
+  "fact_case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-inpainting/ordinary",
+  "historical_model_source_run_preserved": true,
+  "html_sha256": "cea6daff923346ca9df3a2196acc391a513b8a1c11dca7070ca26fb6f505c951",
+  "ir_deltas": "ir-deltas.json",
+  "no_model_or_execution": true,
+  "prior_html_sha256": "379da64e2fff106ed322bfbb002001a6f113d2604e260180fb6af78767f8a7b7",
+  "quantities_exact": true,
+  "status": "PASS",
+  "summary_proof_dir": "/private/tmp/unfold-s8-summary-proofs-7168440-resume/sdxl-inpainting",
+  "svg_deltas": []
+}

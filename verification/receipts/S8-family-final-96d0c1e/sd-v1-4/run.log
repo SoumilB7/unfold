@@ -1,0 +1,16 @@
+{
+  "recipe_status": "ok",
+  "constructed": 709,
+  "total_occurrences": 1088,
+  "execution": {
+    "observed": 621,
+    "execution_unresolved": 88,
+    "proven_inactive": 379
+  },
+  "projection": {
+    "rendered": 707,
+    "non_architectural": 2,
+    "projection_unresolved": 379
+  },
+  "lost_positive_paths": []
+}

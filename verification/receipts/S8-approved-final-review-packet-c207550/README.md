@@ -1,0 +1,7 @@
+# Final S8 review packet
+
+S8 is DONE after explicit output approval, nineteen guarded reproofs, scoped baseline updates and the complete actual c207550 two-worker whole verification. All six lanes pass; full 4,445 passed, zero failed, fourteen skipped and two expected failures; preservation 52 passed. Final independent and owner reviews accept the result and named limits. No push or release.
+
+The four gzip files restore the exact final canonical sheet, owner review and decision pages. Their current paths, original hashes, stored hashes and byte counts are in `canonical-snapshot-manifest.json`; all restored bytes and current sources were checked. The exact executed snapshot tool is archived as text. The supplementary growth proof excludes baseline/gallery/receipt/doc artifacts; the five-file Python preflight is preparation evidence, with exact committed static checks performed after the artifact commit.
+
+The actual run remains attributed to c207550. Earlier red gates, the interrupted f536 attempt and three isolated diagnostic passes remain separate immutable receipts. The complete final run is `../S8-approved-workers2-full-verification-c207550/`; its independent review is `../S8-approved-workers2-independent-c207550/`. The sampled-RSS contract, unretained historical failure causes, selected 59 installed-source plus one cached-config scope, and remaining S7/S9/S12 limits are explicit in the final sheet.

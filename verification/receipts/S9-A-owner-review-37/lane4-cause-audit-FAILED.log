@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit.py", line 391, in <module>
+    main()
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit.py", line 314, in main
+    baseline, current = packet('baseline', BASELINE), packet('current37', CURRENT)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit.py", line 172, in packet
+    assert len(originals) == 1
+           ^^^^^^^^^^^^^^^^^^^
+AssertionError
+LANE4_EXIT=1

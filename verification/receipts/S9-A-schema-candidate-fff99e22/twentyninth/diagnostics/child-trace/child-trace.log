@@ -1,0 +1,32 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_exact_constructed_child_literal_is_qualified_without_root_borrowing[False] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0')
+factory = False
+
+    @pytest.mark.parametrize('factory', [False, True])
+    def test_exact_constructed_child_literal_is_qualified_without_root_borrowing(tmp_path, factory):
+        result, index, document, _ = _child(tmp_path, factory=factory)
+>       assert result.status == 'resolved', result.failures
+E       AssertionError: (ReaderFailure(kind='unsupported_syntax', detail='no exact own-class hidden-size literal default for this selected document/absence', span=None),)
+E       assert 'failed' == 'resolved'
+E         
+E         - resolved
+E         + failed
+
+tests/test_s9_child_class_default.py:50: AssertionError
+_________ test_expanded_json_completes_qwen2_audio_sparse_text_config __________
+
+    def test_expanded_json_completes_qwen2_audio_sparse_text_config():
+        data = unfold(QWEN2_AUDIO_SPARSE_CONFIG, return_json=True)
+    
+>       assert data["dimensions"]["hidden_size"] == 4096
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'hidden_size'
+
+tests/test_expanded_json.py:327: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_s9_child_class_default.py::test_exact_constructed_child_literal_is_qualified_without_root_borrowing[False]
+FAILED tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config
+2 failed in 47.55s

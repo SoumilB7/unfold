@@ -1,0 +1,53 @@
+{
+  "actual_budget_checks": {
+    "log_sha256": {
+      "focused-budget.log": "2d6177288d1e652f4dfe00725682c72d31e0e330c96084a367b8f171d757cbf7",
+      "static.log": "3b86e7a1878af1d0f9e639aab3d437ee48847ddaf7dede21652c2450c780768f"
+    },
+    "passed": 48,
+    "pytest_seconds": 1.03,
+    "result_sha256": "208f3f86b15d3a561b87a033632d78fba0db5a637056ab788d14e0b0611848cd",
+    "static": "PASS2changedPythonfiles"
+  },
+  "actual_output_checks": {
+    "preservation": {
+      "passed": 52,
+      "pytest_seconds": 422.34
+    },
+    "s5": {
+      "passed": 1,
+      "pytest_seconds": 57.85
+    },
+    "s7": {
+      "passed": 1,
+      "pytest_seconds": 8.36
+    }
+  },
+  "checks": [
+    "Guarded installed four outputs match exact independent approval/current/committed hashes.",
+    "Original52preservation and S5/S7 checks passed on installed output commit; lane source/tool/blessed fingerprints and actual60external hashes unchanged.",
+    "Separate fourfile baseline commit matches reviewed baseline/checker/tests/docs only; no production changes.",
+    "All12timings/hosts/medians bound to original archived measurement bytes;43/13 computed by explicit owner-approved S2 method; seven old S2records preserved.",
+    "Current sheet scopes DONE-pending-Linux; historicalFAIL records are labelled historical, not rewritten. S10reader30/9target and S11N1/N2 are open."
+  ],
+  "decision": "ACCEPT_LOCAL_CLOSURE_PENDING_LINUX",
+  "independent_review_references": {
+    "approval-authority.json": "af1cef8901e317808c9958a913891d4f3ed857dc8f57c700a531079b9bc2d9bc",
+    "budget-contract-review.json": "eac5da4ec74c93bb62df8e8fa47988a1ac0b0ee63e434f88b62d20366aad0a9a",
+    "budget-runner-review.json": "336076db87ffec2e6389b83a32fe10f2645559e77e7cbed05daa3a00e01cecca",
+    "installation-verdict.json": "bc05dc1435b2274b44624f1eaa9c6b962561611e3952b8ba6384a7e8cbbb9156",
+    "output-closure-actual-review.json": "57361471949c1ef5def948b003f8160fdd93450acfb7fad3f788219cd5c9d58f",
+    "runner-baseline-review.json": "d9c74e008bf2e667faa1677a3f1cbc62c5a9ffec5de4ca2470131aeb6904fd38"
+  },
+  "limits": [
+    "No full12 or broad model/test rerun was required or performed by reviewer.",
+    "48passing controls validate recorded measured baseline; they are not new timing samples.",
+    "Local acceptance does not claim Linux passed."
+  ],
+  "measured_baseline_commit": "41a8039236c552429ffd6610675625eae559985b",
+  "output_commit": "b3624f2a46acaec09b3b097e8096ae6f28cf227e",
+  "remaining": [
+    "Push exact closing tree and complete native Linux lane.",
+    "Only Linux green permits DONE and unlocking S9."
+  ]
+}

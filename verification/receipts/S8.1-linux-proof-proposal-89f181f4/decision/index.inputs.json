@@ -1,0 +1,26 @@
+{
+  "input_sha256": {
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/final-87cde8d8/sd-v1-4.html": "88b0438ece33eca65a970ee72b0d407c1f794a248639f9bdcc9a486e62ef6506",
+    "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S8.1/final-87cde8d8/sdxl.html": "0b51dd3df1f5f236ad3f19c9e26a4cfc67f4215d1185317e25e56b163ec37e82",
+    "/private/tmp/unfold-s81-approved-linux/census-push-failed.log": "1b1a8f275bbf525fb48e16892df8366863e65e96b4c8b023886fa1b97da6b8e5",
+    "/private/tmp/unfold-s81-approved-linux/census-push-final.json": "9791f76d6f290a9e5029c66182aea408bc462baafcac62f51ac6b20463e79b26",
+    "/private/tmp/unfold-s81-portable-proof-candidate/manifest.json": "15026ed939b549b9af9d32c722d8380fb1cc2b8e7f6a47bf79ac849275ffe334",
+    "/private/tmp/unfold-s81-portable-proof-decision/build_page.py": "6b310e359ae307c01e1050df3a908cee75bcaa6ac3869ed94e1571e91cd2cb1d",
+    "/private/tmp/unfold-s81-portable-proof-decision/inputs.final.json": "78fdd59492a53dfb218ef198a070e323bc0d2be3b19d0eca473d25926f2a95b3",
+    "/private/tmp/unfold-s81-portable-proof-independent-review/actual-proposal-review.json": "8023d2d92a0aa813733bcc31b871838c370903f0779ca1bd14876e50967fddf3",
+    "/private/tmp/unfold-s81-portable-proof-preservation/preservation.log": "cbd6c61289497fe79248fb2d23c40c24cd493151a0d8c0135517ba6f97109bce",
+    "/private/tmp/unfold-s81-portable-proof-preservation/result.json": "e0cfbba0975eab9ebc605bf7e0a42c1cebc411d772110b3402b493e6eff43803",
+    "/private/tmp/unfold-s81-portable-proof-verification/portable-proof-controls.log": "2e8b50174e7cebc44a2502ff65bb2dc681fb3f94c84512e5363ed32a1d49ca3a",
+    "/private/tmp/unfold-s81-portable-proof-verification/result.json": "e3d10e5091d55e2ffa3e7a662eb35c81cb4460688dd464573ef0101a16658ef1",
+    "/private/tmp/unfold-s81-portable-proof-verification/sdxl/full-semantic-delta.json": "2d595f7d1fbf1c42a0809861b44b7d84ba7373295dac0767cdc60c9a6370e61c",
+    "/private/tmp/unfold-s81-portable-proof-verification/sdxl/matrix-delta.json": "479cbfde8b041f1076fcfe12d067c38af10573354d9d314a85f36f54d9d4c5b4",
+    "/private/tmp/unfold-s81-portable-proof-verification/sdxl/result.json": "33cdd215b49a41ebd4b1a60b280e2514e6764065b3fab4a5082e9cf688b988f7"
+  },
+  "linux_run": 34453756753,
+  "linux_status": "FAIL",
+  "new_model_test_browser_or_linux_execution": false,
+  "new_owner_approval_required": true,
+  "page_sha256": "818d2ba39399ecc578eacd3d28cca865d9e51e092777847e3fb3903890be5af6",
+  "preservation_state": "52/52 PASS; S5 example PASS; static PASS. Source and artifact fingerprints unchanged.",
+  "status": "OWNER_REVIEW_PENDING_NOT_DONE"
+}

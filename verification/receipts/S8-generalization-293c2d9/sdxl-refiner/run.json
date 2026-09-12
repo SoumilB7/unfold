@@ -1,0 +1,22 @@
+{
+  "witness": "sdxl-refiner",
+  "command": [
+    "python3",
+    "scripts/demonstrate_s8_unet.py",
+    "--input",
+    "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-refiner/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-generalization-293c2d9/sdxl-refiner",
+    "--condition",
+    "ordinary",
+    "--expect-source-sha256",
+    "1bdc3f1e1212819747a79dd9f2d27eb435ed290ae1f67f91f0945a1abf73f6a9"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 92.814,
+  "commit": "293c2d98796c915f73e8422ddbf00b6fbc7492d4",
+  "scope": "Exploratory published denoiser-only config; not final S8 acceptance.",
+  "html_bytes": 10187713,
+  "html_sha256": "4aa54ff4bf56e3db1a8f25b4d25256aa7a4bbd14f4af8d38315cbd78841a5b04",
+  "report_failures": []
+}

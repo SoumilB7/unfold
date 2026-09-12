@@ -46,6 +46,10 @@ class Block(TypedDict, total=False):
     title: str                    # card heading
     description: str              # card body — explanation prose, no numbers
     facts: "list[str]"            # numeric/spec chips ("32 heads", "4,096 → 12,288")
+    presentation_chips: list[dict]  # typed display records; never block occurrences
+    presentation_path: list        # exact JSON path of this chip-bearing IR card
+    presentation_aliases: list[list]  # other paths of the same shared card object
+    unknown_reason: dict           # producer-authored unresolved envelope metadata
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
@@ -53,7 +57,13 @@ class Block(TypedDict, total=False):
     source_component: str         # qualified owning component (e.g. "text_encoder.text_config")
     source_owner: str             # the exact class the block's facts were read from
     source_file: str              # that class's modeling file
+    source_instance_path: str     # exact reconciled runtime occurrence; "" is the root
+    source_fact_keys: list[str]    # qualified facts consumed by this block
     components: list[dict]        # typed sub-facts inside a compound stage
+    resolved: bool                # honest-unknown switch (U2/B2): False renders the
+                                  # block PALE on any family — the fact/structure is
+                                  # not evidence-backed (tower_cell's "Code-defined
+                                  # block" primitive, generalized). Absent ⇒ solid.
     # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
     static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join
                                   # (residual ⊕, gate ×, split, concat), NON-clickable,
@@ -177,6 +187,13 @@ def validate_block_tree(ir: Any, *, known_views: Optional[set[str]] = None) -> l
         if unknown:
             problems.append(f"{scope}/{bid}: unknown key(s) {sorted(unknown)} — typo?")
 
+        if "presentation_chips" in block:
+            from .presentation import chips_from_block
+            try:
+                chips_from_block(block)
+            except (TypeError, ValueError) as exc:
+                problems.append(f"{scope}/{bid}: invalid presentation chips: {exc}")
+
         view = block.get("view")
         if view is not None and view not in known_views:
             problems.append(
@@ -213,6 +230,9 @@ def validate_click_coupling(html: str) -> list[str]:
     different depth from masking a broken click.  Small snippets with no panel
     structure retain the original document-global behavior for compatibility.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     scoped = _ClickScopeParser()
     scoped.feed(html)
     scoped.close()
@@ -309,6 +329,9 @@ def validate_unique_ref_ids(html: str) -> list[str]:
     silently vanish from the live render even though each svg looks correct in
     isolation (a rendered PNG, or rsvg). This is the document-level check the
     isolated-svg image pass cannot see."""
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     import collections
     referenced = set(_URL_REF.findall(html))
     counts = collections.Counter(self_id for self_id in _DEF_ID.findall(html))
@@ -335,6 +358,9 @@ def validate_no_dotted_arrows(html: str) -> list[str]:
     elements (``marker-end``) so non-flow decorations cannot mask a real dataflow
     violation.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     problems: list[str] = []
     for match in _STROKED_ELEMENT.finditer(html):
         attrs = match.group("attrs")
@@ -354,6 +380,9 @@ def validate_no_dotted_boundaries(html: str) -> list[str]:
     flow semantics or region/highlight styling regressed.  Attribute order and
     quote style are deliberately irrelevant.
     """
+    from .renderers.html.card_payload import expand_card_payloads
+
+    html = expand_card_payloads(html)
     problems: list[str] = []
     for match in _STROKED_ELEMENT.finditer(html):
         attrs = match.group("attrs")

@@ -1,0 +1,12 @@
+{
+  "kandinsky_original_exact": true,
+  "if_first_original_exact": true,
+  "moved_dualencoder_literal_exact": true,
+  "if_synthetic_only_removes_rejected_field": true,
+  "original_shared_incomplete_exact": true,
+  "corrected_shared_only_three_fields": true,
+  "svd_literal_exact": true,
+  "second_if_literal_exact": true,
+  "four_prepared_input_byte_pins": true,
+  "publisher_exact_original_archive": true
+}

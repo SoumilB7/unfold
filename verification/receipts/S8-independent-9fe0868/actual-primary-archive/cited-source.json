@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "cited-source/052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26.py.gz",
+    "content_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+    "sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+    "status": "archived_exact_bytes"
+  }
+]

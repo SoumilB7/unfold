@@ -1,0 +1,36 @@
+{
+  "combined_sha256": "84756d7d2445a84231e8278f97943244cd2ff12ab3b0728efd5e570d921bc051",
+  "config": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+  "library_imports_outside_budget": {
+    "diffusers": {
+      "seconds": 0.8098677499219775,
+      "version": "0.38.0"
+    },
+    "torch": {
+      "seconds": 0.5670388340950012,
+      "version": "2.9.1"
+    },
+    "transformers": {
+      "seconds": 0.9589111669920385,
+      "version": "5.12.1"
+    }
+  },
+  "load_average": [
+    3.708984375,
+    2.892578125,
+    3.453125
+  ],
+  "mode": "fingerprint",
+  "name": "stable-diffusion-3-5-large",
+  "parse_seconds": 27.87559337494895,
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "python": "3.12.10",
+  "repo_commit": "d778d46d6fadfad31427965e8bbfc0b61d422f77",
+  "surface_hashes": {
+    "expanded": "22d1764abfb0945e5b66019ae5c85c2a2617b75e25629fd754f7ce71f4358397",
+    "html_meta": "f668f8265d36c95282be2a9395bd288dc685fa4defdcf9a89b7d86641746b411",
+    "ir": "aaa14b79a02844c079eea7aab79a3bea86c7a0b61a52eebb3ebf7276dfe6dfce",
+    "ledgers": "3d89a931723da36a18ff9a980056d5f564fa3ce14bd1ce00778638d0183059ad",
+    "params": "40f7fb3d00c60a4a6e993ffb1a1666b845b5b4ce96419fe26ba02fa5067a3232"
+  }
+}

@@ -1,0 +1,39 @@
+...............................................................F........ [ 20%]
+........................................................................ [ 41%]
+........................................................................ [ 61%]
+........................................................................ [ 82%]
+...............................................................          [100%]
+=================================== FAILURES ===================================
+_ test_direct_config_namespace_protocols_cannot_preserve_default_proof[vars(config)['hidden_size'] = 32] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5880/test_direct_config_namespace_p0')
+statement = "vars(config)['hidden_size'] = 32"
+
+    @pytest.mark.parametrize('statement', [
+        "vars(config)['hidden_size'] = 32",
+        "del vars(config)['hidden_size']",
+        "config.__dict__.__setitem__('hidden_size', 32)",
+        "config.__dict__.__delitem__('hidden_size')",
+        "config.__dict__.update(hidden_size=32)",
+        "config.__dict__.clear()",
+        "config.__dict__.pop('hidden_size')",
+        "config.__dict__.popitem()",
+        "config.__dict__.setdefault('hidden_size', 32)",
+        "config.__dict__.__ior__({'hidden_size': 32})",
+        "config.__dict__.unknown_method()",
+        "namespace = config.__dict__\n        namespace.clear()",
+        "dict.__setitem__(config.__dict__, 'hidden_size', 32)",
+        "escape(config.__dict__)",
+    ])
+    def test_direct_config_namespace_protocols_cannot_preserve_default_proof(tmp_path, statement):
+        result, _index, _document = _read(tmp_path, after_super='        ' + statement + '\n')
+>       assert result.status == 'failed'
+E       AssertionError: assert 'resolved' == 'failed'
+E         
+E         - failed
+E         + resolved
+
+tests/test_s9_class_default_value.py:306: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s9_class_default_value.py::test_direct_config_namespace_protocols_cannot_preserve_default_proof[vars(config)['hidden_size'] = 32]
+1 failed, 350 passed in 33.90s

@@ -1,0 +1,385 @@
+{
+  "HTML_cause": "All39 raw pages differ only by their exact Diagram uuid4-derived mount ID. Exhaustive replacements and every raw diff retained; zero remaining SVG/geometry/text or payload differences after that finite identity substitution. No page is normalized or approved.",
+  "all_models": [
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "4a39b9d57bf2503e6ea964c767f915bf337c8a5d20757c24601397daf01ca1bb",
+      "slug": "llama-7b"
+    },
+    {
+      "ir_before_delta_count": 53,
+      "native_delta_keys": [
+        "decoder.attention.position_schedule"
+      ],
+      "native_recursive_delta_count": 5,
+      "raw_html_sha256": "e889491dd945f40ccc9f286b96ca6ce03c3df71d0665a2cb93f8baaf0a365fd0",
+      "slug": "bloom"
+    },
+    {
+      "ir_before_delta_count": 51,
+      "native_delta_keys": [
+        "decoder.attention.cross_attention_schedule"
+      ],
+      "native_recursive_delta_count": 5,
+      "raw_html_sha256": "6b563e49739d95c95906c9de49fe2feaaaa0a8e64ec6a1780c2c5519e724cd7c",
+      "slug": "musicgen-small"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "0eb6092caadc08d7677f40e93c80868e7e6dd18f9330901595e7b3c964166827",
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "1e452f6310926d80b3750aa6680f76f6cb232d3ce1072f4ef5a17711392f45e0",
+      "slug": "cogvideox-5b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "b303c2171a08d2fb555fc4dd545ee3aba50ee0aafc2499d5dde1c0d453fe0b6b",
+      "slug": "command-a-03-2025"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "ae86df80a10de3b0f0304b15edf723dc3a49b37c4c755bc0aa043ea616219b8f",
+      "slug": "dbrx-base"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "51889500d2bf0a1407e63c0ebb7f06063a33b0650fe2d7709575618bdbed3dc8",
+      "slug": "deepseek-coder-v2-lite"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "5a644615abda3e55b0a0ef70239b95ce37524016aad45221f2ed4085687c0239",
+      "slug": "deepseek-v3"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "9abb96c347477bb9ac32dd67550fe0d862e906f7f221e79a456efa725419b107",
+      "slug": "deepseek-v4-flash"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "be8abb3eaa076d25cb1eabfee0048bad2bd1484f2ad271349bd83c193d2474cc",
+      "slug": "flux-2-dev"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "d89316e46608f35d74cec0b2b0480ca2b962b91fe67676603f68515b313403e4",
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "db765d700f515be11fa5cb9bff83f3deac9af8da48835335594fa2f04b9d8f94",
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "db6803217a5f795e8acd3c32cd87ada57744ded000bc22aacaced43f3b041ae1",
+      "slug": "gemma-3n-e2b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "9ae6e807e813a9d04aaed05547390aec7fc769d1dc158f5978a35420ec309713",
+      "slug": "glm-4-5"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "bdadde1e330c0a6b3954a404f4cae117cf471bf93875c52bbe364dbb33b6b27c",
+      "slug": "gpt-oss-20b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "aa29300fd42a927d4e7f0aedb5b38c05c54bade2cc7659946fbd671e38113a5d",
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "fac458f270536d53a11481af3ea22c18823913eab577ee718905b821ae84b0a0",
+      "slug": "hunyuanvideo"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "bf404349e0dc3b3067d43f39007aeb6f91a93efabab9c8c71e82bc97b2d56b87",
+      "slug": "jamba-v0-1"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "8e88c174bf99619aec57840ce48e8526d610b561c677830a8c94e6fed001f731",
+      "slug": "lfm2-1-2b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "960bb4792f698c0d8299907a36eebba6b4e2cb9e77f3ed2a237bc33596c16fb4",
+      "slug": "ltx-video"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "24b18f9ede1a2daaf27feae56e73ac6c6e54e8e2f06b0261a6c346e7b4761b50",
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "d1b5e73720f661aeab93c443b27d609288808472475b503912763b3b8f8c8894",
+      "slug": "mochi-1-preview"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "ecedc94561fd264ff5f67f1e2064020edbd4b398539b1ed1afbd2cdb31fc5234",
+      "slug": "nemotron-h-8b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "8e48bef92f6dd79688a73c38d3e03e25cd8922b21fa52aa031e23bced2da2a1b",
+      "slug": "olmo-2-1124-7b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "1820bce45d042456c763d69097618e1f312512d19ee62cfc54e41a3a0e347ecc",
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "0ade1332291087929124db5f4f55c09ee9d01791c11ef1a3e7f1b793d8145d3a",
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "30fcbbf52766350f664e4cc339b5076c7291cb1b0120726ed15eaf4b449fab6c",
+      "slug": "qwen-image"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "62ed652b702269ec3c330dbaf9c31164c65d38f3fc7f848feebce1d1f39adceb",
+      "slug": "qwen2-vl-7b-instruct"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "ab698c68151ad9b473a09fd1e1246a8fb13997d931dec39963f45345bc95a521",
+      "slug": "qwen3-5-27b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "b8d9bce9d5886069848d5f18f7fe76329f72768bf20e3f4c93cf0a0de17ae707",
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "a751d7067161040f2a9c92f3b11ab4fdcdd4e78fe759bce3fb4a4ea5bc8420c3",
+      "slug": "qwen3-8b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "0f4456eaf3454c85a2f86c3c2559704fa06eaa0a896c890a016f750eeabbcf26",
+      "slug": "qwen3-omni-30b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "eb21c2b5299cf441e5e2de6815744559098d8a55847a391d396baf9faf22c244",
+      "slug": "qwen3-vl-235b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "bad2fb360ad9751a65881b0edb32594315ccd5a6fae11d2fb221f63388eebace",
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "04a2425ee5c93a8a7683ac9b7411fb024ffe61fbc737042ee50baa1dc95e1f73",
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "2d808289df96038ee6dea3af544dd785cbd9f940d8750afc90d61c4d4fbfdb1d",
+      "slug": "stable-diffusion-xl-base-1-0"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "05d4a492968ebed2ca44cfde70b849b110d92d75bb26db7126f090ff88e5f103",
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "ir_before_delta_count": 0,
+      "native_delta_keys": [],
+      "native_recursive_delta_count": 0,
+      "raw_html_sha256": "a2b979b71e1717b70705fba82ac80a43d0715fba1c8c985b48217fab71d78dfc",
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "archive_files_independently_verified_against_raw": 590,
+  "archive_map_sha256": "1bf95f4cbf0ac82e113b6fbeb108998742658ee19d6004d1cff4d487d68fa028",
+  "archive_raw_bytes": 71463904,
+  "browser_limit": "Serialized HTML/source inspection and original in-process events only; no browser execution, visibility/click/pixel verdict.",
+  "held_audit_manifest_sha256": "bdb3e26257adef6de7f2631794e2295f336051180822c834e3f4ba4b584774f0",
+  "held_audit_results": {
+    "capture_census_findings": 0,
+    "class3_records": 0,
+    "element_count": 34191,
+    "html_bytes": 9510603,
+    "metadata_findings": 0,
+    "missing_rendered_paths": 0,
+    "native_delta_keys": 2,
+    "unexpected_rendered_paths": 0,
+    "unknown_envelopes": 8473,
+    "unknown_scalar_addresses": 26222
+  },
+  "lane": {
+    "after": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+    "duration": 149.15750012499848,
+    "log_path": "/private/tmp/unfold-s9a-thirtyfourth/current-pages/actual34-pages-presentation-closures.log",
+    "name": "actual34-pages-presentation-closures",
+    "passed": true,
+    "pins_equal": true,
+    "returncode": 0,
+    "scope": "Actual34 capture and presentation findings; no blessing, browser verdict or normalization.",
+    "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1"
+  },
+  "layers_and_structural_drawings_unchanged_all39": true,
+  "matrix_142_occurrence_closure": "Not established here; requires actual34 matrix. Native proof summaries are not reconstructed in this saved audit.",
+  "native_changed_keys": [
+    [
+      "bloom",
+      "decoder.attention.position_schedule"
+    ],
+    [
+      "musicgen-small",
+      "decoder.attention.cross_attention_schedule"
+    ]
+  ],
+  "native_value_changes": 0,
+  "no_model_test_or_product_import_runtime_by_auditor": true,
+  "other37_native_documents_unchanged": true,
+  "output_approval": false,
+  "raw_HTML_hash_changes": 39,
+  "raw_IR_delta_counts_by_phase": {
+    "diagram-ir-after-render.json.gz": 104,
+    "diagram-ir-before-render.json.gz": 104,
+    "ir-after-render.json.gz": 104,
+    "ir-before-render.json.gz": 104
+  },
+  "raw_ir_causes": "Two native proof/provenance changes and exactly one newly recorded count consumption per model. All existing obligation rows/order remain after removing that exact insertion. Every raw leaf retained; index shifts not waived or deleted.",
+  "schedule_targets_live_qualified": 2,
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "source_references": {
+    "model_unfolder/adapters/transformer/parser.py": {
+      "lines": [
+        1413
+      ],
+      "needle": "def _repeated_schedule_projection",
+      "sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0"
+    },
+    "model_unfolder/diagram.py": {
+      "lines": [
+        22
+      ],
+      "needle": "self._mount_id =",
+      "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95"
+    },
+    "model_unfolder/evidence/cross_attention_schedule.py": {
+      "lines": [
+        125
+      ],
+      "needle": "return repeated_count_operand",
+      "sha256": "e9588904fccdafdfe73415edae5262cfaf30fcd0d73cc9d6d6a137e59856400b"
+    },
+    "model_unfolder/evidence/position_linear_bias.py": {
+      "lines": [
+        193
+      ],
+      "needle": "return repeated_count_operand",
+      "sha256": "7ed45313345eb6d89485b4db357b79f30ec15f48968aa70b8b5fbe3bc38c25ec"
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "lines": [
+        178
+      ],
+      "needle": "def repeated_count_operand",
+      "sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68"
+    },
+    "model_unfolder/renderers/html/views.py": {
+      "lines": [
+        1469
+      ],
+      "needle": "position_schedule",
+      "sha256": "04232b0952d12e16111d13f29cf3e7e56894a626af2cb3cc74c9a54cc6e4db9d"
+    }
+  },
+  "sparse_musicgen_limit": "This fleet uses the ordinary checkpoint with declared decoder.num_hidden_layers and code_and_config tier. It does not exercise the separate sparse MusicGen class_default missing-card-citation finding. Zero class_default chip on these ordinary two schedule facts is expected and does not close that sparse display gap.",
+  "verdict": "PASS_INDEPENDENT_SAVED34_DATA_AND_EXACT_CAUSE_AUDIT_NOT_ACCEPTANCE"
+}

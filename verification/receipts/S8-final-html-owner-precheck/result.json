@@ -1,0 +1,29 @@
+{
+  "scope": "Read-only existing validators on actual final HTML; no browser, model or pytest run.",
+  "results": [
+    {
+      "case": "sdxl-ordinary",
+      "html_sha256": "86bb0629771f875bdba3e1fb219c403160938254c4ec2ee5199baaec562bc5bf",
+      "checks": {
+        "validate_click_coupling": [
+          "panel depth 8: clickable node 'unet_context_0' has no card in target panel depth 9 (click would do nothing)"
+        ],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    },
+    {
+      "case": "sd14-ordinary",
+      "html_sha256": "6c2dcc6d057d207828a752ddf09a0c0701e036f4d3d3379d883c324b4c3e6474",
+      "checks": {
+        "validate_click_coupling": [
+          "panel depth 8: clickable node 'unet_context_0' has no card in target panel depth 9 (click would do nothing)"
+        ],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    }
+  ]
+}

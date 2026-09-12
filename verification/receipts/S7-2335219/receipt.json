@@ -1,0 +1,77 @@
+{
+  "authority_workers": 3,
+  "commit": "2335219d22f68c2c8452ebe9fc39c9b7ff71ef8d",
+  "coordinator_fingerprint_after": "c05b387b148f2ea5c251b1615e475a5d301495266b8e49e5b192342e159055aa",
+  "coordinator_fingerprint_before": "c05b387b148f2ea5c251b1615e475a5d301495266b8e49e5b192342e159055aa",
+  "failed_lanes": [],
+  "focused_workers": 1,
+  "full_workers": 4,
+  "lane_schedule": "serial",
+  "lanes": {
+    "collect": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 13.941,
+      "fingerprint_after": "be1c9e7a3d5c21f612352edd395b062d9b60052b4b8cde4e3970cac6260ff1ac",
+      "fingerprint_before": "be1c9e7a3d5c21f612352edd395b062d9b60052b4b8cde4e3970cac6260ff1ac",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/collect.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "focused": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 40.437,
+      "fingerprint_after": "dcbde9e9fa272755b346eea95e93451539cc013803089eea45c6322799877774",
+      "fingerprint_before": "dcbde9e9fa272755b346eea95e93451539cc013803089eea45c6322799877774",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/focused.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "full": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 1163.041,
+      "fingerprint_after": "22f997a8bfb8b6878a1b2af91c1735a43057c55e4a6b11c439a3e7548474f2d3",
+      "fingerprint_before": "22f997a8bfb8b6878a1b2af91c1735a43057c55e4a6b11c439a3e7548474f2d3",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/full.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "preservation": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 153.497,
+      "fingerprint_after": "87a36b160a299b7876a868cbbd89042612526d178640c15fad5385515cca9a97",
+      "fingerprint_before": "87a36b160a299b7876a868cbbd89042612526d178640c15fad5385515cca9a97",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/preservation.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "static": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 0.426,
+      "fingerprint_after": "f863f0f454c1e15788e4b97070b7fb4055fbbd32fa085cbfae23501f6859b067",
+      "fingerprint_before": "f863f0f454c1e15788e4b97070b7fb4055fbbd32fa085cbfae23501f6859b067",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/static.log",
+      "passed": true,
+      "returncode": 0
+    },
+    "u2-authority": {
+      "artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+      "duration_seconds": 101.901,
+      "fingerprint_after": "91c538fdb7d8e89058ba7af6b136d491421a5ee0905053062419ddbc8fa67900",
+      "fingerprint_before": "91c538fdb7d8e89058ba7af6b136d491421a5ee0905053062419ddbc8fa67900",
+      "log": "/private/tmp/model-unfolder-verification/17253e6fff/u2-authority.log",
+      "passed": true,
+      "returncode": 0
+    }
+  },
+  "missing_lanes": [],
+  "preservation_workers": 4,
+  "source_artifacts_after": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+  "source_artifacts_before": "7b07ca72a1fcb5468018ed18ec4496832e861f0e74e101539e6f0524313edf98",
+  "wall_seconds": 1487.277
+}

@@ -1,0 +1,19 @@
+{
+  "after_bytes": 191828,
+  "after_sha256": "b80ac62dcff3d56b57a1ac640ed30c26b458cb0915edd0f5f466e3f27349c5a5",
+  "before_bytes": 191828,
+  "before_sha256": "1e452f6310926d80b3750aa6680f76f6cb232d3ce1072f4ef5a17711392f45e0",
+  "exact_new_mount_occurrences": 331,
+  "exact_old_mount_occurrences": 331,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-722282b684",
+  "mount_identity_before": "uf-09e9900430",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 16,
+  "raw_ordered_svg_count_before": 16,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "cogvideox-5b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

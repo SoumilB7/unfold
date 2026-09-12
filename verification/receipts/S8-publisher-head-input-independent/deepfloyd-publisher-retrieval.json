@@ -1,0 +1,17 @@
+[
+  {
+    "model": "IF-I-XL-v1.0",
+    "url": "https://huggingface.co/DeepFloyd/IF-I-XL-v1.0/resolve/main/unet/config.json",
+    "error": "HTTP Error 401: Unauthorized"
+  },
+  {
+    "model": "IF-I-L-v1.0",
+    "url": "https://huggingface.co/DeepFloyd/IF-I-L-v1.0/resolve/main/unet/config.json",
+    "error": "HTTP Error 401: Unauthorized"
+  },
+  {
+    "model": "IF-I-M-v1.0",
+    "url": "https://huggingface.co/DeepFloyd/IF-I-M-v1.0/resolve/main/unet/config.json",
+    "error": "HTTP Error 401: Unauthorized"
+  }
+]

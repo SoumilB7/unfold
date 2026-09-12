@@ -1,0 +1,266 @@
+{
+  "directories": [
+    "child-phase-788abbd",
+    "child-phase-independent-review",
+    "child-phase-independent-review/accepted",
+    "child-phase-independent-review/initial",
+    "child-phase-preparation",
+    "child-profile-788abbd",
+    "child-profile-independent-review",
+    "child-profile-preparation",
+    "inventory-metadata-independent-review",
+    "inventory-metadata-independent-review/actual",
+    "inventory-metadata-independent-review/preuse",
+    "metadata-child-788abbd",
+    "metadata-child-788abbd/source-snapshot",
+    "metadata-child-788abbd/source-snapshot/physics",
+    "metadata-focused-788abbd",
+    "metadata-focused-788abbd/source-snapshot",
+    "metadata-focused-788abbd/source-snapshot/tests",
+    "metadata-focused-v2-788abbd",
+    "metadata-preparation",
+    "metadata-preparation-v2",
+    "profile-baseline-788abbd",
+    "profile-independent-review",
+    "profile-preparation",
+    "static-focused-788abbd",
+    "static-focused-788abbd/source-snapshot",
+    "static-focused-788abbd/source-snapshot/model_unfolder",
+    "static-focused-788abbd/source-snapshot/model_unfolder/evidence",
+    "static-focused-788abbd/source-snapshot/tests",
+    "static-focused-v2-788abbd",
+    "static-focused-v3-788abbd",
+    "static-hash-count-preparation",
+    "static-hash-count-v1",
+    "static-independent-review",
+    "static-independent-review/actual-replay-child",
+    "static-independent-review/hash-memo",
+    "static-independent-review/rename-v2",
+    "static-independent-review/residual-unit",
+    "static-independent-review/runners-preuse",
+    "static-independent-review/runners-preuse/accepted",
+    "static-preparation",
+    "static-preparation-v2",
+    "static-preparation-v3",
+    "static-replay-v2-788abbd",
+    "static-replay-v2-788abbd/source-snapshot",
+    "static-replay-v2-788abbd/source-snapshot/model_unfolder",
+    "static-replay-v2-788abbd/source-snapshot/model_unfolder/evidence",
+    "static-replay-v2-788abbd/source-snapshot/tests",
+    "static-replay-v3-788abbd",
+    "static-replay-v3-788abbd/source-snapshot",
+    "static-replay-v3-788abbd/source-snapshot/physics"
+  ],
+  "raw_bytes": 178734388,
+  "scopes": [
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-profile-baseline-788abbd.log",
+      "bytes": 53447244,
+      "explicitly_empty": false,
+      "files": 14,
+      "name": "profile-baseline-788abbd",
+      "source": "/private/tmp/unfold-s81-profile-baseline-788abbd"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 10382,
+      "explicitly_empty": false,
+      "files": 1,
+      "name": "profile-preparation",
+      "source": "/private/tmp/unfold-s81-profile-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 22696,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "profile-independent-review",
+      "source": "/private/tmp/unfold-s81-profile-independent-review"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-child-profile-788abbd.log",
+      "bytes": 117421,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "child-profile-788abbd",
+      "source": "/private/tmp/unfold-s81-child-profile-788abbd"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 6214,
+      "explicitly_empty": false,
+      "files": 1,
+      "name": "child-profile-preparation",
+      "source": "/private/tmp/unfold-s81-child-profile-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 13120,
+      "explicitly_empty": false,
+      "files": 4,
+      "name": "child-profile-independent-review",
+      "source": "/private/tmp/unfold-s81-child-profile-independent-review"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-child-phase-788abbd.log",
+      "bytes": 119474,
+      "explicitly_empty": false,
+      "files": 11,
+      "name": "child-phase-788abbd",
+      "source": "/private/tmp/unfold-s81-child-phase-788abbd"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 9216,
+      "explicitly_empty": false,
+      "files": 2,
+      "name": "child-phase-preparation",
+      "source": "/private/tmp/unfold-s81-child-phase-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 19013,
+      "explicitly_empty": false,
+      "files": 6,
+      "name": "child-phase-independent-review",
+      "source": "/private/tmp/unfold-s81-child-phase-independent-review"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-focused-788abbd.log",
+      "bytes": 447595,
+      "explicitly_empty": false,
+      "files": 13,
+      "name": "static-focused-788abbd",
+      "source": "/private/tmp/unfold-s81-static-focused-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-focused-v2-788abbd.log",
+      "bytes": 163459,
+      "explicitly_empty": false,
+      "files": 9,
+      "name": "static-focused-v2-788abbd",
+      "source": "/private/tmp/unfold-s81-static-focused-v2-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-focused-v3-788abbd.log",
+      "bytes": 163673,
+      "explicitly_empty": false,
+      "files": 9,
+      "name": "static-focused-v3-788abbd",
+      "source": "/private/tmp/unfold-s81-static-focused-v3-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-replay-v2-788abbd.log",
+      "bytes": 40286954,
+      "explicitly_empty": false,
+      "files": 22,
+      "name": "static-replay-v2-788abbd",
+      "source": "/private/tmp/unfold-s81-static-replay-v2-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-replay-v3-788abbd.log",
+      "bytes": 38363917,
+      "explicitly_empty": false,
+      "files": 15,
+      "name": "static-replay-v3-788abbd",
+      "source": "/private/tmp/unfold-s81-static-replay-v3-788abbd"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79594,
+      "explicitly_empty": false,
+      "files": 4,
+      "name": "static-preparation",
+      "source": "/private/tmp/unfold-s81-static-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 79594,
+      "explicitly_empty": false,
+      "files": 4,
+      "name": "static-preparation-v2",
+      "source": "/private/tmp/unfold-s81-static-preparation-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 80303,
+      "explicitly_empty": false,
+      "files": 4,
+      "name": "static-preparation-v3",
+      "source": "/private/tmp/unfold-s81-static-preparation-v3"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 992875,
+      "explicitly_empty": false,
+      "files": 32,
+      "name": "static-independent-review",
+      "source": "/private/tmp/unfold-s81-static-independent-review"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-metadata-child-788abbd.log",
+      "bytes": 5276859,
+      "explicitly_empty": false,
+      "files": 13,
+      "name": "metadata-child-788abbd",
+      "source": "/private/tmp/unfold-s81-metadata-child-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-metadata-focused-788abbd.log",
+      "bytes": 169482,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "metadata-focused-788abbd",
+      "source": "/private/tmp/unfold-s81-metadata-focused-788abbd"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-metadata-focused-v2-788abbd.log",
+      "bytes": 163389,
+      "explicitly_empty": false,
+      "files": 9,
+      "name": "metadata-focused-v2-788abbd",
+      "source": "/private/tmp/unfold-s81-metadata-focused-v2-788abbd"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 82713,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "metadata-preparation",
+      "source": "/private/tmp/unfold-s81-metadata-preparation"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 82713,
+      "explicitly_empty": false,
+      "files": 5,
+      "name": "metadata-preparation-v2",
+      "source": "/private/tmp/unfold-s81-metadata-preparation-v2"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 137356,
+      "explicitly_empty": false,
+      "files": 10,
+      "name": "inventory-metadata-independent-review",
+      "source": "/private/tmp/unfold-s81-inventory-metadata-independent-review"
+    },
+    {
+      "adjacent_log": null,
+      "bytes": 78253,
+      "explicitly_empty": false,
+      "files": 3,
+      "name": "static-hash-count-preparation",
+      "source": "/private/tmp/unfold-s81-static-hash-count-preparation"
+    },
+    {
+      "adjacent_log": "/private/tmp/unfold-s81-static-hash-count-v1.log",
+      "bytes": 38320099,
+      "explicitly_empty": false,
+      "files": 15,
+      "name": "static-hash-count-v1",
+      "source": "/private/tmp/unfold-s81-static-hash-count-v1"
+    }
+  ],
+  "stream_count": 248
+}

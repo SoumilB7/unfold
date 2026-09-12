@@ -1,0 +1,1525 @@
+[
+  {
+    "cause": "finite_unknown_slots",
+    "detail": {
+      "all_values_already_present_unchanged": true,
+      "existing_null_or_unknown_slots": 724
+    },
+    "findings": [],
+    "raw_delta_index": 0,
+    "raw_path": "/extras/presentation_unresolved_values",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 1,
+    "raw_path": "/extras/render/opaque_layer_block/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 2,
+    "raw_path": "/layers/0/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 3,
+    "raw_path": "/layers/0/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 4,
+    "raw_path": "/layers/1/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 5,
+    "raw_path": "/layers/1/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 6,
+    "raw_path": "/layers/2/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 7,
+    "raw_path": "/layers/2/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 8,
+    "raw_path": "/layers/3/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 9,
+    "raw_path": "/layers/3/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 10,
+    "raw_path": "/layers/4/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 11,
+    "raw_path": "/layers/4/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 12,
+    "raw_path": "/layers/5/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 13,
+    "raw_path": "/layers/5/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 14,
+    "raw_path": "/layers/6/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 15,
+    "raw_path": "/layers/6/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 16,
+    "raw_path": "/layers/7/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 17,
+    "raw_path": "/layers/7/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 18,
+    "raw_path": "/layers/8/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 19,
+    "raw_path": "/layers/8/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 20,
+    "raw_path": "/layers/9/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 21,
+    "raw_path": "/layers/9/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 22,
+    "raw_path": "/layers/10/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 23,
+    "raw_path": "/layers/10/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 24,
+    "raw_path": "/layers/11/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 25,
+    "raw_path": "/layers/11/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 26,
+    "raw_path": "/layers/12/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 27,
+    "raw_path": "/layers/12/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 28,
+    "raw_path": "/layers/13/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 29,
+    "raw_path": "/layers/13/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 30,
+    "raw_path": "/layers/14/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 31,
+    "raw_path": "/layers/14/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 32,
+    "raw_path": "/layers/15/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 33,
+    "raw_path": "/layers/15/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 34,
+    "raw_path": "/layers/16/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 35,
+    "raw_path": "/layers/16/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 36,
+    "raw_path": "/layers/17/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 37,
+    "raw_path": "/layers/17/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 38,
+    "raw_path": "/layers/18/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 39,
+    "raw_path": "/layers/18/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 40,
+    "raw_path": "/layers/19/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 41,
+    "raw_path": "/layers/19/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 42,
+    "raw_path": "/layers/20/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 43,
+    "raw_path": "/layers/20/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 44,
+    "raw_path": "/layers/21/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 45,
+    "raw_path": "/layers/21/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 46,
+    "raw_path": "/layers/22/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 47,
+    "raw_path": "/layers/22/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 48,
+    "raw_path": "/layers/23/blocks/1/children/0/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "unknown",
+    "detail": {},
+    "findings": [],
+    "raw_delta_index": 49,
+    "raw_path": "/layers/23/blocks/3/unknown_reason",
+    "surface": "ir"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 0,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/19/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 1,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/19/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 2,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/20/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 3,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/21/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 4,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/22/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 5,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/23/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 6,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/24/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 7,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/25/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 8,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/26/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 9,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/27/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 10,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/28/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 11,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/29/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 12,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/30/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 13,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/31/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 14,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/32/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 15,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/33/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 16,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/34/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 17,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/34/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 18,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/35/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 19,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/36/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 20,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/37/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 21,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/37/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 22,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/38/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 23,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/39/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 24,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/40/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 25,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/41/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 26,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/42/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 27,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/43/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 28,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/43/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 29,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/44/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 30,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/45/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 31,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/46/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 32,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/46/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 33,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/47/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 34,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/48/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 35,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/48/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 36,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/49/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 37,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/49/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 38,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/50/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 39,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/51/0",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 40,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/51/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 41,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/52/1",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "scope",
+    "detail": {
+      "exact_sequence_is_sorted_baseline_plus_one": [
+        "model",
+        "model_hidden_size_value"
+      ]
+    },
+    "findings": [],
+    "raw_delta_index": 42,
+    "raw_path": "/config_access/projection_coverage/receipted_scopes/53",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "width",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_size",
+          "component": "root.text_encoder",
+          "path": "hidden_size",
+          "spelling": "hidden_size"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "hidden_size",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_size",
+          "component": "root.text_encoder",
+          "path": "hidden_size",
+          "spelling": "hidden_size"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "hidden_size",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 43,
+    "raw_path": "/config_access/projection_obligations/3/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "width",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "a55dcd6a0b9401c4",
+        "mechanism": "model_hidden_size_value",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_size",
+          "component": "root.text_encoder",
+          "path": "hidden_size",
+          "spelling": "hidden_size"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "hidden_size",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_size",
+          "component": "root.text_encoder",
+          "path": "hidden_size",
+          "spelling": "hidden_size"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "hidden_size",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 44,
+    "raw_path": "/config_access/projection_obligations/3/mechanism",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "activation",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "b9c82d4207301835",
+        "mechanism": "ffn_activation",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_act",
+          "component": "root.text_encoder",
+          "path": "hidden_act",
+          "spelling": "hidden_act"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "activation",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.ffn"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "2ca8151ee5de4413",
+        "mechanism": "ffn_activation",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "hidden_act",
+          "component": "root.text_encoder",
+          "path": "hidden_act",
+          "spelling": "hidden_act"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "activation",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.ffn"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 45,
+    "raw_path": "/config_access/projection_obligations/5/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "mechanism",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "5d420927d1e9f86a",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "mechanism",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "num_heads",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 46,
+    "raw_path": "/config_access/projection_obligations/10/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "mechanism",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "5d420927d1e9f86a",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "mechanism",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "num_heads",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 47,
+    "raw_path": "/config_access/projection_obligations/10/target/key",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "mechanism",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "5d420927d1e9f86a",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "mechanism",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "num_kv_heads",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 48,
+    "raw_path": "/config_access/projection_obligations/11/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "mechanism",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "5d420927d1e9f86a",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "mechanism",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "attention_mechanism",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "num_kv_heads",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 49,
+    "raw_path": "/config_access/projection_obligations/11/target/key",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "geometry",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "4ad1c134ce1e710b",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "dd61719433452b97",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_attention_heads",
+          "component": "root.text_encoder",
+          "path": "num_attention_heads",
+          "spelling": "num_attention_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 50,
+    "raw_path": "/config_access/projection_obligations/12/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "geometry",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "4ad1c134ce1e710b",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "a709716e5da4415e",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "num_key_value_heads",
+          "component": "root.text_encoder",
+          "path": "num_key_value_heads",
+          "spelling": "num_key_value_heads"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 51,
+    "raw_path": "/config_access/projection_obligations/13/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "geometry",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "4ad1c134ce1e710b",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "head_dim",
+          "component": "root.text_encoder",
+          "path": "head_dim",
+          "spelling": "head_dim"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "2dec01fd91252f56",
+        "mechanism": "attention_head_geometry",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "head_dim",
+          "component": "root.text_encoder",
+          "path": "head_dim",
+          "spelling": "head_dim"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "head_geometry",
+          "kind": "fact",
+          "owner": "root.text_encoder.decoder.attention"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 52,
+    "raw_path": "/config_access/projection_obligations/14/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "tie",
+    "detail": {
+      "after_obligation": {
+        "expected_value_status_hash": "34b451cd19670900",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root.text_encoder",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "before_obligation": {
+        "expected_value_status_hash": "",
+        "mechanism": "",
+        "reason": "no projection receipt exists yet",
+        "source": {
+          "canonical": "tie_word_embeddings",
+          "component": "root.text_encoder",
+          "path": "tie_word_embeddings",
+          "spelling": "tie_word_embeddings"
+        },
+        "state": "unreceipted",
+        "target": {
+          "key": "tie_word_embeddings",
+          "kind": "fact",
+          "owner": "root.text_encoder.model"
+        }
+      },
+      "limit": "Nested event remains saved but enclosing canonical surface has no child fact ledger; no child proof reconstructed."
+    },
+    "findings": [],
+    "raw_delta_index": 53,
+    "raw_path": "/config_access/projection_obligations/18/expected_value_status_hash",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 54,
+    "raw_path": "/fact_provenance/root.denoiser.diffusion_bookend_geometry/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 55,
+    "raw_path": "/fact_provenance/root.denoiser.diffusion_bookend_operations/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 56,
+    "raw_path": "/fact_provenance/root.denoiser.diffusion_root_topology/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 57,
+    "raw_path": "/fact_provenance/root.denoiser.stacks[0].attention[0].diffusion_stream_relation/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 58,
+    "raw_path": "/fact_provenance/root.denoiser.stacks[0].cell.diffusion_conditioning_applications/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 59,
+    "raw_path": "/fact_provenance/root.denoiser.stacks[0].cell.diffusion_norm_mechanism/presentation_reference",
+    "surface": "ledgers"
+  },
+  {
+    "cause": "references",
+    "detail": {
+      "has_snapshot_proof": true,
+      "source_role": "from_fact copies existing typed proof summary; serialization does not issue proofs"
+    },
+    "findings": [],
+    "raw_delta_index": 60,
+    "raw_path": "/fact_provenance/root.denoiser.stacks[0].diffusion_stack_depth/presentation_reference",
+    "surface": "ledgers"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "name": "fact-census",
+  "returncode": 1,
+  "duration": 125.97815679199994,
+  "before": "58f63fbc5094ea7a427425b4275e655f3b5d41d0b0dd382ecb39d0b8ba1b4854",
+  "after": "58f63fbc5094ea7a427425b4275e655f3b5d41d0b0dd382ecb39d0b8ba1b4854",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "fact-census.log",
+  "passed": false
+}

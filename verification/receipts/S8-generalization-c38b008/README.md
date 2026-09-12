@@ -1,0 +1,9 @@
+# Fresh published UNet regressions — c38b008
+
+The exact previously downloaded tiny public configs were reused with URL/raw/input hashes; no weights were downloaded. These results reconstruct models with the recorded installed library, not historical checkpoint execution. All three actual production parses/renderings and strict source/artifact checks pass. Source input, actual source archives, qualified facts, constructed inventory, expanded output, actual HTML, pins and timing are retained. Large artifacts are losslessly gzip compressed.
+
+Refiner: 4/1/4 stages, input convolution [384,4,3,3], 2,259,526,660 parameters. Inpainting: 3/1/3, [320,9,3,3], 2,567,478,084 parameters. DDPM: 4/1/4, [128,3,3,3], 35,746,307 parameters. Every constructed occurrence has a canonical/actual placement except the two top down/up ModuleList collection containers; there are no orphan citations. Actual component entry and expanded output contain no invented text encoder, scheduler, VAE or sampling loop; sample input is visible. DDPM has no external-context routes. A separately preserved full supplied SDXL positive retains its real supplied pipeline components.
+
+DDPM retains six explicitly unbound bookends; refiner/inpainting have none. Placement and shape accuracy do not establish every connection or execution closure. The exact unbound lists are in summary/audit records.
+
+Native refiner entry pixels exposed long formal labels overlapping siblings. That is an accepted geometry RETURN, preserved in S8-component-entry-label-return, despite passing scope checks. Original pages remain here; a separately pinned renderer-only phase applies the bounded label correction to exact captured IR/warnings/parameters and checks all other SVGs unchanged. No model rerun, support expansion or blessing was performed. An explicit no-attempt hold briefly stopped the original runner before DDPM; the isolated resume retained both earlier results and completed DDPM once.

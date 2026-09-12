@@ -24,8 +24,10 @@ from typing import Any
 from .utils import drop_none
 
 
-def build_sampling_loop(extras: dict) -> dict | None:
+def build_sampling_loop(extras: dict, *, component_entry=None) -> dict | None:
     """Return the ``sampling_loop`` JSON object, or ``None`` for non-diffusion."""
+    if component_entry is not None:
+        return None
     render = extras.get("render") or {}
     blocks = render.get("loop_blocks") or []
     if not blocks:

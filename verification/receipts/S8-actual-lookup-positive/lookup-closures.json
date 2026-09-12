@@ -1,0 +1,2719 @@
+[
+  {
+    "actual_function": null,
+    "attribute": "__class__",
+    "child_path": null,
+    "closure_kind": "unresolved",
+    "conditions": [],
+    "observation_kind": "unresolved",
+    "reason": "custom_descriptor_lookup",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "add_embedding",
+    "child_path": "add_embedding",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "add_time_proj",
+    "child_path": "add_time_proj",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "class_embedding",
+    "child_path": null,
+    "closure_kind": "non_callable",
+    "conditions": [],
+    "observation_kind": "non_callable",
+    "reason": "",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [],
+      "closure_values": [],
+      "code_matches_source": true,
+      "code_sha256": "900d8e388fd5978037180d70f95e4f72cbf302394a4cc057a46e0fbaa8443b97",
+      "first_line": 609,
+      "module": "diffusers.configuration_utils",
+      "qualname": "ConfigMixin.config",
+      "source_file": "configuration_utils.py",
+      "source_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960"
+    },
+    "attribute": "config",
+    "child_path": null,
+    "closure_kind": "property_storage",
+    "conditions": [],
+    "observation_kind": "property_getter",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 34,
+        "end_line": 617,
+        "line": 610,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/configuration_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 34,
+        "end_line": 617,
+        "line": 617,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/configuration_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": "_internal_dict"
+  },
+  {
+    "actual_function": null,
+    "attribute": "conv_act",
+    "child_path": "conv_act",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "conv_in",
+    "child_path": "conv_in",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "conv_norm_out",
+    "child_path": "conv_norm_out",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "conv_out",
+    "child_path": "conv_out",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "down_blocks",
+    "child_path": "down_blocks",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "encoder_hid_proj",
+    "child_path": null,
+    "closure_kind": "non_callable",
+    "conditions": [],
+    "observation_kind": "non_callable",
+    "reason": "",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [
+        "forward_fn",
+        "kwargs_name"
+      ],
+      "closure_values": [
+        {
+          "function": {
+            "canonical_builtins": [
+              "enumerate",
+              "getattr",
+              "hasattr",
+              "len",
+              "super"
+            ],
+            "closure_names": [],
+            "closure_values": [],
+            "code_matches_source": true,
+            "code_sha256": "8bc5b16effdab35aef8fd057997529ec9ddba234feb7668f694eedfd6087c043",
+            "first_line": 980,
+            "module": "diffusers.models.unets.unet_2d_condition",
+            "qualname": "UNet2DConditionModel.forward",
+            "source_file": "unet_2d_condition.py",
+            "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+          },
+          "kind": "function",
+          "name": "forward_fn",
+          "reason": "",
+          "scalar": null
+        },
+        {
+          "function": null,
+          "kind": "scalar",
+          "name": "kwargs_name",
+          "reason": "",
+          "scalar": "cross_attention_kwargs"
+        }
+      ],
+      "code_matches_source": true,
+      "code_sha256": "7336300ae8a6b4ee8c64b4647b4bf219915c6a7f90affa07d0181f322015a0ae",
+      "first_line": 292,
+      "module": "diffusers.utils.peft_utils",
+      "qualname": "apply_lora_scale.<locals>.decorator.<locals>.wrapper",
+      "source_file": "peft_utils.py",
+      "source_sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc"
+    },
+    "attribute": "forward",
+    "child_path": null,
+    "closure_kind": "unresolved",
+    "conditions": [],
+    "observation_kind": "plain_bound_method",
+    "reason": "callable_closure_requires_separate_delegation_proof",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [],
+      "closure_values": [],
+      "code_matches_source": true,
+      "code_sha256": "75b9676fbeb48f8a5a74cf2e54c4e7a4a767f0dbd9a1a82ab14a1050b56c2c0e",
+      "first_line": 892,
+      "module": "diffusers.models.unets.unet_2d_condition",
+      "qualname": "UNet2DConditionModel.get_aug_embed",
+      "source_file": "unet_2d_condition.py",
+      "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    "attribute": "get_aug_embed",
+    "child_path": null,
+    "closure_kind": "plain_bound_method",
+    "conditions": [],
+    "observation_kind": "plain_bound_method",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 22,
+        "end_line": 942,
+        "line": 892,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+          "component_key": "root",
+          "content_fingerprint": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [],
+      "closure_values": [],
+      "code_matches_source": true,
+      "code_sha256": "a00f567dac0e616f0626f74b83e7acb92f4236c8593f402048231de6853bc0b4",
+      "first_line": 876,
+      "module": "diffusers.models.unets.unet_2d_condition",
+      "qualname": "UNet2DConditionModel.get_class_embed",
+      "source_file": "unet_2d_condition.py",
+      "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    "attribute": "get_class_embed",
+    "child_path": null,
+    "closure_kind": "plain_bound_method",
+    "conditions": [],
+    "observation_kind": "plain_bound_method",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 24,
+        "end_line": 890,
+        "line": 876,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+          "component_key": "root",
+          "content_fingerprint": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [],
+      "closure_values": [],
+      "code_matches_source": true,
+      "code_sha256": "21646bd9b1a299944e64bdc0df21ccbbd84c57965c7507ac700ca29f4e9ed062",
+      "first_line": 851,
+      "module": "diffusers.models.unets.unet_2d_condition",
+      "qualname": "UNet2DConditionModel.get_time_embed",
+      "source_file": "unet_2d_condition.py",
+      "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    "attribute": "get_time_embed",
+    "child_path": null,
+    "closure_kind": "plain_bound_method",
+    "conditions": [],
+    "observation_kind": "plain_bound_method",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 20,
+        "end_line": 874,
+        "line": 851,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+          "component_key": "root",
+          "content_fingerprint": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "mid_block",
+    "child_path": "mid_block",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "num_upsamplers",
+    "child_path": null,
+    "closure_kind": "non_callable",
+    "conditions": [],
+    "observation_kind": "non_callable",
+    "reason": "",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "position_net",
+    "child_path": null,
+    "closure_kind": "unresolved",
+    "conditions": [],
+    "observation_kind": "unresolved",
+    "reason": "custom_fallback_has_no_registered_candidate",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": {
+      "canonical_builtins": [
+        "enumerate",
+        "getattr",
+        "hasattr",
+        "len",
+        "super"
+      ],
+      "closure_names": [],
+      "closure_values": [],
+      "code_matches_source": true,
+      "code_sha256": "1b6bae2b3c82db37f84e16885c0e4a86a32b485b64d0803a1792faafed88e542",
+      "first_line": 944,
+      "module": "diffusers.models.unets.unet_2d_condition",
+      "qualname": "UNet2DConditionModel.process_encoder_hidden_states",
+      "source_file": "unet_2d_condition.py",
+      "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+    },
+    "attribute": "process_encoder_hidden_states",
+    "child_path": null,
+    "closure_kind": "plain_bound_method",
+    "conditions": [],
+    "observation_kind": "plain_bound_method",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 36,
+        "end_line": 978,
+        "line": 944,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py",
+          "component_key": "root",
+          "content_fingerprint": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "text_encoder_hid_proj",
+    "child_path": null,
+    "closure_kind": "unresolved",
+    "conditions": [],
+    "observation_kind": "unresolved",
+    "reason": "custom_fallback_has_no_registered_candidate",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "time_embed_act",
+    "child_path": null,
+    "closure_kind": "non_callable",
+    "conditions": [],
+    "observation_kind": "non_callable",
+    "reason": "",
+    "spans": [],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "time_embedding",
+    "child_path": "time_embedding",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "time_proj",
+    "child_path": "time_proj",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  },
+  {
+    "actual_function": null,
+    "attribute": "up_blocks",
+    "child_path": "up_blocks",
+    "closure_kind": "conditional_registered_child",
+    "conditions": [
+      {
+        "branch": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 8,
+              "end_col": 44,
+              "end_line": 273,
+              "line": 270,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                "component_key": "root",
+                "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "is_in_config",
+                  "operator": "",
+                  "source_segment": "is_in_config",
+                  "span": {
+                    "col": 11,
+                    "end_col": 23,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "const_value": null,
+                      "keyword_children": [],
+                      "kind": "name",
+                      "name": "is_attribute",
+                      "operator": "",
+                      "source_segment": "is_attribute",
+                      "span": {
+                        "col": 32,
+                        "end_col": 44,
+                        "end_line": 270,
+                        "line": 270,
+                        "source": {
+                          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                          "component_key": "root",
+                          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                          "external": false,
+                          "external_provenance": ""
+                        }
+                      }
+                    }
+                  ],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "unaryop",
+                  "name": "",
+                  "operator": "not",
+                  "source_segment": "not is_attribute",
+                  "span": {
+                    "col": 28,
+                    "end_col": 44,
+                    "end_line": 270,
+                    "line": 270,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                      "component_key": "root",
+                      "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "boolop",
+              "name": "",
+              "operator": "and",
+              "source_segment": "is_in_config and not is_attribute",
+              "span": {
+                "col": 11,
+                "end_col": 44,
+                "end_line": 270,
+                "line": 270,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+                  "component_key": "root",
+                  "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "return_span": {
+          "col": 12,
+          "end_col": 44,
+          "end_line": 273,
+          "line": 273,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+            "component_key": "root",
+            "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    ],
+    "observation_kind": "observed_registered_child",
+    "reason": "",
+    "spans": [
+      {
+        "col": 4,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 260,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 61,
+        "end_col": 107,
+        "end_line": 267,
+        "line": 267,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 12,
+        "end_col": 44,
+        "end_line": 273,
+        "line": 273,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 8,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 22,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      {
+        "col": 15,
+        "end_col": 40,
+        "end_line": 276,
+        "line": 276,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/modeling_utils.py",
+          "component_key": "root",
+          "content_fingerprint": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+          "external": false,
+          "external_provenance": ""
+        }
+      }
+    ],
+    "storage_name": null
+  }
+]

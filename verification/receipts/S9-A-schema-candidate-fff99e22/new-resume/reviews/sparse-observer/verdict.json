@@ -1,0 +1,62 @@
+{
+  "decision": "ACCEPT strict sparse diagnostic use; insufficient as sole three-event association closure",
+  "reviewer": "resume_review",
+  "scope": "Read-only source inspection of restored sparse observer and two-witness plan; no runtime and no observer changes.",
+  "source_pins": [
+    {
+      "path": "/private/tmp/unfold-s9a-resume/run_sparse.py",
+      "snapshot": "run_sparse.py",
+      "sha256": "0cc13b9517b965337dd86ee80a8fce76988cbf5efe915e49a98dbffc68b0cf0a",
+      "bytes": 42114
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-resume/sparse-plan.json",
+      "snapshot": "sparse-plan.json",
+      "sha256": "ad0aeb58d8ecb5c82240a721e618b049827bee81800dfb42886c8591691c4d06",
+      "bytes": 823
+    }
+  ],
+  "positive_boundaries": [
+    "Runs actual config_to_ir and Diagram.to_html once per ordinary/sparse condition, preserves full events/native facts/IR/pages, validates present original claim proofs, and brackets source/input/tool/dependency bytes.",
+    "For a recognized omitted operand, the accepted link requires matching root document fingerprint, exact config path, fact owner/key, canonical value-status hash, default/checkpoint provenance, and a nonempty reader. Bare absent_default without a deciding hash cannot satisfy the link.",
+    "Fact values/kinds/completeness/unknown reasons, parameter summaries and ordered SVG bytes must remain equal; only finite exact metadata transitions get an admitted cause. Raw unexplained deltas remain FAIL.",
+    "Declaration-only positive facts are explicitly listed; the report states that parity is not proof qualification."
+  ],
+  "findings": [
+    {
+      "id": "O1",
+      "lines": "run_sparse.py:129-132, 463-492, 558-573",
+      "issue": "Default-use closure is existential: each omitted field needs at least one recognized proof+event link. It does not establish that every dependent fact/event for that operand is correctly linked. A width fact could satisfy a field while another dependency remains unlinked.",
+      "effect": "Raw PASS proves the admitted links and global parity checks, not complete per-consumer event accounting."
+    },
+    {
+      "id": "O2",
+      "lines": "run_sparse.py:473-487",
+      "issue": "Matching events are filtered into a list; nonmatching additional events are not explicitly rejected, multiplicity is not constrained, and reader is required only to be nonempty. consumed, bound and absent_default intents are all eligible.",
+      "effect": "A correct event can coexist with a stale target/hash/reader event. Identical bad events across ordinary and sparse may escape delta comparison. The existing focused three-event tests cover a narrower explicit set but this observer alone does not."
+    },
+    {
+      "id": "O3",
+      "lines": "run_sparse.py:129-132, 465-492, 552-557",
+      "issue": "proof_operands returns no operands for a declaration-only fact. Llama activation without an applied-function proof cannot supply the hidden_act link solely from corrected actual consumption and typed default-event evidence.",
+      "effect": "With no other qualified fact consuming hidden_act, the raw sparse check remains FAIL even if the activation association fix works. This must not trigger a fabricated or out-of-scope application proof."
+    },
+    {
+      "id": "O4",
+      "lines": "run_sparse.py:346-366, 487-490",
+      "issue": "The registered-constructor setup validates a typed constructor default, but the later linked-default predicate unconditionally requires that operand to exist in root_overlay. This is not the registered-constructor channel itself.",
+      "effect": "The SDXL route can remain conservatively red if constructor defaults are not in root_overlay. Do not reinterpret that as absent constructor proof or broaden the allowed delta set without a reviewed channel-specific join."
+    }
+  ],
+  "answer_to_root": "A raw PASS would establish exact links for recognized proof-backed omissions plus the stated parity checks. It would not by itself close all three event-association issues or any stronger mechanism proof. Activation applied-function proof remains separately open; event agreement cannot qualify it.",
+  "recommended_use": [
+    "Keep the current raw observer/result unchanged as a strict diagnostic.",
+    "Use the frozen new focused association controls for explicit targets; inspect actual Llama events for mechanism, composite head_geometry, and activation independently of whether their semantic proof exists.",
+    "If adding an acceptance observer, give it a separately reviewed exact event table: every intended target/premise event must carry the final canonical value/status hash and permitted producer/intent, and no extra stale target event may survive. Default premise evidence and stronger application proof must remain separate predicates.",
+    "Do not call sparse FAIL a product architecture regression when measured values/SVGs agree, and do not call architecture parity full value-ladder closure."
+  ],
+  "limitations": [
+    "No tests/models/product modules executed by reviewer. No observed runtime outcome is asserted here.",
+    "No blessing, output delta acceptance, or S9-A completion is granted."
+  ]
+}

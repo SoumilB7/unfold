@@ -1,0 +1,49 @@
+{
+  "caps": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "case": "injected_missing",
+  "consumed_softcap_events": 0,
+  "layers": 32,
+  "native_softcap": null,
+  "native_softcap_present": false,
+  "page_bytes": 69944,
+  "page_sha256": "bdff7a9f406c2abea7628bd51bd98096d91b80786ca8973c6e08fda69f7b0d2c",
+  "reader_statuses": [
+    [
+      "('decoder.attention.logit_softcap', ())",
+      "resolved"
+    ]
+  ]
+}

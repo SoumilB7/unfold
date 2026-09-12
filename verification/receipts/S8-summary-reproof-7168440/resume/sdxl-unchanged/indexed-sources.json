@@ -1,0 +1,58 @@
+[
+  {
+    "archival_required": true,
+    "component": "root",
+    "external": false,
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-2ce6q2up/0/diffusers/models/unets/unet_2d_condition.py",
+    "sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py",
+    "sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/configuration_clip.py",
+    "sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+    "sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder_2",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py",
+    "sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder_2",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/configuration_clip.py",
+    "sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39"
+  },
+  {
+    "archival_required": false,
+    "component": "text_encoder_2",
+    "external": false,
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+    "sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f"
+  },
+  {
+    "archival_required": true,
+    "component": "root",
+    "external": false,
+    "path": "/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/unfold-s8-source-2ce6q2up/0/diffusers/models/unets/unet_2d_blocks.py",
+    "sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502"
+  }
+]

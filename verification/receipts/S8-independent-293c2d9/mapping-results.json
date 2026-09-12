@@ -1,0 +1,5 @@
+{
+  "mapping_roundtrip": "PASS",
+  "list_reorder_poison": "REJECTED",
+  "list_roundtrip": "PASS"
+}

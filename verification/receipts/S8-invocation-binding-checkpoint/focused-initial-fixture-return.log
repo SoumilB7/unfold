@@ -1,0 +1,303 @@
+.................FFFFFFFF............................................... [ 46%]
+........................................................................ [ 92%]
+............                                                             [100%]
+=================================== FAILURES ===================================
+______ test_custom_fallback_requires_conditional_same_address_super_proof ______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_custom_fallback_requires_0')
+
+    def test_custom_fallback_requires_conditional_same_address_super_proof(tmp_path):
+>       bindings, witness = fallback_fixture(tmp_path)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[name = "other"-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations0')
+prefix = 'name = "other"', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+______ test_fallback_source_mutations_and_wrong_address_refused[-"other"] ______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations1')
+prefix = '', argument = '"other"'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[self.child = None-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations2')
+prefix = 'self.child = None', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[external(self)-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations3')
+prefix = 'external(self)', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[super = other-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations4')
+prefix = 'super = other', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[ignored = self.dangerous_property-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations5')
+prefix = 'ignored = self.dangerous_property', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+_ test_fallback_source_mutations_and_wrong_address_refused[storage = self.__dict__\nstorage["child"] = None-name] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5583/test_fallback_source_mutations6')
+prefix = 'storage = self.__dict__\nstorage["child"] = None', argument = 'name'
+
+    @pytest.mark.parametrize("prefix,argument", [
+        ('name = "other"', "name"), ("", '"other"'),
+        ("self.child = None", "name"), ("external(self)", "name"),
+        ("super = other", "name"), ("ignored = self.dangerous_property", "name"),
+        ('storage = self.__dict__\nstorage["child"] = None', "name"),
+    ])
+    def test_fallback_source_mutations_and_wrong_address_refused(tmp_path, prefix, argument):
+>       bindings, witness = fallback_fixture(tmp_path, prefix, argument)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s8_lookup_closure.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s8_lookup_closure.py:129: in fallback_fixture
+    bindings._modules[""].attribute_bindings = (AttributeBindingWitness(
+<string>:22: in __init__
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttributeBindingWitness(owner_path='', attribute='config', kind='property_getter', reason='', lookup_kind='', lookup_g...teLookup(storage_name='_storage', attribute='child', kind='plain_attribute_lookup', reason='', value_kind='missing'),))
+
+    def __post_init__(self):
+        AttributeLookupRequest(self.owner_path, self.attribute)
+        if self.kind not in {"registered_child", "observed_registered_child", "plain_bound_method", "property_getter", "non_callable", "missing", "unresolved"}:
+            raise ValueError("attribute witness disposition is closed")
+        if self.kind == "unresolved":
+            if not self.reason or self.function or self.child_path or self.iteration:
+                raise ValueError("unresolved lookup needs a reason and no positive target")
+        elif self.lookup_kind not in {"object_getattribute", "object_getattribute_module_getattr", "observed_custom_fallback"}:
+>           raise ValueError("positive lookup needs its exact supported lookup route")
+E           ValueError: positive lookup needs its exact supported lookup route
+
+physics/attribute_bindings.py:161: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_s8_lookup_closure.py::test_custom_fallback_requires_conditional_same_address_super_proof
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[name = "other"-name]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[-"other"]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[self.child = None-name]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[external(self)-name]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[super = other-name]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[ignored = self.dangerous_property-name]
+FAILED tests/test_s8_lookup_closure.py::test_fallback_source_mutations_and_wrong_address_refused[storage = self.__dict__\nstorage["child"] = None-name]
+8 failed, 148 passed in 28.92s

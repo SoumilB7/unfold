@@ -1,0 +1,28 @@
+{
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "root_owns_execution": true,
+  "generation": "thirtysecond",
+  "scope": "29 committed preservation witnesses through the unchanged actual 52-test lane; one call of each original producer per original verifier call.",
+  "upstream_observer": {
+    "path": "verification/receipts/S8.1-output-deltas/capture_preservation.py",
+    "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+  },
+  "normalization": "Only existing test_support.preservation canonical_surfaces/_canon_bytes/_view_hashes/html_meta and gallery_witness. No inverse-packing HTML normalization, old-U0 baseline canonicalization, excluded hashes or modified assertions.",
+  "outputs": "Original pytest findings; all exact canonical surface docs/hashes, view sequences/deltas, returned HTML and raw SVG views; historical full recursive deltas explicitly distinguished from committed expected data.",
+  "baseline_recovery": "Reuse the original31 exact fff99e22 recovery output read-only. Do not launch the optional baseline producer: its unchanged existing output directory is protected by exist_ok=False. No rerun or overwritten old pins.",
+  "no_write": "Only fresh scratch output roots; no guarded writer, active baseline/example/manifest artifact writes, approval or re-bless.",
+  "execution": [
+    "Root runs --lane current32 serially after current pages.",
+    "Use explicit reviewed frozen32 source manifest SHA256.",
+    "Run compare-recovered.py only after both actual saved packets close.",
+    "Original31 baseline packet is checked through its pinned original31 contract and script manifest; current32 uses this new contract.",
+    "Exit nonzero retains actual preservation/test failure; packet_complete has separate meaning."
+  ],
+  "review_limits": "Historical docs can be stale. Candidate versions copied expected metadata are explicitly not measured. Raw HTML retained but not automatically approved; no chips-only causation inferred.",
+  "saved_join": "Finite two-origin join: original31 baseline contract authenticates its recorded before/after pins; current32 contract authenticates current32. Exact baseline source/input/output dictionaries must match. Original surface hash checks and committed expectation authority remain unchanged.",
+  "predecessor": {
+    "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current31-preservation-capture/manifest.json",
+    "sha256": "3c0e3d4a45ac4303c0f13369ca3a73a04c649f19712d1778ab16160120ea23cf"
+  },
+  "baseline_authority_unchanged": true
+}

@@ -1,0 +1,43 @@
+{
+  "actual_portable_seal": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "baseline_output": {
+    "ir_after_sha256": "4428055c7d175366d8f94ab198b80cffc315a2f4fa83969a02c5c1605db8ab47",
+    "ir_before_sha256": "4428055c7d175366d8f94ab198b80cffc315a2f4fa83969a02c5c1605db8ab47",
+    "page_bytes": 57064,
+    "page_sha256": "87b26a2cc38445b5e35331e36dfaf964429f2644dadca4c4f2ca4dd880e49d82",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+  "seconds": 0.23947566599963466,
+  "slug": "bloom",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "2918d5414c0fb4287df93f309a3487e4aa4982dc908b11c2aa687573affb5efa",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_bloom.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_bloom.py"
+    }
+  ],
+  "source_node_count": 3,
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,168 @@
+{
+  "input": "S9-unet/schema-thirtyseventh/stable-diffusion-xl-base-1-0.html",
+  "sha256": "1508e6b151cea5c81cfcc999d20e7881104bb45497d748e4ddb887c2f1ccb532",
+  "bytes": 4459264,
+  "load_ms": 109.84866700164275,
+  "initial_dom": {
+    "elements": 262,
+    "cards": 1,
+    "op_nodes": 10,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1064
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "denoiser",
+      "click_to_card_ms": 41.7838329958613,
+      "card": {
+        "id": "denoiser",
+        "text": "Constructed U-Net denoiser\nExact constructed stages and parameter shapes. Open execution relations remain visible.\nDeclared class default \u00b7 dropout: 0.0 (checkpoint omitted)\nDeclared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)\nDeclared class default \u00b7 attention_type: \"default\" (checkpoint omitted)\nclass_default \u00b7 declared_constructor_defaults: {\"attention_type\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": \"default\"}, \"dropout\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": 0.0}, \"reverse_transformer_layers_per_block\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": null}}\nConditional slot identity links\nConditioning / argument call targets\nNo loop execution implied\nConditional call identity links\nConditional slot identity links\nConditional call identity links\nConditional boundary\nSource ports \u00b7 drill for details\nConditional boundary\nSource ports \u00b7 drill for details\nconv_in\nConditional invocation\nRepeat boundary\ndown_blocks\ndown_blocks.0\ndown_blocks.1\ndown_blocks.2\nadd_embedding\nadd_time_proj\ntime_embedding\ntime_proj\nconv_out\nConditional invocation\nConditional boundary\nSource ports \u00b7 drill for details\nSiLU\nGroupNorm\nRepeat boundary\nup_blocks\nup_blocks.2\nup_blocks.1\nup_blocks.0\nConditional boundary\nmid_block\nmid_block\nConditional boundary\nSource ports \u00b7 drill for details\nSaved skip outputs\nExternal context input",
+        "rect": {
+          "x": 348,
+          "y": -2.28125,
+          "width": 644,
+          "height": 1060.15625,
+          "top": -2.28125,
+          "right": 992,
+          "bottom": 1057.875,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": [
+          {
+            "kind": "class_default",
+            "text": "class_default \u00b7 declared_constructor_defaults: {\"attention_type\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": \"default\"}, \"dropout\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": 0.0}, \"reverse_transformer_layers_per_block\": {\"checkpoint\": \"omitted\", \"provenance\": \"class_default\", \"value\": null}}",
+            "rect": {
+              "x": 348,
+              "y": 133.5625,
+              "width": 644,
+              "height": 60,
+              "top": 133.5625,
+              "right": 992,
+              "bottom": 193.5625,
+              "left": 348
+            },
+            "style": {
+              "background": "rgb(239, 246, 255)",
+              "color": "rgb(30, 58, 138)",
+              "border": "1px solid rgb(96, 165, 250)",
+              "whiteSpace": "normal",
+              "overflowWrap": "anywhere"
+            }
+          }
+        ]
+      },
+      "dom": {
+        "elements": 426,
+        "cards": 1,
+        "op_nodes": 34,
+        "visible_cards": [
+          "denoiser"
+        ],
+        "chip_kinds": [
+          "class_default"
+        ],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 2050
+        }
+      }
+    },
+    {
+      "clicked_node": "instance_down_blocks__0",
+      "card_id": "instance_down_blocks__0",
+      "text": "DownBlock2D\nConstructed occurrence: down_blocks.0. The children below show containment. Their order does not establish execution order.\n5,432,000 parameters in subtree\nExecution: investigation_missing\nno_recipe_attempted\nCross-attention role: investigation_missing \u00b7 owner: S8\nConditional invocation connected in the source-port drills\nresnets\ndownsamplers",
+      "dom": {
+        "elements": 456,
+        "cards": 2,
+        "op_nodes": 36,
+        "visible_cards": [
+          "denoiser",
+          "instance_down_blocks__0"
+        ],
+        "chip_kinds": [
+          "class_default"
+        ],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 2390
+        }
+      }
+    }
+  ],
+  "denoiser_child_ids": [
+    "unet_primary_region_0",
+    "unet_primary_region_1",
+    "unet_primary_region_2",
+    "unet_primary_region_3",
+    "instance_down_blocks__0",
+    "instance_down_blocks__1",
+    "instance_down_blocks__2",
+    "instance_add_embedding",
+    "instance_add_time_proj",
+    "instance_time_embedding",
+    "instance_time_proj",
+    "unet_primary_region_8",
+    "unet_primary_region_7",
+    "instance_conv_act",
+    "instance_conv_norm_out",
+    "unet_primary_region_6",
+    "instance_up_blocks__2",
+    "instance_up_blocks__1",
+    "instance_up_blocks__0",
+    "unet_primary_region_4",
+    "instance_mid_block",
+    "unet_primary_region_5",
+    "unet_skip_bank",
+    "unet_context_0"
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 456,
+    "cards": 2,
+    "op_nodes": 36,
+    "visible_cards": [
+      "denoiser",
+      "instance_down_blocks__0"
+    ],
+    "chip_kinds": [
+      "class_default"
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 2390
+    }
+  }
+}

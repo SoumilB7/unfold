@@ -1,0 +1,112 @@
+{
+  "attribute_lookups": [
+    {
+      "attribute": "class_embedding",
+      "owner_path": ""
+    },
+    {
+      "attribute": "config",
+      "owner_path": "",
+      "storage_attributes": [
+        "center_input_sample",
+        "class_embed_type",
+        "time_embedding_type"
+      ]
+    },
+    {
+      "attribute": "conv_act",
+      "owner_path": ""
+    },
+    {
+      "attribute": "conv_in",
+      "owner_path": ""
+    },
+    {
+      "attribute": "conv_norm_out",
+      "owner_path": ""
+    },
+    {
+      "attribute": "conv_out",
+      "owner_path": ""
+    },
+    {
+      "attribute": "down_blocks",
+      "owner_path": ""
+    },
+    {
+      "attribute": "dtype",
+      "owner_path": ""
+    },
+    {
+      "attribute": "forward",
+      "owner_path": ""
+    },
+    {
+      "attribute": "mid_block",
+      "owner_path": ""
+    },
+    {
+      "attribute": "time_embedding",
+      "owner_path": ""
+    },
+    {
+      "attribute": "time_proj",
+      "owner_path": ""
+    },
+    {
+      "attribute": "up_blocks",
+      "owner_path": ""
+    }
+  ],
+  "build_flags": {},
+  "capture_framework_primitives": true,
+  "config": {
+    "_class_name": "UNet2DModel",
+    "_diffusers_version": "0.0.4",
+    "_name_or_path": "google/ddpm-cifar10-32",
+    "_repo_id": "google/ddpm-cifar10-32",
+    "act_fn": "silu",
+    "attention_head_dim": null,
+    "block_out_channels": [
+      128,
+      256,
+      256,
+      256
+    ],
+    "center_input_sample": false,
+    "down_block_types": [
+      "DownBlock2D",
+      "AttnDownBlock2D",
+      "DownBlock2D",
+      "DownBlock2D"
+    ],
+    "downsample_padding": 0,
+    "flip_sin_to_cos": false,
+    "freq_shift": 1,
+    "in_channels": 3,
+    "layers_per_block": 2,
+    "mid_block_scale_factor": 1,
+    "norm_eps": 1e-06,
+    "norm_num_groups": 32,
+    "out_channels": 3,
+    "sample_size": 32,
+    "time_embedding_type": "positional",
+    "up_block_types": [
+      "UpBlock2D",
+      "UpBlock2D",
+      "AttnUpBlock2D",
+      "UpBlock2D"
+    ]
+  },
+  "config_method": null,
+  "config_module": null,
+  "config_qualname": null,
+  "factory_method": "from_config",
+  "factory_module": "diffusers.models.unets.unet_2d",
+  "factory_qualname": "UNet2DModel",
+  "framework": "diffusers",
+  "import_paths": [],
+  "label": "unnamed",
+  "memory_limit_bytes": 17179869184,
+  "timeout_seconds": 120.0
+}

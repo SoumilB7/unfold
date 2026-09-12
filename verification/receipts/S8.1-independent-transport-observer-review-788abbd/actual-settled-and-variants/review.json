@@ -1,0 +1,58 @@
+{
+  "decision": "ACCEPT_BOUNDED_VISUAL_AND_FUNCTIONAL",
+  "reviewer": "independent_review",
+  "actual": {
+    "settled": {
+      "actual_steps": 16,
+      "all_exact_route_and_visible_card_observations": true,
+      "initial_png_byte_equal": true,
+      "step_png_byte_equal_count": 14,
+      "pixel_differences": [
+        {
+          "step": 13,
+          "pixels": 4,
+          "max_channel_difference": 5,
+          "bbox": [
+            795,
+            476,
+            796,
+            486
+          ],
+          "sha256": [
+            "8c4d6414225d84bf1b747bccd26fa6a635fea10e5e448f81ae826d78a2e8d04b",
+            "f455d4be3442d5a0cdad09958839dffaf71930f71db0b105929c561138ce9d14"
+          ]
+        },
+        {
+          "step": 14,
+          "pixels": 11,
+          "max_channel_difference": 1,
+          "bbox": [
+            1431,
+            16,
+            1438,
+            531
+          ],
+          "sha256": [
+            "6d938ab92a33e6538ed6bfe5230ec66e62875650158ff8687236964cc2d293e4",
+            "138f124caf310a3881e2101632a5af5fde7f68790b2fa3532c30ef0d1c741846"
+          ]
+        }
+      ]
+    },
+    "variants": {
+      "actual_steps": 8,
+      "all_exact_route_and_visible_card_observations": true,
+      "initial_png_byte_equal": true,
+      "step_png_byte_equal_count": 8,
+      "pixel_differences": []
+    }
+  },
+  "visual_assessment": "Viewed real SDXL differing default pair and reopened page: no readable content, connection or layout discrepancy. Four small edge pixels and eleven scrollbar pixels remain explicitly unequal. No targeted repeat required; exact raster-cause attribution not claimed.",
+  "limits": [
+    "14/16 SDXL step PNGs byte exact, not16/16.",
+    "Synthetic variant controls are not model evidence.",
+    "Native observations cover the enumerated routes, not all possible interactions.",
+    "No runtime/model/test execution by reviewer."
+  ]
+}

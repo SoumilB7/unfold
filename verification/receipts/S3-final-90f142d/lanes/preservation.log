@@ -1,0 +1,16 @@
+bringing up nodes...
+bringing up nodes...
+
+....................................................                     [100%]
+============================= slowest 10 durations =============================
+426.78s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[flux-2-dev]
+280.81s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen2-vl-7b-instruct]
+262.47s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[qwen-image]
+260.96s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[musicgen-small]
+215.24s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[mochi-1-preview]
+208.86s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[prxpixel-t2i]
+204.88s call     tests/test_preservation.py::test_poison_manifest_violations_fail[add_extra-witness_count != 29]
+201.93s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[wan2-2-t2v-a14b-diffusers]
+199.19s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[stable-diffusion-xl-base-1-0]
+190.65s call     tests/test_preservation.py::test_expected_witness_zero_drift_zero_skip[ltx-video]
+52 passed in 1617.89s (0:26:57)

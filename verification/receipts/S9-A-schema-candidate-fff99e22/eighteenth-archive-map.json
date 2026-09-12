@@ -1,0 +1,162 @@
+{
+  "directories": [
+    {
+      "archived": "eighteenth/qualification",
+      "original": "/private/tmp/unfold-s9a-eighteenth/qualification"
+    },
+    {
+      "archived": "eighteenth/trace-lane",
+      "original": "/private/tmp/unfold-s9a-eighteenth/trace-lane"
+    },
+    {
+      "archived": "eighteenth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source"
+    },
+    {
+      "archived": "eighteenth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source/model_unfolder"
+    },
+    {
+      "archived": "eighteenth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "eighteenth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "eighteenth/actual-default-trace.json",
+      "bytes": 17811,
+      "original": "/private/tmp/unfold-s9a-eighteenth/actual-default-trace.json",
+      "sha256": "1b706dd145565a0f0c49e0b7fa072e3c15a8fb1ce7912669df116a877061588c"
+    },
+    {
+      "archived": "eighteenth/qualification/constructor-default-boundary.log",
+      "bytes": 179,
+      "original": "/private/tmp/unfold-s9a-eighteenth/qualification/constructor-default-boundary.log",
+      "sha256": "3e575a27c37b6bba186a86da8ba8b7a285bcf1026769fe5ad4f1e4795169880f"
+    },
+    {
+      "archived": "eighteenth/qualification/result.json",
+      "bytes": 552,
+      "original": "/private/tmp/unfold-s9a-eighteenth/qualification/result.json",
+      "sha256": "114bb9e0b5812d30882bd8940294652c286010177e00f725206b7edc7e869398"
+    },
+    {
+      "archived": "eighteenth/run-sparse.py",
+      "bytes": 1615,
+      "original": "/private/tmp/unfold-s9a-eighteenth/run-sparse.py",
+      "sha256": "260727a0a2a1e4c879123014a6728ed6b093c8c1ec898189b013dbaa5817cb73"
+    },
+    {
+      "archived": "eighteenth/run-trace.py",
+      "bytes": 1298,
+      "original": "/private/tmp/unfold-s9a-eighteenth/run-trace.py",
+      "sha256": "0b88355fa3dea3f70198d0d12ec39b34965fb19528216d3b9639a743d0e1421d"
+    },
+    {
+      "archived": "eighteenth/run.py",
+      "bytes": 1108,
+      "original": "/private/tmp/unfold-s9a-eighteenth/run.py",
+      "sha256": "b8aaed4fb32af0e4c12464c3f78fda8150846da1e68d822ad30e6bffc232ec0d"
+    },
+    {
+      "archived": "eighteenth/scope.json",
+      "bytes": 777,
+      "original": "/private/tmp/unfold-s9a-eighteenth/scope.json",
+      "sha256": "d009fe4acb518b0797b34a2f6beea4a7c6de6073f0fa71c89ca61d434ee30806"
+    },
+    {
+      "archived": "eighteenth/source-manifest.json",
+      "bytes": 16311,
+      "original": "/private/tmp/unfold-s9a-eighteenth/source-manifest.json",
+      "sha256": "f2db90ef1b7517a6559fa1a59617117710749116801a8841d10c29e322a7bf28"
+    },
+    {
+      "archived": "eighteenth/sparse-plan.json",
+      "bytes": 822,
+      "original": "/private/tmp/unfold-s9a-eighteenth/sparse-plan.json",
+      "sha256": "6f5387f3fcc7af0b6453a912d5fe60155a626b0d8569a717895a2cdf19592d1a"
+    },
+    {
+      "archived": "eighteenth/trace-default.py",
+      "bytes": 1372,
+      "original": "/private/tmp/unfold-s9a-eighteenth/trace-default.py",
+      "sha256": "02bc632ea2f0344a91d6dd931f2fcc317145dae9a842eeb4f7b6f918f534a126"
+    },
+    {
+      "archived": "eighteenth/trace-lane/actual-default-trace.log",
+      "bytes": 231,
+      "original": "/private/tmp/unfold-s9a-eighteenth/trace-lane/actual-default-trace.log",
+      "sha256": "1ee75490303cbc573cbbc860390a003d16f4d27759f384bc15c286f868a473d9"
+    },
+    {
+      "archived": "eighteenth/trace-lane/result.json",
+      "bytes": 534,
+      "original": "/private/tmp/unfold-s9a-eighteenth/trace-lane/result.json",
+      "sha256": "3ed4ee059ea8eb5a271968704666b1415ec0e64ed225d81b9feb72dad58e873a"
+    },
+    {
+      "archived": "eighteenth-independent-review/actual-result.json",
+      "bytes": 552,
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/actual-result.json",
+      "sha256": "114bb9e0b5812d30882bd8940294652c286010177e00f725206b7edc7e869398"
+    },
+    {
+      "archived": "eighteenth-independent-review/actual.log",
+      "bytes": 179,
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/actual.log",
+      "sha256": "3e575a27c37b6bba186a86da8ba8b7a285bcf1026769fe5ad4f1e4795169880f"
+    },
+    {
+      "archived": "eighteenth-independent-review/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 13631,
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source/model_unfolder/evidence/class_default_value.py",
+      "sha256": "09eb3b634d30f50e0aecfca154b5b6fd8541c28c3a78bfdc71b82a00a80c7e51"
+    },
+    {
+      "archived": "eighteenth-independent-review/source/tests/test_s9_class_default_value.py",
+      "bytes": 16021,
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/source/tests/test_s9_class_default_value.py",
+      "sha256": "862e144aa656e682fcb95457c9c2b7d3a650878433c43f68c37edc682dd51d25"
+    },
+    {
+      "archived": "eighteenth-independent-review/verdict.json",
+      "bytes": 1583,
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v5-review/verdict.json",
+      "sha256": "2e74ab903f1711d90d695a32eb4b59ce251631e3a05aa760b0ca726e3b745da7"
+    }
+  ],
+  "scope": "Released eighteenth candidate and eighteenth D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "eighteenth/changed-sources.tar.gz",
+      "archive_sha256": "2c350315a13d6f9ad60882bfafb0c82a7b365afac7bee50a0b15b55e1bb65585",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 111,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-eighteenth",
+      "manifest_sha256": "f2db90ef1b7517a6559fa1a59617117710749116801a8841d10c29e322a7bf28",
+      "phase": "eighteenth",
+      "uncompressed_bytes": 3849020
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 74576,
+    "copied_files": 17,
+    "source_files": 111
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

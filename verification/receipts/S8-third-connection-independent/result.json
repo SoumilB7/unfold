@@ -1,0 +1,107 @@
+{
+  "artifact_pins": {
+    "facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+    "inventory.json": "b43e532fd6cf0b91776798ac26b08ea5586f00dfade04d64a333d85ab2d2a700",
+    "ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "page.html": "34ec442d9830ddca8c282e6e9825d16cdb9f15b91ae9ee9800bde02aac53b125",
+    "qualified-facts.json": "f00292a7de873147bff78e0fa60c466e42e401e3651033c41406eb74d0aa5287"
+  },
+  "boundary_id": "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__call",
+  "canonical_quantity_card_id": "instance_time_embedding",
+  "claim": "The result of get_time_embed at line 1083 feeds argument 0 of the exact constructed time_embedding invocation at line 1084; root formal timestep_cond feeds argument 1. Call result boundary is visible; internal computation and argument-to-result semantic dependence remain unresolved.",
+  "claim_kind": "connection",
+  "conditions": [
+    {
+      "branch": false,
+      "predicate": "USE_PEFT_BACKEND",
+      "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+      "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:310:15:310:31"
+    },
+    {
+      "branch": false,
+      "predicate": "USE_PEFT_BACKEND",
+      "reason": "This wrapper branch excludes an unclosed call receiving the parent instance",
+      "source": "sha256:78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc:319:19:319:35"
+    },
+    {
+      "excluded_guard_path": [
+        {
+          "kind": "if",
+          "predicate": "is_in_config and not is_attribute",
+          "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+        }
+      ],
+      "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+    },
+    {
+      "branch": false,
+      "predicate": "self.encoder_hid_proj is not None and self.config.encoder_hid_dim_type == \"ip_image_proj\"",
+      "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:966:13:966:102"
+    },
+    {
+      "branch": false,
+      "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+      "reason": "Optional helper branch contains an unclosed parent lookup; branch body excluded",
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+    },
+    {
+      "branch": false,
+      "predicate": "cross_attention_kwargs is not None and cross_attention_kwargs.get(\"gligen\", None) is not None",
+      "reason": "Optional root call has no closed target/effects; its source body is excluded",
+      "source": "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1113:11:1113:104"
+    },
+    {
+      "excluded_guard_path": [
+        {
+          "kind": "if",
+          "predicate": "is_in_config and not is_attribute",
+          "source": "sha256:a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe:270:11:270:44"
+        }
+      ],
+      "reason": "Earlier custom lookup return is excluded; the recorded super fallback selects this registered child"
+    }
+  ],
+  "fact_key": "root.denoiser.primary_state_ports",
+  "limitation": "Overview places the repeat region and time_embedding bookend. Actual input/call/result arrows are in the source-port drill, not on the time_embedding containment bookend or inside its linear/activation child drill. No complete conditioning function or all-path execution asserted.",
+  "overview_ids": [
+    "unet_primary_region_3",
+    "instance_time_embedding"
+  ],
+  "parameter_shapes": {
+    "time_embedding.linear_1.bias": [
+      1280
+    ],
+    "time_embedding.linear_1.weight": [
+      1280,
+      320
+    ],
+    "time_embedding.linear_2.bias": [
+      1280
+    ],
+    "time_embedding.linear_2.weight": [
+      1280,
+      1280
+    ]
+  },
+  "parameter_total": 2050560,
+  "proof_kind": "guarded_primary_state_argument_result_ports",
+  "quantity_fact": "root.denoiser.constructed_parameter_shapes.value.by_module.time_embedding",
+  "routed_drill_card_id": "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false",
+  "source_lines": {
+    "1083": "        t_emb = self.get_time_embed(sample=sample, timestep=timestep)",
+    "1084": "        emb = self.time_embedding(t_emb, timestep_cond)"
+  },
+  "source_refs": [
+    "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1083:16:1083:69",
+    "sha256:052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26:1084:14:1084:55"
+  ],
+  "source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "svg_arrows": 3,
+  "svg_nodes": [
+    "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__call",
+    "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_0",
+    "unet_primary_region_3__iteration__when_true__arg_1__when_false__when_false__when_false__arg_1"
+  ],
+  "value_path": ".regions[3].route.iteration_result.when_true.arguments[1].route.when_false.when_false.when_false"
+}

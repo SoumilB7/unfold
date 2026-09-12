@@ -1,0 +1,27 @@
+{
+  "base_manifest": "f2db90ef1b7517a6559fa1a59617117710749116801a8841d10c29e322a7bf28",
+  "handoffs": [
+    {
+      "original": "/private/tmp/unfold-s9a-operand-root-correction.json",
+      "sha256": "17ebc43181eb13e378615bf760a991b9b435e02a196c4800bef7edf12b6b0e9d"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-intended-declarations-handoff.json",
+      "sha256": "e6c24664f88a0354449340e490c3d4a3bff3c382fd825f55c9487241e7c98ea2"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-intended-declarations-supplement.json",
+      "sha256": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-declaration-test-lifecycle.json",
+      "sha256": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-config-annotation-mro-preparation/manifest.json",
+      "sha256": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089"
+    }
+  ],
+  "diffusion_unready_changes_excluded": true,
+  "new_default_declarations_and_MRO_included": true
+}

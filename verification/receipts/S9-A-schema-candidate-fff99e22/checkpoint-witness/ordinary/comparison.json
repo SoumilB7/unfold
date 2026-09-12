@@ -1,0 +1,11 @@
+{
+  "inventory_config_sha256": "dcb6fb8cdd67069d82c91a4fbc6295c36d79b41516f51b2ee9e9b71bc1aa081c",
+  "checkpoint_header_sha256": [
+    "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+  ],
+  "compared_parameters": 1680,
+  "conflicts": [],
+  "unbound_checkpoint_parameters": [],
+  "parameters_without_checkpoint_metadata": [],
+  "unresolved_binding_reason": null
+}

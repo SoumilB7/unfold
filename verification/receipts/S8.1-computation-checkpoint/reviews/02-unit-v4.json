@@ -1,0 +1,36 @@
+{
+  "decision": "ACCEPT_ACTUAL_FOCUSED_RECEIPT",
+  "command": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_s81_result_cache.py",
+    "tests/test_s81_worker_identity.py",
+    "tests/test_s81_supervisor.py",
+    "tests/test_s81_dependency_capture.py",
+    "tests/test_s81_cache_probes.py"
+  ],
+  "source_entries": 625,
+  "all_source_and_tool_before_after_equal": true,
+  "all_eight_reviewed_surfaces_match": {
+    "physics/cache_dependencies.py": true,
+    "physics/result_cache.py": true,
+    "physics/cache_probes.py": true,
+    "physics/instance_inventory.py": true,
+    "physics/execution_observation.py": true,
+    "physics/worker_timing.py": true,
+    "tests/test_s81_dependency_capture.py": true,
+    "tests/test_s81_cache_probes.py": true
+  },
+  "stdout": "........................................................................ [ 51%]\n...................................................................      [100%]\n139 passed in 0.34s\n",
+  "result_sha256": "90d8000d68c4b982576d5d3239bfcabbc0fbe244818406fc5f15fbba99109661",
+  "log_sha256": "9b7dd5282c8faeefc6114ce5dc06235545fa6fa0cb4f4710ec1774058ccf32ca",
+  "limits": [
+    "Finite fixture/CLI supervisor and cache/native/bootstrap controls only",
+    "No actual model eligibility/store/hit or latency-budget result inferred",
+    "Actual v3 capture is separately running"
+  ]
+}

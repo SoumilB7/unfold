@@ -1,0 +1,43 @@
+{
+  "scope": "Pure saved JSON/gzip/HTML comparison only. No product imports, models, tests, rendering, or output blessing. Prepared source; execute only after root says both closure captures complete.",
+  "files": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/output-diff/compare.py",
+      "sha256": "49944072f60b93c081e71e85bf2861c5066251c0aa56bd525ab5ba02707de58f",
+      "bytes": 15041
+    }
+  ],
+  "inputs": {
+    "plan": "new-resume/closure-capture/targets.json",
+    "baseline": "source-closure-replay/before/capture",
+    "new_closure": "source-closure-replay/after/capture",
+    "new_pages": "current-pages/capture"
+  },
+  "prerequisites": [
+    "Exactly39 target identities in both phase summaries and currentpage results",
+    "All39 phaseclosure statuses REPRODUCED; each expected/actual/recomputedseal equals corresponding reviewed matrixpayloadseal",
+    "Recompute each saved source multiset seal including duplicate rows and failed-source occurrence count",
+    "Both phase summaries identify the exact reviewed target plan",
+    "All current pages CAPTURED; source HTML hashes match capture receipt; baseline IR hashes also match baselinecapture receipt"
+  ],
+  "closure_outputs": [
+    "Full component/external/provenance/shortest-locator/content multiset additions/removals withmultiplicity",
+    "Per-identical-locator+content ownership/externalprovenance distributionchanges",
+    "Exact source parsefailures retained from both phases"
+  ],
+  "ir_outputs": [
+    "Full recursive pathdiffs for before-render and after-render IR; dictkeys union, listindices preserved, scalar typechanges retained, complete added/removedsubtrees",
+    "Every delta has conservative address category and cause_status NOT_YET_PROVEN; no fields ignored/normalized",
+    "Structural layer/stage/parameter summary alongside complete diffs; equality alone cannot acceptoutput"
+  ],
+  "html_outputs": [
+    "Exact rawbytes sha256/bytecounts",
+    "Complete compressed unified HTML diff perwitness; authoritative rawinputs remain at pinned capturepaths",
+    "Ordered raw inlineSVG hashes and directbyte-equality; no DOM/browser or chips-only inference",
+    "Literal parameterbanner fields plus exact recorded IR parametersurfaces; no recalculationor roundedbanner expansion"
+  ],
+  "categories_are_not_causes": "Factvalues/statuses stay separate from evidence/authority metadata; accounting, presentation/unknown and diagnostics distinct; remainingpaths structural_or_unclassified_requires_review. Every category requires cause review and ownerapproval.",
+  "result_semantics": "ENUMERATED_NOT_ACCEPTED. chips_only is null; no automaticarchitectural/bless verdict. Missingmismatchedclosureblocks all comparison before outputdirectory creation. Any later inputhashmismatchfails.",
+  "suggested_command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/output-diff/compare.py --plan verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/targets.json --replay-root /private/tmp/unfold-s9a-twentysixth/source-closure-replay --current-pages /private/tmp/unfold-s9a-twentysixth/current-pages/capture --output /private/tmp/unfold-s9a-twentysixth/output-delta-enumeration",
+  "source_validation": "stdlib AST parse only; no execution of the comparator or tests."
+}

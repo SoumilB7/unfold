@@ -1,0 +1,269 @@
+--- before/model_unfolder/adapters/transformer/parser.py
++++ proposed/model_unfolder/adapters/transformer/parser.py
+@@ -1008,7 +1008,7 @@
+     def _note_typed_fact(
+             *, key, owner, value, status, reader_result, config_paths, reader,
+             reason, completeness="complete", claim_kind=None,
+-            claim_readers=()):
++            claim_readers=(), unknown_reason=None):
+         """One native typed-fact writer shared by exact U6 evidence joins.
+ 
+         Keeping the registry-validated write here prevents every migrated
+@@ -1039,13 +1039,34 @@
+             reason=reason,
+             claim_kind=claim_kind,
+             claim_readers=tuple(claim_readers),
++            unknown_reason=unknown_reason,
+         )
+-        from ...evidence.reader_claims import qualify_reader_fact, ReaderClaimUnavailable
++        from ...evidence.reader_claims import (
++            declare_reader_fact, qualify_reader_fact, ReaderClaimUnavailable)
+         from ...evidence.config_access import current_prepared_document
+         try:
+-            qualified = qualify_reader_fact(
+-                fact, reader_result, context.program_index(),
+-                current_prepared_document.get())
++            # An explicit unresolved question retains the actual reader
++            # declaration. It cannot acquire a positive numeric claim proof.
++            if unknown_reason is not None:
++                if not (
++                        (fact.owner, fact.key, fact.status, fact.completeness)
++                        == ("decoder.attention", "logit_softcap", "unknown", "partial")
++                        and fact.value is None and fact.config_paths == ()
++                        and fact.unknown_reason.reason_class == "investigation_missing"
++                        and fact.unknown_reason.concrete_reason == "softcap_operand_unavailable"
++                        and fact.unknown_reason.investigation is None
++                        and reader_result.status == "resolved"
++                        and reader_result.claim_reader_symbol == (
++                            "model_unfolder.evidence.attention."
++                            "decoder_attention_logit_softcap_for_path")):
++                    raise ValueError("declaration-only write is limited to the exact unresolved softcap operand")
++                qualified = declare_reader_fact(
++                    fact, reader_result, context.program_index(),
++                    current_prepared_document.get())
++            else:
++                qualified = qualify_reader_fact(
++                    fact, reader_result, context.program_index(),
++                    current_prepared_document.get())
+         except ReaderClaimUnavailable:
+             # A finite reader may lack one projection's semantic premise.
+             # Preserve its unqualified fact; malformed proofs still raise.
+@@ -3457,6 +3478,7 @@
+     # same cap operand to this exact checkpoint occurrence.  A familiar key or
+     # a positive number alone is not mechanism evidence.
+     attn_logit_softcap = None
++    _softcap_unresolved = False
+     _softcap_code = _attention_logit_softcap_result(
+         context, config_path=_text_path)
+     _softcap_resolution = None
+@@ -3501,6 +3523,27 @@
+                     "the exact attention score path divides by, tanh-clamps, "
+                     "and multiplies by this exact config-bound operand"),
+             )
++        elif not (_softcap_resolution is not None
++                  and not _softcap_resolution.ambiguous
++                  and _softcap_resolution.value is None
++                  and ((_softcap_resolution.present
++                        and _softcap_resolution.selected_path == ".".join(_bound_path))
++                       or (_softcap_resolution.source_kind == "class_default"
++                           and _softcap_resolution.default_premise is not None))):
++            # This reader proves only the exact `parameter is not None`
++            # guarded protocol. An established None disables that branch;
++            # no resolved operand is a different, unanswered question.
++            from ...uncertainty import UnknownReason
++            _note_typed_fact(
++                key="logit_softcap", owner="decoder.attention", value=None,
++                status="unknown", completeness="partial",
++                reader_result=_softcap_code, config_paths=(),
++                reader="decoder_attention_logit_softcap_for_path",
++                reason=("Source establishes a guarded score softcap, but its "
++                        "numeric operand is unavailable at " + ".".join(_bound_path)),
++                unknown_reason=UnknownReason(
++                    "investigation_missing", "softcap_operand_unavailable"))
++            _softcap_unresolved = _facts is not None
+     else:
+         # Keep an unproven declaration visible to the scoped config ledger; it
+         # cannot reach AttentionSpec.
+@@ -4469,6 +4512,16 @@
+                 residual_scale=residual_multiplier,
+                 cross_attention_spec=cross_spec,
+             ))
++        if _softcap_unresolved:
++            # Cite only this existing attention card. The shared producer adds
++            # its typed unresolved chip; no softcap op or connection is drawn.
++            for _softcap_block in layers[-1].blocks:
++                if (_softcap_block.get("id") == "attn"
++                        and _softcap_block.get("kind") == "attention"
++                        and _softcap_block.get("view") == "attention"):
++                    _softcap_block["source_fact_keys"] = list(dict.fromkeys((
++                        *(_softcap_block.get("source_fact_keys") or ()),
++                        "decoder.attention.logit_softcap")))
+ 
+     vocab_size = consume("vocab_size", fact_owner="model", fact_key="vocab_size") or 0  # embed-table count; ambiguity already blocks
+     # U2 default-kill (the live wrong-value fix): absence of the tie flag is
+--- before/model_unfolder/evidence/registry.py
++++ proposed/model_unfolder/evidence/registry.py
+@@ -992,8 +992,8 @@
+     ),
+     FactDefinition(
+         key="logit_softcap",
+-        value_types=frozenset({"int", "float"}),
+-        allowed_statuses=frozenset({"code_and_config", "class_default"}),
++        value_types=frozenset({"int", "float", "NoneType"}),
++        allowed_statuses=frozenset({"code_and_config", "class_default", "unknown"}),
+         owner_patterns=frozenset({"decoder.attention"}),
+         projections=frozenset({"attention_detail", "json"}),
+         projection_routes=(
+@@ -1007,8 +1007,10 @@
+                 }),
+             ),
+         ),
+-        unknown_policy="omit",
+-        notes="U6: exact score/cap -> tanh -> *cap path joined to the exact "
++        unknown_policy="unknown_banner",
++        notes="A source-present protocol with an unavailable numeric operand is "
++              "an unresolved fact on its existing attention card, never an op receipt. "
++              "U6: exact score/cap -> tanh -> *cap path joined to the exact "
+               "selected config operand; raw declarations are powerless. "
+               "The exact attention opgraph emits the projection receipt.",
+     ),
+@@ -1540,6 +1542,8 @@
+     value_type = type(fact.value).__name__
+     if value_type not in definition.value_types:
+         problems.append(f"{fact.key}: typed write with unregistered value type {value_type!r}")
++    if fact.key == "logit_softcap" and ((fact.status == "unknown") != (fact.value is None)):
++        problems.append("logit_softcap: unknown is an unanswered None operand; known tiers require a number")
+     # A None payload in an explicitly unresolved row asks an unanswered
+     # question. It does not assert that the mechanism is absent. False, the
+     # explicit "none" spelling, and None under a claiming status retain the
+--- before/model_unfolder/renderers/html/fact_projection.py
++++ proposed/model_unfolder/renderers/html/fact_projection.py
+@@ -233,8 +233,15 @@
+ 
+ 
+ def attention_facts(ir) -> frozenset:
+-    return (projected_keys(ir, "attention", ATTENTION_DRAWN)
+-            | projected_keys(ir, "mixers", MIXER_DRAWN))
++    projected = (projected_keys(ir, "attention", ATTENTION_DRAWN)
++                 | projected_keys(ir, "mixers", MIXER_DRAWN))
++    softcap = fact_provenance(ir).get("decoder.attention.logit_softcap")
++    if (isinstance(softcap, dict) and softcap.get("status") == "unknown"
++            and softcap.get("value") is None):
++        # The actual unresolved chip is accounted separately. It does not
++        # claim an attention-graph operation or place source occurrences.
++        projected -= {"decoder.attention.logit_softcap"}
++    return projected
+ 
+ 
+ def ffn_facts(ir) -> frozenset:
+--- before/tests/test_attention_softcap.py
++++ proposed/tests/test_attention_softcap.py
+@@ -236,8 +236,108 @@
+         declared_decoderness="decoder_only_wrapper",
+         class_defaults={"attention_cap": 17.0},
+     )
++    ir = config_to_ir(config, parse_context=context)
++    from model_unfolder.evidence.reader_claims import reader_operand
++    from model_unfolder.diagram import Diagram
++    from model_unfolder.presentation import chips_from_block
++    document = context.prepared_documents["root"].prepared
++    # The original poison stays invalid at the strict evidence boundary.
++    assert "attention_cap" not in document.class_overlay
+     with pytest.raises(ValueError, match="class-default evidence"):
++        reader_operand(document, ("attention_cap",), allow_aliases=False)
++    result = context.reader_results[("decoder.attention.logit_softcap", ())]
++    assert result.status == "resolved" and result.value.guard_span is not None
++    assert result.value.config_path == ("attention_cap",)
++    assert ir.layers and all(layer.attention.logit_softcap is None for layer in ir.layers)
++    fact = context.facts.typed["decoder.attention.logit_softcap"]
++    assert fact.value is None and fact.status == "unknown"
++    assert fact.claim_kind == "applied_function" and fact.claim_readers == (result.claim_reader_symbol,)
++    assert fact.claim_evidence is None and fact.claim_document_token == ""
++    assert fact.source_spans and fact.config_paths == ()
++    assert fact.unknown_reason.reason_class == "investigation_missing"
++    assert fact.unknown_reason.concrete_reason == "softcap_operand_unavailable"
++    assert fact.unknown_reason.investigation is None
++    assert not any(event.intent == "consumed" and event.fact_key == "logit_softcap"
++                   for event in context.config_access.events)
++    assert any(event.intent == "absent_default" and event.config_path == "attention_cap"
++               for event in context.config_access.events)
++    attention_cards = [block for layer in ir.layers for block in layer.blocks
++                       if block.get("id") == "attn" and block.get("kind") == "attention"]
++    assert len(attention_cards) == len(ir.layers)
++    for block in attention_cards:
++        chips = [chip for chip in chips_from_block(block)
++                 if any(ref.to_dict()["fact_key"] == fact.ledger_key() for ref in chip.references)]
++        assert len(chips) == 1 and chips[0].chip_kind == "unresolved"
++        assert chips[0].unknown_reason.to_dict() == fact.unknown_reason.to_dict()
++        assert "logit_softcap" not in block["detail"]["attention"]
++    diagram = Diagram(ir)
++    html = diagram.to_html(standalone=True)
++    assert "softcap_operand_unavailable" in html
++    assert not any(fact.ledger_key() in event.facts_projected
++                   for event in diagram.render_events())
++    assert not any(receipt.fact_key == "logit_softcap"
++                   for event in diagram.render_events() for receipt in event.receipts)
++
++
++@pytest.mark.parametrize(("reason_class", "reason"), [
++    ("structure_unaccounted", "softcap_operand_unavailable"),
++    ("investigation_missing", "foreign_question"),
++])
++def test_softcap_declaration_only_writer_rejects_a_foreign_unknown_question(
++        tmp_path, monkeypatch, reason_class, reason):
++    from model_unfolder import config_to_ir, uncertainty
++    _index, bundle, _root, _block = _pipeline(tmp_path)
++    config = json.loads((_CORPUS / "llama-7b.json").read_text())["config"]
++    config.update({"hidden": 128, "layers": 2})
++    config.pop("attention_cap", None)
++    context = ParseContext(source_bundle=bundle,
++        declared_decoderness="decoder_only_wrapper", class_defaults={"attention_cap": 17.0})
++    original = uncertainty.UnknownReason
++
++    def foreign_question(actual_class, actual_reason, investigation=None):
++        if actual_reason == "softcap_operand_unavailable":
++            return original(reason_class, reason, investigation)
++        return original(actual_class, actual_reason, investigation)
++
++    monkeypatch.setattr(uncertainty, "UnknownReason", foreign_question)
++    with pytest.raises(ValueError, match="declaration-only write is limited"):
+         config_to_ir(config, parse_context=context)
++    assert "decoder.attention.logit_softcap" not in context.facts.typed
++    assert not any(event.intent == "consumed" and event.fact_key == "logit_softcap"
++                   for event in context.config_access.events)
++
++
++@pytest.mark.parametrize(("status", "value"), [
++    ("code_and_config", None), ("class_default", None), ("unknown", 17.0),
++])
++def test_softcap_unknown_schema_cannot_admit_a_number_or_claim_known_absence(status, value):
++    from model_unfolder.evidence.context import FactLedger
++    from model_unfolder.evidence.facts import EvidenceFact
++    with pytest.raises(ValueError, match="unknown is an unanswered None operand"):
++        FactLedger().record_typed(EvidenceFact(
++            key="logit_softcap", owner="decoder.attention", value=value,
++            status=status, completeness="complete"))
++
++
++def test_explicit_none_on_proved_softcap_guard_is_inactive_not_missing_operand(tmp_path):
++    from model_unfolder import config_to_ir
++    from model_unfolder.evidence.reader_claims import reader_operand
++    _index, bundle, _root, _block = _pipeline(tmp_path)
++    config = json.loads((_CORPUS / "llama-7b.json").read_text())["config"]
++    config.update({"hidden": 128, "layers": 2, "attention_cap": None})
++    context = ParseContext(source_bundle=bundle,
++                           declared_decoderness="decoder_only_wrapper")
++    ir = config_to_ir(config, parse_context=context)
++    result = context.reader_results[("decoder.attention.logit_softcap", ())]
++    assert result.status == "resolved" and result.value.guard_span is not None
++    operand = reader_operand(context.prepared_documents["root"].prepared,
++                             ("attention_cap",), allow_aliases=False)
++    assert operand.source_kind == "config_declared" and operand.value is None
++    assert operand.checkpoint_path == ("attention_cap",)
++    assert ir.layers and all(layer.attention.logit_softcap is None for layer in ir.layers)
++    assert "decoder.attention.logit_softcap" not in context.facts.typed
++    assert not any(event.intent == "consumed" and event.fact_key == "logit_softcap"
++                   for event in context.config_access.events)
+ 
+ 
+ def test_real_source_bound_softcap_default_has_no_invented_checkpoint_path():

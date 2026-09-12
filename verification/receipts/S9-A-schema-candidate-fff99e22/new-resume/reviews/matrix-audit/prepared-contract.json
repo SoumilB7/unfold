@@ -1,0 +1,20 @@
+{
+  "status": "PREPARED; full39 data verdict pending root completion",
+  "script_sha256": "aa8c87d636299e283dd53014827f8627b354a277f9356c146cb337ecf1680a35",
+  "scope": "Independent active S7 / archived22 / candidate JSON and gzip payload audit. No product imports/models/baseline writes.",
+  "checks": [
+    "Exact39 membership and order; model/observation/relation artifact hashes",
+    "Exact occurrence order/runtime+static identity, construction/execution axes, construction and product schedules",
+    "Every old citation union retained/removed/qualified-in-place; removed citations never count as stamping",
+    "Full original22 placement-change three-way outcome table",
+    "Every remaining fact finding by actual fact key",
+    "Exact relation IDs/order/endpoints/identity; metadata deltas named",
+    "Top-level relation probe plan fields, source-index seal and independently recomputed plan SHA",
+    "Full companion observation/relation payload deltas on final run"
+  ],
+  "limits": [
+    "A complete data audit is not source semantic acceptance or output blessing. Every lost citation requires a named cause.",
+    "The portable source closure seal is not reconstructible from the model payload alone; its changed value remains explicitly enumerated with source-discovery changes requiring separate evidence.",
+    "Partial reports are diagnostics only; final review waits for matrix generator completion and root bracket."
+  ]
+}

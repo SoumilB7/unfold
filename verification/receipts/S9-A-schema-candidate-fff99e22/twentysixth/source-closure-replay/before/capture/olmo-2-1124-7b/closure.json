@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+  "baseline_output": {
+    "ir_after_sha256": "45a8c66b86ddcf4a53f7346472daa90b3a9248ae2fb3dba170b0b333ded3bc8a",
+    "ir_before_sha256": "45a8c66b86ddcf4a53f7346472daa90b3a9248ae2fb3dba170b0b333ded3bc8a",
+    "page_bytes": 58044,
+    "page_sha256": "4c4c1aa85cc7c3e418dccc3d1be322bf7c79f3ccaca34b875702a733936fedb5",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+  "seconds": 1.1399909159990784,
+  "slug": "olmo-2-1124-7b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "0c29cad0341e0dc97f4cd05835bae60b7558325d935af8ef3a6578401dfe4c2c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_olmo2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_olmo2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

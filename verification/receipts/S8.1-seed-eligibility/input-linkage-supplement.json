@@ -1,0 +1,45 @@
+{
+  "current_S7_input_hashes_equal_initial_audit": 39,
+  "actual_current_SDXL_request": "/private/tmp/unfold-s81-observation-cold-v4/request.json",
+  "actual_current_SDXL_request_sha256": "c9fc1243361169b5fa6b4384e1d9cd5cc2787f1325c803f70c88dc95de78fcf6",
+  "old_SDXL_request_sha256": "7e72567b7c02cba7b31ad192fdffd2d2c16439daed8a36938390f67656a5f075",
+  "old_SDXL_request_equals_actual_current": false,
+  "different_top_level_fields": [
+    {
+      "field": "attribute_lookups",
+      "old_present": false,
+      "current_present": true,
+      "old_count": null,
+      "current_count": 24
+    },
+    {
+      "field": "capture_framework_primitives",
+      "old_present": false,
+      "current_present": true,
+      "old_count": null,
+      "current_count": null
+    },
+    {
+      "field": "factory_module",
+      "old_present": true,
+      "current_present": true,
+      "old_count": null,
+      "current_count": null
+    },
+    {
+      "field": "label",
+      "old_present": true,
+      "current_present": true,
+      "old_count": null,
+      "current_count": null
+    },
+    {
+      "field": "timeout_seconds",
+      "old_present": true,
+      "current_present": true,
+      "old_count": null,
+      "current_count": null
+    }
+  ],
+  "scope": "Actual schema2 observation request comparison only; no guessed current request for other targets. Optional absent fields alone do not establish invalidity; the full capture envelope is absent for every historical target."
+}

@@ -1,0 +1,16 @@
+{
+  "status": "COMPLETE",
+  "base_scanner_sha256": "34d3c32e06ae2c3cd49cfc6344e3ee18bfe7a81489b42c87444a4c0ad3353eec",
+  "supplement_scanner_sha256": "d602124b1ff0630af00fd68e8c1bfd5d437fe5b4ff672f9e1c0d642574047302",
+  "input_paths_sha256": "af53587fe0f4c5310f3f7c0e7e0681e6d4998d52f91906e2d2683e3dec195b45",
+  "files": 8,
+  "stored_bytes": 302405,
+  "decoded_leaves": 8,
+  "containers": {},
+  "host_path_files": 1,
+  "host_path_tokens": 2,
+  "known_local_digest_files": 0,
+  "errors": [],
+  "excluded_self_descriptive_audit_reports": [],
+  "scope": "Explicit changed/new captured files only; old archive contents not rescanned. Self-descriptive audit copies excluded explicitly; they are reports of prior findings, not active portable authority. Counts are separate snapshot supplement, not blindly added to baseline counts for duplicate changed paths."
+}

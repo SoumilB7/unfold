@@ -1,0 +1,22 @@
+{
+  "ordinary": {
+    "independent_original_json_equals_actual_captured_render_ir": true,
+    "original_ir_sha256": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "capture_sha256": "54e18079e61ac5a4b9c7ca544a42912ad64a50c66ca0d722374bfcfb4d54e7c2"
+  },
+  "sparse": {
+    "independent_original_json_equals_actual_captured_render_ir": true,
+    "original_ir_sha256": "f449b0b9dbc9ee8b0e126c28cbd7b82443379b3f7bd777f216437493a5619f57",
+    "capture_sha256": "53b3e05bdad248f7d45715a3abe63f2d49e141666ad48e2675ec0c2b38f7d9a8"
+  },
+  "misleading": {
+    "independent_original_json_equals_actual_captured_render_ir": true,
+    "original_ir_sha256": "fcba38a607b56101bbe384fd5d0de26e82ac80ebfe49f0ef0c36ca021284f5d0",
+    "capture_sha256": "73c5567e772f7fc5fb6abb8c2b276a5f97548fc2b392df7887fc2aac9dda4bb6"
+  },
+  "rewrite": {
+    "independent_original_json_equals_actual_captured_render_ir": true,
+    "original_ir_sha256": "fb5034d56f82972e6f60779846cebdb0ff712d90c22a6de9cd58f31da1016621",
+    "capture_sha256": "711163030c4b014b5a852e9f6c78f2c173b8f53b8ebac64f2e0d7f59d65792b0"
+  }
+}

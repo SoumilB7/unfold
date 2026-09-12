@@ -1,0 +1,71 @@
+{
+  "decision": "ACCEPT",
+  "reviewer": "root",
+  "implementer": "executor",
+  "reviewed_at": "2026-09-08T08:20:09.970504+00:00",
+  "model": "GLM-4.5",
+  "view_signature": [
+    {
+      "label": "architecture",
+      "hash": "bc5df722fc681af5bf5ef5d127daa955"
+    },
+    {
+      "label": "architecture",
+      "hash": "d08a31aea8f3894b54d243ea115ebb9e"
+    },
+    {
+      "label": "architecture_v1",
+      "hash": "48ffc71f29e33d83b6558475a9c256fa"
+    },
+    {
+      "label": "attn",
+      "hash": "f3548d1e25ff73d275bb5df4b556af89"
+    },
+    {
+      "label": "expert_1",
+      "hash": "0ab3484877f3ffc1f5aae70428678459"
+    },
+    {
+      "label": "ffn",
+      "hash": "1a58f54930d25fa7f9b24be19fed4cbb"
+    },
+    {
+      "label": "ffn",
+      "hash": "a39b1c9708734671c499bce8772b066f"
+    },
+    {
+      "label": "g_topk",
+      "hash": "bdefc6faf978f47be8662e9e530a4ebb"
+    },
+    {
+      "label": "router",
+      "hash": "14116d9baf3e2c6b075d22750390f718"
+    }
+  ],
+  "scope": "Exact Soumil-approved S8 output transition; architectural completeness and visual perfection are not claimed.",
+  "user_approval": "yes go ahead; 2026-09-08, 12-design/00-design-decisions-verbatim.md",
+  "report_sha256": "7e42b9f7bc1c814fcda5350282558f4fca6d5a5239396776c5f20e49ca922a36",
+  "gallery_manifest_sha256": "d0e68f3efdb7d31f1ec6224f0ba0d00eee1e7741a72466f9ab4dc2100d8067f2",
+  "pixel_review_sha256": "c881f2b2589d807319c86b58db71a5150316970aeed1856c3c57323953ab39ec",
+  "her_eyes_review_sha256": "50d275aae1842534377343cadb7fc6b6679a55b14ee593a5ff157048761dfff6",
+  "independent_review_evidence": [
+    "verification/receipts/S8-approved-geometry-owner/review.json",
+    "verification/receipts/S8-approved-geometry-owner/report-gallery-bindings.json"
+  ],
+  "report_phase": "actual-fb1-Sable-capture",
+  "proven_facts_equal_prior_lock": true,
+  "retained_visual_suggestions": [
+    {
+      "file": "04__ffn__1.png",
+      "inspected": true,
+      "label": "ffn",
+      "png_sha256": "d2e63f22841cf24c3122baa42f66607d4268993c17f9bd627a994570bcfeeee3",
+      "source_svg_sha256": "c387a2993d64006c610db89de4f94ee8dcffe48b85508455b1f5624b39298963",
+      "visual_hash": "a39b1c9708734671c499bce8772b066f",
+      "delight": "DISLIKE",
+      "verdict": "SUGGEST",
+      "sentence": "The shared-expert input rail disappears behind the wide Router box; route it outside that box without dropping the branch."
+    }
+  ],
+  "limits": "The existing guarded bless offline reproduction must still pass. Suggestions remain visible for S12; no additional output change or support expansion is approved."
+}

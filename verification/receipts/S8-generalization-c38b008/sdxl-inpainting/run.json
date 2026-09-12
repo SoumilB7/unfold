@@ -1,0 +1,25 @@
+{
+  "witness": "sdxl-inpainting",
+  "command": [
+    "python3",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/phase-entry.py",
+    "--checkout",
+    "/private/tmp/unfold-s8-compiler-final",
+    "--scripts",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/scripts",
+    "--input",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-inpainting/input.json",
+    "--output",
+    "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-inpainting",
+    "--condition",
+    "ordinary",
+    "--expect-source-sha256",
+    "6a5ef52aed7986d1e3a52f601ae0cf95224f3178d652aca47c3b57d512819ff7"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 179.121,
+  "commit": "c38b008af8153302d85bbaf2a8e3593841d87e1a",
+  "scope": "Published denoiser-only config; installed-version reconstruction, no weights or original historical library claim.",
+  "html_bytes": 23673785,
+  "html_sha256": "c26497c420b88a7bdd2c7cf4f83ec3248cde18dbfb3183defbc1fec588f6e417"
+}

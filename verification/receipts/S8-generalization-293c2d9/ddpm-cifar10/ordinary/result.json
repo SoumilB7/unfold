@@ -1,0 +1,26 @@
+{
+  "blessed": false,
+  "condition": "ordinary",
+  "constructed": 288,
+  "elapsed_seconds": 42.105,
+  "html_sha256": "f98fe5ee68b11a2ea72b6448356109a6fd985010a648f423d01eeb5fdf8d0a66",
+  "implementation_source_sha256": "1bdc3f1e1212819747a79dd9f2d27eb435ed290ae1f67f91f0945a1abf73f6a9",
+  "implementation_unchanged_during_run": true,
+  "parameters": 35746307,
+  "projected_fact_keys": [
+    "root.denoiser.cell_arithmetic",
+    "root.denoiser.cell_connections",
+    "root.denoiser.constructed_modules",
+    "root.denoiser.constructed_parameter_shapes",
+    "root.denoiser.constructed_stage_relations",
+    "root.denoiser.declared_constructor_defaults",
+    "root.denoiser.primary_state_ports",
+    "root.denoiser.runtime_primitives",
+    "root.denoiser.spatial_mechanisms",
+    "root.denoiser.stage_join_connections"
+  ],
+  "runtime_source_sha256": "ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+  "static_source_sha256": "ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+  "status": "review_required",
+  "wiring_problems": []
+}

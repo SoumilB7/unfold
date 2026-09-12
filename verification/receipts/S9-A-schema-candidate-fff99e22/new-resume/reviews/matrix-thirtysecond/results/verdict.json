@@ -1,0 +1,45 @@
+{
+  "status": "PASS_BOUNDED_SAVED_MATRIX_ACCOUNTING_NOT_UNIT_ACCEPTANCE",
+  "models": 39,
+  "occurrences": 44088,
+  "all_occurrence_membership_order_construction_execution_and_runtime_static_identities_unchanged": true,
+  "original_active_unstamped": {
+    "total": 16324,
+    "qualified_in_place": 16182,
+    "retained_unqualified": 142,
+    "removed": 0
+  },
+  "all_active_citations_survive": true,
+  "active_citations_gained": 2722,
+  "candidate_fact_findings": {
+    "decoder.attention.position_schedule": 141,
+    "decoder.attention.scores_scale": 481,
+    "decoder.attention.cross_attention_schedule": 1
+  },
+  "projection_kinds": {
+    "rendered": 5065,
+    "projection_unresolved": 32820,
+    "non_architectural": 1463,
+    "grouped": 4740
+  },
+  "active_projection_delta": "86 DeepSeek-V4 exact norm occurrences: projection_unresolved to rendered. Same named re-proof gains as26; no additional32 placement change.",
+  "interim22_cleanup": {
+    "projection_kind_changes": 274,
+    "restored_active_kind": 188,
+    "third_kind_exact_norm_reproof": 86,
+    "invalid_broad_citations_removed": 1412,
+    "citation_gains": 43,
+    "not_active_citation_losses": true
+  },
+  "relations": "Five unchanged-identity parameter-sharing relations gain only exact tie_word_embeddings config path. All relation plan receipts/index consistency valid.",
+  "vs26": "Every39 full model payload, occurrence provenance/projection and observation/relation companion is identical. Global matrix differs only at21 source stamp entries, all rehashed against exact32 source.",
+  "input_files_rehashed": 473,
+  "source_files_rehashed": 394,
+  "source32_global_fingerprint": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+  "scope": "Saved JSON/gzip only. No model/tests/product import, proof reconstruction, active artifact writes or output blessing. Full raw leaf deltas and all per-witness findings retained. Actual live proof validation remains separate page/child evidence.",
+  "open_work": [
+    "142 schedule findings (141 position_schedule,1 cross_attention_schedule) remain unqualified in this matrix. Repair is authorized; the prepared audit historical owner-held wording is superseded by the clarified approval boundary. Only output re-bless requires approval.",
+    "481 scores_scale findings are remaining mechanism-proof debt; they are not counted as cleared by citation preservation.",
+    "86 exact norm re-proof gains require inclusion in owner-reviewed output deltas. No acceptance inferred."
+  ]
+}

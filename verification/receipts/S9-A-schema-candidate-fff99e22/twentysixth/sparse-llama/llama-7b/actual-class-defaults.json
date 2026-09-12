@@ -1,0 +1,9 @@
+{
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1"
+  },
+  "hidden_size": 4096,
+  "num_attention_heads": 32,
+  "hidden_act": "silu"
+}

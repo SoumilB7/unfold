@@ -1,0 +1,20 @@
+{
+  "status": "PREPARED_BEFORE_CAPTURE_NO_ACTUAL30_FINDINGS",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "5b0a59938d027635e5d2d9dfbc55eeb0bd98d9f05c649fce7dbd16221e422544",
+      "bytes": 1120
+    },
+    {
+      "path": "audit.py",
+      "sha256": "1011c3136e5bed417d88dbce0a08052104286691a2e964029fe6f0cc9a9bece1",
+      "bytes": 20706
+    },
+    {
+      "path": "plan.json",
+      "sha256": "7f24c8cf0bd7a5d6f18d6d50f723ed645e320699d32b51f9311384cb97445ea8",
+      "bytes": 2621
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "alias": "num_hidden_layers",
+    "canonical": "num_hidden_layers",
+    "component": "root",
+    "config_path": "decoder.num_hidden_layers",
+    "document_fingerprint": "dd2c62455bb1bfb135f1349c7dd157f647a666174b42ca0e58bc62bf6432cb0f",
+    "document_path": [],
+    "document_token": "1e0ade6f929ad22f2f774ae2fb766213b7786b7f754ec50d0707eebb35621af0",
+    "fact_key": "",
+    "fact_owner": "",
+    "intent": "inspected",
+    "mechanism": "",
+    "path_exact": true,
+    "present": true,
+    "provenance": "checkpoint_declared",
+    "reader": "",
+    "reason": "",
+    "value_state": "value",
+    "value_status_hash": ""
+  },
+  {
+    "alias": "num_hidden_layers",
+    "canonical": "num_hidden_layers",
+    "component": "root",
+    "config_path": "decoder.num_hidden_layers",
+    "document_fingerprint": "dd2c62455bb1bfb135f1349c7dd157f647a666174b42ca0e58bc62bf6432cb0f",
+    "document_path": [],
+    "document_token": "1e0ade6f929ad22f2f774ae2fb766213b7786b7f754ec50d0707eebb35621af0",
+    "fact_key": "num_layers",
+    "fact_owner": "model",
+    "intent": "consumed",
+    "mechanism": "",
+    "path_exact": true,
+    "present": true,
+    "provenance": "checkpoint_declared",
+    "reader": "",
+    "reason": "",
+    "value_state": "value",
+    "value_status_hash": ""
+  }
+]

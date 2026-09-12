@@ -1,0 +1,93 @@
+{
+  "decision": "ACCEPT bounded source-only static import cleanup; runtime and pyflakes remain root-owned",
+  "manifest_sha256": "c95494ce9416cf2a51cecd1e3c892ad5347bc3a3dac92b9bc13a4af7e3d268b9",
+  "reviewer": "resume_review",
+  "pins": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/cross_attention_schedule.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/position_linear_bias.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/decoder_norm.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stream.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "model_unfolder/uncertainty.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "tests/test_s9_fact_unknowns.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "tests/test_s9_presentation_chips.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    },
+    {
+      "path": "tests/test_s9_projection_claim_requirements.py",
+      "frozen27_before_pin_matches": true,
+      "snapshot_after_pin_matches": true,
+      "live_equals_snapshot": true
+    }
+  ],
+  "source_findings": [
+    "Parser module-level replace was unused; the only dataclass replacement operation uses the retained local import in parse. The removed local _config_access import in _ffn_mechanism_result was unused; resolver imports and all reader calls remain intact.",
+    "cross_attention_schedule and position_linear_bias remain owner-held undeclared readers. They have no retained_claim_reader decorator; removing only its unused import does not activate/deactivate a producer. Both still import reader_claims for their actual projection/count dependencies, so module initialization is unchanged.",
+    "Decoder norm CallSiteId import has no remaining reference in that module; owner/callee computation and retained reader decorator are unchanged. diffusion_stack removes unused function-local reader_operand names, preserving the actual declared_diffusion_operand import and lookup. diffusion_stream merely deduplicates replace.",
+    "validate_reader_investigation only allows the existing FinalNormClaimWitness finite attempted vocabulary. The removed decoder/embedding witness imports were unused: their types never widened the allowlist, and any investigated result already comes from its actual retained producer. Producer registration records, callable validation and closed witness issuance logic are unchanged.",
+    "Reconciliation removes unused ReaderResult/failure vocabulary imports. No repository caller imports those accidental aliases or depends on them through dynamic lookup found in the bounded search. The intentionally retained INVESTIGATION_KINDS compatibility export still aliases the exact uncertainty frozenset; it is not copied or redefined.",
+    "Uncertainty has postponed annotations. TYPE_CHECKING imports supply only annotation names; existing runtime isinstance checks retain their local imports. No new runtime evidence import/circular import is introduced. Repository search finds no get_type_hints consumer of those unresolved globals; no such external reflection API was verified.",
+    "The three test changes remove only unused imports, without changing assertions, fixtures or their controls."
+  ],
+  "limits": [
+    "All12 exact source snapshots match main and their before pins match frozen27. Review did not import project modules, run pyflakes, tests or models.",
+    "This does not assert an external public API contract for incidental imported aliases removed from reconciliation/decoder_norm; no repository dependency was found. Intended compatibility vocabulary export is preserved.",
+    "Evidence module byte changes affect package source/cache identity and require the separately planned frozen28 gates and actual matrix/pages; no prior fingerprint is silently carried forward."
+  ]
+}

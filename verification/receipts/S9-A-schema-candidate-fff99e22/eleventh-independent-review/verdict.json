@@ -1,0 +1,16 @@
+{
+  "decision": "RETURN_DIRECT_REFLECTIVE_MUTATION",
+  "reviewer": "/root/independent_review",
+  "scope": "Eleventh exact A5 correction",
+  "manifest_sha256": "404019b93ad2e0cba16496ab67c27a0d88769c60120ff6e4512407f9195b22f9",
+  "correction_manifest_sha256": "99b67be686f1e35e758a1bf7fb9fcf7905ef19821b4cef4968a1303d1912f8de",
+  "source_pins": {
+    "model_unfolder/evidence/activation_registry.py": "cea4cdfb95ea5c7557784a240f3333f53b1e0af23ae39463e35205718b33f564",
+    "tests/test_reader_claims.py": "0cb451ce7c2c07c7ce87eb137eef2201071ab032ff20183a31395c9f612e7507",
+    "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+  },
+  "remaining_case": "setattr(getattr(torch, requested), 'ReLU', replacement)",
+  "review_sha256": "a1c75ca0e78c182dff99b083a8a6a47c08a18c248358bf63e79aa630a66380de",
+  "runtime_performed": false,
+  "output_approval": false
+}

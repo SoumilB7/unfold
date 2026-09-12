@@ -1,0 +1,22 @@
+{
+  "expected_kind": "unresolved",
+  "owner_identifiers": [
+    {
+      "context": "parameter",
+      "line": 6
+    },
+    {
+      "context": "load",
+      "line": 10
+    }
+  ],
+  "reason": "Delegation only on the retained branch; other wrapper effects and try/finally paths remain unresolved",
+  "result_kind": "conditional_wrapper",
+  "source": "class Cell:\n    def forward(owner, value):\n        return owner.child(value)\n\ndef wrap(captured):\n    def wrapper(owner, value):\n        try:\n            unknown()\n        except Exception as owner:\n            return captured(owner, value)\n    return wrapper\n",
+  "unsupported": [
+    {
+      "kind": "try",
+      "line": 7
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "status": "PREPARED SOURCE ONLY; actual37 preservation not yet run.36 matrix intentionally superseded and incomplete.",
+  "source37": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "manifest37": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "current": "/private/tmp/unfold-s9a-thirtyseventh/preservation-current37",
+  "baseline": "/private/tmp/unfold-s9a-thirtyfirst/preservation-baseline",
+  "baseline_archive_map": "be2e560d5135d82679de6cebe135ca522e95dc2e1b30175095658a42dc2f8486",
+  "current_observer_manifest": "d1bcadd24e9a98ccf2b7f4dac00dbe3b0241aec4ce3be79b87c63a86c4398f19",
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current37-recovered-cause-audit-r2/audit.py --output /private/tmp/unfold-s9a-thirtyseventh/preservation-cause-audit",
+  "precedence": "Root runs original37 preservation observer then its approved compare-recovered.py; only then this stdlib cause inventory. Never author baseline or reclassify original test result.",
+  "checks": [
+    "Read-only rehash exact recovered baseline archive and every original scratch member. All203 recovered surface hashes must equal original committed expectations.",
+    "Exact current37 source rows/deletions, source/protected brackets, original31 versus current37 harness origins, same expected bytes,52 original test reports,29 unique one-call witnesses.",
+    "Recompute all full ordered JSON leaf/subtree deltas and compare byte-pinned approved comparator outputs. No set rekeying can hide order/value/proof removal.",
+    "Enumerate every native fact change/removal and every actual current consumption obligation versus available canonical native value/status hash. Missing child facts remain explicit, not assumed to be proven by32.",
+    "Retain raw HTML diff plus exact first-mount-law hunks and full deferred payload leaf deltas, with unclassified hunks flagged. Browser/click/design verification remains separate.",
+    "Classify finite known cause paths with exact current37 source anchors, retaining every unknown cause or evidence inconsistency as a finding. Do not assume all facts/tier/status unchanged or all IR deltas additions.",
+    "Read every used artifact/source again at completion; writes only fresh audit output.",
+    "Reject more than one deferred payload block explicitly; count0/1 on both sides and retain presence changes, full payload JSON deltas and raw HTML."
+  ],
+  "new_child_observer": "Root requested an exact37 successor of accepted32 R2 to close unavailable child native joins; this audit does not relabel32 evidence. Child evidence will be independently joined in an addendum after its actual current37 packet is complete.",
+  "limits": [
+    "Classification is bounded source routing, not proof replay or blessing. Some HTML/payload and unmatched child details are intentionally returned for actual evidence-level review.",
+    "No expected number of37 output changes is hardcoded. New schedule proof/tier and existing-card citation deltas are enumerated.",
+    "No product/model/test import or runtime, source edits, guarded writer, active artifact update or approval."
+  ],
+  "css_source_correction": {
+    "source": "model_unfolder/renderers/html/styles.py",
+    "sha256": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+    "cause": "Only37 increment is9 CSS lines retaining full chip text with wrapping/min-width constraints. Existing typed style distinctions and source facts unchanged. Exact browser/layout verdict is separate from source cause."
+  },
+  "predecessor_manifest_sha256": "10159daae09790a6205f1af0735459cc37ccbef8ba1be0a1462eda2c3e21e5bd"
+}

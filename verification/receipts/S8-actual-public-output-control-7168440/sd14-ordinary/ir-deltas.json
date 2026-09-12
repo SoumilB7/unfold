@@ -1,0 +1,520 @@
+{
+  "metadata_lists": [
+    {
+      "actual_card_facts_order_unchanged": true,
+      "block_id": "denoiser",
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults"
+      ],
+      "public_source_order": [
+        "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+        "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+        "Declared class default \u00b7 transformer_layers_per_block: 1 (checkpoint omitted)",
+        "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+        "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+        "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 use_linear_projection: false (checkpoint omitted)",
+        "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 addition_embed_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 addition_time_embed_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+        "Declared class default \u00b7 upcast_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+        "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+        "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+        "Declared class default \u00b7 projection_class_embeddings_input_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+        "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+        "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+        "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+        "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)"
+      ],
+      "reviewed_saved_fact_order": [
+        "Declared class default \u00b7 addition_embed_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)",
+        "Declared class default \u00b7 addition_time_embed_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+        "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+        "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+        "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+        "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+        "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+        "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+        "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+        "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+        "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+        "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+        "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 projection_class_embeddings_input_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+        "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+        "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+        "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+        "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)",
+        "Declared class default \u00b7 transformer_layers_per_block: 1 (checkpoint omitted)",
+        "Declared class default \u00b7 upcast_attention: false (checkpoint omitted)",
+        "Declared class default \u00b7 use_linear_projection: false (checkpoint omitted)"
+      ],
+      "unique_same_exact_members": true
+    }
+  ],
+  "scalar_differences": [
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        0
+      ],
+      "public": "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 addition_embed_type: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        1
+      ],
+      "public": "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        2
+      ],
+      "public": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 addition_time_embed_dim: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        3
+      ],
+      "public": "Declared class default \u00b7 transformer_layers_per_block: 1 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        4
+      ],
+      "public": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        5
+      ],
+      "public": "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        6
+      ],
+      "public": "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        7
+      ],
+      "public": "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        8
+      ],
+      "public": "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        9
+      ],
+      "public": "Declared class default \u00b7 use_linear_projection: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        10
+      ],
+      "public": "Declared class default \u00b7 class_embed_type: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 dual_cross_attention: false (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        11
+      ],
+      "public": "Declared class default \u00b7 addition_embed_type: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 encoder_hid_dim: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        12
+      ],
+      "public": "Declared class default \u00b7 addition_time_embed_dim: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 encoder_hid_dim_type: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        13
+      ],
+      "public": "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        14
+      ],
+      "public": "Declared class default \u00b7 upcast_attention: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 mid_block_type: \"UNetMidBlock2DCrossAttn\" (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        15
+      ],
+      "public": "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 num_attention_heads: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        16
+      ],
+      "public": "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 num_class_embeds: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        17
+      ],
+      "public": "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 only_cross_attention: false (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        18
+      ],
+      "public": "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 projection_class_embeddings_input_dim: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        19
+      ],
+      "public": "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 resnet_out_scale_factor: 1.0 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        20
+      ],
+      "public": "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 resnet_skip_time_act: false (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        21
+      ],
+      "public": "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 resnet_time_scale_shift: \"default\" (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        22
+      ],
+      "public": "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        23
+      ],
+      "public": "Declared class default \u00b7 conv_in_kernel: 3 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 time_cond_proj_dim: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        24
+      ],
+      "public": "Declared class default \u00b7 conv_out_kernel: 3 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 time_embedding_act_fn: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        25
+      ],
+      "public": "Declared class default \u00b7 projection_class_embeddings_input_dim: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 time_embedding_dim: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        26
+      ],
+      "public": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 time_embedding_type: \"positional\" (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        27
+      ],
+      "public": "Declared class default \u00b7 class_embeddings_concat: false (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 timestep_post_act: null (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        28
+      ],
+      "public": "Declared class default \u00b7 mid_block_only_cross_attention: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 transformer_layers_per_block: 1 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        29
+      ],
+      "public": "Declared class default \u00b7 cross_attention_norm: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 upcast_attention: false (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        5,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        30
+      ],
+      "public": "Declared class default \u00b7 addition_embed_type_num_heads: 64 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 use_linear_projection: false (checkpoint omitted)"
+    }
+  ]
+}

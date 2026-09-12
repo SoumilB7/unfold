@@ -1,0 +1,193 @@
+--- a/model_unfolder/renderers/html/block_views/attention.py
++++ b/model_unfolder/renderers/html/block_views/attention.py
+@@ -38,6 +38,29 @@
+     "linear": "linear-attn",
+     "gated_delta": "gated-delta",
+ }
++
++
++def _softcap_is_drawn(attn, region, graph) -> bool:
++    """One decoder softcap is projected only by its actual canonical operation.
++
++    A positive native fact may outlive an opaque attention diagram. Neither
++    its value nor a familiar node ID proves that the renderer drew tanh.
++    """
++    if attn.get("node_prefix") or attn.get("logit_softcap") is None:
++        return False
++    operation = region.by_id().get("attn_softcap")
++    node = graph.by_id().get("attn_softcap")
++    return (operation is not None and operation.kind == "activation"
++            and operation.fn == "tanh" and node is not None
++            and node.kind == "activation" and node.resolved)
++
++
++def _attention_graph_facts(ir, attn, region, graph) -> frozenset:
++    """Keep the same finite softcap drawing test on every attention drill."""
++    projected = attention_facts(ir)
++    if not _softcap_is_drawn(attn, region, graph):
++        projected -= {"decoder.attention.logit_softcap"}
++    return projected
+ 
+ 
+ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool = True) -> str:
+@@ -73,9 +96,8 @@
+             "mechanism": "attention_logit_softcap",
+             "value": attn["logit_softcap"],
+         },)
+-        if attn.get("logit_softcap") is not None
+-        and "decoder.attention.logit_softcap" in fact_rows
+-        and not attn.get("node_prefix") else ())
++        if _softcap_is_drawn(attn, region, graph)
++        and "decoder.attention.logit_softcap" in fact_rows else ())
+     qk_projects = (
+         ({
+             "owner": "decoder.attention",
+@@ -261,7 +283,7 @@
+     return render_graph(
+         graph, info, mount_id, key,
+         f"{ir.get('name', 'model')} {title}", min_width=640,
+-        facts_projected=attention_facts(ir),
++        facts_projected=_attention_graph_facts(ir, attn, region, graph),
+         receipts=receipts,
+     )
+ 
+@@ -277,7 +299,7 @@
+     return render_graph(
+         graph, info, mount_id, "mla-query",
+         f"{ir.get('name', 'model')} MLA query path", min_width=640,
+-        facts_projected=attention_facts(ir),
++        facts_projected=_attention_graph_facts(ir, attn, region, graph),
+         receipts=receipts,
+     )
+ 
+@@ -293,7 +315,7 @@
+     return render_graph(
+         graph, info, mount_id, "mla-kv",
+         f"{ir.get('name', 'model')} MLA KV cache path", min_width=720,
+-        facts_projected=attention_facts(ir),
++        facts_projected=_attention_graph_facts(ir, attn, region, graph),
+         receipts=receipts,
+     )
+ 
+--- a/tests/test_attention_softcap.py
++++ b/tests/test_attention_softcap.py
+@@ -393,6 +393,11 @@
+     # is truthfully projected by both group drills.  Every emitted receipt must
+     # nevertheless cite the same exact route and render context.
+     assert len(receipts) == 2
++    assert all(set(receipt.node_ids) <= set(event.node_ids)
++               for event in events for receipt in event.receipts)
++    assert all("decoder.attention.logit_softcap" in event.facts_projected
++               for event in events if any(receipt.fact_key == "logit_softcap"
++                                          for receipt in event.receipts))
+     assert {receipt.owner for receipt in receipts} == {"decoder.attention"}
+     assert {receipt.mechanism for receipt in receipts} == {
+         "attention_logit_softcap"}
+@@ -418,6 +423,107 @@
+         "attention_logit_softcap")]
+ 
+ 
++def test_positive_softcap_fact_on_opaque_attention_is_not_a_drawn_graph(tmp_path):
++    from model_unfolder import config_to_ir
++    from model_unfolder.diagram import Diagram
++
++    _index, bundle, _root, _block = _pipeline(tmp_path)
++    config = json.loads((_CORPUS / "llama-7b.json").read_text())["config"]
++    config.update(hidden=128, layers=2, attention_cap=17.0)
++    context = ParseContext(source_bundle=bundle,
++                           declared_decoderness="decoder_only_wrapper")
++    ir = config_to_ir(config, parse_context=context)
++    fact = context.facts.typed["decoder.attention.logit_softcap"]
++    assert fact.value == 17.0 and fact.status == "code_and_config"
++    assert fact.claim_kind == "applied_function" and fact.claim_evidence is not None
++    assert len(ir.layers) == 32
++    assert all(layer.attention.logit_softcap == 17.0 for layer in ir.layers)
++    assert any(event.intent == "consumed" and event.fact_key == "logit_softcap"
++               for event in context.config_access.events)
++    diagram = Diagram(ir)
++    html = diagram.to_html(standalone=True)
++    events = diagram.render_events()
++    assert any("opaque" in event.drawn_ops for event in events)
++    assert "attn_softcap" not in html
++    assert not any(fact.ledger_key() in event.facts_projected for event in events)
++    assert not any(receipt.fact_key == "logit_softcap"
++                   for event in events for receipt in event.receipts)
++    assert all(set(receipt.node_ids) <= set(event.node_ids)
++               for event in events for receipt in event.receipts)
++    # Drawing debt does not revoke a native reader proof or its supplied value.
++    assert context.facts.typed[fact.ledger_key()] is fact
++
++
++@pytest.mark.parametrize("mutation", ["missing_node", "opaque_node", "wrong_function"])
++def test_softcap_graph_receipt_requires_the_actual_canonical_operation(monkeypatch, mutation):
++    from model_unfolder import config_to_ir
++    from model_unfolder.diagram import Diagram
++    from model_unfolder.renderers.html.block_views import attention as view
++
++    config = json.loads((_CORPUS / "gemma-2-2b-it.json").read_text())["config"]
++    context = ParseContext.build(config)
++    ir = config_to_ir(config, parse_context=context)
++    fact = context.facts.typed["decoder.attention.logit_softcap"]
++    assert fact.claim_evidence is not None and fact.value == 50.0
++    original = view.attention_region
++    changed = []
++
++    def altered(*args, **kwargs):
++        region = original(*args, **kwargs)
++        operation = region.by_id().get("attn_softcap")
++        if operation is None:
++            return region
++        changed.append(operation.id)
++        if mutation == "missing_node":
++            return replace(region,
++                ops=[op for op in region.ops if op.id != "attn_softcap"],
++                edges=[edge for edge in region.edges
++                       if edge.src != "attn_softcap" and edge.dst != "attn_softcap"])
++        replacement = (replace(operation, kind="opaque") if mutation == "opaque_node"
++                       else replace(operation, fn="relu"))
++        return replace(region, ops=[replacement if op.id == operation.id else op
++                                    for op in region.ops])
++
++    monkeypatch.setattr(view, "attention_region", altered)
++    diagram = Diagram(ir)
++    diagram.to_html(standalone=True)
++    events = diagram.render_events()
++    assert changed
++    assert not any(fact.ledger_key() in event.facts_projected for event in events)
++    assert not any(receipt.fact_key == "logit_softcap"
++                   for event in events for receipt in event.receipts)
++    assert all(set(receipt.node_ids) <= set(event.node_ids)
++               for event in events for receipt in event.receipts)
++    assert context.facts.typed[fact.ledger_key()] is fact
++
++
++@pytest.mark.parametrize("builder", ["build_attention_view", "build_mla_query_path_view",
++                                     "build_mla_kv_cache_view"])
++def test_each_attention_drill_excludes_softcap_without_its_actual_graph_operation(builder):
++    from model_unfolder.renderers.html.block_views import attention as view
++    from model_unfolder.renderers.html.render_context import RenderContext, activate_render_context
++
++    # A finite projector routing control, not a reader proof or model fixture.
++    # A positive root fact must not leak into an unrelated/opaque child graph.
++    ir = {"name": "projection-control", "hidden_size": 128,
++          "extras": {"fact_provenance": {"decoder.attention.logit_softcap": {
++              "value": 17.0, "status": "code_and_config"}}}}
++    info = {"dominant": {"spec": {"attention": {"kind": None, "logit_softcap": 17.0}}}}
++    context = RenderContext()
++    with activate_render_context(context):
++        if builder == "build_attention_view":
++            getattr(view, builder)(ir, info, "uf-aabbcc")
++        else:
++            getattr(view, builder)(ir, info, "uf-aabbcc", {})
++    assert context.events
++    assert not any("decoder.attention.logit_softcap" in event.facts_projected
++                   for event in context.events)
++    assert not any(receipt.fact_key == "logit_softcap"
++                   for event in context.events for receipt in event.receipts)
++    assert all(set(receipt.node_ids) <= set(event.node_ids)
++               for event in context.events for receipt in event.receipts)
++
++
+ def test_softcap_dto_rejects_forged_path_and_order(tmp_path):
+     index, _bundle, root, block = _pipeline(tmp_path)
+     value = attention_logit_softcap_at_block(index, root, block).value

@@ -1,0 +1,26 @@
+{
+  "status": "SOURCE_AND_SAVED_INPUT_INSPECTION_ONLY",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "prior_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "source_manifest_rows": 199,
+  "exact_delta_paths": [
+    {
+      "path": "model_unfolder/renderers/html/styles.py",
+      "before_sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+      "after_sha256": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037"
+    }
+  ],
+  "complete_preservation_import_source_changes": [
+    {
+      "path": "model_unfolder/renderers/html/styles.py",
+      "before_sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+      "after_sha256": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037"
+    }
+  ],
+  "baseline_lane_and_original31_recovery_origin_exactly_unchanged": true,
+  "historical_baseline_files": 203,
+  "historical_baseline_bytes_unchanged": true,
+  "historical_canonical_expectations_not_repaired": "Original inventory unchanged; 118 stale historical expectations do not become authoritative. Exact recovered31 baseline must independently match committed expectation.",
+  "preservation_test_and_expected_manifest_and_corpus_unchanged": true,
+  "authority": "Source/input composition only; root owns runtime. Original31 exact-fff baseline output read-only through original31 contract; current37 through new. Latest executed fleet36 and matrix32 retain separate origins. No acceptance/blessing."
+}

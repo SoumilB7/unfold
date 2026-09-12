@@ -1,0 +1,48 @@
+--- fff99e22/model_unfolder/parser.py
++++ frozen26/model_unfolder/parser.py
+@@ -416,6 +416,45 @@
+     # renderers merely display the IR warning and never reinterpret it.
+     from .evidence.ship_findings import (
+         apply_ship_findings, collect_ship_findings)
++    if ledger is not None:
++        from .evidence.presentation_projection import attach_fact_chips
++        from .evidence.ship_findings import ShipFinding
++        annotation_findings = attach_fact_chips(ir, ledger.typed_records())
++        apply_ship_findings(ir, tuple(ShipFinding(
++            "presentation_qualification", finding)
++            for finding in annotation_findings))
++    if parse_context.checkpoint_headers:
++        from .evidence.checkpoint_metadata import compare_checkpoint_shapes
++        from .evidence.ship_findings import ShipFinding
++        if parse_context.construction_inventory is None:
++            ir.extras["checkpoint_consistency"] = {
++                "reason_class": "investigation_missing",
++                "concrete_reason": "checkpoint_inventory_missing",
++            }
++            apply_ship_findings(ir, (ShipFinding(
++                "checkpoint_consistency",
++                "Stored tensor metadata is available; an instance inventory "
++                "for this config is still required to check its shapes."),))
++        else:
++            consistency = compare_checkpoint_shapes(
++                parse_context.construction_inventory,
++                parse_context.checkpoint_headers, config=_prepared.checkpoint)
++            ir.extras["checkpoint_consistency"] = consistency
++            if consistency["unresolved_binding_reason"] is not None:
++                apply_ship_findings(ir, (ShipFinding(
++                    "checkpoint_consistency",
++                    "Checkpoint shape comparison is incomplete: "
++                    f"{len(consistency['unbound_checkpoint_parameters'])} stored "
++                    "tensor addresses have no exact constructed parameter; "
++                    f"{len(consistency['parameters_without_checkpoint_metadata'])} "
++                    "constructed parameters have no checkpoint metadata."),))
++            apply_ship_findings(ir, tuple(ShipFinding(
++                "construction_conflict",
++                f"construction_conflict: {row['parameter']} built with shape "
++                f"{row['constructed_shape']}; checkpoint stores "
++                f"{row['checkpoint_shape']} (header "
++                f"{row['checkpoint_header_sha256']}).")
++                for row in consistency["conflicts"]))
+     apply_ship_findings(
+         ir, collect_ship_findings(cfg, ir, parse_context, source="local"))
+     _ensure_parsable(ir, cfg_or_id)

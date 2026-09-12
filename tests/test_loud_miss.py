@@ -24,7 +24,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import test_coverage as tc
+from test_support import CORPUS
 
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.forward_ops import unclassified_call_tokens
@@ -32,7 +32,7 @@ from model_unfolder.evidence.forward_ops import unclassified_call_tokens
 
 def _corpus_files() -> list[str]:
     files: set[str] = set()
-    for _name, cfg in tc.CORPUS.items():
+    for _name, cfg in CORPUS.items():
         try:
             files |= set(ParseContext.build(cfg, source="local").source_bundle.files)
         except Exception:
@@ -103,7 +103,7 @@ def test_oracle_floor_transformers_and_diffusers_sources_resolve():
     # The corpus itself must keep resolving a healthy oracle surface: at least
     # the non-synthetic families.  (Synthetic model types are the only allowed
     # no-source entries.)
-    resolved = [name for name, cfg in tc.CORPUS.items()
+    resolved = [name for name, cfg in CORPUS.items()
                 if (lambda b: bool(b.files))(
                     ParseContext.build(cfg, source="local").source_bundle)]
     assert {"dense_gated", "dit_mmdit", "dit_cross", "unet",

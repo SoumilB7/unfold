@@ -1,0 +1,29 @@
+{
+  "candidate": "/private/tmp/unfold-s9a-thirtyseventh/matrix",
+  "checks": [
+    "Exact39 denominator/order and every payload/observation/relation byte hash; complete exact ordered leaf/citation/membership/axes/companion differences retained.",
+    "Original16324 findings classified with removed citations separate from qualification; original142 schedule findings require actual matrix results. New481 formula debt remains distinct.",
+    "All source rows/deletions and generator source map membership verified on entry; positive pins rehashed at exit. Source tree immutability and root runtime brackets remain required.",
+    "Final source37 matrix delta is not assumed CSS-only: every native/projection/companion change against completed32 is enumerated.",
+    "No proof reconstruction, output blessing, model/test execution by this saved-data auditor."
+  ],
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/matrix-thirtyseventh/audit.py --candidate /private/tmp/unfold-s9a-thirtyseventh/matrix --completion-result /private/tmp/unfold-s9a-thirtyseventh/matrix-lane/result.json --output /private/tmp/unfold-s9a-thirtyseventh/independent-matrix-audit.json.gz",
+  "comparison_roots": [
+    "verification/s7",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysecond/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysixth/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/thirtysecond/matrix"
+  ],
+  "completion": "/private/tmp/unfold-s9a-thirtyseventh/matrix-lane/result.json",
+  "expected_generation_map_sha256": "8e79f35bee71cd5379f7dc10069ecab76b472249f927c775c1b1906122e11505",
+  "generation_source_count": 394,
+  "predecessor_source_manifest_sha256": "58eb1690950aa7a904fbe29030359c1a2e1e7529aae527e050fd14d85dd55a0f",
+  "scope": "All exact hardened36 source/receipt/candidate/map/deletion guards and full comparison functions preserved. Actual36 matrix was deliberately interrupted and is never a comparator or an accepted partial result. Actual37 generator must complete fresh; no cache hook, copying or re-stamp.",
+  "source_delta_from36": [
+    "model_unfolder/renderers/html/styles.py"
+  ],
+  "source_fingerprint": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "source_rows": 199,
+  "status": "PREPARED_SOURCE_ONLY_REQUIRES_COMPLETED_EXACT37_MATRIX"
+}

@@ -1,0 +1,13 @@
+{
+  "proposal_manifest_sha256": "4946bf76eeb07504ad944be1d5a9055a8fe09333d6cf9f068e4f95786b4e8b7c",
+  "files": {
+    "input-transform.json": "3e0bc5d30e6697e7290fd74ee1e69069f485f1abb36da34614bc64bbb4b6e7f2",
+    "inputs/S9-schema/defaults-thirtysixth/bloom/ordinary.html": "0056ba099d9054a730e8d3b02e2ab06b0d0e55e3bd4f1859ebffb48369691238",
+    "inputs/S9-schema/defaults-thirtysixth/bloom/sparse.html": "168e071243737bd5c6cd9019c841ca9355f5676182bf560521b9384c3d8fb3c1",
+    "inputs/S9-schema/defaults-thirtysixth/musicgen/ordinary.html": "01e5614e8f632c80affe69412d143f6c199078617d7e92c9ed6d02b090f534a3",
+    "inputs/S9-schema/defaults-thirtysixth/musicgen/sparse.html": "9f7fff10001a993e1e9f7e11c57d018329f12a637ff956a70f7f6616f2c946cc",
+    "inputs/S9-transformer/schema-thirtysixth/llama-7b.html": "cffb914c968edb1c0963963e71c173826b6b95fc63855cb7452a5c8c1813c3b3",
+    "inputs/S9-unet/schema-thirtysixth/stable-diffusion-xl-base-1-0.html": "618dcff8c13bbb2f84848f7be804ca76ea0de7602f4d09dd2e466bf608acc2d5",
+    "qa.py": "14d12f9bd3bc621637ddf6f2c44441d6b97c5da5cc56d332f1e8372f2cf50bae"
+  }
+}

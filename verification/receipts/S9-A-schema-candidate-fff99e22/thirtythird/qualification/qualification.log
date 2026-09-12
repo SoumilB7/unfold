@@ -1,0 +1,68 @@
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 48%]
+........................................................................ [ 65%]
+........................................................................ [ 81%]
+...........................................................F............ [ 97%]
+...........                                                              [100%]
+=================================== FAILURES ===================================
+__ test_actual_nested_class_default_count_keeps_the_schedule_and_weaker_tier ___
+
+    def test_actual_nested_class_default_count_keeps_the_schedule_and_weaker_tier():
+        from model_unfolder import config_to_ir
+        from model_unfolder.evidence.context import ParseContext
+        cfg = json.loads((Path(__file__).parent / "sable_test_corpus" / "musicgen-small.json").read_text())["config"]
+        assert cfg["decoder"].pop("num_hidden_layers") == 24
+        context = ParseContext.build(cfg)
+>       ir = config_to_ir(cfg, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_repeated_schedule_qualification.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:460: in config_to_ir
+    _ensure_parsable(ir, cfg_or_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ir = ModelIR(name='MusicgenForConditionalGeneration', architecture='MusicgenForConditionalGeneration', vocab_size=2048, hid...6 but every authoritative structural surface withholds it'], notes=[], construction_summary=None, component_entry=None)
+ref = {'architectures': ['MusicgenForConditionalGeneration'], 'audio_encoder': {'audio_channels': 1, 'codebook_dim': 128, 'c...on_function': 'gelu', 'audio_channels': 1, 'ffn_dim': 4096, 'hidden_size': 1024, ...}, 'is_encoder_decoder': True, ...}
+
+    def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
+        """Hard-fail when the parse is fundamentally broken (not merely partial).
+    
+        A model with no layers can't be drawn at all — that's a parse error, not a
+        "partial config" warning.  Missing-but-recoverable fields stay warnings.
+        """
+        if ir.layers:
+            return
+        # A UNet diffusion denoiser has no flat transformer-layer stack — its
+        # structure lives in extras["unet"] and is drawn by the UNet view.
+        if (ir.extras or {}).get("unet"):
+            return
+        # U10-F3: an exact diffusion source boundary may honestly prove that the
+        # root stack is unresolved (or that only a nested auxiliary stack is
+        # addressable). Its opaque denoiser shell is a usable diagram and must not
+        # be coerced back into fabricated transformer layers merely to satisfy this
+        # decoder-era invariant.
+        render = (ir.extras or {}).get("render") or {}
+        if not (ir.extras or {}).get("unet") \
+                and render.get("family") == "diffusion" \
+                and render.get("model_blocks") \
+                and isinstance(render.get("opaque_layer_block"), dict):
+            return
+        label = ref if isinstance(ref, str) else (
+            (ref.get("model_type") if isinstance(ref, dict) else None) or "the config"
+        )
+        err = ConfigParseError(
+            f"Loaded {label!r} but couldn't parse a usable model — no transformer "
+            "layers were found (missing num_hidden_layers and all known aliases, or "
+            "this isn't a decoder transformer config). If it's a brand-new "
+            "architecture, updating transformers may help."
+        )
+        _report_error("ConfigParseError", str(err))
+>       raise err
+E       model_unfolder.errors.ConfigParseError: Loaded 'musicgen' but couldn't parse a usable model — no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.
+
+model_unfolder/parser.py:511: ConfigParseError
+=========================== short test summary info ============================
+FAILED tests/test_s9_repeated_schedule_qualification.py::test_actual_nested_class_default_count_keeps_the_schedule_and_weaker_tier
+1 failed, 442 passed in 175.81s (0:02:55)

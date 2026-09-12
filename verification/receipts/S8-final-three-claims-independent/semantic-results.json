@@ -1,0 +1,204 @@
+{
+  "artifact_pins": {
+    "cited-source-audit.json": "1a9d4518112ae2d906881b85721d8c5d8942f60e405dee88121a8fab528e761f",
+    "cited-source.json": "b1bc9c342546b1624344e05629ddd640fd49c83571842876a26be2f29a238248",
+    "controls.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "facts.json": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+    "implementation-after.json": "9f19238f46dbd263752e55a3c366e0b0fca2e4f74cae42df6ffea4e86e69a574",
+    "implementation-before.json": "9f19238f46dbd263752e55a3c366e0b0fca2e4f74cae42df6ffea4e86e69a574",
+    "input.json": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+    "inventory.json": "b43e532fd6cf0b91776798ac26b08ea5586f00dfade04d64a333d85ab2d2a700",
+    "ir.json": "626520e0ec47b3ecec570c44342021ffbfbe7835e3239052de08131987bbcf81",
+    "observation.json": "5333c30b076b7310ab5f9a482dfb91bce0ac90abab1a6beb01caa04c263cbb1c",
+    "output-deltas.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "page.html": "34ec442d9830ddca8c282e6e9825d16cdb9f15b91ae9ee9800bde02aac53b125",
+    "qualified-facts.json": "f00292a7de873147bff78e0fa60c466e42e401e3651033c41406eb74d0aa5287",
+    "result.json": "a77013cc4b9f3602aef17f6e97f14c28f6447d79a576a196b499afb23ac8d974"
+  },
+  "runtime_primitive_claim_kind": "applied_function",
+  "semantic_scope": "Selected GEGLU computation, five positive cell edges, and selected stride-2 Conv2d are independently source/instance/shape matched; no universal execution claim. Spatial drill shows containment and prose, not an explicit flow route.",
+  "three_claims": [
+    {
+      "actual_drills": [
+        {
+          "arrow_count": 7,
+          "nodes": [
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_proj",
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_gate_up_split",
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_multiply",
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_down_proj",
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__op_activation"
+          ]
+        },
+        {
+          "arrow_count": 0,
+          "nodes": [
+            "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff__net"
+          ]
+        }
+      ],
+      "block_id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+      "claim_kind": "applied_function",
+      "direct_parameter_shapes": {
+        "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj.bias": [
+          5120
+        ],
+        "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.0.proj.weight": [
+          5120,
+          640
+        ],
+        "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2.bias": [
+          640
+        ],
+        "down_blocks.1.attentions.0.transformer_blocks.0.ff.net.2.weight": [
+          640,
+          2560
+        ]
+      },
+      "fact_completeness": null,
+      "fact_status": "code_proven",
+      "occurrence": "down_blocks.1.attentions.0.transformer_blocks.0.ff",
+      "parameter_sum": 4920960,
+      "proof_kind": "selected_composite_ffn_return_route",
+      "stage": {
+        "drawn_in_actual_denoiser_svg": true,
+        "id": "instance_down_blocks__1",
+        "label": "down_blocks.1"
+      }
+    },
+    {
+      "actual_drills": [
+        {
+          "arrow_count": 2,
+          "nodes": [
+            "instance_down_blocks__0__resnets__0__norm1",
+            "instance_down_blocks__0__resnets__0__nonlinearity",
+            "instance_down_blocks__0__resnets__0__conv1"
+          ]
+        },
+        {
+          "arrow_count": 3,
+          "nodes": [
+            "instance_down_blocks__0__resnets__0__norm2",
+            "instance_down_blocks__0__resnets__0__nonlinearity",
+            "instance_down_blocks__0__resnets__0__dropout",
+            "instance_down_blocks__0__resnets__0__conv2"
+          ]
+        },
+        {
+          "arrow_count": 3,
+          "nodes": [
+            "instance_down_blocks__0__resnets__0__return_operand_0",
+            "instance_down_blocks__0__resnets__0__return_add",
+            "instance_down_blocks__0__resnets__0__return_scale",
+            "instance_down_blocks__0__resnets__0__return_operand_1"
+          ]
+        },
+        {
+          "arrow_count": 2,
+          "nodes": [
+            "instance_down_blocks__0__resnets__0__conditioning_0_operand_0",
+            "instance_down_blocks__0__resnets__0__conditioning_0_add",
+            "instance_down_blocks__0__resnets__0__conditioning_0_operand_1"
+          ]
+        },
+        {
+          "arrow_count": 0,
+          "nodes": [
+            "instance_down_blocks__0__resnets__0__norm1",
+            "instance_down_blocks__0__resnets__0__conv1",
+            "instance_down_blocks__0__resnets__0__time_emb_proj",
+            "instance_down_blocks__0__resnets__0__norm2",
+            "instance_down_blocks__0__resnets__0__dropout",
+            "instance_down_blocks__0__resnets__0__conv2",
+            "instance_down_blocks__0__resnets__0__nonlinearity"
+          ]
+        }
+      ],
+      "block_id": "instance_down_blocks__0__resnets__0",
+      "claim_kind": "connection",
+      "direct_parameter_shapes": {
+        "down_blocks.0.resnets.0.conv1.bias": [
+          320
+        ],
+        "down_blocks.0.resnets.0.conv1.weight": [
+          320,
+          320,
+          3,
+          3
+        ],
+        "down_blocks.0.resnets.0.conv2.bias": [
+          320
+        ],
+        "down_blocks.0.resnets.0.conv2.weight": [
+          320,
+          320,
+          3,
+          3
+        ],
+        "down_blocks.0.resnets.0.norm1.bias": [
+          320
+        ],
+        "down_blocks.0.resnets.0.norm1.weight": [
+          320
+        ],
+        "down_blocks.0.resnets.0.norm2.bias": [
+          320
+        ],
+        "down_blocks.0.resnets.0.norm2.weight": [
+          320
+        ],
+        "down_blocks.0.resnets.0.time_emb_proj.bias": [
+          320
+        ],
+        "down_blocks.0.resnets.0.time_emb_proj.weight": [
+          320,
+          1280
+        ]
+      },
+      "fact_completeness": null,
+      "fact_status": "code_proven",
+      "occurrence": "down_blocks.0.resnets.0",
+      "parameter_sum": 2255040,
+      "proof_kind": "exact_constructed_member_call_result_to_argument",
+      "stage": {
+        "drawn_in_actual_denoiser_svg": true,
+        "id": "instance_down_blocks__0",
+        "label": "down_blocks.0"
+      }
+    },
+    {
+      "actual_drills": [
+        {
+          "arrow_count": 0,
+          "nodes": [
+            "instance_down_blocks__0__downsamplers__0__conv"
+          ]
+        }
+      ],
+      "block_id": "instance_down_blocks__0__downsamplers__0",
+      "claim_kind": "applied_function",
+      "direct_parameter_shapes": {
+        "down_blocks.0.downsamplers.0.conv.bias": [
+          320
+        ],
+        "down_blocks.0.downsamplers.0.conv.weight": [
+          320,
+          320,
+          3,
+          3
+        ]
+      },
+      "fact_completeness": null,
+      "fact_status": "code_proven",
+      "occurrence": "down_blocks.0.downsamplers.0",
+      "parameter_sum": 921920,
+      "proof_kind": "selected_spatial_primitive_return_route",
+      "stage": {
+        "drawn_in_actual_denoiser_svg": true,
+        "id": "instance_down_blocks__0",
+        "label": "down_blocks.0"
+      }
+    }
+  ]
+}

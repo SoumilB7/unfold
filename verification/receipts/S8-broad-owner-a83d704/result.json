@@ -1,0 +1,34 @@
+{
+  "verdict": "FAIL; faithful frozen gate receipt accepted, no output acceptance",
+  "commit": "a83d704906850257fadd3904904635d218af7365",
+  "lane_count": 6,
+  "failed_lanes": [
+    "full",
+    "preservation"
+  ],
+  "all_lane_fingerprints_identical": true,
+  "all_external_artifact_fingerprints_identical": true,
+  "coordinator_fingerprint_identical": true,
+  "receipt_sha256": "1d30d8954d9d8186ee32255b1eb516ff95e23f66e6d9728b03e89436930981ea",
+  "logs": {
+    "collect": "23e5473a3aa72299949a4e7f9e26aee1230095277c10ff3790825b5892d0218b",
+    "focused": "90c6ae1fe4f657b8f8ad8ab22fbf343fba4f4c14559ec1fccea88eae0a9dacee",
+    "full": "bff19dc7b3a2e966d0a839409a87986e95703ebbc41d1d5d1c1355d1b377904d",
+    "preservation": "1134a98826eea929dcdc0c8b28c06b9dd11579b97157a7f59ce0fc9417c0b031",
+    "static": "6ca7ccbd6d1c72019226849f8adb152e263fbf4463f1f2ce3eebdeae7d080ffa",
+    "u2-authority": "12986e087532e3c267c33754e659ed3560cc9ecb05f0dc816e981174a7f60ca9"
+  },
+  "full": {
+    "passed": 4333,
+    "failed": 31,
+    "skipped": 14,
+    "xfailed": 2,
+    "collected": 4380
+  },
+  "preservation": {
+    "passed": 23,
+    "failed": 29,
+    "total": 52
+  },
+  "limitation": "No per-witness semantic approval follows from hash mismatch alone. New production corrections remain unverified."
+}

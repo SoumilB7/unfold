@@ -1,0 +1,75 @@
+--- prepared34/audit.py
++++ prepared34-r2/audit.py
+@@ -186,6 +186,13 @@
+     args = parser.parse_args()
+     args.partial = False
+     repo = Path.cwd().resolve()
++    expected_candidate = Path("/private/tmp/unfold-s9a-thirtyfourth/matrix")
++    expected_completion = Path("/private/tmp/unfold-s9a-thirtyfourth/matrix-lane/result.json")
++    if args.candidate.resolve() != expected_candidate or args.completion_result.resolve() != expected_completion:
++        raise ValueError("audit requires the exact completed34 candidate and lane paths")
++    frozen_tree = repo / ".claude/worktrees/verify-s9-a-thirtyfourth"
++    source_manifest_path = repo / "verification/receipts/S9-A-schema-candidate-fff99e22/thirtyfourth/source-manifest.json"
++    expected_source_map_path = Path(__file__).resolve().parent / "expected-generation-sources.json"
+     roots = {'active': repo / 'verification/s7',
+              'twentysecond': repo / 'verification/receipts/S9-A-schema-candidate-fff99e22/twentysecond/matrix',
+              'twentysixth': repo / 'verification/receipts/S9-A-schema-candidate-fff99e22/twentysixth/matrix',
+@@ -198,6 +205,24 @@
+         data = path.read_bytes()
+         pins[str(path)] = digest(data)
+         return json.loads(gzip.decompress(data) if path.suffix == '.gz' else data)
++    if digest(source_manifest_path.read_bytes()) != "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1":
++        raise ValueError("wrong frozen34 source manifest")
++    source_rows = read(source_manifest_path)
++    for row in source_rows:
++        path = frozen_tree / row["path"]
++        actual = digest(path.read_bytes()) if path.is_file() else None
++        if actual != row["sha256"] or (row["sha256"] is None and (path.exists() or path.is_symlink())):
++            raise ValueError("frozen34 source row differs: " + row["path"])
++        if actual is not None:
++            pins[str(path)] = actual
++    if digest(expected_source_map_path.read_bytes()) != "fdc201d50c0aec9096869f485eac6f45228666eb4a066384c1a7139733391541":
++        raise ValueError("wrong pinned generation-source map")
++    expected_source_map = read(expected_source_map_path)
++    for name, expected in expected_source_map.items():
++        path = frozen_tree / name
++        pins[str(path)] = digest(path.read_bytes())
++        if pins[str(path)] != expected:
++            raise ValueError("frozen34 generation input changed: " + name)
+     completion = read(args.completion_result.resolve())
+     expected_source = 'b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e'
+     if (completion.get('returncode') != 0 or completion.get('passed') is not True
+@@ -209,7 +234,23 @@
+                 if (root / 'matrix.json').exists()}
+     if not args.partial and set(matrices) != set(roots):
+         raise ValueError('complete matrix publication required')
++    if matrices['candidate']['sources'] != expected_source_map:
++        raise ValueError("candidate sources are not the exact frozen34 generation-source map")
+     active = matrices['active']
++    # Exact source-law replay validates membership, not merely stored file hashes.
++    generation_paths = {
++        frozen_tree / "scripts/generate_s7_shadow.py",
++        *(frozen_tree / row["input"] for row in active["models"]),
++        *(frozen_tree / "model_unfolder").rglob("*.py"),
++        *(frozen_tree / "model_unfolder").rglob("*.yaml"),
++        *(frozen_tree / "model_unfolder").rglob("*.yml"),
++        *(frozen_tree / "physics").rglob("*.py"),
++        *(frozen_tree / "verification/s6/pilots").rglob("*.json"),
++    }
++    actual_source_names = {path.resolve().relative_to(frozen_tree).as_posix()
++                           for path in generation_paths if path.is_file()}
++    if actual_source_names != set(expected_source_map):
++        raise ValueError("frozen34 generation-source membership changed")
+     slugs = [row['slug'] for row in active['models']]
+     if len(slugs) != 39 or len(slugs) != len(set(slugs)):
+         raise ValueError('expected exact active 39-model denominator')
+@@ -274,6 +315,9 @@
+         report['models'].append(row)
+     report['totals'] = aggregates
+     report['completion_result'] = completion
++    report['exact34_generation_source_map_verified'] = True
++    report['generation_source_map_sha256'] = digest(expected_source_map_path.read_bytes())
++    report['frozen34_manifest_sha256'] = digest(source_manifest_path.read_bytes())
+     report['denominator_16324_verified'] = aggregates['active_to_candidate']['original_unstamped.total'] == 16324
+     report['preserved_open_items_not_approval'] = [
+         '86 direct norm placements require named re-proof review',

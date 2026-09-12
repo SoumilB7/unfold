@@ -1,0 +1,16 @@
+{
+  "blessed": false,
+  "closure_kinds": {
+    "conditional_registered_child": 11,
+    "non_callable": 4,
+    "plain_bound_method": 4,
+    "property_storage": 1,
+    "unresolved": 4
+  },
+  "constructed": 1930,
+  "elapsed_seconds": 58.72,
+  "lookups": 24,
+  "status": "review_required",
+  "wrapper_kind": "conditional_wrapper",
+  "wrapper_reason": "Delegation only on the retained branches; finally still runs, and parent-exposing alternatives remain unresolved"
+}

@@ -1,0 +1,392 @@
+{
+  "decoder.attention.bias": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.mask": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.mixer_schedule": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "d3ca4fd50c147ac7db605619f5bc7549b093f0130369bdcb4c74c5691c3673fe"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mixer_schedule:cc6581fc61debf11",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1122:25:1122:63",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1144:25:1144:82",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:12:1273:104",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:13:1273:54",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:44:1273:53",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:59:1273:68",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:72:1273:103",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1273:78:1273:102",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:23:0:23:12",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:24:0:24:31",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:729:19:729:66",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:740:12:740:75",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:743:18:743:58",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:849:36:860:9"
+        ],
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mixer_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "cc6581fc61debf11"
+    },
+    "source": "decoder_mixer_schedule_for_path",
+    "status": "code_and_config",
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.scores_scale": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "20496603e5af0c6f"
+    },
+    "source": "decoder_attention_score_scaling_for_path",
+    "status": "code_proven",
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.attention.sinks": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "d3ca4fd50c147ac7db605619f5bc7549b093f0130369bdcb4c74c5691c3673fe"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.sinks:7f3e293636cd0a7c",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1144:25:1144:82",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:23:0:23:12",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:24:0:24:31",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:729:19:729:66",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:734:22:734:62",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:740:12:740:75",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:743:18:743:58",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:796:21:796:62",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:849:36:860:9"
+        ],
+        "fact_id": "decoder.attention.sinks",
+        "fact_status": "",
+        "index_fingerprints": [
+          "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_sinks.decoder_attention_sinks_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.sinks",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    },
+    "source": "decoder_attention_sinks_for_path",
+    "status": "code_proven",
+    "value": true
+  },
+  "decoder.ffn.activation": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.norm_kind": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "d3ca4fd50c147ac7db605619f5bc7549b093f0130369bdcb4c74c5691c3673fe"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_kind:d23812867aded33c",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1124:31:1124:93",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1125:40:1125:102",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1144:40:1144:71",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:1150:30:1150:70",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:58:19:58:62",
+          "source:root:3be3c5211507ddd1b37ac9dbb27f47533c39d7922779c124517e1d3a7a9c4253:59:40:59:85"
+        ],
+        "fact_id": "decoder.layer.norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "d23812867aded33c"
+    },
+    "source": "decoder_norm_kind_for_path",
+    "status": "code_proven",
+    "value": "rmsnorm"
+  },
+  "decoder.layer.norm_placement": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "model.final_norm_kind": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "d3ca4fd50c147ac7db605619f5bc7549b093f0130369bdcb4c74c5691c3673fe"
+        ],
+        "evidence_refs": [
+          "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731"
+        ],
+        "fact_id": "model.hidden_size",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.hidden_size",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "source": "adapters.transformer.parser.parse",
+    "status": "config_declared",
+    "value": 4096
+  },
+  "model.tie_word_embeddings": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "d3ca4fd50c147ac7db605619f5bc7549b093f0130369bdcb4c74c5691c3673fe"
+        ],
+        "evidence_refs": [
+          "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+        ],
+        "fact_id": "model.tie_word_embeddings",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "model_unfolder.adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "source": "tie_word_embeddings",
+    "status": "config_declared",
+    "value": false
+  }
+}

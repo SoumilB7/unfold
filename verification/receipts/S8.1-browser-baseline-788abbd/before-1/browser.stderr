@@ -1,0 +1,4 @@
+[0908/212356.160767:ERROR:base/power_monitor/thermal_state_observer_mac.mm:140] ThermalStateObserverMac unable to register to power notifications. Result: 9
+[0908/212356.345863:ERROR:net/dns/dns_config_service_posix.cc:138] DNS config watch failed to start.
+[0908/212356.351802:WARNING:net/dns/dns_config_service_posix.cc:197] Failed to read DnsConfig.
+[0908/212356.445969:FATAL:content/browser/sandbox_parameters_mac.mm:87] Check failed: . : Input/output error (5)

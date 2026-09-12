@@ -1,0 +1,4 @@
+{
+  "scope": "Within-condition renderer mutations; separate from ordinary-versus-sparse comparisons at each phase",
+  "deltas": []
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "Return correction for actual frozen25 failures; source only",
+  "supersedes_for_execution": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/events/manifest.json",
+  "preserves_original_handoff": true,
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "4c9bdaf9e69ba39715ee8a068349170317768fd6abacb28a2525a46f6e4f112b",
+      "base_sha256": "efd17066cf2c941bc1e0e134253b648127f626d29bf8f7fa5a74aea2259bf435",
+      "bytes": 266060
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "sha256": "072d78c3d5783cfa4fd5af848917ed46c1e5ab158a2626dc100402eb19363c88",
+      "base_sha256": "62380443450f512f336dd3b024c61a6088118b6a385f3bb22138adaf821e45b3",
+      "bytes": 8610
+    }
+  ],
+  "changes": [
+    "Rename only extracted FFN helper and two calls; preserve existing FFN schedule status scalar",
+    "Correct direct synthetic unmapped document provenance expectations to exact empty string per provenance contract; keep exact class_default checks"
+  ],
+  "source_scope_binding_inventory": {
+    "_ffn_status_with_selector_default": [
+      {
+        "kind": "function",
+        "line": 961
+      }
+    ]
+  },
+  "runtime": "Not run by executor. Original25 remains 266 passed /12 failed and immutable. Root must re-run focused lane on new candidate.",
+  "proposed_tests": [
+    "python3 -m pytest -q tests/test_s9_attention_event_association.py tests/test_s9_projection_claim_requirements.py tests/test_s7_reconciliation.py tests/test_attention_geometry.py tests/test_ffn_mechanism.py"
+  ]
+}

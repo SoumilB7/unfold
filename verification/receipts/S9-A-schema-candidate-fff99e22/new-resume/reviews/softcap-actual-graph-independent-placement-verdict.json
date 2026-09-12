@@ -1,0 +1,86 @@
+{
+  "verdict": "PASS_BOUNDED_SOURCE_REVIEW_RUNTIME_PENDING",
+  "reviewer": "placement_executor",
+  "proposal_manifest_sha256": "e92e422ab2ebb018a0b9fa972d3108a3b9439db98fe36493982d5c92e7c5d5ca",
+  "source_files": [
+    {
+      "path": "model_unfolder/renderers/html/block_views/attention.py",
+      "before_sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "proposed_sha256": "a14e54916470208eb44dcbe012e72d0677a9f488fb508c18161817ad074a9377"
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "proposed_sha256": "56e39a520de7f2d1eaf858502fd12e119c2b51f98f1bbcefcdd7f0275498d3d1"
+    }
+  ],
+  "checks": [
+    {
+      "boundary": "Actual softcap operation",
+      "finding": "A receipt requires unprefixed attention with non-null softcap, canonical region operation attn_softcap of kind activation and function tanh, plus an actual resolved activation graph node at that address. A value, familiar node ID, opaque fallback or changed function alone cannot pass."
+    },
+    {
+      "boundary": "All drawing-fact routes",
+      "finding": "Same finite predicate removes only decoder.attention.logit_softcap from the parent attention and both MLA child-drill facts_projected sets when absent. Suppressing only the receipt would have left a false drawn-fact/occurrence route; allthree callers now close that route."
+    },
+    {
+      "boundary": "Native authority preserved",
+      "finding": "The reader result, consumed config operand, typed fact/value/proof, schema, canonical region and graph builders are unchanged. A source-proved17 on opaque attention remains a qualified fact with unfulfilled drawing debt; this repair does not author C-stage computation or a replacement chip."
+    },
+    {
+      "boundary": "Controls",
+      "finding": "Every existing assertion is retained. RealGemma still requires two exact receipts and matching obligation route, now also receipt-node membership and drawn-fact key. Synthetic17 requires32 real layers, its original native fact identity, no absent-op receipt or fact key. Missing-node/wrong-kind/wrong-function poisons and allthree actual builder routes are checked."
+    },
+    {
+      "boundary": "Direct builder fixture",
+      "finding": "Minimal info contains dominant.spec.attention, the only indexed info lookup in these builder entries. Other graph rendering metadata uses defaults/get lookups. MLA region constructors accept the missing optional dimensions as limited nodes. Static adequacy checked; root runtime remains mandatory."
+    }
+  ],
+  "structural_writer_implications": {
+    "predicted_new_sinks": 0,
+    "reason": "Read-only graph/region predicate and projected-key filtering; no ledger/spec/graph constructor or source_fact_keys/source_instance_path writer added. Existing rendering calls unchanged."
+  },
+  "validation": "All proposal artifact hashes and both live before hashes matched; proposed Python ASTs parse; all17 old function assertion lists retained as subsequences. No project imports/tests/browser/model execution.",
+  "source_reads": [
+    {
+      "path": "model_unfolder/opgraph.py",
+      "sha256": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3"
+    },
+    {
+      "path": "model_unfolder/renderers/html/op_render.py",
+      "sha256": "6b85ef7800b9593ebb2eadc96a6d7d56a8e94151049a5e516cc8f1007cc91c1d"
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph_engine.py",
+      "sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439"
+    },
+    {
+      "path": "model_unfolder/renderers/html/render_context.py",
+      "sha256": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db"
+    }
+  ],
+  "saved_reference": [
+    {
+      "path": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/explicit_17/page.html.gz",
+      "sha256": "f34c5fe9713203b1d036bcab2e515d5e938cc466744ba234ef34c71cfebdc24e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-thirtyfirst/softcap-diagnostic/capture/explicit_17/ir-before.json",
+      "sha256": "d3f89281b9e46cddb1ad31a496ada0d4b6d2d970e42bf43f011c5c81793c6d00"
+    }
+  ],
+  "limits": [
+    "No graph/value/proof restoration and no output blessing. This is S9-A accounting only; missing complete attention drawing remains separate restoration debt.",
+    "Predicate establishes the finite canonical softcap op route, not a generic proof of every graph label, edge or rendered pixel.",
+    "Root must apply into a new immutable candidate and run the original positive/absence/unknown controls plus new graph poisons and writer census."
+  ],
+  "saved_reference_note": "Actual31 explicit17 saved HTML has zero attn_softcap strings; saved IR has32 layers. Read-only reference supports the new test fixture premise, not new-tree success."
+}

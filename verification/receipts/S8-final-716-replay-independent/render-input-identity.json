@@ -1,0 +1,17 @@
+{
+  "cases": [
+    "ddpm-cifar10",
+    "sd14-ordinary",
+    "sdxl-changed",
+    "sdxl-inpainting",
+    "sdxl-misleading",
+    "sdxl-missing",
+    "sdxl-ordinary",
+    "sdxl-refiner",
+    "sdxl-rewrite",
+    "sdxl-sparse",
+    "sdxl-unchanged"
+  ],
+  "actual_render_ir_equals_saved_ir_plus_unchanged_param_display": true,
+  "exact_parameter_record_unchanged": true
+}

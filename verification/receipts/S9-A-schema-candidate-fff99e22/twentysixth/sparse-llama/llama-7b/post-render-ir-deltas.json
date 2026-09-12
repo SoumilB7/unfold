@@ -1,0 +1,4515 @@
+[
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_size_per_layer_input",
+    "after": "root:hidden_act",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:is_gated_act",
+    "after": "root:hidden_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:layer_norm_eps",
+    "after": "root:hidden_size_per_layer_input",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      11
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:layer_norm_epsilon",
+    "after": "root:is_gated_act",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      12
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:logits_scaling",
+    "after": "root:layer_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      13
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:max_window_layers",
+    "after": "root:layer_norm_epsilon",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      14
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:moe_intermediate_size",
+    "after": "root:logits_scaling",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      15
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:norm_type",
+    "after": "root:max_window_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      16
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_experts",
+    "after": "root:moe_intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      17
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_experts_per_tok",
+    "after": "root:norm_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      18
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_mtp_layers",
+    "after": "root:num_attention_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      19
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_nextn_predict_layers",
+    "after": "root:num_experts",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      20
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_shared_experts",
+    "after": "root:num_experts_per_tok",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      21
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:query_pre_attn_scalar",
+    "after": "root:num_mtp_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      22
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:scale_embedding",
+    "after": "root:num_nextn_predict_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      23
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:sliding_window",
+    "after": "root:num_shared_experts",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      24
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:sliding_window_pattern",
+    "after": "root:query_pre_attn_scalar",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      25
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:swiglu_limit",
+    "after": "root:scale_embedding",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      26
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:use_bidirectional_attention",
+    "after": "root:sliding_window",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      27
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:use_sliding_window",
+    "after": "root:sliding_window_pattern",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      28
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:vocab_size_per_layer_input",
+    "after": "root:swiglu_limit",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      29
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "root:use_bidirectional_attention",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      30
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "root:use_sliding_window",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      31
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "root:vocab_size_per_layer_input",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      4
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_act",
+    "after": "root:intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      5
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_size",
+    "after": "root:is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      6
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:intermediate_size",
+    "after": "root:max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      7
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:is_encoder_decoder",
+    "after": "root:mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:max_position_embeddings",
+    "after": "root:model_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:mlp_bias",
+    "after": "root:num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:model_type",
+    "after": "root:num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      11
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_attention_heads",
+    "after": "root:rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      12
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_hidden_layers",
+    "after": "root:rope_parameters",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      13
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_key_value_heads",
+    "after": "root:rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      14
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:rms_norm_eps",
+    "after": "root:rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      15
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:rope_parameters",
+    "after": "root:tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      16
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:rope_theta",
+    "after": "root:vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      17
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:rope_type",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      18
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:tie_word_embeddings",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "accessed",
+      19
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:vocab_size",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      2
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_act",
+    "after": "root:intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      3
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_size",
+    "after": "root:is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      4
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:intermediate_size",
+    "after": "root:max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      5
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:is_encoder_decoder",
+    "after": "root:mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      6
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:max_position_embeddings",
+    "after": "root:num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      7
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:mlp_bias",
+    "after": "root:num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_attention_heads",
+    "after": "root:rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_hidden_layers",
+    "after": "root:rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_key_value_heads",
+    "after": "root:rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      11
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:rms_norm_eps",
+    "after": "root:tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      12
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:rope_theta",
+    "after": "root:vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      13
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:rope_type",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      14
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:tie_word_embeddings",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed",
+      15
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:vocab_size",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      2
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_act",
+    "after": "root:intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      3
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:hidden_size",
+    "after": "root:is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      4
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:intermediate_size",
+    "after": "root:max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      5
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:is_encoder_decoder",
+    "after": "root:mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      6
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:max_position_embeddings",
+    "after": "root:num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      7
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:mlp_bias",
+    "after": "root:num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_attention_heads",
+    "after": "root:rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_hidden_layers",
+    "after": "root:tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root:num_key_value_heads",
+    "after": "root:vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      11
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:rms_norm_eps",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      12
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:tie_word_embeddings",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "consumed_unprojected",
+      13
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "root:vocab_size",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "67951bb3d9db1731",
+    "after": "4c97e9d6f1864ba2",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "model_hidden_size_value",
+    "after": "ffn_intermediate_width",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      1,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "model",
+    "after": "decoder.ffn",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "4c97e9d6f1864ba2",
+    "after": "b558ebc2063408fd",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "ffn_intermediate_width",
+    "after": "position_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "position_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      2,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.ffn",
+    "after": "decoder.attention",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "b9c82d4207301835",
+    "after": "6f8aee9beb40ac24",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "ffn_activation",
+    "after": "position_frequency_initialization",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "reason"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "no projection receipt exists yet",
+    "after": "registered pending-projection debt",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_act",
+    "after": "rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_act",
+    "after": "rope_parameters.rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_act",
+    "after": "rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "state"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "unreceipted",
+    "after": "pending",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "activation",
+    "after": "rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      3,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.ffn",
+    "after": "decoder.attention",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "b558ebc2063408fd",
+    "after": "9787accbb0ae34c0",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "position_schedule",
+    "after": "position_frequency_initialization",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "reason"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "no projection receipt exists yet",
+    "after": "registered pending-projection debt",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rope_parameters.rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "state"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "unreceipted",
+    "after": "pending",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      4,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "position_schedule",
+    "after": "rope_initialization",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "6f8aee9beb40ac24",
+    "after": "db7d4c151cc72744",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "position_frequency_initialization",
+    "after": "mixer_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "reason"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "registered pending-projection debt",
+    "after": "no projection receipt exists yet",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_theta",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_parameters.rope_theta",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_theta",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "state"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "pending",
+    "after": "unreceipted",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      5,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_theta",
+    "after": "mixer_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "9787accbb0ae34c0",
+    "after": "43c8dac4496c036b",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "position_frequency_initialization",
+    "after": "ffn_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "reason"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "registered pending-projection debt",
+    "after": "no projection receipt exists yet",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_type",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_parameters.rope_type",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_type",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "state"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "pending",
+    "after": "unreceipted",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_initialization",
+    "after": "ffn_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      6,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "decoder.ffn",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      7,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "db7d4c151cc72744",
+    "after": "61f6df5c5123ba18",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      7,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mixer_schedule",
+    "after": "mask_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      7,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mixer_schedule",
+    "after": "mask_schedule",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "43c8dac4496c036b",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "ffn_schedule",
+    "after": "decoderness",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "ffn_schedule",
+    "after": "mask",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      8,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.ffn",
+    "after": "decoder.attention",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "61f6df5c5123ba18",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mask_schedule",
+    "after": "norm_kind_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mask_schedule",
+    "after": "norm_kind_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      9,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "decoder.layer",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "",
+    "after": "7e943a2de3a9029e",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoderness",
+    "after": "attention_mechanism",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "is_encoder_decoder",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "is_encoder_decoder",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "is_encoder_decoder",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      10,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mask",
+    "after": "mechanism",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "",
+    "after": "58e42c61f60ced05",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "norm_kind_eps",
+    "after": "attention_head_geometry",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rms_norm_eps",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rms_norm_eps",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rms_norm_eps",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "norm_kind_eps",
+    "after": "head_geometry",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      11,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.layer",
+    "after": "decoder.attention",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "a615d6a9effdcd21",
+    "after": "58e42c61f60ced05",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_mechanism",
+    "after": "attention_head_geometry",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "head_dim",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "head_dim",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "head_dim",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      12,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mechanism",
+    "after": "head_geometry",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "a615d6a9effdcd21",
+    "after": "df40488d7e9f5dfc",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_mechanism",
+    "after": "projection_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "attention_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "attention_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "attention_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      13,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mechanism",
+    "after": "bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "38a8326edd3aad06",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_head_geometry",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_geometry",
+    "after": "bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      14,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "decoder.ffn",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "38a8326edd3aad06",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_head_geometry",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_geometry",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      15,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "model",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "38a8326edd3aad06",
+    "after": "a9cd6a1ddefafc47",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_head_geometry",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_dim",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_dim",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_dim",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "head_geometry",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      16,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "model",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "expected_value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "df40488d7e9f5dfc",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "mechanism"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "projection_bias",
+    "after": "",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "source",
+      "canonical"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_bias",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "source",
+      "path"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_bias",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "source",
+      "spelling"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "attention_bias",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "target",
+      "key"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "bias",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      17,
+      "target",
+      "owner"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "decoder.attention",
+    "after": "model",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      18
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": {
+      "source": {
+        "component": "root",
+        "path": "mlp_bias",
+        "spelling": "mlp_bias",
+        "canonical": "mlp_bias"
+      },
+      "target": {
+        "owner": "decoder.ffn",
+        "key": "bias",
+        "kind": "fact"
+      },
+      "state": "unreceipted",
+      "reason": "no projection receipt exists yet",
+      "mechanism": "",
+      "expected_value_status_hash": ""
+    },
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      19
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": {
+      "source": {
+        "component": "root",
+        "path": "vocab_size",
+        "spelling": "vocab_size",
+        "canonical": "vocab_size"
+      },
+      "target": {
+        "owner": "model",
+        "key": "vocab_size",
+        "kind": "fact"
+      },
+      "state": "unreceipted",
+      "reason": "no projection receipt exists yet",
+      "mechanism": "",
+      "expected_value_status_hash": ""
+    },
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      20
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": {
+      "source": {
+        "component": "root",
+        "path": "tie_word_embeddings",
+        "spelling": "tie_word_embeddings",
+        "canonical": "tie_word_embeddings"
+      },
+      "target": {
+        "owner": "model",
+        "key": "tie_word_embeddings",
+        "kind": "fact"
+      },
+      "state": "unreceipted",
+      "reason": "no projection receipt exists yet",
+      "mechanism": "",
+      "expected_value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "projection_obligations",
+      21
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": {
+      "source": {
+        "component": "root",
+        "path": "max_position_embeddings",
+        "spelling": "max_position_embeddings",
+        "canonical": "max_position_embeddings"
+      },
+      "target": {
+        "owner": "model",
+        "key": "max_position_embeddings",
+        "kind": "fact"
+      },
+      "state": "unreceipted",
+      "reason": "no projection receipt exists yet",
+      "mechanism": "",
+      "expected_value_status_hash": ""
+    },
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "config access accounting changed; exact event/default provenance comparison remains required",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      4
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_act",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      5
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      6
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      7
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "is_encoder_decoder",
+    "after": "max_sequence_length",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "max_position_embeddings",
+    "after": "mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "max_sequence_length",
+    "after": "model_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mlp_bias",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      11
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "model_type",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      12
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      13
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rope_parameters",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      14
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      15
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rms_norm_eps",
+    "after": "rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      16
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_parameters",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      17
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_theta",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      18
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "rope_type",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      19
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "tie_word_embeddings",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_audit",
+      "accessed",
+      20
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "vocab_size",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "derived config audit changed; obligations are not discarded",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      2
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_act",
+    "after": "intermediate_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      3
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "hidden_size",
+    "after": "is_encoder_decoder",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      4
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "intermediate_size",
+    "after": "max_position_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      5
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "is_encoder_decoder",
+    "after": "mlp_bias",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      6
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "max_position_embeddings",
+    "after": "num_hidden_layers",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      7
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "mlp_bias",
+    "after": "num_key_value_heads",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      8
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "rms_norm_eps",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      9
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_hidden_layers",
+    "after": "rope_theta",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      10
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "rope_type",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      11
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rms_norm_eps",
+    "after": "tie_word_embeddings",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      12
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "rope_theta",
+    "after": "vocab_size",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      13
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "rope_type",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      14
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "tie_word_embeddings",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "config_consumed",
+      15
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "vocab_size",
+    "after": null,
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "checkpoint consumption census changed; defaults are not checkpoint occurrences",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.bias",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.bias",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.bias",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.cached",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.cached",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.cached",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.head_geometry",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.head_geometry",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "projection:decoder.attention.head_geometry:38a8326edd3aad06",
+    "after": "projection:decoder.attention.head_geometry:58e42c61f60ced05",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.head_geometry",
+      "presentation_reference",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.head_geometry",
+      "presentation_reference",
+      "value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "38a8326edd3aad06",
+    "after": "58e42c61f60ced05",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.head_geometry",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mask",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mask",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mask",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mask_schedule",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mask_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mask_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mechanism",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mechanism",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+    "after": "projection:decoder.attention.mechanism:7e943a2de3a9029e",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mechanism",
+      "presentation_reference",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mechanism",
+      "presentation_reference",
+      "value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "a615d6a9effdcd21",
+    "after": "7e943a2de3a9029e",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mechanism",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.mixer_schedule",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mixer_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mixer_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.output_projection",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.output_projection",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.output_projection",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.position_schedule",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.position_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.position_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.projection_mode",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.projection_mode",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.projection_mode",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.rope_initialization",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.rope_initialization",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.rope_initialization",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.attention.rope_theta",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.rope_theta",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.rope_theta",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.activation",
+      "presentation_reference",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "fact authority metadata changed; only exact per-fact rules are admitted",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.activation",
+      "presentation_reference",
+      "value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "b9c82d4207301835",
+    "after": "47322c7513880114",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "fact authority metadata changed; only exact per-fact rules are admitted",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.activation",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "fact authority metadata changed; only exact per-fact rules are admitted",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.ffn_schedule",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.ffn_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.ffn_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.gated",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.gated",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.gated",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.intermediate_size",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.intermediate_size",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.intermediate_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.ffn.projection_mode",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.projection_mode",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.projection_mode",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.layer.norm_kind",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.norm_kind",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.norm_kind",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.layer.norm_placement",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.norm_placement",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.norm_placement",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "decoder.layer.residual_topology",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.residual_topology",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.residual_topology",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.final_norm_kind",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.final_norm_kind",
+    "diagnostic_cause": "exact root proof/default operand binding: model.final_norm_kind",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731",
+    "after": "projection:model.hidden_size:4e51a9e148e3c210",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      1
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      2
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:12:337:23",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      3
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:4:337:23",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      4
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      5
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:429:23:429:43",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      6
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:25:435:31",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      7
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:8:435:32",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      8
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:46:0:46:44",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "evidence_refs",
+      9
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda:65:4:65:27",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "fact_status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_declared",
+    "after": "",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "index_fingerprints",
+      0
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "proof_kind"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_resolution",
+    "after": "retained_reader_projection",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "claim_proof",
+      "reader_symbols",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "adapters.transformer.parser.parse",
+    "after": "model_unfolder.evidence.class_default_value.model_hidden_size_class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_declared",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "presentation_reference",
+      "value_status_hash"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "67951bb3d9db1731",
+    "after": "4e51a9e148e3c210",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "source"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "adapters.transformer.parser.parse",
+    "after": "model_unfolder.evidence.class_default_value.model_hidden_size_class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.hidden_size",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_declared",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "fact_provenance",
+      "model.tie_word_embeddings",
+      "presentation_reference",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.tie_word_embeddings",
+    "diagnostic_cause": "exact root proof/default operand binding: model.tie_word_embeddings",
+    "admitted": true
+  },
+  {
+    "path": [
+      "extras",
+      "render",
+      "model_blocks",
+      1,
+      "presentation_aliases"
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": [],
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "presentation metadata/addressing changed; drawing equality is checked separately",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "render",
+      "model_blocks",
+      1,
+      "presentation_chips"
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": [
+      {
+        "chip_kind": "class_default",
+        "text": "hidden_size: 4096",
+        "owner": "model",
+        "references": [
+          {
+            "claim_proof": {
+              "claim_kind": "value",
+              "document_fingerprints": [
+                "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+              ],
+              "evidence_refs": [
+                "projection:model.hidden_size:4e51a9e148e3c210",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:12:337:23",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:4:337:23",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:429:23:429:43",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:25:435:31",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:8:435:32",
+                "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:46:0:46:44",
+                "source:root:5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda:65:4:65:27"
+              ],
+              "fact_id": "model.hidden_size",
+              "fact_status": "",
+              "index_fingerprints": [
+                "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+              ],
+              "proof_kind": "retained_reader_projection",
+              "reader_symbols": [
+                "model_unfolder.evidence.class_default_value.model_hidden_size_class_default"
+              ],
+              "recipe_ids": []
+            },
+            "completeness": "complete",
+            "fact_key": "model.hidden_size",
+            "owner": "model",
+            "status": "class_default",
+            "value_status_hash": "4e51a9e148e3c210"
+          }
+        ],
+        "unknown_reason": null,
+        "decision_ref": null,
+        "parameters": []
+      }
+    ],
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "presentation metadata/addressing changed; drawing equality is checked separately",
+    "admitted": false
+  },
+  {
+    "path": [
+      "extras",
+      "render",
+      "model_blocks",
+      1,
+      "presentation_path"
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": [
+      "extras",
+      "render",
+      "model_blocks",
+      1
+    ],
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "presentation metadata/addressing changed; drawing equality is checked separately",
+    "admitted": false
+  }
+]

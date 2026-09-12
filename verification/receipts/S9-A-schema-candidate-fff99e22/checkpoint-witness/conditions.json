@@ -1,0 +1,20 @@
+[
+  {
+    "condition": "ordinary",
+    "status": "PASS",
+    "seconds": 65.20347012486309,
+    "compared_parameters": 1680,
+    "conflicts": 0,
+    "html_bytes": 2172022,
+    "html_sha256": "cc4e2cbe2ffca60e8604670561464d3adfd0200cc4a61dfc26a6d10744523afe"
+  },
+  {
+    "condition": "wrong-cross-attention-width",
+    "status": "PASS",
+    "seconds": 53.61113787535578,
+    "compared_parameters": 1680,
+    "conflicts": 140,
+    "html_bytes": 2245446,
+    "html_sha256": "9b8afe74b034e64fb57e5ddfbcdf3aea948e6d6c3c56756a09c7d0a22a6e51e0"
+  }
+]

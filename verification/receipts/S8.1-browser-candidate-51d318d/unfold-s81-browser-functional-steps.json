@@ -1,0 +1,72 @@
+[
+  {
+    "depth": 0,
+    "id": "denoiser"
+  },
+  {
+    "depth": 1,
+    "id": "instance_down_blocks__1"
+  },
+  {
+    "depth": 2,
+    "id": "instance_down_blocks__1__attentions"
+  },
+  {
+    "depth": 3,
+    "id": "instance_down_blocks__1__attentions__0"
+  },
+  {
+    "depth": 4,
+    "id": "instance_down_blocks__1__attentions__0__transformer_blocks"
+  },
+  {
+    "depth": 5,
+    "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0"
+  },
+  {
+    "depth": 6,
+    "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__attn2"
+  },
+  {
+    "depth": 6,
+    "id": "instance_down_blocks__1__attentions__0__transformer_blocks__0__ff",
+    "clear_deeper": true
+  },
+  {
+    "depth": 1,
+    "id": "instance_up_blocks__1",
+    "clear_deeper": true
+  },
+  {
+    "depth": 2,
+    "id": "instance_up_blocks__1__join_0"
+  },
+  {
+    "depth": 1,
+    "id": "instance_time_embedding",
+    "clear_deeper": true
+  },
+  {
+    "depth": 2,
+    "id": "instance_time_embedding__linear_1"
+  },
+  {
+    "depth": 1,
+    "id": "unet_context_0",
+    "clear_deeper": true
+  },
+  {
+    "depth": 0,
+    "id": "denoiser",
+    "expected_card": "default",
+    "clear_deeper": true
+  },
+  {
+    "depth": 0,
+    "id": "denoiser"
+  },
+  {
+    "depth": 1,
+    "id": "instance_down_blocks__1"
+  }
+]

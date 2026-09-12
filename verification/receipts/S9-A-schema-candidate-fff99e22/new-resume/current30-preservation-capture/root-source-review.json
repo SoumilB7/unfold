@@ -1,0 +1,17 @@
+{
+  "verdict": "BOUNDED_SOURCE_ACCEPT_RUNTIME_PENDING",
+  "manifest_sha256": "7f192e9d5e7f167d3b77ef1137ea1f1de49aff9f2ef487747e9f015d0e51e622",
+  "reviewed": [
+    "Held source/input/artifact/script inventories and exact deletion checks in parent and child",
+    "Original verify_expected_witness/canonical_surfaces/view/gallery/HTML calls delegated once with original objects returned and original exceptions rethrown",
+    "Observation failures invalidate the capture packet and retain original test failure behavior",
+    "Unchanged full preservation test file; expected manifest must equal git HEAD bytes; no writer or bless path",
+    "Canonical hashes and exact ordered views compared against authoritative expected manifest; stale historical documents explicitly marked",
+    "Recovered baseline documents accepted only when established canonical hash equals the committed expectation"
+  ],
+  "limits": [
+    "Source review only; root serial runtime required",
+    "No pixel, output, baseline or unit approval",
+    "Historical document mismatches do not alter authoritative expected hashes"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "scope": "Independent actual HTML verification after context-card correction; no model/pytest/browser run.",
+  "results": [
+    {
+      "case": "sdxl-ordinary",
+      "html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "checks": {
+        "validate_click_coupling": [],
+        "validate_unique_ref_ids": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": []
+      }
+    },
+    {
+      "case": "sd14-ordinary",
+      "html_sha256": "24c44a91b2dc885aa66e2c753ddcbee148d67f9aea339e76a4188b9f73d16349",
+      "checks": {
+        "validate_click_coupling": [],
+        "validate_unique_ref_ids": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": []
+      }
+    }
+  ]
+}

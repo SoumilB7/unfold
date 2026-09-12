@@ -1,0 +1,47 @@
+S7 shadow corpus auraflow-v0-3
+S7 shadow corpus bloom
+S7 shadow corpus cogvideox-5b
+S7 shadow corpus dbrx-base
+S7 shadow corpus deepseek-v3
+S7 shadow corpus flux-2-dev
+S7 shadow corpus fluxtransformer2dmodel
+S7 shadow corpus gemma-2-2b-it
+S7 shadow corpus glm-4-5
+S7 shadow corpus gpt-oss-20b
+S7 shadow corpus granite-3-0-8b-instruct
+S7 shadow corpus hunyuanvideo
+S7 shadow corpus llama-7b
+S7 shadow corpus ltx-video
+S7 shadow corpus lumina-image-2-0
+S7 shadow corpus mochi-1-preview
+S7 shadow corpus musicgen-small
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+S7 shadow corpus olmo-2-1124-7b
+S7 shadow corpus pixart-sigma-xl-2-1024-ms
+S7 shadow corpus prxpixel-t2i
+S7 shadow corpus qwen-image
+S7 shadow corpus qwen2-vl-7b-instruct
+S7 shadow corpus qwen3-5-27b-text
+S7 shadow corpus qwen3-8b
+S7 shadow corpus sana-1600m-1024px-diffusers
+S7 shadow corpus stable-diffusion-3-5-large
+S7 shadow corpus stable-diffusion-xl-base-1-0
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/scripts/generate_s7_shadow.py", line 1182, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/scripts/generate_s7_shadow.py", line 1177, in main
+    generate()
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/scripts/generate_s7_shadow.py", line 669, in generate
+    artifact, observation_payload, relation_payload = _one(
+                                                      ^^^^^
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/scripts/generate_s7_shadow.py", line 552, in _one
+    table = reconcile(
+            ^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/model_unfolder/evidence/reconciliation.py", line 1321, in reconcile
+    for source_key in _fact_source_keys(fact, program_index)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-final-verification-96d0c1e/model_unfolder/evidence/reconciliation.py", line 1489, in _fact_source_keys
+    raise ValueError(
+ValueError: fact 'root.denoiser.ffn_mechanisms' source span '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/attention.py':934 has no ProgramIndex source address: ()

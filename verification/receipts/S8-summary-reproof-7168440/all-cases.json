@@ -1,0 +1,288 @@
+[
+  {
+    "case": "sdxl-ordinary",
+    "phase": "initial",
+    "result": {
+      "case": "/private/tmp/unfold-s8-final-c38b008/sdxl/ordinary",
+      "elapsed_seconds": 9.699,
+      "facts_sha256": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+      "indexed_source_nodes": 8,
+      "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "inventory_sha256": "b43e532fd6cf0b91776798ac26b08ea5586f00dfade04d64a333d85ab2d2a700",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sdxl-sparse",
+    "phase": "initial",
+    "result": {
+      "case": "/private/tmp/unfold-s8-final-c38b008/sdxl/sparse",
+      "elapsed_seconds": 7.981,
+      "facts_sha256": "325948f53d82d86802f6124326af27d6153566151e033d836ded19bc522d2b86",
+      "indexed_source_nodes": 8,
+      "input_sha256": "231f2bf9fbcc759eacb1f967a7ae97b50527a44a2a14ebed43db132c90e9b818",
+      "inventory_sha256": "9ccbdf6255eabcd02f58b1fa6c7296b29f69a6437295e908782db521c0bd718f",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sdxl-misleading",
+    "phase": "initial",
+    "result": {
+      "case": "/private/tmp/unfold-s8-final-c38b008/sdxl/misleading",
+      "elapsed_seconds": 7.707,
+      "facts_sha256": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+      "indexed_source_nodes": 8,
+      "input_sha256": "f619a015e9137f3783703db2629b1482734784b062b7a245593a630ece056647",
+      "inventory_sha256": "84664f9807c7bbe6c259267889e5020e12a78fc5fb041c878ee5b3106f53b0be",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sdxl-rewrite",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-final-c38b008/sdxl/rewrite",
+      "elapsed_seconds": 8.776,
+      "facts_sha256": "cc492cdde7f80bff51537c5c7c58960ed0fa7dd9c79763d04f5a4dd1a9d1abce",
+      "indexed_source_nodes": 8,
+      "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "inventory_sha256": "fe9d507fa673040a0db49a10e523b85df2c456e28a4c803cfccbab50726efc1f",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "017493cd16b3a9b1695f15ddfb663922ee7edb9c55fba5c511603961650e8a36",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sdxl-unchanged",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/unchanged",
+      "elapsed_seconds": 7.943,
+      "facts_sha256": "d69b1e1e628bee58bf4600232826ceb227dac820ac7d8e6f906a2a45cf5f5908",
+      "indexed_source_nodes": 8,
+      "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "inventory_sha256": "b43e532fd6cf0b91776798ac26b08ea5586f00dfade04d64a333d85ab2d2a700",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sdxl-changed",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/changed",
+      "elapsed_seconds": 8.263,
+      "facts_sha256": "d603168c3ada91e62df1856e311919ea94869cc2b6dadf1844359094638ab6a6",
+      "indexed_source_nodes": 8,
+      "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "inventory_sha256": "41415e50c4e022a07c17daa2a09a8523e7398361dd19fc3a3b4ad81e673157d7",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "2b065a8d3a768b83ec5b6e29273a32a05136cff83d04449a05b76bfb6fd34e23",
+      "summary": {
+        "parameter_count": 2656985604,
+        "parameterized_module_count": 1102,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "0512175371a78b7a378a65b2df71a3ec1305fb658479cb605efb598c420cdd2f"
+  },
+  {
+    "case": "sdxl-missing",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/sdxl/missing",
+      "elapsed_seconds": 8.161,
+      "facts_sha256": "5509aae733fab024bf83f676bc4e9b5ec54054e231fe45672bbfdbc470c3896a",
+      "indexed_source_nodes": 8,
+      "input_sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "inventory_sha256": "b43e532fd6cf0b91776798ac26b08ea5586f00dfade04d64a333d85ab2d2a700",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567463684,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "f8de2fbd23c158203fc88652abce5d0dc8d9fe9776ab78ad008d888d25a81437"
+  },
+  {
+    "case": "sd14-ordinary",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/sd-v1-4/ordinary",
+      "elapsed_seconds": 7.522,
+      "facts_sha256": "552bd48ff5847db2e601a2a5b3aca83cc8e02d400499ed78f0a1aedf9b61ad86",
+      "indexed_source_nodes": 5,
+      "input_sha256": "b99d071738951cb1ca6b6d9f77147a983fad8e9d60a0601916b135ed5ac08756",
+      "inventory_sha256": "8062e4c9792c20bec007e20d08e3482bb13cc10d78750c0413de4ac89a0c651c",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 859520964,
+        "parameterized_module_count": 391,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 9,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "0bb47a7575f52e537a791c4ee72f2b501b7de540d94c4095ca8c89ab9a4fbb24"
+  },
+  {
+    "case": "sdxl-refiner",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-refiner/ordinary",
+      "elapsed_seconds": 5.154,
+      "facts_sha256": "3e62849ea1b11f10be535066b06666a3c8cfb69cf24cd325a7a5d2e7cefed197",
+      "indexed_source_nodes": 2,
+      "input_sha256": "a9a8317c663c78e978d0697c58763d8c3d4faa75fd0006cdc03cf3b71a6787d8",
+      "inventory_sha256": "4eb24980d2b0ee96bbd322af978bfc694107af07e4c324ade5a593c882c44f82",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2259526660,
+        "parameterized_module_count": 742,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 9,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "00148e16b3c48af48c4d8c516b386e03056a6cc34094202cdd512405344a5319"
+  },
+  {
+    "case": "sdxl-inpainting",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/sdxl-inpainting/ordinary",
+      "elapsed_seconds": 5.519,
+      "facts_sha256": "30131ec52aa2deff402520ad12e5b9bd151b0b4f0fa0f8e47e46c12369a82000",
+      "indexed_source_nodes": 2,
+      "input_sha256": "1a0586efef78cc84c7f03f04eb79e7670e5bb7f117cc45e7dbf718c73cb2a57a",
+      "inventory_sha256": "3014203d7a1b13404381fe4da8d73311e3135365e07b7d4abd798b8fffc9d322",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "summary": {
+        "parameter_count": 2567478084,
+        "parameterized_module_count": 1050,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 7,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "18e82531e0a79082bac64d24f92659ec81ab6076b3bc9ea849cbd93c71fb7324"
+  },
+  {
+    "case": "ddpm-cifar10",
+    "phase": "resume",
+    "result": {
+      "case": "/private/tmp/unfold-s8-render-phase-c38-v2/generalization/ddpm-cifar10/ordinary",
+      "elapsed_seconds": 4.774,
+      "facts_sha256": "3150cc01176e786a322f5308f1d7555ab3631ac7270f1625f59e1cd165a3688e",
+      "indexed_source_nodes": 2,
+      "input_sha256": "294054d1575eb18a7889f072cd6e9fff7f3cf93ad45d45046f3fd32e4b3cb1f3",
+      "inventory_sha256": "c61c6b627ee5991e7ee55946ee39ee5a7c51a268a8c680ad995aa690db2b1158",
+      "no_model_or_execution": true,
+      "root_and_external_nodes_archived": 2,
+      "root_sha256": "ecbebc96b01f95606c4b335586393d32df1774531856e7ad74ba16db6d70f733",
+      "summary": {
+        "parameter_count": 35746307,
+        "parameterized_module_count": 164,
+        "population_fact_key": "root.denoiser.constructed_modules",
+        "scope": "denoiser",
+        "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+        "stage_count": 9,
+        "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+      },
+      "three_fact_values_exact": true
+    },
+    "summary_sha256": "e97bfbbb26435dce6a91b79cefc162e11bad6f643a8c36f6547c1b934678b7b1"
+  }
+]

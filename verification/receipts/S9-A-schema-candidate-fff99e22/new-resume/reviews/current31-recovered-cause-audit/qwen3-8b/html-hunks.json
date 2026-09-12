@@ -1,0 +1,30 @@
+[
+  {
+    "after": "/* Typed annotations remain distinguishable by borders and labels as well as colour. */\n#<MOUNT> .uf-chip-unresolved {\n  background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;\n}\n#<MOUNT> .uf-unknown-values {\n  margin:12px 0; padding:8px 12px; border:1px dashed #4D7C0F;\n  border-radius:8px; color:#14532D; background:#ECFDF5;\n}\n#<MOUNT> .uf-unknown-values summary { cursor:pointer; font-size:12px; }\n#<MOUNT> .uf-unknown-value-list { display:flex; flex-direction:column; gap:6px; margin-top:8px; }\n#<MOUNT> .uf-value-reason { white-space:normal; overflow-wrap:anywhere; border-radius:4px; }\n#<MOUNT> .uf-unknown-value-group { font-size:11px; line-height:1.5; }\n#<MOUNT> .uf-unknown-value-group > div { margin-top:5px; }\n#<MOUNT> .uf-value-paths { font-size:10px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:320px; overflow:auto; }\n#<MOUNT> .uf-chip-class_default {\n  background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;\n}\n#<MOUNT> .uf-chip-symbolic {\n  background:#FAF5FF; color:#581C87; border:3px double #A855F7;\n}\n#<MOUNT> .uf-chip-pending_design {\n  background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;\n}\n",
+    "after_lines": [
+      322,
+      345
+    ],
+    "before": "",
+    "before_lines": [
+      322,
+      321
+    ],
+    "cause": "css",
+    "tag": "insert"
+  },
+  {
+    "after": "<div class=\"uf-stats\"><div class=\"uf-stat\"><div class=\"uf-stat-key\">LAYERS</div><div class=\"uf-stat-val\">36</div></div><div class=\"uf-stat\" data-uf-receipt-node=\"stats_hidden_size\"><div class=\"uf-stat-key\">HIDDEN</div><div class=\"uf-stat-val\">4,096</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">VOCAB</div><div class=\"uf-stat-val\">151,936</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">CONTEXT</div><div class=\"uf-stat-val\">40,960</div></div><div class=\"uf-stat\" title=\"estimate uses conventions for unknowns: embedding-stage normalization not proven \u2014 its parameters omitted\"><div class=\"uf-stat-key\">PARAMS</div><div class=\"uf-stat-val\">~8.19B*</div></div></div>\n",
+    "after_lines": [
+      480,
+      480
+    ],
+    "before": "<div class=\"uf-stats\"><div class=\"uf-stat\"><div class=\"uf-stat-key\">LAYERS</div><div class=\"uf-stat-val\">36</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">HIDDEN</div><div class=\"uf-stat-val\">4,096</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">VOCAB</div><div class=\"uf-stat-val\">151,936</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">CONTEXT</div><div class=\"uf-stat-val\">40,960</div></div><div class=\"uf-stat\" title=\"estimate uses conventions for unknowns: embedding-stage normalization not proven \u2014 its parameters omitted\"><div class=\"uf-stat-key\">PARAMS</div><div class=\"uf-stat-val\">~8.19B*</div></div></div>\n",
+    "before_lines": [
+      456,
+      456
+    ],
+    "cause": "banner",
+    "tag": "replace"
+  }
+]

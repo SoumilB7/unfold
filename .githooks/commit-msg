@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+message_file=$1
+
+# Git comments and blank leading lines are not commit-message content.
+content=$(sed '/^[[:space:]]*#/d' "$message_file")
+title=$(printf '%s\n' "$content" | awk 'NF { print; exit }')
+body=$(printf '%s\n' "$content" | awk '
+  NF && !seen { seen=1; next }
+  seen && NF { print; found=1 }
+  END { if (!found) exit 1 }
+' 2>/dev/null || true)
+
+if [ -z "$title" ] || [ -z "$body" ]; then
+  echo "commit rejected: use a subject and a non-empty explanatory body" >&2
+  exit 1
+fi

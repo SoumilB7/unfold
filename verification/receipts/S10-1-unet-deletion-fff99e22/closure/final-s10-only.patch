@@ -1,0 +1,3832 @@
+diff --git a/docs/U3_CURRENT_READER_INVENTORY.md b/docs/U3_CURRENT_READER_INVENTORY.md
+index 1fd0d9e1..be130f32 100644
+--- a/docs/U3_CURRENT_READER_INVENTORY.md
++++ b/docs/U3_CURRENT_READER_INVENTORY.md
+@@ -8,11 +8,11 @@ This is the current authority/deletion worklist. The older
+ 
+ ## Summary
+ 
+-- quarantined semantic readers: **5**
+-- exact evidence-layer `ast.parse` sites: **20**
+-- legacy model-source parse sites: **9**
+-- frozen reader/helper implementation digest: `7fb2348bdd23d66a087f2932fc6d504c135fe644cf2e231961d9ba0740cbbadd`
+-- frozen legacy-parse caller digest: `8e2aae516112895c20accde56062dfd7862712af46f0c5cbe47469793bcc4fe9`
++- quarantined semantic readers: **0**
++- exact evidence-layer `ast.parse` sites: **19**
++- legacy model-source parse sites: **8**
++- frozen reader/helper implementation digest: `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`
++- frozen legacy-parse caller digest: `573bd61a2c20eb3b7ba4e40825435f3d7bd239c910616f8bd69ac4edcfac20bd`
+ 
+ ## Authority classes
+ 
+@@ -28,11 +28,6 @@ This is the current authority/deletion worklist. The older
+ 
+ | Future unit | Definition | Exact production callers | Reason | Deletion condition |
+ |---|---|---|---|---|
+-| U11 | `model_unfolder/evidence/patterns.py::unet_code_attention_placement_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet attention placement interpretation | U11 registers the exact owner-qualified fact and deletes unet_code_attention_placement_from_files |
+-| U11 | `model_unfolder/evidence/patterns.py::unet_mid_block_present_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet mid-stage topology interpretation | U11 registers the exact owner-qualified fact and deletes unet_mid_block_present_from_files |
+-| U11 | `model_unfolder/evidence/patterns.py::unet_stage_attn_cell_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet stage attention-cell interpretation | U11 registers the exact owner-qualified fact and deletes unet_stage_attn_cell_from_files |
+-| U11 | `model_unfolder/evidence/patterns.py::unet_stage_temporal_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet temporal-cell interpretation | U11 registers the exact owner-qualified fact and deletes unet_stage_temporal_from_files |
+-| U11 | `model_unfolder/evidence/patterns.py::unet_transformer_ffn_activation_from_files` | `model_unfolder/adapters/diffusor/parser.py:_parse_unet_model` | UNet nested-transformer FFN interpretation | U11 registers the exact owner-qualified fact and deletes unet_transformer_ffn_activation_from_files |
+ 
+ ## Parse authority
+ 
+@@ -46,7 +41,6 @@ This is the current authority/deletion worklist. The older
+ | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_init_helper_block_classes` | U14 | conformance-local helper/block scan |
+ | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_selected_init_refs` | U14 | conformance-local constructor selection |
+ | `legacy_model_source` | `model_unfolder/evidence/forward_ops.py::_parse_file` | U14 | parallel forward-op parser shared by legacy facts/conformance |
+-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U11 | UNet compatibility parser retained for U11 |
+ | `legacy_model_source` | `model_unfolder/evidence/transitive.py::_parse_file` | U14 | parallel callable/transitive parser shared by conformance |
+ | `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U14 | diffusion layer/stage compatibility readers still share this legacy class-node cache; U9 vision authority is deleted |
+ | `repository_audit` | `model_unfolder/evidence/consumer_firewall.py::scan_consumer_source` | — | lawful retained authority |
+diff --git a/model_unfolder/adapters/diffusor/parser.py b/model_unfolder/adapters/diffusor/parser.py
+index 4883aca5..bf8d5872 100644
+--- a/model_unfolder/adapters/diffusor/parser.py
++++ b/model_unfolder/adapters/diffusor/parser.py
+@@ -3,8 +3,8 @@
+ For non-U-shaped roots, exact source occurrences plus checkpoint-bound operands
+ author one typed diffusion projection.  Unknown mechanisms remain opaque; this
+ adapter has no family/config template fallback. A positively proven U-shape
+-enters the runtime-bound UNet fact projection; the former adapter is available
+-only inside an explicit differential comparison. VAE and scheduler internals
++enters the runtime-bound UNet fact projection. The replaced compatibility
++interpreter is deleted; incomplete evidence never enables a fallback. VAE and scheduler internals
+ remain explicit U12/U13 handoffs.
+ """
+ from __future__ import annotations
+@@ -16,7 +16,6 @@ from ...everchanging import (
+     load_diffusion_aliases,
+     load_diffusion_text_encoders,
+     load_diffusion_typing,
+-    load_unet_conditioning,
+ )
+ from ...evidence import config_access as _config_access
+ from ...evidence.identity_roles import identity_address
+@@ -45,182 +44,6 @@ _ENCODER_NAMES = load_diffusion_text_encoders()
+ # Adapter interface
+ # ---------------------------------------------------------------------------
+ 
+-def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=None) -> ModelIR:
+-    """Legacy S8 differential only; ordinary parsing cannot enter this body."""
+-    from .unet_differential import legacy_comparison_enabled
+-    if not legacy_comparison_enabled():
+-        raise RuntimeError("legacy UNet authority is restricted to differential verification")
+-    from .unet import parse_unet, unet_geom, unet_render_spec
+-    unet = parse_unet(cfg)
+-    # The Transformer2D FFN's inner shape, ANCHORED to the block classes the
+-    # config's own block-type strings name (identity-as-address) — restores
+-    # the evidence-backed GEGLU an import-closure vote could not prove.
+-    # None keeps the honest-undeclared FFN card.
+-    try:
+-        from ...evidence.conformance import _augment_diffusion_files
+-        from ...evidence.patterns import unet_transformer_ffn_activation_from_files
+-        bundle = getattr(context, "source_bundle", None)
+-        _root = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+-                      or getattr(bundle, "files", ()) or ())
+-        _types = (list(_g(cfg, "down_block_types") or [])
+-                  + list(_g(cfg, "up_block_types") or [])
+-                  + [_g(cfg, "mid_block_type") or ""])
+-        unet["transformer_ffn_act"] = (
+-            unet_transformer_ffn_activation_from_files(
+-                _augment_diffusion_files(_root), _types) if _root else None)
+-    except Exception:
+-        unet["transformer_ffn_act"] = None
+-    # F2: the mid (bottleneck) block is drawn ONLY when the denoiser class
+-    # constructs one.  UNet2DConditionModel builds `self.mid_block`; Kandinsky3UNet
+-    # builds none (its forward is conv_in -> down -> up -> conv_out).  Source is
+-    # authoritative; config's declared mid_block_type is the fallback; unknown
+-    # keeps the current bottleneck (but never claims false provenance).
+-    declares_mid = _g(cfg, "mid_block_type") is not None
+-    bundle = getattr(context, "source_bundle", None)
+-    _mroot = ((getattr(bundle, "component_files", {}) or {}).get("root")
+-              or getattr(bundle, "files", None))
+-    _march = getattr(bundle, "architecture", None) or arch_name
+-    mid_present = None
+-    try:
+-        from ...evidence.patterns import unet_mid_block_present_from_files
+-        mid_present = unet_mid_block_present_from_files(_mroot, _march)
+-    except Exception:
+-        mid_present = None
+-    unet["declares_mid_block_type"] = declares_mid
+-    unet["mid_present"] = mid_present
+-    if not declares_mid and mid_present is not True:
+-        # Without a declaration, only positive source evidence may create a
+-        # bottleneck. A proven negative or source-unknown result must not retain
+-        # the generic fabricated mid stage.
+-        unet["mid"] = {}
+-        unet["mid_dropped"] = True
+-        if mid_present is None:
+-            unet["mid_unresolved"] = True
+-    # F2: when the config declares no block-type lists, the per-level attention
+-    # placement lives in the model CODE (Kandinsky3's add_cross_attention tuple),
+-    # not the config — read it so the attention this model is known for is shown,
+-    # rather than an all-attn=False skeleton.
+-    if not unet.get("declares_block_types"):
+-        try:
+-            from ...evidence.patterns import unet_code_attention_placement_from_files
+-            _apply_code_attention_placement(
+-                unet, unet_code_attention_placement_from_files(_mroot, _march))
+-        except Exception:
+-            pass
+-    # F2: the attention CELL of each declared stage is DERIVED from the resolved
+-    # block class's construction (Transformer2D wrapper vs plain cross-Attention) —
+-    # the block-type string is only the ADDRESS.  Unresolvable -> None (honest-
+-    # unknown, drawn pale), NEVER a class-name guess.
+-    if unet.get("declares_block_types"):
+-        try:
+-            from ...evidence.conformance import _augment_diffusion_files
+-            from ...evidence.patterns import (unet_stage_attn_cell_from_files,
+-                                              unet_stage_temporal_from_files)
+-            _dfiles = _augment_diffusion_files(tuple(_mroot)) if _mroot else ()
+-            for st in (unet.get("down") or []) + ([unet.get("mid")] if unet.get("mid") else []) + (unet.get("up") or []):
+-                if st.get("stage_type"):
+-                    if st.get("attn"):
+-                        st["attn_kind"] = unet_stage_attn_cell_from_files(_dfiles, st["stage_type"])
+-                    # F3: temporal branch DERIVED per stage from the block class's
+-                    # construction (Conv3d / AlphaBlender), not a root-level stamp.
+-                    tv = unet_stage_temporal_from_files(_dfiles, st["stage_type"])
+-                    if tv is not None:
+-                        st["temporal"] = tv
+-        except Exception:
+-            pass
+-    # F3: is this a VIDEO denoiser at all (the Video U-Net label / frames axis)?
+-    # Root-level fact from EVIDENCE (the class's forward processes a frames axis),
+-    # never the class name.  Per-stage temporal OPS come from each stage class above.
+-    unet["temporal"] = _u11_unet_temporal_axis(cfg, arch_name, context)
+-    boc = unet["block_out_channels"]
+-    if not boc:
+-        warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
+-    if boc and not unet.get("declares_block_types"):
+-        cad = unet.get("cross_attention_dim")
+-        warnings.append(
+-            "This UNet config declares no down_block_types/up_block_types — per-stage "
+-            "attention placement is defined in the model code, not the config, so the "
+-            "denoiser is shown as a convolutional U skeleton"
+-            + (" with no bottleneck (the denoiser class constructs no mid block)"
+-               if unet.get("mid_dropped") else "")
+-            + (f" with text cross-attention (dim {cad}) entering at code-defined stages"
+-               if cad else "")
+-            + "."
+-        )
+-    hidden = max(boc) if boc else 0
+-    # ONE namespaced sub-parse; names derive from it (never a second
+-    # context-less parse under the wrong ownership namespace).
+-    text_encoder_specs = _text_encoder_specs(cfg, context=context)
+-    text_encoders = [s["name"] for s in text_encoder_specs]
+-    conditioning = _u11_unet_conditioning(cfg, text_encoders)
+-    # The cross-attention K/V label the UNet view draws follows the resolved
+-    # conditioning modality (image_proj -> "Image embeds", never "Encoded text").
+-    # Set BEFORE unet_geom: it builds the denoiser cards from ``unet`` in-place.
+-    unet["kv_label"] = conditioning.get("kv_label")
+-    unet["kv_modality"] = conditioning.get("kv_modality")
+-    _ignore_component_container(cfg, "_vae_config", "root.vae")
+-    geom = unet_geom(cfg, unet, text_encoders=text_encoders,
+-                     scheduler_geom=_scheduler_geom(cfg),
+-                     text_encoder_specs=text_encoder_specs)
+-    geom["vae"] = _vae_geom(cfg)
+-    geom["text_encoder_specs"] = text_encoder_specs
+-    geom["conditioning"] = conditioning
+-
+-    extras: dict = {"render": unet_render_spec(geom), "unet": unet}
+-    meta = {k: v for k, v in {
+-        "unet_stages": len(boc) or None,
+-        "in_channels": unet["in_channels"],
+-        "cross_attention_dim": unet["cross_attention_dim"],
+-        "downscale": unet["downscale"],
+-        "text_encoders": text_encoders or None,
+-        "scheduler": geom.get("scheduler"),
+-        "scheduler_train_timesteps": geom.get("scheduler_train_timesteps"),
+-        "conditioning": conditioning,
+-    }.items() if v is not None}
+-    if meta:
+-        extras["diffusion"] = meta
+-
+-    return ModelIR(
+-        name=_diffusion_name(cfg, arch_name),
+-        architecture=arch_name,
+-        vocab_size=0,
+-        hidden_size=hidden,           # widest stage — for the "Hidden" stat
+-        max_position_embeddings=None,
+-        tie_word_embeddings=True,
+-        layers=[],                    # a U-net has no flat transformer-layer stack
+-        extras=extras,
+-        warnings=warnings,
+-    )
+-
+-
+-def _apply_code_attention_placement(unet: dict, placement: dict | None) -> None:
+-    """Set per-stage attention from a CODE-READ per-level placement (F2): a conv-U
+-    that declares no block-type lists (Kandinsky3) carries ``add_cross_attention``/
+-    ``add_self_attention`` tuples in its class ``__init__``.  Down stage i is level
+-    i; up stage j (channels reversed) is level n-1-j.  The attention CELL is
+-    ``code_defined`` (a Kandinsky3AttentionBlock: self + cross attention with a
+-    conv 1x1 FFN — NOT a Transformer2D and NOT a plain SimpleCrossAttn)."""
+-    if not placement or not placement.get("cross"):
+-        return
+-    cross = placement.get("cross") or []
+-    selfa = placement.get("self") or cross
+-    down, up = unet.get("down") or [], unet.get("up") or []
+-    n = len(unet.get("block_out_channels") or [])
+-
+-    def _mark(st, level):
+-        hc = bool(level < len(cross) and cross[level])
+-        hs = bool(level < len(selfa) and selfa[level])
+-        st["attn"] = hc or hs
+-        st["has_cross"], st["has_self"] = hc, hs
+-        st["attn_kind"] = "code_defined" if (hc or hs) else st.get("attn_kind")
+-        st["transformers"] = 1 if (hc or hs) else 0
+-
+-    for i, st in enumerate(down):
+-        _mark(st, i)
+-    for j, st in enumerate(up):
+-        _mark(st, n - 1 - j)
+-    unet["code_attention_placement"] = True
+-
+ 
+ def _diffusion_name(cfg: Any, arch_name: str) -> str:
+     """Prefer the model *tag* (repo id) for the display name, e.g.
+@@ -650,18 +473,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
+     if context is None:
+         from ...evidence.context import ParseContext
+         context = ParseContext.build(cfg, source="local")
+-    warnings: list[str] = []   # config GAPS → "⚠ partial config"
+     cls = _g(cfg, "_class_name") or "diffusion"
+     arch_name = architecture_name(cfg, cls)
+ 
+     topology = _shadow_diffusion_root_topology(context)
+ 
+-    # Exact source topology selects the UNet cutover. The legacy comparison
+-    # flag is scoped by verification code and cannot be enabled by config.
++    # Exact source topology selects the sole UNet projection. Incomplete
++    # construction remains typed and cannot revive the deleted interpreter.
+     if topology.has_value and topology.value.kind == "u_shaped":
+-        from .unet_differential import legacy_comparison_enabled
+-        if legacy_comparison_enabled():
+-            return _parse_unet_model(cfg, arch_name, warnings, context=context)
+         from .unet_cutover import build_unet_cutover
+         result = build_unet_cutover(
+             cfg, context, handoffs=_projected_pipeline_handoffs(
+@@ -858,29 +677,6 @@ def _vae_geom(cfg: Any) -> dict | None:
+     return {k: v for k, v in out.items() if v is not None} or None
+ 
+ 
+-def _u11_unet_temporal_axis(
+-        cfg: Any, cls: str, context=None) -> bool | None:
+-    """U11 compatibility: VIDEO UNet evidence, never the class name (I-10).
+-
+-    The resolved root class's own forward() must process a frames axis
+-    (``num_frames``), read from the ONE ProgramIndex under the EXACT owner
+-    occurrence (U3-D1 ``denoiser_temporal_axis``).  The reader runs only for a
+-    resolved component-root address and only a resolved verdict is consumed —
+-    ambiguous/absent/failed source never guesses. A temporal-looking config
+-    declaration is geometry only and cannot create video computation.
+-    """
+-    if context is not None:
+-        from ...evidence.component_owner import resolve_component_root
+-        from ...evidence.denoiser import denoiser_temporal_axis
+-        index = context.program_index()
+-        resolution = resolve_component_root(index, context.source_bundle, "root")
+-        if resolution.address_resolved:
+-            verdict = denoiser_temporal_axis(index, resolution.occurrence)
+-            if verdict.status == "resolved":
+-                return bool(verdict.require_value())
+-    return None
+-
+-
+ # _detect_text_encoders was DELETED (2026-07-16): it re-ran the full
+ # text-encoder sub-parse context-less, re-parsing each encoder under the wrong
+ # ownership namespace (root instead of root.<slot>) and falsely attributing a
+@@ -888,62 +684,6 @@ def _u11_unet_temporal_axis(
+ # Names now derive from the ONE namespaced `_text_encoder_specs(cfg, context=)`.
+ 
+ 
+-def _u11_unet_conditioning(cfg: Any, encoders: list) -> dict:
+-    """U11 compatibility conditioning from the DECLARED UNet config enums.
+-
+-    This helper is unreachable from U10's source-projected denoiser path.  It is
+-    retained only behind a positively proven U-shaped root until U11 replaces
+-    the legacy UNet interpreter.
+-
+-    The denoiser's conditioning story is resolved from
+-    (``encoder_hid_dim_type`` for the cross-attention K/V + its projector;
+-    ``addition_embed_type`` for the vector added to the timestep) plus the set of
+-    pipeline components that actually exist — never a hardcoded text assumption
+-    (F1).  An image-conditioned decoder (Kandinsky-2.2: ``image_proj``/``image``,
+-    no text encoder) is drawn as image conditioning, not a fabricated text tower.
+-
+-    Resolution order for the cross-attention K/V modality:
+-      1. a declared, RECOGNISED ``encoder_hid_dim_type`` names the modality;
+-      2. a declared-but-unrecognised type -> honest-unknown (never text);
+-      3. no type declared but text encoders exist -> text (SDXL/PixArt today);
+-      4. nothing -> unknown.
+-    """
+-    vocab = load_unet_conditioning()
+-    enc_map = vocab["encoder_hid_dim_type"]
+-    add_map = vocab["addition_embed_type"]
+-    ehdt = _g(cfg, "encoder_hid_dim_type")
+-    aet = _g(cfg, "addition_embed_type")
+-    has_text = bool(encoders)
+-    out: dict = {
+-        "encoder_hid_dim_type": ehdt,
+-        "addition_embed_type": aet,
+-        "has_text_encoder": has_text,
+-    }
+-    kv = enc_map.get(str(ehdt)) if ehdt else None
+-    if kv:
+-        out["kv_modality"] = kv.get("modality")
+-        out["kv_label"] = kv.get("kv_label")
+-        out["projector"] = kv.get("projector")
+-        out["kv_text"] = bool(kv.get("text"))
+-    elif ehdt:                                   # declared but unmapped: honest-unknown
+-        out["kv_modality"] = "unknown"
+-        out["kv_label"] = "External conditioning"
+-        out["kv_text"] = False
+-    elif has_text:                               # conventional text conditioning
+-        out["kv_modality"] = "text"
+-        out["kv_label"] = "Encoded text"
+-        out["kv_text"] = True
+-    else:
+-        out["kv_modality"] = "unknown"
+-        out["kv_label"] = "External conditioning"
+-        out["kv_text"] = False
+-    add = add_map.get(str(aet)) if aet else None
+-    if add:
+-        out["add_modality"] = add.get("modality")
+-        out["add_label"] = add.get("add_label")
+-    return out
+-
+-
+ def _slot_context(root_context, slot: str, *, document=None, binding=None):
+     """Delegates to the ONE shared slot-context builder (evidence/context.py)."""
+     from ...evidence.context import slot_parse_context
+diff --git a/model_unfolder/adapters/diffusor/unet.py b/model_unfolder/adapters/diffusor/unet.py
+deleted file mode 100644
+index 8d2bc825..00000000
+--- a/model_unfolder/adapters/diffusor/unet.py
++++ /dev/null
+@@ -1,971 +0,0 @@
+-"""UNet (UNet2DConditionModel) diffusion denoisers — SD1.5 / SD2 / SDXL / Kandinsky.
+-
+-A conv U-net, not a transformer: the denoiser is a *down* path (encoder) of
+-resolution stages, a mid block, and a mirrored *up* path (decoder) with skip
+-connections.  Cross-attention to text appears at the stages whose block-type
+-name says so (``CrossAttn*Block2D``).  Parsed here into a structure the UNet view
+-draws as a U; the sampling-loop hero is reused unchanged (only the denoiser node
+-opens a UNet diagram instead of the DiT stack).
+-"""
+-from __future__ import annotations
+-
+-from typing import Any
+-
+-from ...evidence import config_access as _config_access
+-from ...ir import AttentionSpec, FFNSpec
+-from ..transformer.blocks.attention import attention_child_blocks, attention_detail
+-from ..transformer.blocks.feed_forward import ffn_child_blocks, ffn_detail, ffn_view
+-from ..transformer.common import get_config_value as _g
+-from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
+-from .compound import unet_mid_stage, unet_resolution_stage
+-
+-
+-def _consume(cfg: Any, field: str, fact_owner: str, fact_key: str):
+-    """U2-R7: CONSUME one exact-spelling UNet config read into the drawn fact
+-    it supplies (occurrence -> (fact_owner, fact_key)).  These reads run under
+-    the ambient ``root.denoiser`` owner scope set by the diffusor ``parse``;
+-    the UNet spellings are exact (no alias vocabulary), matching the bare
+-    reads they replace."""
+-    res = _config_access.resolve(cfg, field, ())
+-    if res.ambiguous:
+-        return None
+-    return res.consume_decision(
+-        mechanism="unet_geometry", fact_owner=fact_owner, fact_key=fact_key,
+-        reader="adapters.diffusor.unet._consume").value
+-
+-
+-def is_unet(cfg: Any) -> bool:
+-    """True for a convolutional U-net denoiser — detected by CONFIG SIGNATURE, never
+-    by class name.
+-
+-    THE CORE LAW: identity (``"UNet" in _class_name``) is not a signal — it dragged
+-    ``Kandinsky3UNet`` / ``StableCascadeUNet`` through the ``UNet2DConditionModel``
+-    dialect and fabricated a structure their configs never declare. A conv-U is
+-    instead recognised by the fields it carries: per-stage channels
+-    (``block_out_channels``) plus EITHER the resolution-stage block-type lists
+-    (``down_block_types`` — the full UNet2DConditionModel dialect ``parse_unet``
+-    reads end-to-end) OR a text-conditioning width (``cross_attention_dim`` — a
+-    conditioned conv-U whose per-stage attention placement may live in the model
+-    code; rendered honestly as a skeleton + a code-defined-placement note rather
+-    than fabricated). A raw pipeline dict defers to its nested ``unet`` sub-config."""
+-    if _g(cfg, "block_out_channels") is None:
+-        sub = _g(cfg, "unet")
+-        return isinstance(sub, dict) and is_unet(sub)
+-    return _g(cfg, "down_block_types") is not None or _g(cfg, "cross_attention_dim") is not None
+-
+-
+-def parse_unet(cfg: Any) -> dict:
+-    """Resolution-stage structure of the U-net (down / mid / up + per-stage attn)."""
+-    boc = [int(c) for c in (_g(cfg, "block_out_channels") or []) if isinstance(c, (int, float))]
+-    n = len(boc)
+-    down_types = list(_g(cfg, "down_block_types") or [])
+-    up_types = list(_g(cfg, "up_block_types") or [])
+-    # NO fabricated default: a missing mid_block_type means the config does not
+-    # declare a cross-attention bottleneck, so we must not assert one (Kandinsky3 /
+-    # other non-UNet2DConditionModel dialects carry no block-type lists). The mid
+-    # renders as a plain bottleneck (attn=False) and the absent block-type lists are
+-    # surfaced honestly via ``declares_block_types`` below.
+-    mid_type = _g(cfg, "mid_block_type") or ""
+-    lpb = _g(cfg, "layers_per_block")
+-    tlpb = _g(cfg, "transformer_layers_per_block")
+-
+-    def at(v, i, default):
+-        if isinstance(v, (list, tuple)):
+-            return v[i] if i < len(v) else default
+-        return v if v is not None else default
+-
+-    def has_attn(t) -> bool:
+-        return isinstance(t, str) and "Attn" in t
+-
+-    down = []
+-    for i, c in enumerate(boc):
+-        stage_type = at(down_types, i, "")
+-        a = has_attn(stage_type)
+-        down.append(unet_resolution_stage(
+-            direction="down",
+-            stage_type=stage_type,
+-            channels=c,
+-            resnets=int(at(lpb, i, 2)),
+-            attn=a,
+-            transformers=int(at(tlpb, i, 1)) if a else 0,
+-            sample=i < n - 1,            # downsample on every stage but the last
+-        ))
+-    mid = unet_mid_stage(
+-        stage_type=mid_type,
+-        channels=boc[-1] if boc else None,
+-        attn=has_attn(mid_type),
+-        resnets=2,
+-        # diffusers' UNetMidBlock2DCrossAttn uses transformer_layers_per_block[-1]
+-        # for its single Transformer2D's depth (SDXL: 10) — not the default 1.
+-        transformers=int(at(tlpb, n - 1, 1)) if has_attn(mid_type) else 0,
+-    )
+-    up = []
+-    for j in range(n):                       # up processing order; channels reversed
+-        c = boc[n - 1 - j]
+-        stage_type = at(up_types, j, "")
+-        a = has_attn(stage_type)
+-        up.append(unet_resolution_stage(
+-            direction="up",
+-            stage_type=stage_type,
+-            channels=c,
+-            resnets=int(at(lpb, n - 1 - j, 2)) + 1,
+-            attn=a,
+-            transformers=int(at(tlpb, n - 1 - j, 1)) if a else 0,
+-            sample=j < n - 1,            # upsample on every stage but the last
+-        ))
+-
+-    # Attention head geometry per stage (so the self/cross-attention drill reuses
+-    # the canonical attention opener).  Diffusers is ambiguous: when
+-    # num_attention_heads is unset, attention_head_dim is actually the head COUNT
+-    # (SDXL: [5,10,20] heads over [320,640,1280] ch ⇒ head_dim 64).
+-    # U2-R7: the head geometry labels every attention-bearing stage of the
+-    # drawn U — consumed into the same attention facts as the DiT twin reads
+-    # (this UNet read is its own occurrence).
+-    nah = _consume(cfg, "num_attention_heads", "denoiser.attention", "num_heads")
+-    ahd = _consume(cfg, "attention_head_dim", "denoiser.attention", "head_dim")
+-
+-    def heads_hd(i: int, channels):
+-        h = at(nah, i, None) if nah is not None else None
+-        a = at(ahd, i, None) if ahd is not None else None
+-        if h:                                  # explicit head count; a = head dim
+-            return int(h), (int(a) if a else (channels // int(h) if channels else None))
+-        if a:                                  # legacy: attention_head_dim IS the count
+-            return int(a), (channels // int(a) if channels else None)
+-        return None, None
+-
+-    # Stable node ids so the U-shape boxes are clickable and couple to cards.
+-    for i, st in enumerate(down):
+-        st["id"] = f"unet_down_{i}"
+-        st["num_heads"], st["head_dim"] = heads_hd(i, st.get("channels"))
+-    for j, st in enumerate(up):
+-        st["id"] = f"unet_up_{j}"
+-        st["num_heads"], st["head_dim"] = heads_hd(n - 1 - j, st.get("channels"))
+-    mid["id"] = "unet_mid"
+-    mid["num_heads"], mid["head_dim"] = heads_hd(n - 1, mid.get("channels"))
+-
+-    cad = _consume(cfg, "cross_attention_dim",
+-                   "denoiser.conditioning", "cross_attention_dim")
+-    if isinstance(cad, (list, tuple)):
+-        cad = cad[0] if cad else None
+-    # Declared encoder-width bridge: when encoder_hid_dim is set, the U-net
+-    # projects the encoder's states to cross_attention_dim BEFORE any stage
+-    # reads them (diffusers builds encoder_hid_proj; a bare encoder_hid_dim
+-    # defaults the type to "text_proj" = one nn.Linear — same rule as the code).
+-    ehd = _g(cfg, "encoder_hid_dim")
+-    ehdt = _g(cfg, "encoder_hid_dim_type") or ("text_proj" if ehd else None)
+-    # U2-R7: act_fn is read ONCE (it was two bare reads) — a resolved value is
+-    # the drawn ResNet/conv activation label, consumed into the same FFN fact as
+-    # the DiT activation.  U4-F: absence stays None.  A renderer cannot install
+-    # the common diffusers SiLU default; an exact config-class/source binding in
+-    # a later mechanism unit may prove it.
+-    _act = _consume(cfg, "act_fn", "denoiser.ffn", "activation")
+-    return {
+-        "in_channels": _consume(cfg, "in_channels", "denoiser.patch",
+-                                "in_channels"),
+-        "out_channels": _consume(cfg, "out_channels", "denoiser.patch",
+-                                 "out_channels"),
+-        "block_out_channels": boc,
+-        "cross_attention_dim": cad,
+-        "encoder_hid": ({"dim": ehd, "type": str(ehdt)} if ehd else None),
+-        "down": down, "mid": mid, "up": up,
+-        "downscale": 2 ** (n - 1) if n else None,
+-        "addition_embed_type": _g(cfg, "addition_embed_type"),
+-        # Whether the config declares the resolution-stage block-type lists. When it
+-        # does NOT (Kandinsky3UNet etc.), per-stage attention placement is defined in
+-        # the model code, not the config — the caller surfaces that honestly rather
+-        # than letting the absent lists read as "no attention anywhere".
+-        "declares_block_types": bool(down_types or up_types),
+-        # ResNet/conv activation: only an owner-bound resolved value may name
+-        # the operation.  Missing evidence remains an unresolved Activation.
+-        "act_fn": str(_act) if _act is not None else None,
+-        "act_declared": _act is not None,
+-    }
+-
+-
+-def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict,
+-              text_encoder_specs: list | None = None) -> dict:
+-    """Loop-view geometry for a UNet denoiser (the denoiser node label/desc)."""
+-    n = len(unet["block_out_channels"])
+-    # SDXL-style micro-conditioning: pooled text + size/crop/target ("time_ids")
+-    # embeddings are projected and ADDED to the timestep embedding. Surfaced only
+-    # when the config declares addition_embed_type = text_time.
+-    aet = _g(cfg, "addition_embed_type")
+-    added_cond = ({"type": aet,
+-                   "proj_in": _g(cfg, "projection_class_embeddings_input_dim"),
+-                   "time_embed_dim": _g(cfg, "addition_time_embed_dim")}
+-                  if aet == "text_time" else None)
+-    # F3: a spatio-temporal (video) UNet mixes information ACROSS frames — every
+-    # ResNet/Transformer stage carries a temporal branch + AlphaBlender.  Surface
+-    # the frames axis and (SVD) the added_time_ids micro-conditioning.
+-    temporal = bool(unet.get("temporal"))
+-    num_frames = _g(cfg, "num_frames")
+-    add_time_dim = _g(cfg, "addition_time_embed_dim")
+-    temporal_desc = (
+-        " This is a VIDEO U-net: every ResNet and Transformer stage additionally "
+-        "runs a TEMPORAL branch (mixing across the "
+-        + (f"{num_frames} " if num_frames else "")
+-        + "frames) and blends it with the spatial branch through a learned "
+-        "AlphaBlender — the mechanism that makes the frames coherent."
+-        if temporal else "")
+-    return {
+-        "denoiser_family": "unet",
+-        "video": temporal,
+-        "num_frames": num_frames,
+-        "in_channels": unet["in_channels"],
+-        "cross_attention_dim": unet["cross_attention_dim"],
+-        "joint_attention_dim": None,
+-        "pooled_projection_dim": None,
+-        "guidance_embeds": None,
+-        "added_cond": added_cond,
+-        "added_time_ids": ({"time_embed_dim": add_time_dim,
+-                            "proj_in": _g(cfg, "projection_class_embeddings_input_dim")}
+-                           if temporal and add_time_dim else None),
+-        "text_encoders": text_encoders,
+-        "denoiser_label": ["Video U-Net", "Denoiser"] if temporal else ["U-Net", "Denoiser"],
+-        "denoiser_title": "Spatio-temporal U-Net denoiser" if temporal else "U-Net denoiser",
+-        "denoiser_desc": (
+-            f"The network applied at every step: a {n}-stage convolutional U-net "
+-            "(down → mid → up with skip connections) that takes the latent z_t "
+-            "(+ timestep + text conditioning) and predicts the noise. Each down "
+-            "stage halves the spatial resolution"
+-            + (f" (the latent is {unet['downscale']}× downscaled at the bottleneck)"
+-               if unet.get("downscale") else "")
+-            + " and each up stage doubles it back; the timestep modulates every "
+-            "ResNet"
+-            + (f", and text conditioning (dim {unet['cross_attention_dim']}) enters "
+-               "the cross-attention stages" if unet.get("cross_attention_dim") else "")
+-            + temporal_desc
+-            + ". Click to open its architecture."
+-        ),
+-        "denoiser_children": unet_denoiser_children(unet, text_encoder_specs),
+-        **scheduler_geom,
+-    }
+-
+-
+-def _stage_facts(st: dict) -> list[str]:
+-    """Numbers as card chips (never on the box): channels, ResNet count, cross-
+-    attention depth, and the 2× resample."""
+-    facts: list[str] = []
+-    for comp in (st.get("components") or []):
+-        kind = comp.get("kind")
+-        if kind == "channels":
+-            facts.append(f"{int(comp['value']):,} ch")
+-        elif kind == "resnet_stack":
+-            facts.append(f"{int(comp.get('count') or 1)}× ResNet")
+-        elif kind == "cross_attention":
+-            # ``count`` is the Transformer2D DEPTH (transformer_layers_per_block),
+-            # not the number of transformer blocks \u2014 so label it as depth.
+-            c = int(comp.get("count") or 1)
+-            facts.append(f"{c}-layer Transformer" if c > 1 else "Transformer")
+-        elif kind == "downsample":
+-            facts.append("downsample 2×")
+-        elif kind == "upsample":
+-            facts.append("upsample 2×")
+-    return facts
+-
+-
+-def _stage_cell_phrase(st: dict, t, kv_word: str) -> str:
+-    """The attention-cell phrase for a stage description, honest per cell kind (F2).
+-    ``attn_kind`` is DERIVED in the parser from the resolved block class's
+-    construction (never a class-name bucket); ``None`` => honest-unknown."""
+-    k = st.get("attn_kind")
+-    if k == "simple_cross":
+-        return (f"{kv_word} cross-attention (SimpleCrossAttn — a plain "
+-                "cross-attention, no Transformer2D)")
+-    if k == "code_defined":
+-        parts = [p for p in ("self" if st.get("has_self") else "",
+-                             "cross" if st.get("has_cross") else "") if p]
+-        return f"code-defined {' + '.join(parts)} attention (read from the model code, no Transformer2D)"
+-    if k == "transformer2d":
+-        return f"{t}-layer {kv_word} cross-attention Transformer2D"
+-    return (f"{kv_word} cross-attention (block structure not resolved from source)")
+-
+-
+-def _stage_detail(st: dict, direction) -> dict:
+-    """The facts the stage drill-down (``unet_stage`` view) reads."""
+-    return {"channels": st.get("channels"), "resnets": st.get("resnets"),
+-            "attn": st.get("attn"), "transformers": st.get("transformers"),
+-            "direction": direction, "sample": st.get("sample"),
+-            "attn_kind": st.get("attn_kind")}
+-
+-
+-def _unet_resnet_ops(act_label: str, act_note: str = "",
+-                     temporal: bool = False) -> list[dict]:
+-    """Cards for the ResNet residual cell.
+-
+-    The real ResnetBlock2D.forward() is:
+-      norm1 + act → conv1 → (⊕ timestep emb) → norm2 + act → conv2 → (input ⊕ hidden)
+-    The residual bypass goes around the ENTIRE cell (from the block's raw input), not
+-    from norm1's output.  The timestep injection sits between conv1 and norm2.
+-    ``act_label``/``act_note`` come from the config's ``act_fn`` (a constructor
+-    record) with its provenance — the old hardcoded "SiLU" strings asserted the
+-    class default as if it were read.
+-
+-    ``temporal`` (F3): a SpatioTemporalResBlock runs the spatial ResnetBlock2D
+-    above THEN a temporal 1-D-conv branch, then blends them with an AlphaBlender —
+-    the temporal ops a flat 2D drawing erases."""
+-    norm_desc = (f"Group normalization then a {act_label} activation, applied before "
+-                 "each convolution so the conv sees a well-scaled signal. GroupNorm "
+-                 f"is fixed in the ResnetBlock2D class; the activation is {act_note}.")
+-    conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with its "
+-                 f"spatial neighbours — the cell runs GroupNorm+{act_label} → Conv 3×3 twice.")
+-    ops = [
+-        {"id": "unet_op_norm1", "title": f"GroupNorm + {act_label}", "description": norm_desc},
+-        {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
+-        {"id": "unet_op_temb", "title": "⊕ Timestep embedding",
+-         "description": ("The linear-projected timestep embedding is added here "
+-                         f"(ResnetBlock2D: hidden_states = hidden_states + "
+-                         f"time_emb_proj({act_label}(temb))). "
+-                         "This is the mechanism by which a UNet ResNet receives the current noise "
+-                         "level — distinct from DiT/AdaLN, which gates normalization parameters. "
+-                         "The projection adjusts the channel width to match the residual branch.")},
+-        {"id": "unet_op_norm2", "title": f"GroupNorm + {act_label}", "description": norm_desc},
+-        {"id": "unet_op_conv2", "title": "Conv 3×3", "description": conv_desc},
+-        {"id": "unet_op_residual", "title": "Residual add",
+-         "description": ("Adds the block's raw input back onto the convolved output — "
+-                         "(input_tensor + hidden_states) / output_scale_factor. The bypass "
+-                         f"goes around the entire cell: norm1, {act_label}, conv1, "
+-                         f"timestep injection, norm2, {act_label}, conv2. When "
+-                         "in/out channels differ a 1×1 conv adjusts "
+-                         "the shortcut (conv_shortcut).")},
+-    ]
+-    if temporal:
+-        ops += [
+-            {"id": "unet_op_temporal", "title": "Temporal conv (over frames)",
+-             "description": ("A TemporalResnetBlock: a 1-D convolution along the FRAMES "
+-                             f"axis (GroupNorm → {act_label} → Conv3d over time). "
+-                             "It mixes each "
+-                             "spatial position's features across the video's frames — the "
+-                             "temporal half of the SpatioTemporalResBlock, absent from any "
+-                             "image U-net.")},
+-            {"id": "unet_op_alphablend", "title": "AlphaBlender (time mix)",
+-             "description": ("Learnedly blends the spatial and temporal branches: "
+-                             "x = α·x_spatial + (1−α)·x_temporal (AlphaBlender). α is a "
+-                             "learned mix factor — the mechanism that makes the frames "
+-                             "coherent instead of each denoised independently.")},
+-        ]
+-    return ops
+-
+-
+-def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
+-                                ffn_act: str | None = None,
+-                                kv_label: str | None = None,
+-                                temporal: bool = False) -> list[dict]:
+-    """The three sub-blocks of a Transformer2D layer — each REUSES the canonical
+-    attention / feed-forward opener (the same view a transformer attention/FFN
+-    block opens), instead of a bespoke leaf.  Block ids are scoped by ``prefix``
+-    (the stage id) so a stage's heads/width survive the per-depth card dedup; the
+-    canonical attention opener stays shared.  Until U10 proves the exact UNet
+-    attention storage and score path, its internal projection/score details
+-    remain unresolved rather than being supplied by this view factory.
+-
+-    ``kv_label`` (F1) is the resolved cross-attention K/V modality label — text
+-    ("Encoded text") for SD/SDXL, image ("Image embeds") for image_proj decoders
+-    (Kandinsky-2.2).  A text/None label keeps the exact prior text wording."""
+-    nh, hd, ch = st.get("num_heads"), st.get("head_dim"), st.get("channels")
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_name = "Encoded text" if kv_text else str(kv_label)
+-    kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
+-    kv_from = "text" if kv_text else str(kv_label)
+-    # ``attn_kind == transformer2d`` proves the enclosing cell and its
+-    # self/cross placement.  It does not prove the inner attention mechanism,
+-    # head sharing, projection storage, or score path.  U10 owns that reader.
+-    self_spec = AttentionSpec(
+-        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full")
+-    # Cross-attention pulls K/V from the resolved conditioning source (encoded
+-    # text for SD/SDXL, image embeds for image_proj decoders), not the latent —
+-    # give it a real cross spec so its drilled view shows those states entering.
+-    cross_spec = AttentionSpec(
+-        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full",
+-        cross_attention=True, cross_kv_source=kv_source)
+-    # FFN inner shape: ANCHORED code evidence when available (the block class
+-    # the config's block-type strings name — SDXL proves geglu), else the
+-    # honest-undeclared card.  Never a hardcoded assertion, never an
+-    # import-closure vote (it proves the wrong family's activation).
+-    if ffn_act:
+-        ff_spec = FFNSpec(kind="dense", activation=ffn_act,
+-                          activation_from_class=True,
+-                          intermediate_size=None,
+-                          gated="glu" in ffn_act)
+-    else:
+-        ff_spec = FFNSpec(
+-            kind=None, activation=None, intermediate_size=None, gated=None)
+-    hidden = ch or 0
+-    # Each inner op (Q/K/V proj, scaled scores, softmax, apply-V, concat, output
+-    # proj) is ATOMIC — it gets a description card, not a further view. Supplying
+-    # them as children also makes the attention view's ops clickable (the view
+-    # renders ops as drill targets only when the block declares child cards).
+-    # Self- and cross-attention share these canonical SDPA op cards (same op ids):
+-    # source-NEUTRAL wording (generic=True) keeps the shared card correct for both;
+-    # the K/V-source difference is carried by cross-attention's own source node.
+-    self_children = attention_child_blocks(self_spec, hidden, generic=True)
+-    # Cross-attention adds ONLY its distinguishing node — the K/V source — and
+-    # reuses the shared SDPA op cards above by matching op ids.
+-    if kv_text:
+-        cross_children = [{
+-            "id": "cross_attention_states",
+-            "title": "Encoded text (K/V)",
+-            "description": (
+-                "The encoded prompt supplies the keys and values here — the latent "
+-                "tokens are the queries, this external text sequence is the K/V, which "
+-                "is what makes it cross-attention"
+-                + (f". The text encoders' features are concatenated to {cross_dim}-d "
+-                   "(see the 'Encoded text' source in the denoiser view for that "
+-                   "concatenation)" if cross_dim else "")
+-                + "."),
+-            "facts": [f"K/V from text ({cross_dim:,})"] if cross_dim else None,
+-        }]
+-    else:
+-        cross_children = [{
+-            "id": "cross_attention_states",
+-            "title": f"{kv_name} (K/V)",
+-            "description": (
+-                f"The {kv_from} supplies the keys and values here — the latent "
+-                f"tokens are the queries, this external {kv_from} sequence is the K/V, "
+-                "which is what makes it cross-attention"
+-                + (f". See the '{kv_name}' source in the denoiser view for where it "
+-                   "enters" if cross_dim else "")
+-                + "."),
+-            "facts": [f"K/V ({cross_dim:,})"] if cross_dim else None,
+-        }]
+-    cross_title = "Cross-attention (text)" if kv_text else f"Cross-attention ({kv_from})"
+-    cross_desc = ("Cross-attention: queries from the latent tokens, keys/values from "
+-                  + ("the encoded text prompt" if kv_text else f"the {kv_from}")
+-                  + (f" (dim {cross_dim})" if cross_dim else "")
+-                  + (" — where text conditioning enters the U-net. Click to see "
+-                     "the text states feeding K/V." if kv_text else
+-                     f" — where {kv_from} conditioning enters the U-net. Click to see "
+-                     "the states feeding K/V."))
+-    return [
+-        {"id": f"{prefix}__selfattn", "title": "Self-attention",
+-         "description": "Full bidirectional self-attention over the spatial latent tokens "
+-                        "at this resolution. Click to open its Q/K/V structure.",
+-         "view": "attention", "detail": {"attention": attention_detail(self_spec)},
+-         "children": self_children},
+-        {"id": f"{prefix}__crossattn", "title": cross_title,
+-         "description": cross_desc,
+-         "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
+-         "children": cross_children},
+-        {"id": f"{prefix}__ff", "title": "Feed-forward",
+-         "description": ((f"Position-wise {ffn_act.upper() if 'glu' in ffn_act else ffn_act} "
+-                          "feed-forward sublayer, applied after attention. Its "
+-                          "structure is read from the block class the config's "
+-                          "block types name, not from a config field.")
+-                         if ffn_act else
+-                         ("Position-wise feed-forward sublayer, applied after "
+-                          "attention. The config does not declare its inner "
+-                          "structure (gate/activation live in the model code).")),
+-         "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)},
+-         # generic (dim-neutral) op cards, shared across stages — clickable Linear/act/×.
+-         "children": ffn_child_blocks(ff_spec, hidden, generic=True)},
+-    ] + ([
+-        {"id": f"{prefix}__temporal_tf", "title": "Temporal transformer",
+-         "description": ("A temporal transformer sublayer (TransformerSpatioTemporalModel): "
+-                         "self-attention along the FRAMES axis so each spatial position "
+-                         "attends across time. Absent from any image U-net.")},
+-        {"id": f"{prefix}__temporal_blend", "title": "AlphaBlender (time mix)",
+-         "description": ("Learnedly blends the spatial-transformer and temporal-transformer "
+-                         "outputs: x = α·x_spatial + (1−α)·x_temporal. The learned α is what "
+-                         "makes the generated frames coherent.")},
+-    ] if temporal else [])
+-
+-
+-def _simple_cross_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) -> dict:
+-    """One SimpleCrossAttn* attention card (F2), scoped by stage id.  This block
+-    applies a PLAIN cross-``Attention`` — NO Transformer2D wrapper, NO
+-    self-attention sublayer, NO feed-forward — so it must NOT be drawn as SD/SDXL's
+-    self->cross->GEGLU Transformer2D (the fabrication for Kandinsky/DeepFloyd)."""
+-    nh, hd = st.get("num_heads"), st.get("head_dim")
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_from = "text" if kv_text else str(kv_label)
+-    kv_name = "Encoded text" if kv_text else str(kv_label)
+-    kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
+-    cross_spec = AttentionSpec(
+-        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full",
+-        cross_attention=True, cross_kv_source=kv_source)
+-    return {
+-        "id": f"{sid}__crossattn", "title": "Cross-attention",
+-        "description": (
+-            f"A plain cross-attention block (SimpleCrossAttn*): the latent tokens "
+-            f"are the queries, the {kv_from} supplies the keys/values"
+-            + (f" (dim {cross_dim})" if cross_dim else "")
+-            + ". Unlike SD/SDXL's CrossAttn blocks there is NO Transformer2D "
+-            "wrapper, NO self-attention sublayer and NO feed-forward — just the "
+-            "ResNet cell and this cross-attention. Its inner attention mechanism "
+-            "remains unresolved until the exact Attention implementation is read."),
+-        "facts": [f for f in (f"{nh} heads" if nh else "",
+-                              f"K/V ({cross_dim:,})" if cross_dim else "") if f] or None,
+-        "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
+-        "children": [{
+-            "id": "cross_attention_states",
+-            "title": f"{kv_name} (K/V)",
+-            "description": (
+-                f"The {kv_from} supplies the keys and values here — the latent "
+-                f"tokens are the queries, this external {kv_from} sequence is the "
+-                "K/V. A plain cross-attention, not wrapped in a Transformer2D."),
+-            "facts": [f"K/V ({cross_dim:,})"] if cross_dim else None,
+-        }],
+-    }
+-
+-
+-def _unknown_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) -> dict:
+-    """Honest-unknown attention cell (F2): the stage carries attention (its block
+-    type name says so) but the block CLASS could not be resolved from source, so
+-    the internal structure is UNRESOLVED — draw a cross-attention leaf with an
+-    explicit note, never a fabricated Transformer2D/GEGLU."""
+-    nh, hd = st.get("num_heads"), st.get("head_dim")
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_from = "text" if kv_text else str(kv_label)
+-    kv_name = "Encoded text" if kv_text else str(kv_label)
+-    kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
+-    cross_spec = AttentionSpec(
+-        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+-        mask="full", cross_attention=True, cross_kv_source=kv_source)
+-    return {
+-        "id": f"{sid}__crossattn", "title": "Cross-attention",
+-        "description": (
+-            f"This stage cross-attends to the {kv_from}, but the block class's "
+-            "internal cell (whether a Transformer2D with self-attention + "
+-            "feed-forward, or a plain cross-attention) could NOT be resolved from "
+-            "the model source — shown honestly as unresolved rather than assumed."),
+-        "facts": [f for f in (f"{nh} heads" if nh else "", "structure unresolved") if f],
+-        "resolved": False,
+-        "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
+-        "children": [{"id": "cross_attention_states", "title": f"{kv_name} (K/V)",
+-                      "description": f"The {kv_from} supplies the keys/values.",
+-                      "facts": [f"K/V ({cross_dim:,})"] if cross_dim else None}],
+-    }
+-
+-
+-def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) -> dict:
+-    """One code-PLACED attention card (F2), for a conv-U whose per-level attention
+-    placement was READ from the class source (``add_cross_attention`` /
+-    ``add_self_attention``).  Two evidence tiers, kept SEPARATE:
+-      * PLACEMENT (self and/or cross present at this level) — code-proven, drawn;
+-      * the block's INTERNAL cell (its feed-forward kind, norm conditioning) — NOT
+-        resolved here, so stated honestly as code-defined-unresolved, never
+-        asserted as GEGLU or as a conv FFN."""
+-    nh, hd = st.get("num_heads"), st.get("head_dim")
+-    has_self, has_cross = bool(st.get("has_self")), bool(st.get("has_cross"))
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_from = "text" if kv_text else str(kv_label)
+-    kv_name = "Encoded text" if kv_text else str(kv_label)
+-    kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
+-    title = ("Self + cross attention" if has_self and has_cross
+-             else "Cross-attention" if has_cross else "Self-attention")
+-    children: list[dict] = []
+-    if has_self:
+-        self_spec = AttentionSpec(
+-            kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+-            mask="full")
+-        children.append({
+-            "id": f"{sid}__code_self", "title": "Self-attention",
+-            "description": ("Self-attention over the spatial latent tokens at this "
+-                            "resolution (this level's self-attention is code-proven "
+-                            "from add_self_attention)."),
+-            "view": "attention", "detail": {"attention": attention_detail(self_spec)}})
+-    if has_cross:
+-        cross_spec = AttentionSpec(
+-            kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+-            mask="full", cross_attention=True, cross_kv_source=kv_source)
+-        children.append({
+-            "id": f"{sid}__code_cross", "title": f"Cross-attention ({kv_from})",
+-            "description": (f"Cross-attention: queries from the latent tokens, keys/values "
+-                            f"from the {kv_from} (code-proven from add_cross_attention)."),
+-            "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
+-            "children": [{"id": "cross_attention_states", "title": f"{kv_name} (K/V)",
+-                          "description": f"The {kv_from} supplies the keys/values.",
+-                          "facts": [f"K/V ({cross_dim:,})"] if cross_dim else None}]})
+-    children.append({
+-        "id": f"{sid}__code_ff", "title": "Feed-forward (unresolved)",
+-        "resolved": False,
+-        "description": ("This attention block also carries a feed-forward, but its "
+-                        "inner structure (activation/gating/norm conditioning) was "
+-                        "NOT resolved from source — shown honestly as unresolved "
+-                        "rather than assumed to be an SD Transformer2D's GEGLU.")})
+-    return {
+-        "id": f"{sid}__crossattn", "title": title,
+-        "resolved": False,
+-        "description": (
+-            "A code-PLACED attention block: "
+-            + (" + ".join([s for s in ("self-attention" if has_self else "",
+-                                       "cross-attention" if has_cross else "") if s]))
+-            + " — the per-level presence is code-proven from the model's "
+-            "add_cross_attention / add_self_attention (not the config). Its internal "
+-            "cell (feed-forward kind, norm conditioning) is code-defined and NOT "
+-            "resolved here — it is NOT drawn as an SD Transformer2D."),
+-        "facts": [f for f in (f"{nh} heads" if nh else "",
+-                              "self+cross" if has_self and has_cross else
+-                              "cross" if has_cross else "self",
+-                              "cell unresolved") if f] or None,
+-        "children": children,
+-    }
+-
+-
+-def _resnet_card(
+-    sid: str,
+-    st: dict,
+-    rn_label: str = "",
+-    *,
+-    act_label: str,
+-    act_note: str,
+-    temporal: bool = False,
+-) -> dict:
+-    """One ResNet block card, scoped by stage id.  Both the description and children
+-    now name the timestep injection (the ⊕ between conv1 and norm2).  ``temporal``
+-    (F3) adds the SpatioTemporalResBlock's temporal branch + AlphaBlender."""
+-    temporal_note = (" Then a TEMPORAL branch (1-D conv over frames) is blended in "
+-                     "via an AlphaBlender — this is a SpatioTemporalResBlock."
+-                     if temporal else "")
+-    return {
+-        "id": f"{sid}__resnet", "title": "ResNet block" if not temporal else "Spatio-temporal ResNet",
+-        "description": (f"GroupNorm+{act_label} → Conv 3×3 → ⊕ timestep emb → "
+-                        f"GroupNorm+{act_label} → Conv 3×3 "
+-                        "→ residual add (identity shortcut, or 1×1 conv when channels change). "
+-                        "The timestep embedding is projected and added after the first conv, "
+-                        "injecting the current noise level into the residual branch."
+-                        + temporal_note
+-                        + (f" {rn_label} per stage (layers_per_block)." if rn_label else "")),
+-        "view": "unet_resnet",
+-        "detail": {"channels": st.get("channels"), "temporal": temporal},
+-        "children": _unet_resnet_ops(act_label, act_note, temporal=temporal),
+-    }
+-
+-
+-def _transformer_card(sid: str, st: dict, t, cross_dim, ffn_act: str | None = None,
+-                      kv_label: str | None = None, temporal: bool = False) -> dict:
+-    """One Transformer2D block card, scoped by stage id.  ``temporal`` (F3) makes it
+-    a TransformerSpatioTemporalModel: the spatial transformer plus a temporal
+-    transformer blended by an AlphaBlender."""
+-    nh = st.get("num_heads")
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_from = "text" if kv_text else str(kv_label)
+-    temporal_note = (" Then a TEMPORAL transformer (attention across frames) is "
+-                     "blended in via an AlphaBlender — this is a "
+-                     "TransformerSpatioTemporalModel." if temporal else "")
+-    return {
+-        "id": f"{sid}__transformer",
+-        "title": "Spatio-temporal Transformer" if temporal else "Transformer block",
+-        "description": (f"A Transformer2D block — {t} layer(s), each running self-attention "
+-                        f"→ {kv_from} cross-attention → feed-forward. Where "
+-                        f"{kv_from} conditioning enters." + temporal_note),
+-        "facts": [f for f in (f"{t}× layers" if t else "", f"{nh} heads" if nh else "") if f]
+-                 or None,
+-        "view": "unet_transformer",
+-        "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
+-                   "channels": st.get("channels"), "cross_dim": cross_dim, "prefix": sid,
+-                   "temporal": temporal},
+-        "children": _unet_transformer_subblocks(st, cross_dim, sid, ffn_act=ffn_act,
+-                                                kv_label=kv_label, temporal=temporal),
+-    }
+-
+-
+-def _unet_stage_children(
+-    st: dict,
+-    direction,
+-    cross_dim,
+-    *,
+-    act_label: str,
+-    act_note: str,
+-    ffn_act: str | None = None,
+-    kv_label: str | None = None,
+-    temporal: bool = False,
+-) -> list[dict]:
+-    """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
+-    for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
+-    plus the resample.  Real nested blocks — not a flat op list.
+-
+-    Block ids are SCOPED by the stage id (``unet_down_1__resnet``): the same block
+-    type recurs in every stage at different widths/heads, and the panel model
+-    dedups cards by id — without scoping, all stages would collapse to the first
+-    stage's card (e.g. every ResNet drill showing 320 ch).  Channel-agnostic leaf
+-    ops (GroupNorm/Conv descriptions) stay shared.
+-
+-    Mid block special case: UNetMidBlock2DCrossAttn forward is
+-    ``resnets[0] → attn[0] → resnets[1]`` — a ResNet sandwich around the Transformer,
+-    NOT a paired loop.  direction=None signals this; the children reflect the actual
+-    sequential order with distinct pre/post resnet ids."""
+-    sid = st.get("id") or "unet_stage"
+-    rn, t = st.get("resnets"), st.get("transformers")
+-    # F3: temporal is per-STAGE (derived from the stage block class), not a
+-    # root-level stamp on every stage.
+-    # Root video geometry proves a frames axis, not the internals of every stage.
+-    # Only a positive per-stage source witness may add temporal conv/attention/
+-    # blending operations. Unknown stages remain structurally opaque/2-D-neutral.
+-    temporal = st.get("temporal") is True
+-    attn_kind = st.get("attn_kind")
+-    simple = attn_kind == "simple_cross"
+-    code_def = attn_kind == "code_defined"
+-    tf2d = attn_kind == "transformer2d"
+-    # The attention cell is DERIVED from the resolved block class's construction
+-    # (parser): a code-read self/cross cell (Kandinsky), a plain cross-Attention
+-    # (SimpleCrossAttn*), the SD/SDXL Transformer2D, or honest-unknown when the
+-    # block class/source is unresolvable — NEVER a class-name guess.
+-    attn_card = (_code_attn_card(sid, st, cross_dim, kv_label) if code_def
+-                 else _simple_cross_card(sid, st, cross_dim, kv_label) if simple
+-                 else _transformer_card(sid, st, t, cross_dim, ffn_act=ffn_act,
+-                                        kv_label=kv_label, temporal=temporal) if tf2d
+-                 else _unknown_attn_card(sid, st, cross_dim, kv_label))
+-    cell_name = ("attention block" if code_def else "cross-attention" if simple
+-                 else "Transformer2D" if tf2d else "attention block")
+-
+-    if direction is None and st.get("attn"):
+-        # Mid block: ResNet₀ → [attn] → ResNet₁  (UNetMidBlock2D*.forward)
+-        return [
+-            {**_resnet_card(sid, st, act_label=act_label, act_note=act_note, temporal=temporal),
+-             "id": f"{sid}__resnet_pre",
+-             "title": "ResNet block (pre)",
+-             "description": (f"First ResNet of the bottleneck sandwich: runs before the "
+-                             f"{cell_name}. GroupNorm+{act_label} → Conv 3×3 → ⊕ timestep emb "
+-                             f"→ GroupNorm+{act_label} → Conv 3×3 → residual add.")},
+-            attn_card,
+-            {**_resnet_card(sid, st, act_label=act_label, act_note=act_note, temporal=temporal),
+-             "id": f"{sid}__resnet_post",
+-             "title": "ResNet block (post)",
+-             "description": (f"Second ResNet of the bottleneck sandwich: runs after the "
+-                             f"{cell_name}. Same cell as the first — GroupNorm+{act_label} → "
+-                             f"Conv 3×3 → ⊕ timestep emb → GroupNorm+{act_label} → Conv 3×3 → "
+-                             "residual add.")},
+-        ]
+-
+-    children: list[dict] = [_resnet_card(sid, st, str(rn) if rn else "",
+-                                         act_label=act_label, act_note=act_note,
+-                                         temporal=temporal)]
+-    if st.get("attn"):
+-        children.append(attn_card)
+-    if st.get("sample"):
+-        if direction == "down":
+-            children.append({"id": f"{sid}__downsample", "title": "Downsample",
+-                             "description": "Halves spatial resolution with a stride-2 convolution."})
+-        else:
+-            children.append({"id": f"{sid}__upsample", "title": "Upsample",
+-                             "description": "Doubles spatial resolution by nearest-neighbour "
+-                                            "upsampling then a convolution."})
+-    return children
+-
+-
+-def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -> list[dict]:
+-    """One card per U-net node — conv_in, each down/mid/up stage, conv_out — so
+-    every clickable box in the U-shape resolves to a described card.  Numbers are
+-    chips here; the box shows only the stage name.  Each description names the
+-    config field it is read from (the block's code signature)."""
+-    boc = unet.get("block_out_channels") or []
+-    in_ch, out_ch = unet.get("in_channels"), unet.get("out_channels")
+-    down, up, mid = unet.get("down") or [], unet.get("up") or [], unet.get("mid") or {}
+-    # ResNet/conv activation from an owner-bound act_fn input.  Absence stays
+-    # unresolved; neither this adapter nor a renderer installs a class default.
+-    from ...labels import activation_label
+-    act_label = activation_label(unet.get("act_fn"))
+-    act_note = (
+-        "resolved through the denoiser's act_fn input"
+-        if unet.get("act_fn") is not None
+-        else "unresolved because no owner-bound act_fn evidence is available"
+-    )
+-    # F1: the cross-attention conditioning modality (text for SD/SDXL, image for
+-    # image_proj decoders) — drives the "text/image cross-attention" wording so an
+-    # image-conditioned decoder is never described as text-conditioned.
+-    kv_label = unet.get("kv_label")
+-    temporal = bool(unet.get("temporal"))       # F3: spatio-temporal (video) cells
+-    kv_text = kv_label is None or "text" in str(kv_label).lower()
+-    kv_word = "text" if kv_text else {
+-        "image": "image", "image_prompt": "image-prompt", "image_hint": "image",
+-    }.get(unet.get("kv_modality"), "cross")
+-    cards: list[dict] = [{
+-        "id": "unet_conv_in",
+-        "title": "Conv in",
+-        "description": (
+-            f"Input 3×3 convolution: lifts the {in_ch}-channel noisy latent to "
+-            f"{boc[0]} feature channels. Declared by in_channels / block_out_channels[0]."
+-            if in_ch and boc else "Input convolution into the U-net's feature width."),
+-        "facts": [f"{in_ch} → {boc[0]} ch"] if (in_ch and boc) else None,
+-    }]
+-    for st in down:
+-        ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
+-        cards.append({
+-            "id": st["id"], "title": "Down stage",
+-            "description": (
+-                f"Down-path resolution stage: {rn} residual (ResNet) block(s) at "
+-                f"{ch:,} channels"
+-                + (f", each followed by a {_stage_cell_phrase(st, t, kv_word)}" if attn else "")
+-                + (". Halves the spatial resolution into the next stage."
+-                   if st.get("sample") else ". The lowest down-path resolution.")
+-                + " Declared by down_block_types / block_out_channels / layers_per_block"
+-                + (" / transformer_layers_per_block." if attn else ".")),
+-            "facts": _stage_facts(st) or None,
+-            "view": "unet_stage", "detail": _stage_detail(st, "down"),
+-            "children": _unet_stage_children(
+-                                             st, "down", unet.get("cross_attention_dim"),
+-                                             act_label=act_label, act_note=act_note,
+-                                             ffn_act=unet.get("transformer_ffn_act"),
+-                                             kv_label=kv_label, temporal=temporal),
+-        })
+-    if mid:
+-        ch = mid.get("channels")
+-        # Provenance is honest: claim "mid_block_type" only when the config
+-        # actually declares it (F2 — the old string lied for Kandinsky-shape
+-        # configs that carry no mid_block_type).
+-        mid_prov = (" Declared by mid_block_type / transformer_layers_per_block."
+-                    if unet.get("declares_mid_block_type")
+-                    else " Constructed by the denoiser class (no mid_block_type in config).")
+-        cards.append({
+-            "id": "unet_mid", "title": "Mid stage",
+-            "description": (
+-                f"Bottleneck stage at the lowest resolution: {mid.get('resnets')} "
+-                f"ResNet block(s) at {ch:,} channels"
+-                + (f" with a {_stage_cell_phrase(mid, mid.get('transformers'), kv_word)} "
+-                   "between them" if mid.get("attn") else "")
+-                + "." + mid_prov
+-                if ch else "U-net bottleneck stage."),
+-            "facts": _stage_facts(mid) or None,
+-            "view": "unet_stage", "detail": _stage_detail(mid, None),
+-            "children": _unet_stage_children(
+-                                             mid, None, unet.get("cross_attention_dim"),
+-                                             act_label=act_label, act_note=act_note,
+-                                             ffn_act=unet.get("transformer_ffn_act"),
+-                                             kv_label=kv_label, temporal=temporal),
+-        })
+-    for st in up:
+-        ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
+-        cards.append({
+-            "id": st["id"], "title": "Up stage",
+-            "description": (
+-                f"Up-path resolution stage: concatenates the skip connection from "
+-                f"the matching down stage, then {rn} residual (ResNet) block(s) at "
+-                f"{ch:,} channels"
+-                + (f", each with a {_stage_cell_phrase(st, t, kv_word)}" if attn else "")
+-                + (". Doubles the spatial resolution." if st.get("sample") else ".")
+-                + " Declared by up_block_types / block_out_channels / layers_per_block"
+-                + (" / transformer_layers_per_block." if attn else ".")),
+-            "facts": _stage_facts(st) or None,
+-            "view": "unet_stage", "detail": _stage_detail(st, "up"),
+-            "children": _unet_stage_children(
+-                                             st, "up", unet.get("cross_attention_dim"),
+-                                             act_label=act_label, act_note=act_note,
+-                                             ffn_act=unet.get("transformer_ffn_act"),
+-                                             kv_label=kv_label, temporal=temporal),
+-        })
+-    cad = unet.get("cross_attention_dim")
+-    if cad and (any(s.get("attn") for s in down + up) or mid.get("attn")):
+-        # The per-encoder widths (when the loader fetched their configs) let the
+-        # drill view show HOW the encoders concatenate into the K/V width.
+-        encoders = [
+-            {"name": str(s.get("name") or "Text encoder").split(" (")[0],
+-             "hidden": s.get("hidden")}
+-            for s in (text_encoder_specs or [])
+-        ]
+-        n_enc = len(encoders)
+-        sum_note = ""
+-        widths = [e["hidden"] for e in encoders if e.get("hidden")]
+-        if len(widths) >= 2 and sum(widths) == cad:
+-            sum_note = " (" + " + ".join(f"{w:,}" for w in widths) + f" = {cad:,})"
+-        ehid = unet.get("encoder_hid") or None
+-        proj_note = (
+-            f", projected to that width from the encoder's "
+-            f"{ehid['dim']:,}-d features first" if ehid else "")
+-        if kv_text:
+-            cond_title = "Text conditioning"
+-            cond_desc = (
+-                "The encoded text prompt supplies the keys/values to EVERY "
+-                "cross-attention stage — the down, mid and up CrossAttn blocks all "
+-                f"read the same {cad}-d text states"
+-                + (f", the {n_enc} text encoders' token features concatenated along "
+-                   f"the feature axis{sum_note}" if n_enc >= 2
+-                   else (proj_note or
+-                         " (in SDXL, the two CLIP encoders' features concatenated)"))
+-                + ". The latent flows through the U vertically; this conditioning "
+-                "enters each cross-attention stage from the side. Click to see how "
+-                "the encoders combine. Declared by cross_attention_dim + the "
+-                "CrossAttn* block types.")
+-        else:
+-            cond_title = ("Image conditioning" if kv_word.startswith("image")
+-                          else "External conditioning")
+-            cond_desc = (
+-                f"The {kv_word} embedding supplies the keys/values to EVERY "
+-                "cross-attention stage — the down, mid and up CrossAttn blocks all "
+-                f"read the same {cad}-d {kv_word} states"
+-                + (proj_note or "")
+-                + ". The latent flows through the U vertically; this conditioning "
+-                "enters each cross-attention stage from the side. Declared by "
+-                "encoder_hid_dim_type + cross_attention_dim.")
+-        card = {
+-            "id": "unet_text_cond",
+-            "title": cond_title,
+-            "description": cond_desc,
+-            "facts": [f"K/V dim {cad:,}"],
+-        }
+-        if encoders:
+-            card["view"] = "encoded_text_concat"
+-            card["detail"] = {"encoders": encoders, "cross_attention_dim": cad}
+-            if ehid:
+-                card["detail"]["projection"] = {**ehid, "out": cad}
+-        children: list[dict] = []
+-        if ehid and encoders:
+-            # the clickable projection box in the concat view drills into this
+-            is_linear = ehid["type"] == "text_proj"
+-            children.append({
+-                "id": "text_proj_op",
+-                "title": "Text projection" if is_linear else "Encoder projection",
+-                "description": (
+-                    (f"A learned Linear maps the encoder's {ehid['dim']:,}-d token "
+-                     f"features to the {cad:,}-d cross-attention width before any "
+-                     "stage reads them — the encoder and the U-net were built at "
+-                     "different widths, and this single matrix is the bridge"
+-                     if is_linear else
+-                     f"A code-defined projection ({ehid['type']}) maps the "
+-                     f"encoder's {ehid['dim']:,}-d features to the {cad:,}-d "
+-                     "cross-attention width before any stage reads them")
+-                    + ". Applied once to the encoded prompt, not per stage. "
+-                    "Declared by encoder_hid_dim + encoder_hid_dim_type."),
+-                "facts": [f"{ehid['dim']:,} → {cad:,}"],
+-            })
+-        if len(encoders) >= 2:
+-            # the clickable ‖ in the concat view drills into this card
+-            children.append({
+-                "id": "text_concat_op",
+-                "title": "Concatenate (feature axis)",
+-                "description": (
+-                    "The encoders' per-token features are joined along the feature "
+-                    "(channel) axis — stacked side by side into wider tokens, with "
+-                    "no projection, no mixing and no added parameters"
+-                    + (f". Here {' + '.join(f'{w:,}' for w in widths)} = {cad:,}"
+-                       if len(widths) >= 2 and sum(widths) == cad
+-                       else f", giving the {cad:,}-d conditioning")
+-                    + ". That combined tensor is the keys/values every "
+-                    "cross-attention stage reads. It is the same operation "
+-                    "(torch.cat over the feature axis) as the U-net's skip "
+-                    "connections — which is why both use the ‖ connector, not ⊕."),
+-                "facts": [f"→ {cad:,}-d K/V"],
+-            })
+-        if children:
+-            card["children"] = children
+-        cards.append(card)
+-    cards.append({
+-        "id": "unet_conv_out",
+-        "title": "Conv out",
+-        "description": (
+-            f"Output GroupNorm + {act_label} + 3×3 convolution: normalises (conv_norm_out, GroupNorm "
+-            f"over {boc[0] if boc else '?'} channels), activates (conv_act, {act_label} — {act_note}), then projects "
+-            f"back to {out_ch} channels — the predicted noise (ε̂). "
+-            "Declared by out_channels / norm_num_groups."
+-            if out_ch else "Output normalisation and convolution to the predicted noise."),
+-        "facts": ([f"{boc[0]:,} → {out_ch} ch"] if (boc and out_ch) else
+-                  [f"→ {out_ch} ch"] if out_ch else None),
+-    })
+-    return cards
+-
+-
+-def unet_render_spec(geom: dict) -> dict:
+-    """Render spec for a UNet pipeline — reuses the sampling-loop hero; the
+-    denoiser node opens the UNet view (``denoiser_view = "unet"``)."""
+-    return {
+-        "family": "diffusion",
+-        "layout": "unet_pipeline",
+-        "theme": "teal",
+-        "denoiser_view": "unet",
+-        # The sampling loop is identical for a UNet and a DiT (only the denoiser
+-        # node's drill-down differs), so it reuses the SAME declared edges/region
+-        # — without these the hero loop would draw no arrows.
+-        "loop_blocks": diffusion_loop_blocks(geom),
+-        "loop_edges": diffusion_loop_edges(geom),
+-        "loop_region": diffusion_loop_region(),
+-    }
+diff --git a/model_unfolder/adapters/diffusor/unet_differential.py b/model_unfolder/adapters/diffusor/unet_differential.py
+deleted file mode 100644
+index 6cb987b6..00000000
+--- a/model_unfolder/adapters/diffusor/unet_differential.py
++++ /dev/null
+@@ -1,20 +0,0 @@
+-"""Temporary S8 comparison flag; never enabled by a product input/config."""
+-from contextlib import contextmanager
+-from contextvars import ContextVar
+-
+-
+-_legacy_comparison = ContextVar("unet_legacy_differential", default=False)
+-
+-
+-def legacy_comparison_enabled():
+-    return _legacy_comparison.get()
+-
+-
+-@contextmanager
+-def legacy_unet_comparison():
+-    """Verification-only old-path witness, scoped to the calling context."""
+-    token = _legacy_comparison.set(True)
+-    try:
+-        yield
+-    finally:
+-        _legacy_comparison.reset(token)
+diff --git a/model_unfolder/everchanging/__init__.py b/model_unfolder/everchanging/__init__.py
+index bc1acbbf..6b7f9dc4 100644
+--- a/model_unfolder/everchanging/__init__.py
++++ b/model_unfolder/everchanging/__init__.py
+@@ -197,17 +197,6 @@ def load_diffusion_text_encoders() -> dict[str, str]:
+     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
+ 
+ 
+-def load_unet_conditioning() -> dict[str, dict]:
+-    """U11-only UNet conditioning display vocabulary.
+-
+-    The U10 source projector never consumes this table; it remains quarantined
+-    behind the positively proven U-shaped compatibility handoff.
+-    """
+-    data = load("diffusor", "conditioning")
+-    return {
+-        "encoder_hid_dim_type": data.get("encoder_hid_dim_type") or {},
+-        "addition_embed_type": data.get("addition_embed_type") or {},
+-    }
+ 
+ 
+ # --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
+diff --git a/model_unfolder/everchanging/diffusor/conditioning.yaml b/model_unfolder/everchanging/diffusor/conditioning.yaml
+deleted file mode 100644
+index 54c1ba81..00000000
+--- a/model_unfolder/everchanging/diffusor/conditioning.yaml
++++ /dev/null
+@@ -1,68 +0,0 @@
+-# U11 compatibility-only UNet conditioning display vocabulary.
+-#
+-# This file is quarantined behind a positively source-proven U-shaped root. It
+-# is not used by the U10 denoiser projector and cannot select a DiT/MMDiT
+-# topology. U11 must replace these declared enum stories with component/code
+-# evidence or delete them; new structural rows are forbidden.
+-#
+-# A denoiser's conditioning story is DECLARED by two config enums on the UNet /
+-# denoiser: `encoder_hid_dim_type` (what the cross-attention keys/values are, and
+-# how they are projected before any stage reads them) and `addition_embed_type`
+-# (what extra vector is projected and ADDED to the timestep embedding).  The
+-# renderer must draw the modality the config declares — an image-conditioned
+-# decoder (Kandinsky-2.2: `image_proj`/`image`, no text encoder at all) must NOT
+-# be drawn as a text-conditioned model with a fabricated text-encoder tower.
+-#
+-# This file is the single map from each declared enum value to its human story,
+-# so a new dialect is supported by adding a row — no code change.  An UNMAPPED
+-# value falls to honest-unknown (pale "external conditioning"), never to text.
+-#
+-# Block style (`key:` then `field: value` rows) so the built-in loader works
+-# without PyYAML.
+-
+-# encoder_hid_dim_type -> the cross-attention K/V modality + projector.
+-#   modality  : text / image / text_image / image_prompt  (what enters K/V)
+-#   kv_label  : the label drawn on the external-K/V source box
+-#   projector : the encoder_hid_proj module diffusers builds for this type
+-#   text      : true when a text encoder is a real component of this story
+-encoder_hid_dim_type:
+-  text_proj:
+-    modality: text
+-    kv_label: Encoded text
+-    projector: Linear (text_proj)
+-    text: true
+-  text_image_proj:
+-    modality: text_image
+-    kv_label: Text + image embeds
+-    projector: TextImageProjection
+-    text: true
+-  image_proj:
+-    modality: image
+-    kv_label: Image embeds
+-    projector: ImageProjection
+-    text: false
+-  ip_image_proj:
+-    modality: image_prompt
+-    kv_label: Image-prompt embeds
+-    projector: IPAdapterFullImageProjection
+-    text: false
+-
+-# addition_embed_type -> the vector projected and ADDED to the timestep embedding.
+-#   modality  : text / image / text_image / image_hint / text_time
+-#   add_label : short human wording for the added-conditioning sentence
+-addition_embed_type:
+-  text:
+-    modality: text
+-    add_label: a pooled text vector
+-  text_image:
+-    modality: text_image
+-    add_label: a pooled text vector together with the image embedding
+-  text_time:
+-    modality: text_time
+-    add_label: the pooled text vector together with the size/crop/target ("time_ids") embeddings
+-  image:
+-    modality: image
+-    add_label: the image embedding (from the prior)
+-  image_hint:
+-    modality: image_hint
+-    add_label: the image embedding together with a structural hint map
+diff --git a/model_unfolder/evidence/legacy_reader_quarantine.py b/model_unfolder/evidence/legacy_reader_quarantine.py
+index b724993b..f671d0ee 100644
+--- a/model_unfolder/evidence/legacy_reader_quarantine.py
++++ b/model_unfolder/evidence/legacy_reader_quarantine.py
+@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U7", "U8", "U11"})
+ # model-source parse authority.  A future owning unit updates/shrinks these only
+ # in the same commit that deletes or migrates the old authority.
+ LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
+-    "7fb2348bdd23d66a087f2932fc6d504c135fe644cf2e231961d9ba0740cbbadd")
++    "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945")
+ LEGACY_PARSE_CALLER_FINGERPRINT = (
+-    "8e2aae516112895c20accde56062dfd7862712af46f0c5cbe47469793bcc4fe9")
++    "573bd61a2c20eb3b7ba4e40825435f3d7bd239c910616f8bd69ac4edcfac20bd")
+ 
+ 
+ @dataclass(frozen=True)
+@@ -96,33 +96,7 @@ def _row(symbol: str, unit: str, reason: str, *, module: str = "patterns.py",
+     )
+ 
+ 
+-LEGACY_SEMANTIC_READERS = (
+-    _row("unet_code_attention_placement_from_files", "U11",
+-         "UNet attention placement interpretation",
+-         callers=(
+-             "model_unfolder/adapters/diffusor/parser.py:_parse_unet_model",
+-         )),
+-    _row("unet_mid_block_present_from_files", "U11",
+-         "UNet mid-stage topology interpretation",
+-         callers=(
+-             "model_unfolder/adapters/diffusor/parser.py:_parse_unet_model",
+-         )),
+-    _row("unet_stage_attn_cell_from_files", "U11",
+-         "UNet stage attention-cell interpretation",
+-         callers=(
+-             "model_unfolder/adapters/diffusor/parser.py:_parse_unet_model",
+-         )),
+-    _row("unet_stage_temporal_from_files", "U11",
+-         "UNet temporal-cell interpretation",
+-         callers=(
+-             "model_unfolder/adapters/diffusor/parser.py:_parse_unet_model",
+-         )),
+-    _row("unet_transformer_ffn_activation_from_files", "U11",
+-         "UNet nested-transformer FFN interpretation",
+-         callers=(
+-             "model_unfolder/adapters/diffusor/parser.py:_parse_unet_model",
+-         )),
+-)
++LEGACY_SEMANTIC_READERS: tuple[LegacySemanticReader, ...] = ()
+ 
+ 
+ def _parse(path: str, symbol: str, category: str, unit: str = "",
+@@ -171,9 +145,6 @@ PARSE_AUTHORITY_SITES = (
+     _parse("model_unfolder/evidence/forward_ops.py", "_parse_file",
+            "legacy_model_source", "U14",
+            "parallel forward-op parser shared by legacy facts/conformance"),
+-    _parse("model_unfolder/evidence/patterns.py", "_parse_defs",
+-           "legacy_model_source", "U11",
+-           "UNet compatibility parser retained for U11"),
+     _parse("model_unfolder/evidence/transitive.py", "_parse_file",
+            "legacy_model_source", "U14",
+            "parallel callable/transitive parser shared by conformance"),
+diff --git a/model_unfolder/evidence/patterns.py b/model_unfolder/evidence/patterns.py
+index 2efd6518..b77bde5e 100644
+--- a/model_unfolder/evidence/patterns.py
++++ b/model_unfolder/evidence/patterns.py
+@@ -25,9 +25,7 @@ Detectors should attach the actual field/call names that triggered them as
+ from __future__ import annotations
+ 
+ import ast
+-import functools
+ from collections import defaultdict
+-from pathlib import Path
+ 
+ from .models import ClassEvidence, CodeEvidence, CodeFinding, SourceBundle
+ 
+@@ -408,284 +406,6 @@ def _overall_confidence(findings: list[CodeFinding], bundle: SourceBundle) -> fl
+     return round(sum(f.confidence for f in findings) / len(findings), 3)
+ 
+ 
+-@functools.lru_cache(maxsize=128)
+-def _parse_defs(files: tuple[str, ...]) -> dict[str, ast.ClassDef]:
+-    defs: dict[str, ast.ClassDef] = {}
+-    for path in files:
+-        try:
+-            tree = ast.parse(Path(path).read_text(encoding="utf-8"), filename=path)
+-        except (OSError, SyntaxError, UnicodeDecodeError):
+-            continue
+-        for node in ast.walk(tree):
+-            if isinstance(node, ast.ClassDef):
+-                defs.setdefault(node.name, node)
+-    return defs
+-
+-
+-def unet_transformer_ffn_activation_from_files(files, declared_block_types) -> str | None:
+-    """The UNet Transformer2D FFN's activation, ANCHORED — or None.
+-
+-    A Counter-vote across the import closure proves the WRONG family's
+-    activation (transformer_flux.py rides in via imports), so the read must be
+-    anchored to the blocks THIS config builds:
+-
+-    1. the config's ``down/up/mid_block_types`` strings NAME the block classes
+-       (identity-as-ADDRESS — the lawful single use: a constructor record
+-       locating source, exactly like ``architectures``);
+-    2. BFS the CONSTRUCTION edges (field_types + sub_module_classes) from
+-       those classes;
+-    3. among reachable classes, the BLOCK-shaped ones (an attention-role AND
+-       an ffn-role field) yield their FFN construction's ``activation_fn``
+-       kwarg — literal, param-default, or IfExp constants;
+-    4. unanimous → the activation (SDXL: BasicTransformerBlock's default
+-       ``geglu``); mixed or empty → None (honest-undeclared, never a vote)."""
+-    import ast as _ast
+-    from .transitive import build_registry
+-    from .forward_ops import _method, _role_of
+-    from .vision import _class_node
+-
+-    declared = [str(t) for t in (declared_block_types or ()) if t]
+-    if not declared or not files:
+-        return None
+-    registry = build_registry([str(f) for f in files])
+-    seen = {t for t in declared if t in registry}
+-    queue = list(seen)
+-    while queue:
+-        info = registry.get(queue.pop(0))
+-        if info is None:
+-            continue
+-        kids = set((info.field_types or {}).values())
+-        for elems in (info.sub_module_classes or {}).values():
+-            kids |= set(elems)
+-        for child in kids:
+-            if child in registry and child not in seen:
+-                seen.add(child)
+-                queue.append(child)
+-    verdicts: set[str] = set()
+-    for cls in sorted(seen):
+-        fields = (registry[cls].field_types or {}).values()
+-        if not (any(_role_of(x) == "attention" for x in fields)
+-                and any(_role_of(x) == "ffn" for x in fields)):
+-            continue
+-        node = _class_node(registry[cls].source_file, cls)
+-        init = _method(node, "__init__") if node else None
+-        if init is None:
+-            continue
+-        defaults = {a.arg: d.value for a, d in
+-                    zip(init.args.args[::-1], (init.args.defaults or [])[::-1])
+-                    if isinstance(d, _ast.Constant) and isinstance(d.value, str)}
+-        for n in _ast.walk(init):
+-            if not isinstance(n, _ast.Call):
+-                continue
+-            for kw in (n.keywords or []):
+-                if kw.arg != "activation_fn":
+-                    continue
+-                v = kw.value
+-                if isinstance(v, _ast.Constant) and isinstance(v.value, str):
+-                    verdicts.add(v.value.lower())
+-                elif isinstance(v, _ast.Name) and v.id in defaults:
+-                    verdicts.add(defaults[v.id].lower())
+-                elif isinstance(v, _ast.IfExp):
+-                    for sub in (v.body, v.orelse):
+-                        if isinstance(sub, _ast.Constant) and isinstance(sub.value, str):
+-                            verdicts.add(sub.value.lower())
+-    return next(iter(verdicts)) if len(verdicts) == 1 else None
+-
+-
+-def unet_stage_temporal_from_files(files, block_type) -> bool | None:
+-    """Does a UNet resolution-stage block process a TEMPORAL axis, DERIVED from the
+-    resolved block class's construction — never the class name (F3).
+-
+-    A spatio-temporal block (SVD ``*SpatioTemporal``) builds a ``SpatioTemporalResBlock``
+-    / ``TransformerSpatioTemporalModel`` whose construction reaches a ``Conv3d``
+-    (a 1-D conv over frames) and/or an ``AlphaBlender`` (the learned spatial/temporal
+-    mix) — structural invariants absent from any 2-D ``ResnetBlock2D``/``Transformer2D``.
+-    Returns ``True`` only from a positive construction witness. A traversal that
+-    does not encounter a marker is incomplete negative evidence and returns
+-    ``None``; callers must not turn that into a 2-D verdict."""
+-    from .transitive import build_registry
+-    bt = str(block_type or "")
+-    if not bt or not files:
+-        return None
+-    registry = build_registry([str(f) for f in files])
+-    if bt not in registry:
+-        return None
+-    seen = {bt}
+-    queue = [bt]
+-    temporal_markers = {"conv3d", "alphablender"}
+-    while queue:
+-        info = registry.get(queue.pop(0))
+-        if info is None:
+-            continue
+-        constructed = set((info.field_types or {}).values())
+-        for elems in (info.sub_module_classes or {}).values():
+-            constructed |= set(elems)
+-        if any(any(m in str(c).lower() for m in temporal_markers) for c in constructed):
+-            return True
+-        for child in constructed:
+-            if child in registry and child not in seen:
+-                seen.add(child)
+-                queue.append(child)
+-    return None
+-
+-
+-def unet_stage_attn_cell_from_files(files, block_type) -> str | None:
+-    """The attention CELL a UNet resolution-stage block constructs, DERIVED from the
+-    resolved block class's construction — never a class-name bucket.
+-
+-    The config's block-type string is used only as an ADDRESS to locate the class;
+-    the verdict comes from what the class BUILDS (same BFS rail as
+-    ``unet_transformer_ffn_activation_from_files``):
+-      * ``transformer2d`` — a reachable block-shaped class constructs BOTH an
+-        attention-role AND an ffn-role submodule (a Transformer2D wrapping
+-        self->cross->FFN: SD/SDXL ``CrossAttn*Block2D``);
+-      * ``None``          — the class/source is unresolvable (caller draws
+-        honest-unknown, never a class-name guess)."""
+-    from .transitive import build_registry
+-    from .forward_ops import _role_of
+-    bt = str(block_type or "")
+-    if not bt or not files:
+-        return None
+-    registry = build_registry([str(f) for f in files])
+-    if bt not in registry:
+-        return None
+-    seen = {bt}
+-    queue = [bt]
+-    while queue:
+-        info = registry.get(queue.pop(0))
+-        if info is None:
+-            continue
+-        kids = set((info.field_types or {}).values())
+-        for elems in (info.sub_module_classes or {}).values():
+-            kids |= set(elems)
+-        for child in kids:
+-            if child in registry and child not in seen:
+-                seen.add(child)
+-                queue.append(child)
+-    has_transformer_block = False
+-    for cls in seen:
+-        info = registry[cls]
+-        classes = list((info.field_types or {}).values())
+-        for elems in (info.sub_module_classes or {}).values():
+-            classes.extend(elems)
+-        roles = {_role_of(x) for x in classes}
+-        if "attention" in roles:
+-            if "ffn" in roles:
+-                has_transformer_block = True
+-    if has_transformer_block:
+-        return "transformer2d"
+-    # Attention-without-a-seen-FFN is not proof of a plain cross-attention cell:
+-    # the FFN may be constructed through a helper, inherited, or stored under a
+-    # role the traversal did not resolve. Keep the cell opaque until its exact
+-    # forward/closure is positively proven.
+-    return None
+-
+-
+-def unet_code_attention_placement_from_files(files, architecture) -> dict | None:
+-    """Per-level attention placement of a conv-U denoiser whose config declares NO
+-    block-type lists (Kandinsky3UNet), read from the class's own ``__init__``.
+-
+-    Kandinsky3UNet hardcodes ``add_cross_attention = (False, True, True, True)`` and
+-    ``add_self_attention = (...)`` — the per-level attention placement lives in the
+-    MODEL CODE, not the config, so a config-only parser draws no attention at all.
+-    Returns ``{"cross": [bool,...], "self": [bool,...]}`` from the tuple/list
+-    constants, or ``None`` when the class or fields are unreadable."""
+-    import ast as _ast
+-    from .forward_ops import _method
+-    from .vision import _class_node
+-    if not architecture:
+-        return None
+-    out: dict[str, list] = {}
+-    for path in (files or ()):
+-        node = _class_node(str(path), architecture)
+-        if node is None:
+-            continue
+-        init = _method(node, "__init__")
+-        if init is None:
+-            continue
+-        for child in _ast.walk(init):
+-            if not isinstance(child, _ast.Assign):
+-                continue
+-            for tgt in child.targets:
+-                name = getattr(tgt, "id", None)
+-                key = ("cross" if name == "add_cross_attention"
+-                       else "self" if name == "add_self_attention" else None)
+-                if key is None or not isinstance(child.value, (_ast.Tuple, _ast.List)):
+-                    continue
+-                vals = [bool(e.value) for e in child.value.elts
+-                        if isinstance(e, _ast.Constant) and isinstance(e.value, bool)]
+-                if vals:
+-                    out[key] = vals
+-        if out:
+-            return out
+-    return out or None
+-
+-
+-def unet_mid_block_present_from_files(files, architecture) -> bool | None:
+-    """Does the resolved conv-U denoiser class CONSTRUCT a mid (bottleneck) block?
+-
+-    ``UNet2DConditionModel`` builds ``self.mid_block``; ``Kandinsky3UNet`` builds
+-    NONE — its forward is ``conv_in -> down -> up -> conv_out`` with no bottleneck.
+-    So a fabricated mid stage (drawn today for every conv-U) is a false structure
+-    for the whole non-``UNet2DConditionModel`` family.  ``True``/``False`` read
+-    from the class's own ``__init__`` field construction; ``None`` when the class
+-    or source is unavailable (caller then falls to the config: a declared
+-    ``mid_block_type`` means a mid exists)."""
+-    import ast as _ast
+-    from .forward_ops import extract_forward_ops, _method
+-    from .vision import _class_node
+-    if not architecture:
+-        return None
+-    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+-    root = ops.get(architecture)
+-    if root is None:
+-        return None
+-    fields = set(root.field_types or {})
+-    fields |= set(root.module_list_elems or {})
+-    if not fields:
+-        return None
+-    if any("mid" in str(f).lower() for f in fields):
+-        return True
+-    # Absence in __init__ is not proof. A negative verdict additionally requires
+-    # the exact architecture's own forward to directly execute both down and up
+-    # paths while never calling a mid/bottleneck field. Helper-only forwards and
+-    # inherited forwards abstain because their call graph is incomplete here.
+-    for path in (files or ()):
+-        node = _class_node(str(path), architecture)
+-        forward = _method(node, "forward") if node is not None else None
+-        if forward is None:
+-            continue
+-        names: set[str] = set()
+-        # ModuleLists are normally invoked through ``for block in
+-        # self.down_blocks: block(...)``; the call target is then a local name,
+-        # so the exact owner is carried by the loop iterable rather than Call.
+-        for loop in (n for n in _ast.walk(forward)
+-                     if isinstance(n, (_ast.For, _ast.AsyncFor))):
+-            it = loop.iter
+-            if (isinstance(it, _ast.Call) and isinstance(it.func, _ast.Name)
+-                    and it.func.id in {"enumerate", "iter"} and it.args):
+-                it = it.args[0]
+-            if (isinstance(it, _ast.Attribute)
+-                    and isinstance(it.value, _ast.Name)
+-                    and it.value.id == "self"):
+-                names.add(it.attr.lower())
+-        for call in (n for n in _ast.walk(forward) if isinstance(n, _ast.Call)):
+-            func = call.func
+-            if isinstance(func, _ast.Attribute):
+-                names.add(func.attr.lower())
+-                value = func.value
+-                if (isinstance(value, _ast.Attribute)
+-                        and isinstance(value.value, _ast.Name)
+-                        and value.value.id == "self"):
+-                    names.add(value.attr.lower())
+-        has_down = any("down" in name for name in names)
+-        has_up = any("up" in name for name in names)
+-        has_mid = any("mid" in name or "bottleneck" in name for name in names)
+-        if has_down and has_up and not has_mid:
+-            return False
+-    return None
+-
+-
+ class _ConfigExprEvaluator:
+     """Evaluate a small __init__ expression against a config — the shared engine
+     for CODE-DERIVED constants the config omits but the source COMPUTES: ChatGLM's
+diff --git a/model_unfolder/evidence/structural_debt.py b/model_unfolder/evidence/structural_debt.py
+index fae3d108..aaf8f9d9 100644
+--- a/model_unfolder/evidence/structural_debt.py
++++ b/model_unfolder/evidence/structural_debt.py
+@@ -225,12 +225,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
+             module=_TA, symbol="decoder_extras",
+             consumer="model_unfolder/renderers/html/sections.py::"
+                      "_stats_banner"),
+-    _extras("render", "root",
+-            "UNet-side render-spec author (same PRESENTATION debt)",
+-            "U5", "no_writer:extras:render",
+-            module=_DP, symbol="_parse_unet_model",
+-            consumer="model_unfolder/renderers/html/sections.py::"
+-                     "_stats_banner"),
+     _extras("render", "root.denoiser",
+             "U10-F3 source-projected render DTO; presentation remains a raw "
+             "extras transport until the U14 renderer boundary is typed",
+@@ -254,21 +248,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
+             module=_MB, symbol="multimodal_extras", census="<dynamic>",
+             consumer="model_unfolder/evidence/conformance.py::"
+                      "_check_recursive_component_facts"),
+-    _extras("diffusion", "root",
+-            "UNet meta descriptor (channels/text-encoders/scheduler) as raw "
+-            "extras", "U11", "fact_registered:diffusion_meta",
+-            occurrence="unet config boc/in_channels/cross_attention_dim + "
+-                       "pipeline text_encoders/scheduler",
+-            module=_DP, symbol="_parse_unet_model",
+-            consumer="model_unfolder/renderers/html/sections.py::"
+-                     "_diffusion_stats"),
+-    _extras("unet", "root",
+-            "full UNet block-structure descriptor as raw extras",
+-            "U11", "fact_registered:unet_blocks",
+-            occurrence="UNet config geometry assembled by diffusor/unet.py",
+-            module=_DP, symbol="_parse_unet_model",
+-            consumer="model_unfolder/renderers/html/block_views/unet.py::"
+-                     "build_unet_view"),
+     # U8 retired the former position_kind/qk_norm drawn-leaf debts: the exact
+     # per-layer position_schedule and qk_norm_schedule facts now authorize the
+     # canonical layer-map projection and are receipted by that real consumer.
+@@ -886,10 +865,6 @@ _CONSUMER_DEBT_BASELINE = (
+     ('model_unfolder/renderers/html/block_views/modality_views/conditioning.py', 'conditioning_input', 'renderer', 'raw_extras', '3fbbeba7773755e3'),
+     ('model_unfolder/renderers/html/block_views/modality_views/video.py', 'build_video_path_view', 'renderer', 'raw_extras', 'de8ef3ebd9f7f11f'),
+     ('model_unfolder/renderers/html/block_views/registry.py', 'render_view', 'renderer', 'raw_extras', 'f6568ea08cd6042b'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', '_text_source_label', 'renderer', 'raw_extras', '94cf4b192dfe8dc8'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', '_draw_text_conditioning', 'renderer', 'raw_extras', '4271fc2560fe3393'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', '_stage_title', 'renderer', 'raw_extras', '7f1d4831e31adb5b'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_view', 'renderer', 'raw_extras', 'f337a110eca6bd73'),
+     ('model_unfolder/renderers/html/document.py', '_render_fragment_body', 'renderer', 'raw_extras', '4e0f5a0ff4503742'),
+     ('model_unfolder/renderers/html/document.py', '_render_canonical_fragment', 'renderer', 'raw_extras', '4592b54801fb2c20'),
+     ('model_unfolder/renderers/html/evidence.py', '_code_evidence_section', 'renderer', 'raw_extras', 'ce0f5f767cc3d150'),
+diff --git a/model_unfolder/evidence/structural_writes.py b/model_unfolder/evidence/structural_writes.py
+index 97054577..a56520f4 100644
+--- a/model_unfolder/evidence/structural_writes.py
++++ b/model_unfolder/evidence/structural_writes.py
+@@ -149,9 +149,8 @@ _EXTRAS = frozenset({
+     # top-level ``extras.setdefault``, dict-literal/AnnAssign extras binding,
+     # and ``extras.update``.  These writes always existed; the census was
+     # blind to their shapes (they were the "writer-less" LEGACY_EXTRAS rows).
+-    "render", "softcap", "unet", "<dynamic>",
++    "render", "softcap", "<dynamic>",
+     "block_diffusion", "block_diffusion.canvas_length",
+-    "diffusion",
+ })
+ _OPGRAPH = frozenset({
+     'Op:activation', 'Op:alibi_bias', 'Op:attn_apply_v', 'Op:attn_output_gate',
+@@ -644,15 +643,11 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
+      'extras', '<dynamic>'),
+     ('model_unfolder/adapters/transformer/special_parts/modalities/builder.py',
+      'multimodal_extras', 'extras', '<dynamic>'),
+-    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'render'),
+-    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'unet'),
+     ('model_unfolder/adapters/transformer/assembly.py', 'decoder_extras', 'extras', 'render'),
+     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'softcap'),
+     # U2-R5 (reviewed): the pilot's typed-fact author — the projector
+     # out-width consumption records projector_out_features (code_and_config).
+     ('model_unfolder/adapters/transformer/special_parts/modalities/vision.py', '_record_projector_fact', 'ledger', '<dynamic>'),
+-    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'diffusion'),
+-    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'spec', 'ModelIR'),
+     # U10-F4: the exact source/config projection records registered typed
+     # facts.  The dynamic key is lawful only through FactLedger.record_typed;
+     # the registry validator closes its owner/key/status/value surface.
+@@ -664,11 +659,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
+     # a route-validated receipt.
+     ('model_unfolder/adapters/diffusor/projection_ir.py', 'project_code_fact',
+      'ledger', '<dynamic>'),
+-    ('model_unfolder/adapters/diffusor/unet.py', '_code_attn_card', 'spec', 'AttentionSpec'),
+-    ('model_unfolder/adapters/diffusor/unet.py', '_simple_cross_card', 'spec', 'AttentionSpec'),
+-    ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'AttentionSpec'),
+-    ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'FFNSpec'),
+-    ('model_unfolder/adapters/diffusor/unet.py', '_unknown_attn_card', 'spec', 'AttentionSpec'),
+     ('model_unfolder/adapters/transformer/assembly.py', 'decoder_layer', 'spec', 'LayerSpec'),
+     ('model_unfolder/adapters/transformer/assembly.py', 'parallel_decoder_layer', 'spec', 'LayerSpec'),
+     ('model_unfolder/adapters/transformer/assembly.py', 'single_stream_decoder_layer', 'spec', 'LayerSpec'),
+@@ -1005,12 +995,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
+     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'),
+     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'),
+     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'kind'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'id'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'kind'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_stage_view', 'card', 'id'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_stage_view', 'card', 'kind'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_transformer_view', 'card', 'id'),
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_transformer_view', 'card', 'kind'),
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_block_view', 'card', 'id'),
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_block_view', 'card', 'kind'),
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_view', 'card', 'id'),
+@@ -1035,9 +1019,6 @@ _STRUCTURAL_WRITERS_MULTI = {
+      'expanded', 'kind:denoiser_state'): 2,
+     ('model_unfolder/adapters/diffusor/projection_ir.py', '_ffn_spec',
+      'spec', 'FFNSpec'): 2,
+-    ('model_unfolder/adapters/diffusor/unet.py', '_code_attn_card', 'spec', 'AttentionSpec'): 2,
+-    ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'AttentionSpec'): 2,
+-    ('model_unfolder/adapters/diffusor/unet.py', '_unet_transformer_subblocks', 'spec', 'FFNSpec'): 2,
+     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras_nested', 'render[]'): 3,
+     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'spec', 'AttentionSpec'): 2,
+     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'spec', 'FFNSpec'): 2,
+@@ -1065,12 +1046,6 @@ _STRUCTURAL_WRITERS_MULTI = {
+     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'): 4,
+     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'): 4,
+     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'kind'): 2,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'id'): 11,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_resnet_view', 'card', 'kind'): 9,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_stage_view', 'card', 'id'): 12,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_stage_view', 'card', 'kind'): 8,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_transformer_view', 'card', 'id'): 8,
+-    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_transformer_view', 'card', 'kind'): 6,
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_block_view', 'card', 'id'): 8,
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_block_view', 'card', 'kind'): 6,
+     ('model_unfolder/renderers/html/block_views/vae.py', 'build_vae_decoder_view', 'card', 'id'): 7,
+diff --git a/model_unfolder/renderers/html/block_views/registry.py b/model_unfolder/renderers/html/block_views/registry.py
+index a1022c0d..63a6b1a1 100644
+--- a/model_unfolder/renderers/html/block_views/registry.py
++++ b/model_unfolder/renderers/html/block_views/registry.py
+@@ -50,11 +50,6 @@ from ..render_context import (
+     current_render_context,
+ )
+ from .unet import (
+-    build_encoded_text_concat_view,
+-    build_unet_resnet_view,
+-    build_unet_stage_view,
+-    build_unet_transformer_view,
+-    build_unet_view,
+     build_unet_constructed_view,
+     build_constructed_children_view,
+     build_runtime_ffn_view,
+@@ -82,14 +77,6 @@ class ViewCtx:
+ ViewFn = Callable[["ViewCtx", dict], "str | None"]
+ 
+ 
+-# These retained layouts are authored only by the explicitly enabled legacy
+-# UNet comparison. They remain dispatchable for historical IR review and must
+-# be exercised by differential controls, never counted as ordinary coverage.
+-DIFFERENTIAL_ONLY_VIEWS = frozenset({
+-    "unet", "encoded_text_concat", "unet_stage", "unet_resnet", "unet_transformer",
+-})
+-
+-
+ def view_key(block: dict) -> str | None:
+     """The block's layout-archetype key."""
+     return block.get("view")
+@@ -224,7 +211,6 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
+     "vae_decoder": _from_block(build_vae_decoder_view),
+     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
+     "text_encoder": _from_block(build_text_encoder_view),
+-    "unet": _from_block(build_unet_view),
+     "unet_constructed": _from_block(build_unet_constructed_view),
+     "constructed_children": _from_block(build_constructed_children_view),
+     "runtime_ffn": _from_block(build_runtime_ffn_view),
+@@ -232,10 +218,6 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
+     "runtime_port_route": _from_block(build_runtime_port_route),
+     "runtime_cell_connections": _from_block(build_runtime_cell_connections),
+     "runtime_context_connection": _from_block(build_runtime_context_connection),
+-    "encoded_text_concat": _from_block(build_encoded_text_concat_view),
+-    "unet_stage": _from_block(build_unet_stage_view),
+-    "unet_resnet": _from_block(build_unet_resnet_view),
+-    "unet_transformer": _from_block(build_unet_transformer_view),
+     # Generic custom tower: any adapter block with view:"tower" + detail.tower
+     # renders through the one tower backbone — no per-tower view code.
+     "tower": _from_block(build_tower_view),
+diff --git a/model_unfolder/renderers/html/block_views/unet.py b/model_unfolder/renderers/html/block_views/unet.py
+index 44e0b42d..083cba4b 100644
+--- a/model_unfolder/renderers/html/block_views/unet.py
++++ b/model_unfolder/renderers/html/block_views/unet.py
+@@ -7,17 +7,14 @@ Skip accumulation and context links retain their separately proven endpoints.
+ Unbound bookends remain explicit containment cards, and boundary drills expose
+ local source-port details and unresolved call/guard meaning.
+ 
+-The later legacy UNet view builders remain for the explicit old-path
+-comparison. They are not the production overview's topology authority.
++The legacy layout interpreter was deleted in S10-1.
+ """
+ from __future__ import annotations
+ 
+-from ....block_schema import DIFFUSION_PART_KINDS
+ from ..graph_engine import render_graph
+ from ..stack_view import fit_svg, point
+-from ..svg import _ids, _path, _svg_tag, _svg_text, _v_seg
++from ..svg import _ids, _path, _svg_tag, _svg_text
+ from ..theme import C, FONT_HEAD, FONT_MONO
+-from ..tower import tower_graph
+ 
+ 
+ def build_unet_constructed_view(ir, info, mount_id, block):
+@@ -467,490 +464,6 @@ def build_runtime_context_connection(ir, info, mount_id, block):
+                              if "source_instance_path" in child]}))
+ 
+ 
+-def _text_source_label(ir: dict):
+-    """Label for the 'encoded text' source — makes the two-CLIP origin visible.
+-
+-    The text the U-net cross-attends is a SINGLE tensor: the text encoders' token
+-    features concatenated along the feature axis (SDXL: 768 + 1,280 = 2,048).  So
+-    one box is correct, but the label shows it is the concatenation of the N
+-    encoders, answering 'where did the second CLIP go?'."""
+-    extras = ir.get("extras") or {}
+-    diff = extras.get("diffusion") or {}
+-    encs = diff.get("text_encoders") or []
+-    cond = diff.get("conditioning") or {}
+-    modality = cond.get("kv_modality")
+-    # F1: when the declared cross-attention K/V is NOT text (image_proj / hint /
+-    # unknown), the source label is the resolved modality's own — never "Encoded
+-    # text" for a component the pipeline conditions on differently.
+-    if modality and modality != "text":
+-        return cond.get("kv_label") or "External conditioning"
+-    # The cross-attention width is a dim — it belongs on a card/chip, never on the
+-    # block label (design policy). The label shows only the structural origin: the
+-    # concatenation of N text encoders ("where did the second CLIP go?").
+-    if len(encs) >= 2:
+-        fam = "CLIP" if all("CLIP" in str(e) for e in encs) else "encoders"
+-        return ["Encoded text", f"{len(encs)}× {fam} (concat)"]
+-    return cond.get("kv_label") or "Encoded text"
+-
+-
+-def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+-    u = (ir.get("extras") or {}).get("unet") or {}
+-    down = u.get("down") or []
+-    up = u.get("up") or []
+-    mid = u.get("mid") or {}
+-    n = len(down)
+-
+-    arrow_id, shadow_id = _ids(mount_id, "unet")
+-    parts: list[str] = []
+-    regions: list[dict] = []
+-    LX, RX = 188.0, 588.0
+-    sw, sh, row_gap, y0 = 200.0, 58.0, 120.0, 92.0
+-    MERGE_DROP = 26.0                 # the concat connector sits this far below an up stage
+-    DOWN_DROP = sh / 2 + MERGE_DROP   # each down stage sits at its skip's entry level, so
+-                                      # the skip runs STRAIGHT into the connector (no elbow)
+-
+-    def stage(cx: float, y: float, st: dict, default_kind: str) -> dict:
+-        # Stage NAME only on the box; channels / ResNet / attention counts are
+-        # fact chips on the stage's card (numbers never ride the diagram block).
+-        resolved = st.get("diffusion_part_kind") in DIFFUSION_PART_KINDS
+-        return _box(parts, cx, y, sw, sh, _stage_title(st, default_kind), shadow_id,
+-                    resolved=resolved, node_id=st.get("id"))
+-
+-    conv_in = _box(parts, LX, 22, sw, 44, "Conv in", shadow_id, node_id="unet_conv_in")
+-    conv_out = _box(parts, RX, 22, sw, 44, "Conv out", shadow_id, node_id="unet_conv_out")
+-    regions += [conv_in, conv_out]
+-
+-    # Right column = up stages; left column row i = the matching down stage, sat
+-    # DOWN_DROP lower so its right-edge centre is level with the up stage's concat
+-    # connector — that makes every skip a straight horizontal arrow.
+-    down_g, up_g = [], []
+-    for i in range(n):
+-        y = y0 + i * row_gap
+-        up_g.append(stage(RX, y, up[n - 1 - i], "up_stage"))
+-        down_g.append(stage(LX, y + DOWN_DROP, down[i], "down_stage"))
+-    regions += down_g + up_g
+-
+-    # F2: the mid (bottleneck) box is drawn ONLY when the denoiser class
+-    # constructs one — a Kandinsky3-shape conv-U (conv_in -> down -> up -> conv_out,
+-    # no bottleneck) draws NO mid, and the deepest down stage connects straight
+-    # across to the deepest up stage.
+-    has_mid = bool(mid)
+-    mid_cx = (LX + RX) / 2
+-    if has_mid:
+-        mid_y = down_g[n - 1]["bottom"] + 26
+-        mid_g = _box(parts, mid_cx, mid_y, sw + 44, sh, _stage_title(mid, "mid_stage"), shadow_id,
+-                     resolved=mid.get("diffusion_part_kind") in DIFFUSION_PART_KINDS,
+-                     node_id="unet_mid")
+-        regions.append(mid_g)
+-        cross_y = mid_g["cy"]
+-    else:
+-        mid_g = None
+-        cross_y = down_g[n - 1]["bottom"] + 26
+-
+-    # --- DOWN path: conv_in -> down stages -> mid (the resolution change per
+-    # stage lives on the cards + the denoiser description, not on the diagram). ---
+-    parts.append(_v_seg(LX, conv_in["bottom"], down_g[0]["top"] - 6, arrow_id))
+-    for i in range(n - 1):
+-        parts.append(_v_seg(LX, down_g[i]["bottom"], down_g[i + 1]["top"] - 6, arrow_id))
+-    if has_mid:
+-        parts.append(_path(f"M {LX} {down_g[n-1]['bottom']} L {LX} {cross_y} L {mid_g['left'] - 6} {cross_y}", arrow_id))
+-
+-    # --- UP path: at EACH up stage, the skip from the matching down stage and the
+-    # features coming up from below MERGE at a concat connector (‖) just below the
+-    # stage, then go on up into it.  UNet skips concatenate along the channel axis
+-    # — two arrows in, one out; solid lines, ⊕ reserved for addition. ---
+-    if has_mid:
+-        parts.append(_path(  # mid -> below the bottom up stage (into its concat)
+-            f"M {mid_g['right']} {cross_y} L {RX} {cross_y} "
+-            f"L {RX} {up_g[n-1]['bottom'] + MERGE_DROP + 11}", arrow_id))
+-    else:
+-        # no bottleneck: deepest down stage flows straight across to the deepest
+-        # up stage's concat entry (the U's floor is a plain crossover).
+-        parts.append(_path(
+-            f"M {LX} {down_g[n-1]['bottom']} L {LX} {cross_y} L {RX} {cross_y} "
+-            f"L {RX} {up_g[n-1]['bottom'] + MERGE_DROP + 11}", arrow_id))
+-    for i in range(n):
+-        b = up_g[i]
+-        my = b["bottom"] + MERGE_DROP              # == down_g[i] centre → straight skip
+-        if i < n - 1:                              # features coming up from below (straight)
+-            parts.append(_v_seg(RX, up_g[i + 1]["top"], my + 11, arrow_id))
+-        parts.append(_svg_tag("line", {           # the skip, straight in from the left
+-            "x1": down_g[i]["right"], "y1": my, "x2": RX - 11, "y2": my,
+-            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+-            "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+-        _concat_node(parts, RX, my)
+-        parts.append(_v_seg(RX, my - 11, b["bottom"] + 4, arrow_id))   # ‖ -> up stage (straight)
+-    parts.append(_v_seg(RX, up_g[0]["top"], conv_out["bottom"] + 6, arrow_id))
+-
+-    # --- TEXT CONDITIONING: the encoded prompt (the text encoders' K/V) enters
+-    # EVERY cross-attention stage. Drawn as a source at the bottom that broadcasts
+-    # laterally into each CrossAttn stage from its outer edge — latent flows
+-    # vertically through the U, conditioning enters from the side. ---
+-    _draw_text_conditioning(parts, regions, shadow_id, arrow_id, u,
+-                            down, up, mid, down_g, up_g, mid_g, LX, RX, sw,
+-                            text_label=_text_source_label(ir))
+-
+-    return fit_svg(arrow_id, shadow_id, parts, regions,
+-                   f"{ir.get('name', 'model')} U-net denoiser", min_width=720, pad=44)
+-
+-
+-def _draw_text_conditioning(parts, regions, shadow_id, arrow_id, u, down, up,
+-                            mid, down_g, up_g, mid_g, LX, RX, sw,
+-                            text_label="Encoded text") -> None:
+-    """Show the encoded text feeding the cross-attention stages.
+-
+-    Only the stages whose block type carries cross-attention receive it (down[i]
+-    / up[n-1-i] with ``attn``, and the mid block).  A source box at the bottom
+-    fans out: straight up into the bottleneck, and out to a left/right lateral bus
+-    that taps each cross-attn stage on its OUTER edge.  Skipped entirely for an
+-    unconditional U-net (no ``cross_attention_dim`` / no attention stages)."""
+-    cad = u.get("cross_attention_dim")
+-    n = len(down)
+-    down_attn = [g for i, g in enumerate(down_g) if down[i].get("attn")]
+-    up_attn = [g for i, g in enumerate(up_g) if up[n - 1 - i].get("attn")]
+-    mid_attn = bool(mid.get("attn")) and mid_g is not None
+-    if not cad or not (down_attn or up_attn or mid_attn):
+-        return
+-
+-    mid_cx = (LX + RX) / 2
+-    tb_h = 56.0 if isinstance(text_label, (list, tuple)) else 48.0
+-    # Anchor the conditioning source below the bottleneck; with no mid block the
+-    # floor of the U is the deepest down/up row.
+-    floor = (mid_g["bottom"] if mid_g is not None
+-             else max(down_g[n - 1]["bottom"], up_g[n - 1]["bottom"]))
+-    tb = _box(parts, mid_cx, floor + 44, 252.0, tb_h, text_label,
+-              shadow_id, node_id="unet_text_cond")
+-    regions.append(tb)
+-    cy = tb["cy"]
+-    x_L = (LX - sw / 2) - 34          # lane left of the down column
+-    x_R = (RX + sw / 2) + 34          # lane right of the up column
+-
+-    def tap(x_from: float, into_left_edge: bool, g: dict) -> None:
+-        edge = (g["left"] - 4) if into_left_edge else (g["right"] + 4)
+-        parts.append(_svg_tag("line", {
+-            "x1": x_from, "y1": g["cy"], "x2": edge, "y2": g["cy"],
+-            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+-            "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+-
+-    if mid_attn:                                   # straight up into the bottleneck
+-        parts.append(_svg_tag("line", {
+-            "x1": mid_cx, "y1": tb["top"], "x2": mid_cx, "y2": mid_g["bottom"] + 5,
+-            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+-            "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+-    if down_attn:                                  # left bus + taps into down stages
+-        top_y = min(g["cy"] for g in down_attn)
+-        parts.append(_svg_tag("path", {
+-            "d": f"M {tb['left']} {cy} L {x_L} {cy} L {x_L} {top_y}",
+-            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+-            "stroke-linecap": "round", "stroke-linejoin": "round"}))
+-        for g in down_attn:
+-            tap(x_L, True, g)
+-        regions.append(point(x_L - 6, cy))
+-    if up_attn:                                    # right bus + taps into up stages
+-        top_y = min(g["cy"] for g in up_attn)
+-        parts.append(_svg_tag("path", {
+-            "d": f"M {tb['right']} {cy} L {x_R} {cy} L {x_R} {top_y}",
+-            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+-            "stroke-linecap": "round", "stroke-linejoin": "round"}))
+-        for g in up_attn:
+-            tap(x_R, False, g)
+-        regions.append(point(x_R + 6, cy))
+-
+-
+-def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+-    """A resolution stage: in → [ResNet block (+ Transformer block when the stage
+-    has cross-attention)] × layers_per_block → optional 2× resample → out.  The
+-    ResNet block and Transformer block are clickable and DRILL FURTHER (into the
+-    residual cell, and into self→cross→FF × depth respectively).
+-
+-    Mid block special case (direction=None): UNetMidBlock2DCrossAttn forward is
+-    ResNet₀ → Transformer → ResNet₁ — a sandwich, not a paired repeat.  Drawn as
+-    three sequential ``pre`` blocks, no ``× N`` frame."""
+-    d = block.get("detail") or {}
+-    ch = d.get("channels")
+-    resnets = int(d.get("resnets") or 1)
+-    direction = d.get("direction")
+-    op = {"w": 224, "h": 48}
+-    # Node ids are scoped by the stage id so each stage drills into ITS OWN
+-    # resnet / transformer cards (matching _unet_stage_children), not the first
+-    # stage's deduped card.
+-    sid = block.get("id") or "unet_stage"
+-    # F2: only a source-proven Transformer2D stage draws the "Transformer block";
+-    # SimpleCrossAttn / code-defined / unresolved stages draw a plain attention
+-    # cell (its card id is {sid}__crossattn), NEVER a fabricated Transformer2D.
+-    akind = d.get("attn_kind")
+-    tf2d = akind == "transformer2d"
+-    attn_id = f"{sid}__transformer" if tf2d else f"{sid}__crossattn"
+-    attn_label = ("Transformer block" if tf2d
+-                  else "Attention" if akind == "code_defined"
+-                  else "Cross-attention")
+-
+-    if direction is None and d.get("attn"):
+-        # Mid block: ResNet₀ → [attn] → ResNet₁ (UNetMidBlock2D*.forward)
+-        # Shown as a sequential ``pre`` chain — no repeat frame, no ×N badge.
+-        spec = {
+-            "source": {"id": "unet_stage_in", "label": f"in ({ch:,} ch)" if ch else "in"},
+-            "pre": [
+-                {"id": f"{sid}__resnet_pre", "kind": "norm", "label": "ResNet block", **op},
+-                {"id": attn_id, "kind": "attention", "label": attn_label, **op},
+-                {"id": f"{sid}__resnet_post", "kind": "norm", "label": "ResNet block", **op},
+-            ],
+-            "output": {"id": "unet_stage_out"},
+-            "side_inputs": [{
+-                "node": {"id": "unet_stage_text", "kind": "embedding",
+-                         "label": _text_source_label(ir), "w": 210},
+-                "target": attn_id,
+-            }],
+-        }
+-        graph = tower_graph(spec)
+-        return render_graph(graph, info, mount_id, f"unetstage_{sid}",
+-                            f"{ir.get('name', 'model')} {block.get('title') or 'U-net mid stage'}",
+-                            min_width=560)
+-
+-    # Block NAME only — the per-block facts (transformer depth, self/cross/FF,
+-    # stride-2 conv) are chips/prose on each block's card, never a sub-caption on
+-    # the diagram block.
+-    cell = [{"id": f"{sid}__resnet", "kind": "norm", "label": "ResNet block", **op}]
+-    if d.get("attn"):
+-        cell.append({"id": attn_id, "kind": "attention", "label": attn_label, **op})
+-    post = ([{"id": f"{sid}__{'down' if direction == 'down' else 'up'}sample",
+-              "kind": "embedding",
+-              "label": "Downsample" if direction == "down" else "Upsample",
+-              "w": 224, "h": 46}]
+-            if d.get("sample") else [])
+-
+-    spec = {
+-        "source": {"id": "unet_stage_in", "label": f"in ({ch:,} ch)" if ch else "in"},
+-        "cell": cell,
+-        "repeat": resnets,
+-        "post": post,
+-        "output": {"id": "unet_stage_out"},
+-    }
+-    if d.get("attn"):
+-        # The conditioning enters the attention cell (its cross-attention) — show
+-        # it feeding in from the side, the same conditioning seen one level up.
+-        spec["side_inputs"] = [{
+-            "node": {"id": "unet_stage_text", "kind": "embedding",
+-                     "label": _text_source_label(ir), "w": 210},
+-            "target": attn_id,
+-        }]
+-    graph = tower_graph(spec)
+-    return render_graph(graph, info, mount_id, f"unetstage_{block.get('id') or 'x'}",
+-                        f"{ir.get('name', 'model')} {block.get('title') or 'U-net stage'}",
+-                        min_width=560)
+-
+-
+-def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+-    """One ResNet block — the actual ResnetBlock2D.forward() cell:
+-    in → GroupNorm+activation → Conv 3×3 → ⊕ timestep emb →
+-    GroupNorm+activation → Conv 3×3 → ⊕ → out.
+-
+-    The residual bypass (shortcut) goes around the ENTIRE cell from the raw block
+-    input — not from norm1.  The timestep embedding is injected between conv1 and
+-    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN).
+-    The activation label is projected from the canonical child card; this renderer
+-    never supplies a SiLU/GELU mechanism default."""
+-    d = block.get("detail") or {}
+-    ch = d.get("channels")
+-    temporal = bool(d.get("temporal"))
+-    child_by_id = {
+-        child.get("id"): child
+-        for child in (block.get("children") or [])
+-        if isinstance(child, dict)
+-    }
+-    norm_activation = str(
+-        (child_by_id.get("unet_op_norm1") or {}).get("title")
+-        or "GroupNorm + Activation"
+-    )
+-    op = {"w": 216, "h": 44}
+-    # A ResNet block is ONE residual cell, not a repeated stack (the per-stage
+-    # repeat = layers_per_block is shown one level up, on the stage). So its ops
+-    # are ``pre`` (a plain chain + residual loop), never a "× N" repeat-frame.
+-    # residual_from "unet_res_in" (the block's input port): the shortcut bypasses
+-    # norm1 + activation + conv1 + temb_inject + norm2 + activation + conv2.
+-    # F3: a spatio-temporal block appends the temporal 1-D-conv branch + AlphaBlender.
+-    pre = [
+-        {"id": "unet_op_norm1", "kind": "norm",
+-         "label": norm_activation, **op},
+-        {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
+-        {"id": "unet_op_temb", "kind": "residual_add", "label": "⊕ Timestep emb"},
+-        {"id": "unet_op_norm2", "kind": "norm",
+-         "label": norm_activation, **op},
+-        {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
+-        {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_res_in"},
+-    ]
+-    if temporal:
+-        pre += [
+-            {"id": "unet_op_temporal", "kind": "embedding", "label": "Temporal conv",
+-             "sub": "1-D over frames", **op},
+-            {"id": "unet_op_alphablend", "kind": "residual_add", "label": "α AlphaBlender"},
+-        ]
+-    graph = tower_graph({
+-        "source": {"id": "unet_res_in", "label": f"in ({ch:,} ch)" if ch else "in"},
+-        "pre": pre,
+-        "output": {"id": "unet_res_out"},
+-        # The projected timestep embedding enters beside the injection node.
+-        "side_inputs": [{
+-            "node": {"id": "unet_res_temb", "kind": "source",
+-                     "label": "Timestep emb", "w": 148},
+-            "target": "unet_op_temb",
+-        }],
+-    })
+-    return render_graph(graph, info, mount_id, f"unetres_{block.get('id') or 'x'}",
+-                        f"{ir.get('name', 'model')} ResNet block", min_width=540)
+-
+-
+-def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+-    """One Transformer2D block: in → [Self-attention → Cross-attention (text) →
+-    Feed-forward] × transformer_layers → out.  Each sub-block opens the canonical
+-    attention / feed-forward view (the same opener a transformer layer uses)."""
+-    d = block.get("detail") or {}
+-    t = int(d.get("transformers") or 1)
+-    temporal = bool(d.get("temporal"))
+-    # match the scoped sub-block ids built in _unet_transformer_subblocks
+-    sid = d.get("prefix") or block.get("id") or "unet"
+-    op = {"w": 232, "h": 46}
+-    cell = [
+-        {"id": f"{sid}__selfattn", "kind": "attention", "label": "Self-attention", **op},
+-        {"id": f"{sid}__crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
+-        {"id": f"{sid}__ff", "kind": "ffn", "label": "Feed-forward", **op},
+-    ]
+-    if temporal:
+-        # F3: TransformerSpatioTemporalModel — a temporal transformer + AlphaBlender.
+-        cell += [
+-            {"id": f"{sid}__temporal_tf", "kind": "attention", "label": "Temporal transformer",
+-             "sub": "attention over frames", **op},
+-            {"id": f"{sid}__temporal_blend", "kind": "residual_add", "label": "α AlphaBlender"},
+-        ]
+-    graph = tower_graph({
+-        "source": {"id": "unet_tf_in", "label": "in (latent tokens)"},
+-        "cell": cell,
+-        "repeat": t,
+-        "output": {"id": "unet_tf_out"},
+-        # The encoded text enters beside the cross-attention sub-block — it supplies
+-        # that sublayer's K/V (self-attention and FF stay on the latent).
+-        "side_inputs": [{
+-            "node": {"id": "unet_tf_text", "kind": "embedding",
+-                     "label": _text_source_label(ir), "w": 210},
+-            "target": f"{sid}__crossattn",
+-        }],
+-    })
+-    return render_graph(graph, info, mount_id, f"unettf_{block.get('id') or 'x'}",
+-                        f"{ir.get('name', 'model')} Transformer block", min_width=540)
+-
+-
+-def build_encoded_text_concat_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+-    """How the text encoders combine into the cross-attention K/V.
+-
+-    Each encoder produces a token sequence at its own width; SDXL concatenates the
+-    two CLIP penultimate hidden states along the feature axis (768 + 1,280 =
+-    2,048) — the single tensor the U-net cross-attends.  Drawn as N encoder boxes
+-    feeding one ``‖`` concat connector (the SAME op as the U-net skips) → K/V.  A
+-    single-encoder model (SD1.5) draws a straight pass-through (no concat).  A
+-    declared ``encoder_hid_dim`` bridge (Kolors: ChatGLM 4,096-d → 2,048-d)
+-    draws its projection box between the lane(s) and the K/V — a width change
+-    is an OP, never a bare arrow."""
+-    d = block.get("detail") or {}
+-    encoders = d.get("encoders") or []
+-    cad = d.get("cross_attention_dim")
+-    proj = d.get("projection") if isinstance(d.get("projection"), dict) else None
+-    arrow_id, shadow_id = _ids(mount_id, "txtconcat")
+-    parts: list[str] = []
+-    regions: list[dict] = []
+-
+-    bw, bh, gap = 168.0, 58.0, 52.0
+-    n = max(len(encoders), 1)
+-    y_enc, y_concat, y_out = 196.0, 96.0, 36.0
+-    if proj:                       # projection row: everything below shifts down
+-        y_proj = 100.0
+-        # A lone encoder tucks in under the projection; a concat lane keeps the
+-        # full extra row (‖ sits where the projection's feed arrives).
+-        y_enc += 96.0 if len(encoders) >= 2 else 26.0
+-        y_concat += 96.0
+-    total = n * bw + (n - 1) * gap
+-    x0 = -total / 2 + bw / 2
+-
+-    enc_g: list[dict] = []
+-    for i in range(n):
+-        e = encoders[i] if i < len(encoders) else {"name": "Text encoder"}
+-        cxn = x0 + i * (bw + gap)
+-        hid = e.get("hidden")
+-        name = str(e.get("name") or "Text encoder")
+-        label = [name, f"{hid:,}-d"] if hid else name
+-        g = _box(parts, cxn, y_enc, bw, bh, label, shadow_id)
+-        enc_g.append(g)
+-        regions.append(g)
+-
+-    # Whatever the lane(s) resolve to feeds either the projection (when the
+-    # config declares one) or the K/V directly.  _box is TOP-anchored, so the
+-    # box spans y_proj..y_proj+44; +10 keeps the arrowhead clear of its bottom
+-    # edge AND the clickable highlight ring.
+-    y_next = (y_proj + 44.0 + 10.0) if proj else y_out
+-    if len(encoders) >= 2:
+-        # the ‖ concat connector is clickable — opens a card explaining the op
+-        _concat_node(parts, 0.0, y_concat, node_id="text_concat_op")
+-        regions.append(point(0.0, y_concat))
+-        for g in enc_g:                              # each encoder → the ‖ connector
+-            if abs(g["cx"]) < 1:
+-                parts.append(_v_seg(0.0, g["top"], y_concat + 11, arrow_id))
+-            else:
+-                side = -11 if g["cx"] < 0 else 11
+-                parts.append(_path(
+-                    f"M {g['cx']} {g['top']} L {g['cx']} {y_concat} L {side} {y_concat}",
+-                    arrow_id))
+-        parts.append(_v_seg(0.0, y_concat - 11, y_next, arrow_id))
+-    else:                                            # single encoder: straight up
+-        parts.append(_v_seg(0.0, enc_g[0]["top"], y_next, arrow_id))
+-
+-    if proj:
+-        # encoder_hid_proj: text_proj IS one nn.Linear; other declared types are
+-        # code-defined modules — labelled as the bare op, dims live on the card.
+-        pg = _box(parts, 0.0, y_proj, bw, 44.0,
+-                  "Linear" if proj.get("type") == "text_proj" else "Projection",
+-                  shadow_id, node_id="text_proj_op")
+-        regions.append(pg)
+-        parts.append(_v_seg(0.0, pg["top"], y_out, arrow_id))
+-
+-    out_label = f"K/V ({cad:,})" if cad else "cross-attention K/V"
+-    parts.append(_svg_text(0.0, y_out - 10, out_label, {
+-        "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO,
+-        "font-size": 12}))
+-    regions.append(point(0.0, y_out - 18))
+-
+-    return fit_svg(arrow_id, shadow_id, parts, regions,
+-                   f"{ir.get('name', 'model')} encoded text → K/V", min_width=520, pad=44)
+-
+-
+-def _stage_title(st: dict, default_kind: str) -> str:
+-    if st.get("custom_label"):
+-        return str(st["custom_label"])
+-    kind = st.get("diffusion_part_kind") or default_kind
+-    return {
+-        "down_stage": "Down stage",
+-        "mid_stage": "Mid stage",
+-        "up_stage": "Up stage",
+-    }.get(kind, "Stage")
+-
+-
+-def _concat_node(parts: list[str], cx: float, cy: float, node_id: str | None = None) -> None:
+-    """A concatenation connector (‖) where lanes join along the feature axis.  Two
+-    parallel bars — deliberately NOT a '+': concatenation, and ⊕ is reserved
+-    across the package for addition.  ``node_id`` makes it a clickable drill
+-    target coupled to a card explaining the op."""
+-    children = [_svg_tag("circle", {
+-        "cx": cx, "cy": cy, "r": 11, "fill": C["block"],
+-        "stroke": C["block_alt"], "stroke-width": 0.6})]
+-    for dx in (-3.0, 3.0):
+-        children.append(_svg_tag("line", {
+-            "x1": cx + dx, "y1": cy - 5, "x2": cx + dx, "y2": cy + 5,
+-            "stroke": C["text_block"], "stroke-width": 2,
+-            "stroke-linecap": "round", "pointer-events": "none"}))
+-    if node_id:
+-        parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+-    else:
+-        parts.extend(children)
+-
+-
+ def _box(parts, cx, y, w, h, main, shadow_id, *, resolved=True, node_id=None) -> dict:
+     """A solid, clickable U-net node (name only).  No light input/output accent —
+     conv-in/out are real conv ops, drawn solid like every other stage; their
+diff --git a/scripts/demonstrate_s8_unet.py b/scripts/demonstrate_s8_unet.py
+index 2d28b8a0..5cb614f0 100644
+--- a/scripts/demonstrate_s8_unet.py
++++ b/scripts/demonstrate_s8_unet.py
+@@ -8,7 +8,6 @@ from __future__ import annotations
+ 
+ import argparse
+ import ast
+-from contextlib import nullcontext
+ import dataclasses
+ import difflib
+ import gzip
+@@ -36,7 +35,6 @@ from model_unfolder.evidence.runtime_inventory import request_from_resolved_sour
+ from model_unfolder.evidence.program_index import ProgramIndex
+ from model_unfolder.evidence.runtime_source import RuntimeSourceBindings
+ from physics.source_override import SourceOverride
+-from model_unfolder.adapters.diffusor.unet_differential import legacy_unet_comparison
+ from report_s8_demonstration import observation, blocks
+ 
+ EXPERIMENT_MOUNT_ID = "uf-s8-demonstration"
+@@ -279,7 +277,7 @@ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("--input", type=Path, required=True)
+     parser.add_argument("--output", type=Path, required=True)
+-    parser.add_argument("--condition", choices=("ordinary", "sparse", "misleading", "rewrite", "unchanged", "changed", "missing", "legacy"), required=True)
++    parser.add_argument("--condition", choices=("ordinary", "sparse", "misleading", "rewrite", "unchanged", "changed", "missing"), required=True)
+     parser.add_argument("--expect-source-sha256", help="Refuse a run against a changed production source manifest")
+     args = parser.parse_args()
+     artifact = args.output / args.condition
+@@ -316,8 +314,7 @@ def main():
+     _write(artifact / "controls.json", controls)
+     start = time.monotonic()
+     print("Parsing", args.condition, flush=True)
+-    with legacy_unet_comparison() if args.condition == "legacy" else nullcontext():
+-        ir = config_to_ir(config, parse_context=context)
++    ir = config_to_ir(config, parse_context=context)
+     diagram = experiment_diagram(ir)
+     _write(artifact / "render-input.json", render_input_record(diagram))
+     html = diagram.to_html()
+diff --git a/test_support/latency_contract.py b/test_support/latency_contract.py
+index 4dfe1d5f..c6498c08 100644
+--- a/test_support/latency_contract.py
++++ b/test_support/latency_contract.py
+@@ -56,7 +56,7 @@ def validate_budget(document):
+             medians[target] = statistics.median(seconds(value) for value in samples)
+         require(medians == baseline['medians_seconds'], 'baseline medians must match samples')
+         budget = seconds(baseline['budget_seconds'])
+-        require(budget == owner_budget, 'approved measured owner budget')
++        require(budget <= owner_budget, 'UNet budget exceeds the approved owner ceiling')
+         require(budget == math.ceil(1.3 * max(medians.values())), 'S2 measured budget calculation')
+     return section
+ 
+diff --git a/tests/test_code_evidence.py b/tests/test_code_evidence.py
+index 1f307f0f..21911d7f 100644
+--- a/tests/test_code_evidence.py
++++ b/tests/test_code_evidence.py
+@@ -676,7 +676,6 @@ def test_fileless_hub_warning_is_not_masked(monkeypatch):
+     assert any("remote-code source fetch failed" in w for w in bundle.warnings)
+ 
+ 
+-
+ # ---------------------------------------------------------------------------
+ # QK-norm — code-first (the code decides the SHAPE and names its own gate)
+ # ---------------------------------------------------------------------------
+@@ -2046,44 +2045,6 @@ def test_norm_placement_defaults_two_unknown_tiers():
+     assert "norm_placement" not in (ir2.layers[0].ffn.asserted or ())
+     assert ctx2.facts.records["decoder.layer.norm_placement"].status == "code_proven"
+ 
+-def test_unet_prose_on_code_evidence_rail():
+-    """B3/U4-F: a resolved UNet activation follows the owner-bound act_fn
+-    input; absence stays unresolved.  The Transformer2D FFN is independently
+-    honest-undeclared (never the old hardcoded GEGLU assertion)."""
+-    import json, pathlib
+-    from model_unfolder.sable import DEFAULT_CORPUS
+-    from model_unfolder.adapters.diffusor.unet import (
+-        parse_unet, unet_denoiser_children, _unet_transformer_subblocks)
+-
+-    fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
+-                     / "stable-diffusion-xl-base-1-0.json").read_text())
+-    cfg = fx["config"]
+-    sub = cfg.get("unet") or cfg          # pipeline index or bare unet config
+-    if not isinstance(sub, dict) or "block_out_channels" not in sub:
+-        sub = next((v for v in cfg.values()
+-                    if isinstance(v, dict) and "block_out_channels" in v), cfg)
+-    unet = parse_unet(sub)
+-    assert unet["act_fn"] == "silu"
+-    blob = json.dumps(unet_denoiser_children(unet))
+-    assert "GEGLU" not in blob
+-    assert "act_fn" in blob               # provenance sentence present
+-
+-    st = {"id": "unet_down_1", "channels": 640, "num_heads": 10, "head_dim": 64}
+-    ff = next(b for b in _unet_transformer_subblocks(st, 2048)
+-              if b["id"].endswith("__ff"))
+-    assert "not declare" in ff["description"]
+-    assert ff["detail"]["ffn"].get("gated") is None
+-
+-    # a synthetic gelu act_fn flows into every label
+-    unet2 = parse_unet({"block_out_channels": [64, 128], "in_channels": 4,
+-                        "out_channels": 4, "down_block_types":
+-                        ["DownBlock2D", "AttnDownBlock2D"],
+-                        "up_block_types": ["AttnUpBlock2D", "UpBlock2D"],
+-                        "act_fn": "gelu"})
+-    blob2 = json.dumps(unet_denoiser_children(unet2))
+-    assert "GroupNorm+GELU" in blob2 or "GroupNorm + GELU" in blob2
+-    assert "resolved through the denoiser's act_fn input" in blob2
+-
+ 
+ def test_asserted_facts_are_tagged_for_the_s4_blocking_ship_gate():
+     """B5 (U2): the `asserted` tuple now carries ONLY the drawn conventions
+@@ -2130,25 +2091,12 @@ def test_asserted_facts_are_tagged_for_the_s4_blocking_ship_gate():
+ 
+ 
+ def test_unet_ffn_activation_anchored_to_declared_blocks():
+-    """Keep legacy address controls and verify the current occurrence's FFN graph."""
++    """The production FFN graph comes from its exact constructed occurrence."""
+     import json, pathlib, re
+     from model_unfolder.sable import DEFAULT_CORPUS
+-    from model_unfolder.evidence.context import ParseContext
+-    from model_unfolder.evidence.conformance import _augment_diffusion_files
+-    from model_unfolder.evidence.patterns import unet_transformer_ffn_activation_from_files
+-
+     fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
+                      / "stable-diffusion-xl-base-1-0.json").read_text())
+     cfg = fx["config"]
+-    ctx = ParseContext.build(cfg, source="local")
+-    root = (ctx.source_bundle.component_files or {}).get("root") or ctx.source_bundle.files
+-    files = _augment_diffusion_files(tuple(root))
+-    types = list(cfg.get("down_block_types") or []) + list(cfg.get("up_block_types") or []) \
+-        + [cfg.get("mid_block_type") or ""]
+-    assert unet_transformer_ffn_activation_from_files(files, types) == "geglu"
+-    assert unet_transformer_ffn_activation_from_files(files, []) is None
+-    assert unet_transformer_ffn_activation_from_files((), types) is None
+-
+     # The production card cites the fact for its own constructed occurrence.
+     from model_unfolder import unfold
+     from model_unfolder.lint import _walk_blocks
+diff --git a/tests/test_coverage.py b/tests/test_coverage.py
+index 2e8a5942..c33ef2d8 100644
+--- a/tests/test_coverage.py
++++ b/tests/test_coverage.py
+@@ -33,7 +33,7 @@ from model_unfolder.block_schema import (
+     validate_unique_ref_ids,
+ )
+ from model_unfolder.renderers.html.block_views import registry as reg
+-from test_support import CORPUS, SDXL_UNET, SDXL_TEXT_ENCODER_CONFIGS  # §16.1 shared fixtures
++from test_support import CORPUS  # §16.1 shared fixtures
+ 
+ 
+ 
+@@ -71,21 +71,10 @@ def test_every_registered_view_is_exercised_and_couples():
+             problems = validate_click_coupling(html)
+             assert problems == [], f"{name}: recursive coupling broken:\n  " + "\n  ".join(problems)
+         ordinary = set(exercised)
+-        assert not ordinary.intersection(reg.DIFFERENTIAL_ONLY_VIEWS)
+         assert {"unet_constructed", "runtime_ffn", "runtime_stage_connections",
+                 "runtime_port_route", "runtime_cell_connections",
+                 "runtime_context_connection"} <= ordinary
+ 
+-        # Historical layouts keep real dispatcher/coupling coverage under
+-        # their sole producer, without being represented as production views.
+-        from model_unfolder.adapters.diffusor.unet_differential import legacy_unet_comparison
+-        exercised.clear()
+-        with legacy_unet_comparison():
+-            html = unfold(dict(SDXL_UNET, _text_encoder_configs=SDXL_TEXT_ENCODER_CONFIGS)).to_html(
+-                standalone=True)
+-        assert validate_click_coupling(html) == []
+-        assert reg.DIFFERENTIAL_ONLY_VIEWS <= exercised
+-        exercised.update(ordinary)
+     finally:
+         reg.render_view = orig
+ 
+diff --git a/tests/test_diffusion.py b/tests/test_diffusion.py
+index fe42c2e6..6358b534 100644
+--- a/tests/test_diffusion.py
++++ b/tests/test_diffusion.py
+@@ -645,29 +645,6 @@ def test_unet_is_claimed_by_diffusor_not_transformer():
+     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
+ 
+ 
+-def test_unet_detection_is_by_signature_not_name():
+-    """THE CORE LAW: a conv-U is detected by its config SIGNATURE, never by the
+-    "UNet" substring in its class name. Both directions must hold:
+-
+-    * a NON-"UNet"-named config carrying the dialect fields IS a UNet, and
+-    * a "UNet"-named config that does NOT carry the dialect (no block-type lists,
+-      no cross_attention_dim) is NOT forced through ``parse_unet`` — the failure
+-      mode that dragged Kandinsky3UNet / StableCascadeUNet into a fabricated
+-      UNet2DConditionModel structure.
+-    """
+-    from model_unfolder.adapters.diffusor.unet import is_unet
+-
+-    # name says nothing of "UNet", but the signature is the full dialect → claimed.
+-    no_unet_in_name = {k: v for k, v in SDXL_UNET.items() if k != "_class_name"}
+-    no_unet_in_name["_class_name"] = "SomeBespokeDenoiser2DModel"
+-    assert is_unet(no_unet_in_name) is True
+-
+-    # "UNet" in the name but only `block_out_channels` (no block-type lists, no
+-    # cross_attention_dim) → NOT claimed (identity must not override evidence).
+-    name_only = {"_class_name": "MysteryUNetModel", "block_out_channels": [128, 256]}
+-    assert is_unet(name_only) is False
+-
+-
+ def test_unet_does_not_fabricate_cross_attention_mid_when_undeclared():
+     """A conv-U conditioned by `cross_attention_dim` but declaring no block-type
+     lists (Kandinsky3UNet shape) must NOT get a fabricated cross-attention mid
+@@ -677,14 +654,8 @@ def test_unet_does_not_fabricate_cross_attention_mid_when_undeclared():
+         "block_out_channels": [384, 768, 1536, 3072], "layers_per_block": 3,
+         "attention_head_dim": 64, "cross_attention_dim": 4096, "in_channels": 4,
+     }
+-    from model_unfolder.adapters.diffusor.unet import is_unet, parse_unet
+-    assert is_unet(kand) is True                          # claimed (signature: cross_attention_dim)
+-    unet = parse_unet(kand)
+-    assert unet["mid"].get("attn") is False               # NO fabricated cross-attn mid
+-    assert unet["declares_block_types"] is False
+-    # U10 routing is stricter than the quarantined U11 interpreter: because the
+-    # current source proof does not close Kandinsky's append/pop skip route, the
+-    # config signature cannot route production into that interpreter.
++    # A config signature cannot manufacture a U-shaped computation when the
++    # source does not prove the route.
+     ir = config_to_ir(kand)
+     assert "unet" not in ir.extras
+     assert ir.extras["render"]["family"] == "diffusion"
+@@ -711,8 +682,6 @@ def test_sdxl_retains_both_encoders_and_conditional_added_embedding(sdxl_render)
+     assert modules["mid_block.attentions.0.transformer_blocks"]["children"] == [str(i) for i in range(10)]
+ 
+ 
+-
+-
+ def test_published_image_decoder_keeps_own_projection_without_text_tower():
+     """Published Kandinsky input preserves image projection occurrences without asserting unproved K/V roles."""
+     from model_unfolder.lint import _walk_blocks
+@@ -889,28 +858,6 @@ def test_sdxl_draws_constructed_transformer2d_and_qualified_ffn(sdxl_render):
+             assert f'data-id="{child["id"]}"' in html
+ 
+ 
+-def test_attn_cell_kind_is_source_derived_not_class_name():
+-    """F2 (Law-1): the cell family is DERIVED from the resolved block class's
+-    construction (Transformer2D wrapper vs plain Attention), with class name used
+-    only as an ADDRESS. Unresolvable -> None (honest-unknown), never a name guess."""
+-    import os, diffusers
+-    from model_unfolder.evidence.patterns import unet_stage_attn_cell_from_files
+-    from model_unfolder.evidence.conformance import _augment_diffusion_files
+-    base = os.path.dirname(diffusers.__file__)
+-    files = _augment_diffusion_files((
+-        os.path.join(base, "models/unets/unet_2d_blocks.py"),
+-        os.path.join(base, "models/unets/unet_3d_blocks.py"),
+-        os.path.join(base, "models/attention_processor.py"),
+-        os.path.join(base, "models/attention.py")))
+-    assert unet_stage_attn_cell_from_files(files, "CrossAttnDownBlock2D") == "transformer2d"
+-    # Seeing attention but not seeing an FFN is incomplete negative evidence;
+-    # the exact plain-cross cell remains opaque until its forward is proven.
+-    assert unet_stage_attn_cell_from_files(files, "SimpleCrossAttnDownBlock2D") is None
+-    assert unet_stage_attn_cell_from_files(files, "DownBlock2D") is None       # no attention
+-    assert unet_stage_attn_cell_from_files(files, "NopeBlock") is None         # unresolvable
+-    assert unet_stage_attn_cell_from_files((), "CrossAttnDownBlock2D") is None  # no source
+-
+-
+ def test_unet_context_argument_does_not_assert_unproved_kv_role(sdxl_render):
+     """A source-bound external argument remains distinct from an unproved K/V role."""
+     _, ir, html = sdxl_render
+@@ -2015,8 +1962,6 @@ def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
+     assert bare_attn.get("description")
+ 
+ 
+-
+-
+ def test_config_only_heterogeneous_encoder_schedule_cannot_split_the_tower():
+     """A ``layer_types`` list is not execution evidence.
+ 
+@@ -2083,8 +2028,6 @@ def test_config_tokens_do_not_change_typed_grouping_or_period_detection():
+     assert detect_layer_period([sigs[0]] * 6) == 1
+ 
+ 
+-
+-
+ def test_moe_text_encoder_opens_the_canonical_moe_drill():
+     """An MoE text encoder opens the SAME router/top-k/expert drill a decoder
+     MoE opens — serialized off the one decoder builder, at the ENCODER's own
+diff --git a/tests/test_everchanging.py b/tests/test_everchanging.py
+index da56d3da..4011d2b4 100644
+--- a/tests/test_everchanging.py
++++ b/tests/test_everchanging.py
+@@ -36,7 +36,6 @@ def test_diffusor_vocab_loads():
+ 
+ def test_u10_generic_conditioning_loader_is_retired():
+     assert not hasattr(ec, "load_diffusion_conditioning")
+-    assert ec.load_unet_conditioning()["encoder_hid_dim_type"]
+ 
+ 
+ def test_transformer_stage_taxonomy_is_exhaustive():
+diff --git a/tests/test_legacy_reader_quarantine.py b/tests/test_legacy_reader_quarantine.py
+index 6021c6ee..2c58f725 100644
+--- a/tests/test_legacy_reader_quarantine.py
++++ b/tests/test_legacy_reader_quarantine.py
+@@ -1,6 +1,8 @@
+ from pathlib import Path
+ import importlib.util
+ 
++import pytest
++
+ from model_unfolder.evidence.legacy_reader_quarantine import (
+     LEGACY_SEMANTIC_READERS,
+     PARSE_AUTHORITY_SITES,
+@@ -13,8 +15,18 @@ from model_unfolder.evidence.legacy_reader_quarantine import (
+ ROOT = Path(__file__).resolve().parents[1]
+ 
+ 
++@pytest.fixture
++def synthetic_reader(monkeypatch):
++    from model_unfolder.evidence import legacy_reader_quarantine as quarantine
++    row = quarantine.LegacySemanticReader(
++        "model_unfolder/evidence/patterns.py",
++        "unet_mid_block_present_from_files", "U11", "test-only reader",
++        "U11 deletes the synthetic test reader")
++    monkeypatch.setattr(quarantine, "LEGACY_SEMANTIC_READERS", (row,))
++
++
+ def test_legacy_semantic_reader_quarantine_is_exact_and_cannot_grow():
+-    assert len(LEGACY_SEMANTIC_READERS) == 5
++    assert LEGACY_SEMANTIC_READERS == ()
+     assert legacy_reader_quarantine_problems(ROOT) == ()
+ 
+ 
+@@ -26,11 +38,11 @@ def test_every_quarantined_reader_has_one_future_owner_and_deletion_condition():
+ 
+ 
+ def test_every_evidence_parse_site_has_one_explicit_authority_class():
+-    assert len(PARSE_AUTHORITY_SITES) == 20
+-    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 20
++    assert len(PARSE_AUTHORITY_SITES) == 19
++    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 19
+     legacy = [row for row in PARSE_AUTHORITY_SITES
+               if row.category == "legacy_model_source"]
+-    assert len(legacy) == 9
++    assert len(legacy) == 8
+     assert all(row.deletion_unit and row.reason for row in legacy)
+     assert {row.category for row in PARSE_AUTHORITY_SITES} == {
+         "central_program_index",
+@@ -73,7 +85,7 @@ def test_poison_new_raw_files_reader_is_blocking(tmp_path):
+         for item in problems)
+ 
+ 
+-def test_poison_new_caller_of_existing_reader_is_blocking(tmp_path):
++def test_poison_new_caller_of_existing_reader_is_blocking(tmp_path, synthetic_reader):
+     evidence = tmp_path / "model_unfolder" / "evidence"
+     adapter = tmp_path / "model_unfolder" / "adapters"
+     evidence.mkdir(parents=True)
+@@ -92,7 +104,7 @@ def test_poison_new_caller_of_existing_reader_is_blocking(tmp_path):
+         for item in problems)
+ 
+ 
+-def test_poison_qualified_or_aliased_reader_call_is_blocking(tmp_path):
++def test_poison_qualified_or_aliased_reader_call_is_blocking(tmp_path, synthetic_reader):
+     evidence = tmp_path / "model_unfolder" / "evidence"
+     adapter = tmp_path / "model_unfolder" / "adapters"
+     evidence.mkdir(parents=True)
+@@ -117,7 +129,7 @@ def test_poison_qualified_or_aliased_reader_call_is_blocking(tmp_path):
+     assert "model_unfolder/adapters/poison.py:qualified" in caller_problem
+ 
+ 
+-def test_poison_moving_reader_into_class_scope_is_blocking(tmp_path):
++def test_poison_moving_reader_into_class_scope_is_blocking(tmp_path, synthetic_reader):
+     evidence = tmp_path / "model_unfolder" / "evidence"
+     evidence.mkdir(parents=True)
+     (evidence / "patterns.py").write_text(
+@@ -148,7 +160,7 @@ def test_poison_new_evidence_ast_parse_site_is_blocking(tmp_path):
+         for item in problems)
+ 
+ 
+-def test_poison_reader_body_change_is_blocking(tmp_path):
++def test_poison_reader_body_change_is_blocking(tmp_path, synthetic_reader):
+     evidence = tmp_path / "model_unfolder" / "evidence"
+     evidence.mkdir(parents=True)
+     (evidence / "patterns.py").write_text(
+@@ -166,7 +178,7 @@ def test_poison_new_legacy_parse_helper_caller_is_blocking(tmp_path):
+     evidence.mkdir(parents=True)
+     (evidence / "poison.py").write_text(
+         "def new_source_consumer(files):\n"
+-        "    return _parse_defs(files)\n",
++        "    return _parse_file(files)\n",
+         encoding="utf-8")
+     problems = legacy_reader_quarantine_problems(tmp_path)
+     assert any(
+diff --git a/tests/test_reader_exceptions.py b/tests/test_reader_exceptions.py
+index 9bf9f08f..c1e5ea4e 100644
+--- a/tests/test_reader_exceptions.py
++++ b/tests/test_reader_exceptions.py
+@@ -51,7 +51,6 @@ _BASELINE = {
+     "adapters/diffusor/loader.py": 2,
+     # U4-B: the rotary source reader already types file/parse failures; its
+     # broad wrapper hid a real tuple/frozenset contract regression as unknown.
+-    "adapters/diffusor/parser.py": 4,
+     "adapters/transformer/debug.py": 1,
+     # U9: exact component/projector/fusion readers replaced four remaining
+     # modality compatibility wrappers.  Lock the resulting 6 -> 2 reduction.
+diff --git a/tests/test_s81_latency.py b/tests/test_s81_latency.py
+index de7a9483..08b90b50 100644
+--- a/tests/test_s81_latency.py
++++ b/tests/test_s81_latency.py
+@@ -381,3 +381,27 @@ def test_measured_baseline_does_not_accept_unexplained_revisions(mutation):
+         cold['budget_seconds'] += 1
+     with pytest.raises(ValueError):
+         validate_budget(document)
++
++
++@pytest.mark.parametrize("cold,warm", [(26.0, 7.0), (20.0, 5.0)])
++def test_s2_measured_budget_can_ratchet_down(cold, warm):
++    import math
++    document = _budgets()
++    for key, value in (("cold_empty_cache", cold), ("warm_populated_cache", warm)):
++        row = document["unet_instance"][key]
++        row["samples_seconds"] = {target: [value] * 3 for target in TARGETS}
++        row["medians_seconds"] = {target: value for target in TARGETS}
++        row["budget_seconds"] = math.ceil(1.3 * value)
++    validate_budget(document)
++
++
++@pytest.mark.parametrize("key,value", [("cold_empty_cache", 34.0), ("warm_populated_cache", 11.0)])
++def test_s2_correct_arithmetic_cannot_raise_the_owner_ceiling(key, value):
++    import math
++    document = _budgets()
++    row = document["unet_instance"][key]
++    row["samples_seconds"] = {target: [value] * 3 for target in TARGETS}
++    row["medians_seconds"] = {target: value for target in TARGETS}
++    row["budget_seconds"] = math.ceil(1.3 * value)
++    with pytest.raises(ValueError, match="approved owner ceiling"):
++        validate_budget(document)
+diff --git a/tests/test_s8_unet_routing.py b/tests/test_s8_unet_routing.py
+index d2402298..7576962f 100644
+--- a/tests/test_s8_unet_routing.py
++++ b/tests/test_s8_unet_routing.py
+@@ -1,43 +1,36 @@
+-"""A product input cannot re-enable the legacy UNet authority."""
++"""A product input cannot revive the deleted UNet compatibility authority."""
++from importlib.util import find_spec
+ from types import SimpleNamespace
+ 
+ import pytest
+ 
+ from model_unfolder.adapters.diffusor import parser
+ from model_unfolder.adapters.diffusor import unet_cutover
+-from model_unfolder.adapters.diffusor.unet_differential import (
+-    legacy_comparison_enabled, legacy_unet_comparison,
+-)
++from model_unfolder.renderers.html.block_views import registry
+ 
+ 
+-def test_old_author_cannot_be_called_without_the_comparison_flag():
+-    with pytest.raises(RuntimeError, match="restricted to differential"):
+-        parser._parse_unet_model({}, "unused", [])
++def test_old_author_and_comparison_module_are_deleted():
++    assert find_spec('model_unfolder.adapters.diffusor.unet') is None
++    assert find_spec('model_unfolder.adapters.diffusor.unet_differential') is None
++    assert not hasattr(parser, '_parse_unet_model')
++    assert not {'unet', 'unet_stage', 'unet_resnet', 'unet_transformer',
++                'encoded_text_concat'}.intersection(registry.VIEW_REGISTRY)
+ 
+ 
+-def test_comparison_flag_is_scoped_and_restored_on_failure():
+-    assert not legacy_comparison_enabled()
+-    with pytest.raises(ValueError):
+-        with legacy_unet_comparison():
+-            assert legacy_comparison_enabled()
+-            with legacy_unet_comparison():
+-                assert legacy_comparison_enabled()
+-            assert legacy_comparison_enabled()
+-            raise ValueError("stop comparison")
+-    assert not legacy_comparison_enabled()
+-
+-
+-def test_production_u_shape_uses_cutover_even_with_misleading_config(monkeypatch):
++@pytest.mark.parametrize('result_ir', [object(), None])
++def test_production_u_shape_uses_only_cutover_with_misleading_config(monkeypatch, result_ir):
+     calls = []
+-    result_ir = object()
+-    monkeypatch.setattr(parser, "_shadow_diffusion_root_topology", lambda context:
+-                        SimpleNamespace(has_value=True, value=SimpleNamespace(kind="u_shaped")))
+-    monkeypatch.setattr(parser, "_projected_pipeline_handoffs", lambda *a, **k: {})
+-    monkeypatch.setattr(unet_cutover, "build_unet_cutover", lambda *a, **k:
+-                        calls.append("new") or SimpleNamespace(ir=result_ir))
+-    monkeypatch.setattr(parser, "_parse_unet_model", lambda *a, **k:
+-                        pytest.fail("production entered legacy authority"))
+-    config = {"_class_name": "Address", "legacy_unet_comparison": True,
+-              "UNFOLD_UNET_LEGACY": True}
+-    assert parser.parse(config, context=SimpleNamespace(source_overrides=())) is result_ir
+-    assert calls == ["new"]
++    limited = SimpleNamespace(warnings=[])
++    monkeypatch.setattr(parser, '_parse_projected_denoiser', lambda *a, **k: limited)
++    monkeypatch.setattr(parser, '_shadow_diffusion_root_topology', lambda context:
++                        SimpleNamespace(has_value=True, value=SimpleNamespace(kind='u_shaped')))
++    monkeypatch.setattr(parser, '_projected_pipeline_handoffs', lambda *a, **k: {})
++    monkeypatch.setattr(unet_cutover, 'build_unet_cutover', lambda *a, **k:
++                        calls.append('new') or SimpleNamespace(ir=result_ir, inventory_result=SimpleNamespace(failure=None)))
++    config = {'_class_name': 'Address', 'legacy_unet_comparison': True,
++              'UNFOLD_UNET_LEGACY': True}
++    actual = parser.parse(config, context=SimpleNamespace(source_overrides=()))
++    assert actual is (result_ir if result_ir is not None else limited)
++    if result_ir is None:
++        assert actual.warnings == ['UNet investigation_missing: the exact selected source reader did not close the UNet root']
++    assert calls == ['new']
+diff --git a/tests/test_u4_f_cross_surface_closure.py b/tests/test_u4_f_cross_surface_closure.py
+index d4358208..5476a596 100644
+--- a/tests/test_u4_f_cross_surface_closure.py
++++ b/tests/test_u4_f_cross_surface_closure.py
+@@ -1,15 +1,9 @@
+ """U4-F: unknown architecture has one meaning on every consumer surface."""
+ from __future__ import annotations
+ 
+-import json
+ 
+ import pytest
+ 
+-from model_unfolder.adapters.diffusor.unet import (
+-    _unet_stage_children,
+-    parse_unet,
+-    unet_denoiser_children,
+-)
+ from model_unfolder.adapters.transformer.assembly import (
+     decoder_extras,
+     decoder_layer,
+@@ -19,9 +13,6 @@ from model_unfolder.ir import AttentionSpec, FFNSpec, ModelIR
+ from model_unfolder.opgraph import attention_region, ffn_region
+ from model_unfolder.opgraph import Op, Region
+ from model_unfolder.renderers.html.op_render import _node_for, region_to_graph
+-from model_unfolder.renderers.html.block_views.unet import (
+-    build_unet_resnet_view,
+-)
+ from model_unfolder.renderers.html.block_views.mtp_head import (
+     build_mtp_transformer_block_view,
+ )
+@@ -152,54 +143,6 @@ def test_one_unknown_state_survives_every_projection():
+                for note in assumptions)
+ 
+ 
+-def test_unet_missing_activation_never_becomes_silu():
+-    unet = parse_unet({
+-        "block_out_channels": [32, 64],
+-        "down_block_types": ["DownBlock2D", "DownBlock2D"],
+-        "up_block_types": ["UpBlock2D", "UpBlock2D"],
+-        "layers_per_block": 1,
+-        "in_channels": 4,
+-        "out_channels": 4,
+-    })
+-    assert unet["act_fn"] is None
+-    cards = unet_denoiser_children(unet)
+-    payload = json.dumps(cards)
+-    assert "SiLU" not in payload
+-    assert "GroupNorm+Activation" in payload
+-    assert "no owner-bound act_fn evidence" in payload
+-    resnet = _unet_stage_children(
+-        unet["down"][0],
+-        "down",
+-        unet.get("cross_attention_dim"),
+-        act_label="Activation",
+-        act_note="unresolved because no owner-bound act_fn evidence is available",
+-    )[0]
+-    html = build_unet_resnet_view(
+-        {"name": "unknown-unet"},
+-        {"blocks": {}},
+-        "unknown-unet",
+-        resnet,
+-    )
+-    assert "GroupNorm + Activation" in html
+-    assert "SiLU" not in html
+-
+-
+-def test_unet_declared_activation_survives_the_same_path():
+-    unet = parse_unet({
+-        "block_out_channels": [32],
+-        "down_block_types": ["DownBlock2D"],
+-        "up_block_types": ["UpBlock2D"],
+-        "layers_per_block": 1,
+-        "in_channels": 4,
+-        "out_channels": 4,
+-        "act_fn": "silu",
+-    })
+-    assert unet["act_fn"] == "silu"
+-    payload = json.dumps(unet_denoiser_children(unet))
+-    assert "GroupNorm+SiLU" in payload
+-    assert "resolved through the denoiser's act_fn input" in payload
+-
+-
+ @pytest.mark.parametrize("kind", [None, "", "novel_block"])
+ def test_tower_renderer_never_turns_unknown_block_kind_into_norm(kind):
+     graph = tower_graph({
+@@ -382,36 +325,3 @@ def test_missing_model_bookend_cards_render_only_neutral_placeholders():
+         "Output stage unresolved",
+     ):
+         assert neutral in html
+-
+-
+-@pytest.mark.parametrize(
+-    "cell_kind",
+-    ["transformer2d", "simple_cross", "code_defined", None],
+-)
+-def test_unet_cell_kind_never_fabricates_inner_mha(cell_kind):
+-    """A container-cell classification is not an attention-mechanism proof."""
+-    stage = {
+-        "id": f"stage_{cell_kind or 'unknown'}",
+-        "channels": 64,
+-        "resnets": 1,
+-        "attn": True,
+-        "transformers": 1,
+-        "num_heads": 8,
+-        "head_dim": 8,
+-        "attn_kind": cell_kind,
+-        "has_self": True,
+-        "has_cross": True,
+-    }
+-    cards = _unet_stage_children(
+-        stage,
+-        "down",
+-        128,
+-        act_label="Activation",
+-        act_note="unresolved",
+-    )
+-    payload = json.dumps(cards)
+-    assert '"kind": "mha"' not in payload
+-    assert '"num_kv_heads": 8' not in payload
+-    assert "q_proj" not in payload
+-    assert "k_proj" not in payload
+-    assert "v_proj" not in payload
+diff --git a/verification/latency_budgets.json b/verification/latency_budgets.json
+index 93fd34ad..6f2ebdb5 100644
+--- a/verification/latency_budgets.json
++++ b/verification/latency_budgets.json
+@@ -122,47 +122,47 @@
+       "sd-v1-4": "tests/unseen_model_configs/sd-v1-4.json"
+     },
+     "cold_empty_cache": {
+-      "budget_seconds": 43.0,
++      "budget_seconds": 37.0,
+       "samples_seconds": {
+         "stable-diffusion-xl-base-1-0": [
+-          32.681176166050136,
+-          32.24899445800111,
+-          37.415210667066276
++          33.80945962527767,
++          27.482870374806225,
++          28.366631291806698
+         ],
+         "sd-v1-4": [
+-          30.219834292307496,
+-          36.45807833317667,
+-          31.40346366725862
++          26.483579707797617,
++          26.49351983424276,
++          26.721054583787918
+         ]
+       },
+       "medians_seconds": {
+-        "stable-diffusion-xl-base-1-0": 32.681176166050136,
+-        "sd-v1-4": 31.40346366725862
++        "stable-diffusion-xl-base-1-0": 28.366631291806698,
++        "sd-v1-4": 26.49351983424276
+       }
+     },
+     "warm_populated_cache": {
+-      "budget_seconds": 13.0,
++      "budget_seconds": 11.0,
+       "samples_seconds": {
+         "stable-diffusion-xl-base-1-0": [
+-          21.048966709058732,
+-          9.044011458288878,
+-          9.88753820816055
++          8.770339500159025,
++          7.808447666000575,
++          8.095881125424057
+         ],
+         "sd-v1-4": [
+-          8.8164959163405,
+-          8.942279499955475,
+-          8.618206750135869
++          8.664209959097207,
++          7.986142709385604,
++          8.002395582851022
+         ]
+       },
+       "medians_seconds": {
+-        "stable-diffusion-xl-base-1-0": 9.88753820816055,
+-        "sd-v1-4": 8.8164959163405
++        "stable-diffusion-xl-base-1-0": 8.095881125424057,
++        "sd-v1-4": 8.002395582851022
+       }
+     },
+-    "budget_basis": "S2 method: 1.3 times the slowest measured median per mode, rounded up to whole seconds; approved owner verdict on c7ec5526.",
++    "budget_basis": "S2 method: 1.3 times the slowest measured median per mode, rounded up; S10-1 authorized downward ratchet from 43 / 13 to 37 / 11.",
+     "measurement_status": "measured",
+-    "measured_at": "2026-09-09",
+-    "baseline_commit": "87cde8d8c0e983b315384db8d79c8c6bcee468f4",
++    "measured_at": "2026-09-10",
++    "baseline_commit": "fff99e2230064762598748463accd170e1e34e22",
+     "budget_multiplier": 1.3,
+     "baseline_host": {
+       "platform": "macOS-26.5.1-arm64-arm-64bit",
+@@ -170,17 +170,17 @@
+       "before": {
+         "cpu_count": 10,
+         "load_average": [
+-          5.30712890625,
+-          6.4296875,
+-          5.6650390625
++          3.41845703125,
++          7.197265625,
++          8.57666015625
+         ]
+       },
+       "after": {
+         "cpu_count": 10,
+         "load_average": [
+-          5.837890625,
+-          6.7255859375,
+-          6.13330078125
++          2.74951171875,
++          4.69287109375,
++          7.0732421875
+         ]
+       }
+     },
+@@ -190,32 +190,32 @@
+         "pair": 0,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 32.681176166050136,
+-          "html_seconds": 2.98867250001058,
+-          "imports_seconds": 0.835334416013211,
+-          "parent_cpu_seconds": 15.865829,
+-          "unfold_seconds": 32.67745608417317
++          "budget_seconds": 33.80945962527767,
++          "html_seconds": 2.9002443747594953,
++          "imports_seconds": 0.32556316582486033,
++          "parent_cpu_seconds": 15.95167,
++          "unfold_seconds": 33.80705595808104
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            5.30712890625,
+-            6.4296875,
+-            5.6650390625
++            3.41845703125,
++            7.197265625,
++            8.57666015625
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            7.03076171875,
+-            6.70458984375,
+-            5.79345703125
++            4.56005859375,
++            7.06396484375,
++            8.47119140625
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
+-          "sha256": "7088699014815b035835d7f5c2c8ede890783b67928ad712fdf5d713912a8f01",
+-          "bytes": 51775
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
++          "sha256": "63c5d537fd5145451ba71d87e088f03c4eccf57ace4816a4268554388c523741",
++          "bytes": 51764
+         }
+       },
+       {
+@@ -223,32 +223,32 @@
+         "pair": 0,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 21.048966709058732,
+-          "html_seconds": 3.2726151668466628,
+-          "imports_seconds": 0.8314359588548541,
+-          "parent_cpu_seconds": 12.720797,
+-          "unfold_seconds": 21.043829208239913
++          "budget_seconds": 8.770339500159025,
++          "html_seconds": 2.745702332817018,
++          "imports_seconds": 0.32240266585722566,
++          "parent_cpu_seconds": 8.438728,
++          "unfold_seconds": 8.768270832952112
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            7.03076171875,
+-            6.70458984375,
+-            5.79345703125
++            4.56005859375,
++            7.06396484375,
++            8.47119140625
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            10.265625,
+-            7.552734375,
+-            6.13330078125
++            4.28125,
++            6.88037109375,
++            8.38037109375
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
+-          "sha256": "971ddeb6de66eea3e769200c5d4e4be4e65b0a9ade7e16f89fbdc76b69638d84",
+-          "bytes": 4269
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
++          "sha256": "1bedee5cb271766ea77932065218fe3b1587e809ed340e8816ea48ca2272709d",
++          "bytes": 4264
+         }
+       },
+       {
+@@ -256,32 +256,32 @@
+         "pair": 1,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 32.24899445800111,
+-          "html_seconds": 2.947908249683678,
+-          "imports_seconds": 0.9491394590586424,
+-          "parent_cpu_seconds": 16.039080000000002,
+-          "unfold_seconds": 32.24492824962363
++          "budget_seconds": 27.482870374806225,
++          "html_seconds": 2.751559667289257,
++          "imports_seconds": 0.3190784160979092,
++          "parent_cpu_seconds": 14.66721,
++          "unfold_seconds": 27.48091208282858
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            10.265625,
+-            7.552734375,
+-            6.13330078125
++            4.28125,
++            6.88037109375,
++            8.38037109375
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            8.1953125,
+-            7.345703125,
+-            6.1142578125
++            3.71875,
++            6.49365234375,
++            8.1865234375
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
+-          "sha256": "6122d36d40146092b73ccfe9ca9c2668d9b9aebd58aaa28b86828bac399939ee",
+-          "bytes": 51778
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
++          "sha256": "2fd06ad7b1e44f994c0558a56eb9d5aa1f010569a3dd93aad4f7041fba69a54f",
++          "bytes": 51756
+         }
+       },
+       {
+@@ -289,32 +289,32 @@
+         "pair": 1,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 9.044011458288878,
+-          "html_seconds": 2.941310833208263,
+-          "imports_seconds": 0.8605146673507988,
+-          "parent_cpu_seconds": 8.780883,
+-          "unfold_seconds": 9.03763037500903
++          "budget_seconds": 7.808447666000575,
++          "html_seconds": 2.725670167244971,
++          "imports_seconds": 0.3152605830691755,
++          "parent_cpu_seconds": 7.78539,
++          "unfold_seconds": 7.8064337079413235
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            8.1953125,
+-            7.345703125,
+-            6.1142578125
++            3.71875,
++            6.49365234375,
++            8.1865234375
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.75439453125,
+-            7.06689453125,
+-            6.03564453125
++            3.26953125,
++            6.2568359375,
++            8.07177734375
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
+-          "sha256": "5c5c9978b0379ce5ebcd89432adea5fb49553ff918dfa7a89b84d25d4b827db4",
+-          "bytes": 4269
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
++          "sha256": "b34eab4507e06e23ceaf20fda946deb6f5d5b999e0dc0f34eb882710d00effbe",
++          "bytes": 4255
+         }
+       },
+       {
+@@ -322,32 +322,32 @@
+         "pair": 2,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 37.415210667066276,
+-          "html_seconds": 2.9745495840907097,
+-          "imports_seconds": 0.8332185409963131,
+-          "parent_cpu_seconds": 17.083581,
+-          "unfold_seconds": 37.411253875121474
++          "budget_seconds": 28.366631291806698,
++          "html_seconds": 3.2061513331718743,
++          "imports_seconds": 0.31520141707733274,
++          "parent_cpu_seconds": 15.425998,
++          "unfold_seconds": 28.364535917062312
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.75439453125,
+-            7.06689453125,
+-            6.03564453125
++            3.26953125,
++            6.2568359375,
++            8.07177734375
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.9326171875,
+-            7.05810546875,
+-            6.0830078125
++            3.06982421875,
++            5.91455078125,
++            7.8828125
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
+-          "sha256": "d70133ae49d2561ff3790102c029d59d0f9bbebad4c4474ce438835ca40607e8",
+-          "bytes": 51783
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
++          "sha256": "d9d70ed9305e993d9b46372be1341cbb203325b63f2921c2a31633fb77842755",
++          "bytes": 51764
+         }
+       },
+       {
+@@ -355,32 +355,32 @@
+         "pair": 2,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 9.88753820816055,
+-          "html_seconds": 2.9700118750333786,
+-          "imports_seconds": 0.8839146248064935,
+-          "parent_cpu_seconds": 9.446810000000001,
+-          "unfold_seconds": 9.88256729207933
++          "budget_seconds": 8.095881125424057,
++          "html_seconds": 2.838797540869564,
++          "imports_seconds": 0.32310883281752467,
++          "parent_cpu_seconds": 8.045641,
++          "unfold_seconds": 8.093739166855812
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.9326171875,
+-            7.05810546875,
+-            6.0830078125
++            3.06396484375,
++            5.86572265625,
++            7.85400390625
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            8.69873046875,
+-            7.44580078125,
+-            6.23828125
++            3.06005859375,
++            5.77099609375,
++            7.796875
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
+-          "sha256": "1511800129e515552cda462c4f32fbf83454bd1ee30a0a6bbd8684eee83fb464",
+-          "bytes": 4278
++          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
++          "sha256": "35f65c97c1fc248093839482442262c13d38396d61cafbb70f18835dea121c36",
++          "bytes": 4266
+         }
+       },
+       {
+@@ -388,32 +388,32 @@
+         "pair": 0,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 30.219834292307496,
+-          "html_seconds": 2.8585359579883516,
+-          "imports_seconds": 0.857680750079453,
+-          "parent_cpu_seconds": 16.430798,
+-          "unfold_seconds": 30.216070957947522
++          "budget_seconds": 26.483579707797617,
++          "html_seconds": 2.604732916690409,
++          "imports_seconds": 0.33427566569298506,
++          "parent_cpu_seconds": 14.803676,
++          "unfold_seconds": 26.48048287536949
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            8.69873046875,
+-            7.44580078125,
+-            6.23828125
++            3.06005859375,
++            5.77099609375,
++            7.796875
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.5556640625,
+-            7.04638671875,
+-            6.14111328125
++            3.2255859375,
++            5.53955078125,
++            7.64111328125
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/cold/result.json",
+-          "sha256": "fbefdd344c0a50e680a3c237d2bc2a00f226186d7e349f2f8a4ca130a6a0e172",
+-          "bytes": 51440
++          "logical_path": "latency-unet/samples/sd-v1-4/0/cold/result.json",
++          "sha256": "93d84b91660bbef98ce8d8b8b30eb2e65da0ba321b1920e02a02057ab94bcfd7",
++          "bytes": 51427
+         }
+       },
+       {
+@@ -421,32 +421,32 @@
+         "pair": 0,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 8.8164959163405,
+-          "html_seconds": 2.844835666939616,
+-          "imports_seconds": 0.8663699580356479,
+-          "parent_cpu_seconds": 8.702519,
+-          "unfold_seconds": 8.812727333046496
++          "budget_seconds": 8.664209959097207,
++          "html_seconds": 2.714870125055313,
++          "imports_seconds": 0.32436137460172176,
++          "parent_cpu_seconds": 8.295324,
++          "unfold_seconds": 8.662174083292484
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.5556640625,
+-            7.04638671875,
+-            6.14111328125
++            3.2255859375,
++            5.53955078125,
++            7.64111328125
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            5.90283203125,
+-            6.87939453125,
+-            6.09716796875
++            2.88623046875,
++            5.349609375,
++            7.5361328125
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/warm/result.json",
+-          "sha256": "30ca008efbd42481a5afb9db36a057e1466fa16cc80d951abdc01b9c2c9efcc8",
+-          "bytes": 3936
++          "logical_path": "latency-unet/samples/sd-v1-4/0/warm/result.json",
++          "sha256": "33beae1e3c902a91efd3f77fade11f3c4e7baa9cd10f1f37f199921553f5c212",
++          "bytes": 3929
+         }
+       },
+       {
+@@ -454,32 +454,32 @@
+         "pair": 1,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 36.45807833317667,
+-          "html_seconds": 2.9667975422926247,
+-          "imports_seconds": 0.8623255421407521,
+-          "parent_cpu_seconds": 18.430412,
+-          "unfold_seconds": 36.45313541730866
++          "budget_seconds": 26.49351983424276,
++          "html_seconds": 2.5856622918508947,
++          "imports_seconds": 0.31609908398240805,
++          "parent_cpu_seconds": 14.784388,
++          "unfold_seconds": 26.4915412501432
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            5.90283203125,
+-            6.87939453125,
+-            6.09716796875
++            2.88623046875,
++            5.349609375,
++            7.5361328125
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.7548828125,
+-            6.92138671875,
+-            6.14453125
++            2.50927734375,
++            5.02685546875,
++            7.3427734375
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/cold/result.json",
+-          "sha256": "86cf10aa39503f2469af5fceeecd15f8814766ca74fddb07d96ac3cef25a82fd",
+-          "bytes": 51443
++          "logical_path": "latency-unet/samples/sd-v1-4/1/cold/result.json",
++          "sha256": "7d7b4f54d97845399c0515afb1084716be597e2e235cc16e10f1859a932a7456",
++          "bytes": 51430
+         }
+       },
+       {
+@@ -487,31 +487,31 @@
+         "pair": 1,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 8.942279499955475,
+-          "html_seconds": 2.750000167172402,
+-          "imports_seconds": 0.9140762090682983,
+-          "parent_cpu_seconds": 8.728145,
+-          "unfold_seconds": 8.938463583122939
++          "budget_seconds": 7.986142709385604,
++          "html_seconds": 2.708663792349398,
++          "imports_seconds": 0.32755387481302023,
++          "parent_cpu_seconds": 7.950807,
++          "unfold_seconds": 7.9835897497832775
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.7548828125,
+-            6.92138671875,
+-            6.14453125
++            2.50927734375,
++            5.02685546875,
++            7.3427734375
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            7.04296875,
+-            6.97412109375,
+-            6.1767578125
++            2.74462890625,
++            4.9931640625,
++            7.30322265625
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/warm/result.json",
+-          "sha256": "7db9dc427e1adc4b46074a308fb8676f5802bee0429cf2a4eacdaf7d91098b39",
++          "logical_path": "latency-unet/samples/sd-v1-4/1/warm/result.json",
++          "sha256": "59038f2a2af50b81b31286463b8d892205c4d2e191187dd72ca3a4a151ecfb26",
+           "bytes": 3932
+         }
+       },
+@@ -520,32 +520,32 @@
+         "pair": 2,
+         "mode": "cold",
+         "timings": {
+-          "budget_seconds": 31.40346366725862,
+-          "html_seconds": 2.774404250085354,
+-          "imports_seconds": 1.3095779581926763,
+-          "parent_cpu_seconds": 16.913391,
+-          "unfold_seconds": 31.396250959020108
++          "budget_seconds": 26.721054583787918,
++          "html_seconds": 2.6688404171727598,
++          "imports_seconds": 0.33829599991440773,
++          "parent_cpu_seconds": 15.228071,
++          "unfold_seconds": 26.718679666053504
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            7.04296875,
+-            6.97412109375,
+-            6.1767578125
++            2.74462890625,
++            4.9931640625,
++            7.30322265625
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.8359375,
+-            6.95263671875,
+-            6.20166015625
++            2.96337890625,
++            4.83251953125,
++            7.1640625
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/cold/result.json",
+-          "sha256": "f9736bbb14b87656447fd1bdccc3376811bc8155f0859263f852289af01b4579",
+-          "bytes": 51437
++          "logical_path": "latency-unet/samples/sd-v1-4/2/cold/result.json",
++          "sha256": "378d86dd64617e8c4ca07030126355e4a0090fe6f27bea38044f804cc0f3273d",
++          "bytes": 51427
+         }
+       },
+       {
+@@ -553,51 +553,62 @@
+         "pair": 2,
+         "mode": "warm",
+         "timings": {
+-          "budget_seconds": 8.618206750135869,
+-          "html_seconds": 2.709869584068656,
+-          "imports_seconds": 0.8631775001995265,
+-          "parent_cpu_seconds": 8.490139,
+-          "unfold_seconds": 8.612819166854024
++          "budget_seconds": 8.002395582851022,
++          "html_seconds": 2.8546430421993136,
++          "imports_seconds": 0.3174576251767576,
++          "parent_cpu_seconds": 7.868612000000001,
++          "unfold_seconds": 8.000265333801508
+         },
+         "host_before": {
+           "cpu_count": 10,
+           "load_average": [
+-            6.5283203125,
+-            6.88671875,
+-            6.1826171875
++            2.88623046875,
++            4.78515625,
++            7.1337890625
+           ]
+         },
+         "host_after": {
+           "cpu_count": 10,
+           "load_average": [
+-            5.837890625,
+-            6.7255859375,
+-            6.13330078125
++            2.74951171875,
++            4.69287109375,
++            7.0732421875
+           ]
+         },
+         "receipt": {
+-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/warm/result.json",
+-          "sha256": "4595375c6d84475010dbefc8399e4064a832e225de947c5d9c1df143c8a1fb9e",
+-          "bytes": 3933
++          "logical_path": "latency-unet/samples/sd-v1-4/2/warm/result.json",
++          "sha256": "aa6f059d3a6c7590f520debdd3b271f13e48013406c4a679f9d2901f922fbb95",
++          "bytes": 3937
+         }
+       }
+     ],
+     "baseline_receipt": {
+-      "artifact_map": "verification/receipts/S8.1-owner-resubmission-actual-results/artifact-map.json",
+-      "artifact_map_sha256": "77a3d20ab5bc716525bfc8ec856e3dfe4693be0ade3ddc7e83c160760b874923",
++      "artifact_map": "verification/receipts/S10-1-unet-deletion-fff99e22/artifact-map.json",
++      "artifact_map_sha256": "a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04",
+       "campaign": {
+-        "logical_path": "final-canonical/latency-unet/campaign.json",
+-        "sha256": "1ee71a3ebdc98996fda61c44290daa96e3fab67dd1ef0d4edfe14af21dd804ff",
+-        "bytes": 17525
++        "logical_path": "latency-unet/campaign.json",
++        "sha256": "4c57fe6d3f29b6f2baef92bc0778a1ff00024f9212686a994726d97b904aba5a",
++        "bytes": 17013
+       }
+     },
+     "performance_target": {
+       "owner": "executor",
+       "step": "S10",
+-      "item": "static UNet reader cost, target 30 / 9",
++      "item": "static UNet reader cost, target 30 / 9; measured medians met at S10-1",
+       "cold_seconds": 30.0,
+       "warm_seconds": 9.0
+     },
+-    "ratchet": "Remeasure at S10 deletion; ratchet the gate down when costs fall. A rise above these measured medians requires a named cause; no automatic baseline renewal."
++    "ratchet": "Only downward renewal from the previously accepted gate; all twelve fresh-process samples retained. A higher cost needs a named cause; no automatic upward baseline renewal.",
++    "baseline_tree": {
++      "kind": "isolated_deletion_candidate",
++      "base_commit": "fff99e2230064762598748463accd170e1e34e22",
++      "patch_logical_path": "deletion/final-candidate.patch",
++      "patch_sha256": "0a7d3887a0202174a6f9fdea5f57cf237b61f27119f0199ebfa0fb9301c81654",
++      "production_sources_pin": {
++        "bytes": 37310,
++        "path": "pins-before.json",
++        "sha256": "d4007912909b1e9ec2a5dad64ea7ba7d9bf360b3d8762aa3e016569d43d834a1"
++      }
++    }
+   }
+ }

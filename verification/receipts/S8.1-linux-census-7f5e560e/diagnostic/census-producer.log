@@ -1,0 +1,3 @@
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+census regenerated: 2 occurrences -> /private/tmp/unfold-s81-linux-census-diagnostic/COR5_NET1_MIGRATION_DEBT.md

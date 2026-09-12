@@ -1,0 +1,29 @@
+{
+  "status": "HELD source-only bounded actual Hidden cell receipt repair; root independent review and runtime required",
+  "cause": "Two actual receipt-chain failures and static architecture_view promise traced to the new exact hidden_size scalar obligation lacking a true displayed receipt. Saved26 shows existing Hidden scalar cells; no embedding-flow inference is needed.",
+  "source_changes": [
+    "One exact html receipt route: model/model_hidden_size_value, stats_banner.hidden_size, stats_hidden_size actual marked cell, field, sections._stats_banner.",
+    "Inside the existing item append loop, emit only after the literal Hidden cell was appended and its raw canonical exact-int scalar, formatted item text and final escaped numeric HTML agree. Values come from canonical ir.hidden_size; tier only from context.fact_rows. Missing fact or context does not mint a receipt.",
+    "Nonvisual data-uf-receipt-node marker on the actual exact scalar cell makes node identity inspectable without fake DOM identity. This is an enumerated HTML metadata delta requiring the ordinary owner approval flow before preservation renewal.",
+    "Finite high-level stats_banner surface and one owner-qualified ConditionalProjector replace hidden_size false architecture_view promise. Existing architecture graph leaf sets unchanged. Static obligation map covers stats_banner; declaration never substitutes for actual event."
+  ],
+  "tests": [
+    "Real explicit/nested scalar consumption-to-qualified-fact-to-banner receipt chains; actual marker identity and captured number; class_default receipt retains sparse source proof tier and absent checkpoint path.",
+    "Actual rendered raw value differs from fact; formatted value wrong/approximate/missing; final escaped text wrong; Hidden item absent; no emitter event; absent fact; foreign fact tier and render context all remain findings.",
+    "Wrong node/surface/projector/kind/owner receipt cannot borrow another registered route. Static finite capability has exact model owner and cannot claim graph cell/foreign owner."
+  ],
+  "required_root_tests": [
+    "tests/test_s9_width_banner_receipts.py",
+    "tests/test_projection_obligations.py",
+    "tests/test_receipts.py",
+    "tests/test_fact_registry.py",
+    "tests/test_u2_r4_structural_multiset.py",
+    "tests/test_s9_scalar_decisions.py"
+  ],
+  "metadata_limits": [
+    "The per39 marker counts are source inferences from saved26 output, not claimed actual candidate renders. Record all actual differences after current source execution.",
+    "No changes to parser/scalar facts, receipted-scope suppression, thresholds, shader/CSS/layout or embedding dataflow proof.",
+    "Any family where no existing Hidden cell is emitted cannot obtain a banner receipt; an owed undrawn obligation remains a finding.",
+    "Source syntax only; no product imports/tests/model runtime by executor."
+  ]
+}

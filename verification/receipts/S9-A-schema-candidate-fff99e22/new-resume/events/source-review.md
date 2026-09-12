@@ -1,0 +1,11 @@
+# Source-only event association handoff
+
+The production diff against frozen twentyfourth changes only transformer/parser.py. The attention reader is byte-identical to twentyfourth. No fact value, fact status, reader witness, projection formula, activation proof, or drawing rule is added or changed by these edits. Runtime equivalence still requires root verification.
+
+1. Attention operands retain their ordinary inspections during resolution; only a successful bind emits mechanism consumption. Each event names decoder.attention.mechanism and hashes the existing bound.kind with the exact same final tier used for its fact. The binder and positive/failed decisions are unchanged. Null, nonpositive, nondividing or missing operands cannot acquire successful consumption merely because they were inspected.
+2. All three homogeneous geometry branches construct the same dictionary that was already passed to the fact writer. They do so immediately before consumption and pass that dictionary as expected_value. The event never reads a completed ledger or IR to invent its expectation. A later wrong-value fact is independently rejected by its existing claim proof; it cannot rewrite prior event hashes.
+3. Activation dispatch emits the final existing code_and_config or class_default tier, including a class-default branch selector through the same helper used by the fact writer. It hashes the existing normalized activation value. This event does not qualify an applied_function claim; a missing stronger activation proof remains explicit debt.
+
+Tests cover ordinary/default head operands, exact final hashes and fact keys, invalid bindings retaining unknown facts and inspections without consumption, post-decision geometry mutation rejection, actual existing MLA/partial geometry branch hashes (including the source class-default guard), and ordinary/default activation hash agreement without requiring nonexistent application proof. Source review corrected the interrupted test's false assumption that failed binding removes the mechanism fact: it deliberately retains an unknown fact.
+
+Supported config-object no_mapping behavior belongs to the retained core/parser changes and is untouched here. No tests, model construction, or product imports were run by this executor. No outputs were blessed.

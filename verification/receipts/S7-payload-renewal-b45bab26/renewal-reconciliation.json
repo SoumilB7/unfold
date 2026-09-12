@@ -1,0 +1,1385 @@
+{
+ "DISAGREE": [
+  "projection kind changed on 86 occurrences: {\"deepseek-v4-flash.json.gz\": {\"projection_unresolved->rendered\": 86}}"
+ ],
+ "head_commit": "b45bab26539eca773c2f03519ebfd72ca7719d93",
+ "items": {
+  "A_fresh_vs_candidate37": {
+   "byte_identical": 39,
+   "logically_different": [],
+   "logically_identical": [
+    "auraflow-v0-3.json.gz",
+    "bloom.json.gz",
+    "cogvideox-5b.json.gz",
+    "command-a-03-2025.json.gz",
+    "dbrx-base.json.gz",
+    "deepseek-coder-v2-lite.json.gz",
+    "deepseek-v3.json.gz",
+    "deepseek-v4-flash.json.gz",
+    "flux-2-dev.json.gz",
+    "fluxtransformer2dmodel.json.gz",
+    "gemma-2-2b-it.json.gz",
+    "gemma-3n-e2b.json.gz",
+    "glm-4-5.json.gz",
+    "gpt-oss-20b.json.gz",
+    "granite-3-0-8b-instruct.json.gz",
+    "hunyuanvideo.json.gz",
+    "jamba-v0-1.json.gz",
+    "lfm2-1-2b.json.gz",
+    "llama-7b.json.gz",
+    "ltx-video.json.gz",
+    "lumina-image-2-0.json.gz",
+    "mochi-1-preview.json.gz",
+    "musicgen-small.json.gz",
+    "nemotron-h-8b.json.gz",
+    "olmo-2-1124-7b.json.gz",
+    "pixart-sigma-xl-2-1024-ms.json.gz",
+    "prxpixel-t2i.json.gz",
+    "qwen-image.json.gz",
+    "qwen2-vl-7b-instruct.json.gz",
+    "qwen3-5-27b-text.json.gz",
+    "qwen3-5-27b.json.gz",
+    "qwen3-8b.json.gz",
+    "qwen3-omni-30b.json.gz",
+    "qwen3-vl-235b.json.gz",
+    "sana-1600m-1024px-diffusers.json.gz",
+    "stable-diffusion-3-5-large.json.gz",
+    "stable-diffusion-xl-base-1-0.json.gz",
+    "stablelm-2-1-6b.json.gz",
+    "wan2-2-t2v-a14b-diffusers.json.gz"
+   ],
+   "model_set_equal": true,
+   "models": 39,
+   "models_rows_equal_candidate37": true,
+   "observations_count": 39,
+   "observations_identical": true,
+   "relations_count": 39,
+   "relations_identical": true,
+   "sources_entries": [
+    394,
+    394
+   ],
+   "sources_fresh_equals_candidate37": true,
+   "sources_fresh_equals_committed_stamp": true
+  },
+  "B_fresh_vs_committed": {
+   "blocking_head_to_fresh": [
+    70186,
+    54257
+   ],
+   "construction_equal_all": true,
+   "execution_equal_all": true,
+   "identity_order_equal_all": true,
+   "models_with_provenance_changes": [
+    "bloom.json.gz",
+    "command-a-03-2025.json.gz",
+    "deepseek-coder-v2-lite.json.gz",
+    "deepseek-v3.json.gz",
+    "deepseek-v4-flash.json.gz",
+    "gemma-2-2b-it.json.gz",
+    "glm-4-5.json.gz",
+    "gpt-oss-20b.json.gz",
+    "granite-3-0-8b-instruct.json.gz",
+    "lfm2-1-2b.json.gz",
+    "llama-7b.json.gz",
+    "nemotron-h-8b.json.gz",
+    "olmo-2-1124-7b.json.gz",
+    "qwen2-vl-7b-instruct.json.gz",
+    "qwen3-5-27b-text.json.gz",
+    "qwen3-8b.json.gz",
+    "stablelm-2-1-6b.json.gz"
+   ],
+   "models_with_relation_changes": [
+    "bloom.json.gz",
+    "command-a-03-2025.json.gz",
+    "gemma-2-2b-it.json.gz",
+    "granite-3-0-8b-instruct.json.gz",
+    "lfm2-1-2b.json.gz"
+   ],
+   "per_model": {
+    "auraflow-v0-3.json.gz": {
+     "blocking": [
+      1823,
+      1784
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 2,
+     "head_unqualified": 39,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 39,
+     "occ": [
+      1101,
+      1101
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "bloom.json.gz": {
+     "blocking": [
+      1270,
+      565
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 705,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 706,
+     "occ": [
+      777,
+      777
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": false,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "cogvideox-5b.json.gz": {
+     "blocking": [
+      2431,
+      2387
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 44,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 44,
+     "occ": [
+      1448,
+      1448
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "command-a-03-2025.json.gz": {
+     "blocking": [
+      1244,
+      148
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 64,
+     "head_unqualified": 1160,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 64,
+     "newly_cited": 1416,
+     "occ": [
+      791,
+      791
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": false,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "dbrx-base.json.gz": {
+     "blocking": [
+      1733,
+      807
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 926,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 926,
+     "occ": [
+      527,
+      527
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "deepseek-coder-v2-lite.json.gz": {
+     "blocking": [
+      735,
+      296
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 439,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 493,
+     "occ": [
+      489,
+      489
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "deepseek-v3.json.gz": {
+     "blocking": [
+      2257,
+      662
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 61,
+     "head_unqualified": 1656,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 61,
+     "newly_cited": 1778,
+     "occ": [
+      1215,
+      1215
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "deepseek-v4-flash.json.gz": {
+     "blocking": [
+      1604,
+      1431
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 87,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 173,
+     "occ": [
+      1502,
+      1502
+     ],
+     "projection_field_diffs": {
+      "kind": 86,
+      "reason": 86,
+      "reason_class": 86
+     },
+     "provenance_equal": false,
+     "relations_count": [
+      2,
+      2
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "flux-2-dev.json.gz": {
+     "blocking": [
+      1458,
+      1266
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 2,
+     "head_unqualified": 192,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 192,
+     "occ": [
+      706,
+      706
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "fluxtransformer2dmodel.json.gz": {
+     "blocking": [
+      2544,
+      2464
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 2,
+     "head_unqualified": 80,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 80,
+     "occ": [
+      1321,
+      1321
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "gemma-2-2b-it.json.gz": {
+     "blocking": [
+      818,
+      55
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 52,
+     "head_unqualified": 789,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 26,
+     "newly_cited": 971,
+     "occ": [
+      397,
+      397
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": false,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "gemma-3n-e2b.json.gz": {
+     "blocking": [
+      4616,
+      4612
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 4,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 4,
+     "occ": [
+      2896,
+      2896
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      13,
+      13
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "glm-4-5.json.gz": {
+     "blocking": [
+      3405,
+      635
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 92,
+     "head_unqualified": 2862,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 92,
+     "newly_cited": 3138,
+     "occ": [
+      1743,
+      1743
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "gpt-oss-20b.json.gz": {
+     "blocking": [
+      708,
+      51
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 24,
+     "head_unqualified": 681,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 24,
+     "newly_cited": 777,
+     "occ": [
+      271,
+      271
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "granite-3-0-8b-instruct.json.gz": {
+     "blocking": [
+      1093,
+      83
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 80,
+     "head_unqualified": 1050,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 40,
+     "newly_cited": 1250,
+     "occ": [
+      527,
+      527
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": false,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "hunyuanvideo.json.gz": {
+     "blocking": [
+      3401,
+      3351
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 3,
+     "head_unqualified": 50,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 50,
+     "occ": [
+      1927,
+      1927
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "jamba-v0-1.json.gz": {
+     "blocking": [
+      545,
+      545
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 0,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 0,
+     "occ": [
+      546,
+      546
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "lfm2-1-2b.json.gz": {
+     "blocking": [
+      259,
+      103
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 6,
+     "head_unqualified": 162,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 6,
+     "newly_cited": 206,
+     "occ": [
+      201,
+      201
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": false,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "llama-7b.json.gz": {
+     "blocking": [
+      780,
+      67
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 64,
+     "head_unqualified": 745,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 32,
+     "newly_cited": 905,
+     "occ": [
+      423,
+      423
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "ltx-video.json.gz": {
+     "blocking": [
+      1469,
+      1438
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 31,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 31,
+     "occ": [
+      777,
+      777
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "lumina-image-2-0.json.gz": {
+     "blocking": [
+      1588,
+      1583
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 3,
+     "head_unqualified": 5,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 5,
+     "occ": [
+      946,
+      946
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "mochi-1-preview.json.gz": {
+     "blocking": [
+      4683,
+      4681
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 2,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 2,
+     "occ": [
+      2416,
+      2416
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "musicgen-small.json.gz": {
+     "blocking": [
+      1244,
+      1241
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 3,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 3,
+     "occ": [
+      969,
+      969
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      1,
+      1
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "nemotron-h-8b.json.gz": {
+     "blocking": [
+      369,
+      315
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 54,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 106,
+     "occ": [
+      370,
+      370
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "olmo-2-1124-7b.json.gz": {
+     "blocking": [
+      1069,
+      67
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 64,
+     "head_unqualified": 1034,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 32,
+     "newly_cited": 1194,
+     "occ": [
+      487,
+      487
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "pixart-sigma-xl-2-1024-ms.json.gz": {
+     "blocking": [
+      1310,
+      1310
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 0,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 0,
+     "occ": [
+      1310,
+      1310
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "prxpixel-t2i.json.gz": {
+     "blocking": [
+      473,
+      372
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 101,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 101,
+     "occ": [
+      447,
+      447
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen-image.json.gz": {
+     "blocking": [
+      4478,
+      4414
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 64,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 64,
+     "occ": [
+      2479,
+      2479
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen2-vl-7b-instruct.json.gz": {
+     "blocking": [
+      1255,
+      856
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 427,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 28,
+     "newly_cited": 455,
+     "occ": [
+      731,
+      731
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen3-5-27b-text.json.gz": {
+     "blocking": [
+      1707,
+      516
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 64,
+     "head_unqualified": 1207,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 16,
+     "newly_cited": 1479,
+     "occ": [
+      1063,
+      1063
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen3-5-27b.json.gz": {
+     "blocking": [
+      1484,
+      1479
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 5,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 5,
+     "occ": [
+      1345,
+      1345
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen3-8b.json.gz": {
+     "blocking": [
+      1201,
+      75
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 72,
+     "head_unqualified": 1162,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 36,
+     "newly_cited": 1342,
+     "occ": [
+      547,
+      547
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen3-omni-30b.json.gz": {
+     "blocking": [
+      4266,
+      4266
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 0,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 0,
+     "occ": [
+      2144,
+      2144
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "qwen3-vl-235b.json.gz": {
+     "blocking": [
+      1917,
+      1914
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 3,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 3,
+     "occ": [
+      1621,
+      1621
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "sana-1600m-1024px-diffusers.json.gz": {
+     "blocking": [
+      1347,
+      1283
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 64,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 64,
+     "occ": [
+      905,
+      905
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "stable-diffusion-3-5-large.json.gz": {
+     "blocking": [
+      2996,
+      2995
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 0,
+     "head_unqualified": 1,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 1,
+     "occ": [
+      1689,
+      1689
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "stable-diffusion-xl-base-1-0.json.gz": {
+     "blocking": [
+      1860,
+      1860
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 5370,
+     "head_unqualified": 0,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 0,
+     "occ": [
+      3551,
+      3551
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "stablelm-2-1-6b.json.gz": {
+     "blocking": [
+      587,
+      124
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 48,
+     "head_unqualified": 487,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 24,
+     "newly_cited": 559,
+     "occ": [
+      343,
+      343
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": false,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    },
+    "wan2-2-t2v-a14b-diffusers.json.gz": {
+     "blocking": [
+      2159,
+      2156
+     ],
+     "claim_kind_changed": 0,
+     "construction_equal": true,
+     "execution_equal": true,
+     "head_cited": 1,
+     "head_unqualified": 3,
+     "head_unqualified_still": 0,
+     "identity_order_equal": true,
+     "new_unqualified": 0,
+     "newly_cited": 3,
+     "occ": [
+      1140,
+      1140
+     ],
+     "projection_field_diffs": {},
+     "provenance_equal": true,
+     "relations_count": [
+      0,
+      0
+     ],
+     "relations_equal": true,
+     "removed_citations": 0,
+     "schedules_equal": true
+    }
+   },
+   "projection_field_diffs": {
+    "kind": 86,
+    "reason": 86,
+    "reason_class": 86
+   },
+   "projection_kind_changes_by_model": {
+    "deepseek-v4-flash.json.gz": {
+     "projection_unresolved->rendered": 86
+    }
+   },
+   "relation_counts_equal_all": true,
+   "schedules_equal_all": true,
+   "totals": {
+    "claim_kind_changed": 0,
+    "head_cited": 6080,
+    "head_unqualified": 16324,
+    "head_unqualified_still": 0,
+    "new_unqualified": 481,
+    "newly_cited": 18565,
+    "occ_fresh": 44088,
+    "occ_head": 44088,
+    "removed_citations": 0
+   }
+  },
+  "C_reconciliation_vs_owner_audit": {
+   "blocking_findings": {
+    "agree": true,
+    "expected": [
+     70186,
+     54257
+    ],
+    "mine": [
+     70186,
+     54257
+    ],
+    "owner": [
+     70186,
+     54257
+    ]
+   },
+   "citations_removed": {
+    "agree": true,
+    "expected": 0,
+    "mine": 0,
+    "owner": 0
+   },
+   "claim_kinds_changed": {
+    "agree": true,
+    "expected": 0,
+    "mine": 0,
+    "owner": 0
+   },
+   "formerly_unqualified": {
+    "agree": true,
+    "expected": 16324,
+    "mine": 16324,
+    "owner": 16324
+   },
+   "identity_order_construction_execution_schedules": {
+    "agree": true,
+    "expected": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "mine": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "owner": [
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "models_with_provenance_changes": {
+    "agree": true,
+    "expected": null,
+    "mine": [
+     "bloom.json.gz",
+     "command-a-03-2025.json.gz",
+     "deepseek-coder-v2-lite.json.gz",
+     "deepseek-v3.json.gz",
+     "deepseek-v4-flash.json.gz",
+     "gemma-2-2b-it.json.gz",
+     "glm-4-5.json.gz",
+     "gpt-oss-20b.json.gz",
+     "granite-3-0-8b-instruct.json.gz",
+     "lfm2-1-2b.json.gz",
+     "llama-7b.json.gz",
+     "nemotron-h-8b.json.gz",
+     "olmo-2-1124-7b.json.gz",
+     "qwen2-vl-7b-instruct.json.gz",
+     "qwen3-5-27b-text.json.gz",
+     "qwen3-8b.json.gz",
+     "stablelm-2-1-6b.json.gz"
+    ],
+    "owner": [
+     "bloom.json.gz",
+     "command-a-03-2025.json.gz",
+     "deepseek-coder-v2-lite.json.gz",
+     "deepseek-v3.json.gz",
+     "deepseek-v4-flash.json.gz",
+     "gemma-2-2b-it.json.gz",
+     "glm-4-5.json.gz",
+     "gpt-oss-20b.json.gz",
+     "granite-3-0-8b-instruct.json.gz",
+     "lfm2-1-2b.json.gz",
+     "llama-7b.json.gz",
+     "nemotron-h-8b.json.gz",
+     "olmo-2-1124-7b.json.gz",
+     "qwen2-vl-7b-instruct.json.gz",
+     "qwen3-5-27b-text.json.gz",
+     "qwen3-8b.json.gz",
+     "stablelm-2-1-6b.json.gz"
+    ]
+   },
+   "models_with_relation_changes": {
+    "agree": true,
+    "expected": null,
+    "mine": [
+     "bloom.json.gz",
+     "command-a-03-2025.json.gz",
+     "gemma-2-2b-it.json.gz",
+     "granite-3-0-8b-instruct.json.gz",
+     "lfm2-1-2b.json.gz"
+    ],
+    "owner": [
+     "bloom.json.gz",
+     "command-a-03-2025.json.gz",
+     "gemma-2-2b-it.json.gz",
+     "granite-3-0-8b-instruct.json.gz",
+     "lfm2-1-2b.json.gz"
+    ]
+   },
+   "new_unqualified": {
+    "agree": true,
+    "expected": 481,
+    "mine": 481,
+    "owner": 481
+   },
+   "newly_cited": {
+    "agree": true,
+    "expected": null,
+    "mine": 18565,
+    "owner": 18565
+   },
+   "occurrences": {
+    "agree": true,
+    "expected": [
+     44088,
+     44088
+    ],
+    "mine": [
+     44088,
+     44088
+    ],
+    "owner": [
+     44088,
+     44088
+    ]
+   },
+   "projection_field_diffs": {
+    "agree": true,
+    "expected": null,
+    "mine": {
+     "kind": 86,
+     "reason": 86,
+     "reason_class": 86
+    },
+    "owner": {
+     "kind": 86,
+     "reason": 86,
+     "reason_class": 86
+    }
+   },
+   "still_unqualified": {
+    "agree": true,
+    "expected": 0,
+    "mine": 0,
+    "owner": 0
+   }
+  }
+ }
+}

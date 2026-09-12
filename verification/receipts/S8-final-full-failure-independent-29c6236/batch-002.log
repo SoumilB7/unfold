@@ -1,0 +1,38 @@
+.........................................................F.............. [ 42%]
+........................................................................ [ 84%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+______________ test_diffusion_recursive_depth_conforms[sdxl_unet] ______________
+
+name = 'sdxl_unet'
+
+    @pytest.mark.parametrize("name", sorted(_DEPTH_FIXTURES))
+    def test_diffusion_recursive_depth_conforms(name):
+        cfg = _DEPTH_FIXTURES[name]
+        d = unfold(cfg)
+        ir = d.ir
+        # 1. recursion bottoms out: every block carries a registered view OR a
+        #    description (a leaf) — no bare, undrillable, undescribed block.
+        from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
+        render = (ir.extras or {}).get("render") or {}
+        trees = [getattr(L, "blocks", []) for L in ir.layers] + \
+                [render.get("model_blocks") or [], render.get("loop_blocks") or []]
+        for blocks in trees:
+            for b in _walk_blocks(blocks):
+                if b.get("static"):
+                    continue
+>               assert b.get("view") in VIEW_REGISTRY or b.get("description") or b.get("children"), \
+                    f"{name}: block {b.get('id')!r} is a bare leaf (no view/description)"
+E               AssertionError: sdxl_unet: block 'unet_primary_region_3__iteration__when_true__call__slot_0' is a bare leaf (no view/description)
+E               assert (None in {'attention': <function _from_block.<locals>.<lambda> at 0x11c3c63e0>, 'audio_encoder': <function _from_block.<locals>...k.<locals>.<lambda> at 0x11c3c6ac0>, 'conditioning_path': <function _from_block.<locals>.<lambda> at 0x11c3c6b60>, ...} or None or None)
+E                +  where None = <built-in method get of dict object at 0x32099eb00>('view')
+E                +    where <built-in method get of dict object at 0x32099eb00> = {'facts': ['Target of this call at the corresponding recorded loop slot'], 'id': 'unet_primary_region_3__iteration__when_true__call__slot_0', 'kind': 'opaque', 'label': 'down_blocks.0', ...}.get
+E                +  and   None = <built-in method get of dict object at 0x32099eb00>('description')
+E                +    where <built-in method get of dict object at 0x32099eb00> = {'facts': ['Target of this call at the corresponding recorded loop slot'], 'id': 'unet_primary_region_3__iteration__when_true__call__slot_0', 'kind': 'opaque', 'label': 'down_blocks.0', ...}.get
+E                +  and   None = <built-in method get of dict object at 0x32099eb00>('children')
+E                +    where <built-in method get of dict object at 0x32099eb00> = {'facts': ['Target of this call at the corresponding recorded loop slot'], 'id': 'unet_primary_region_3__iteration__when_true__call__slot_0', 'kind': 'opaque', 'label': 'down_blocks.0', ...}.get
+
+tests/test_diffusion.py:1092: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_diffusion.py::test_diffusion_recursive_depth_conforms[sdxl_unet]
+1 failed, 169 passed in 1860.66s (0:31:00)

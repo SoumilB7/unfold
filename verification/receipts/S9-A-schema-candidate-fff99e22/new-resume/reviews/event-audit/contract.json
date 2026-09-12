@@ -1,0 +1,30 @@
+{
+  "status": "Prepared source-only; root independent review and execution required",
+  "scope": "Saved ordinary/sparse Llama artifacts only. Three event targets; no models or product imports. This script does not change strict sparse observer or results.",
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/event-audit/audit.py --capture /private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b --output /private/tmp/unfold-s9a-event-audit-twentysixth.json",
+  "script_sha256": "6b9334f9cf9e71feecbd5eca57c6a5560486a3ec4ceced28c7c32b3303597886",
+  "association_contract": [
+    "Enumerate every saved event bearing one of the three exact target keys, their three mechanism scopes, or stale decoder.attention.num_heads/num_kv_heads targets. Record nondeciding rows separately; do not silently filter bad decisions.",
+    "Every consumed/absent_default decision must name an admitted exact target, original expected reader, matching mechanism, exact root document/path/fingerprint, and final canonical value/status hash. Native final hash must agree with saved ledger presentation reference.",
+    "Mechanism/geometry expected operand paths come from the saved original-proof operand derivation. Each exact operand must have exactly one decision event; duplicates, missing paths, stale targets, extra paths and wrong hashes fail even when identical across conditions.",
+    "Activation expected path is explicitly hidden_act for this bounded witness; its scalar must equal the saved native activation value via checkpoint or class overlay. This is a value-channel association predicate, never an activation-application proof.",
+    "Checkpoint events require present/consumed/checkpoint_declared/value. Omitted-default events require absent/absent_default/class_default/missing with exact default path, matching overlay value, and no checkpoint occurrence.",
+    "Report semantic proof presence separately for every fact. Missing activation proof does not make correct association fail and never becomes qualified because association passes.",
+    "The original sparse bracket must have pins_equal=true. All audit input files are hashed before/after. Original sparse FAIL remains visible and untouched."
+  ],
+  "reviewed_source_basis": [
+    "Frozen26 actual artifact formats read without executing audit; original-proof-operands records include source_path/source_kind/checkpoint_path/value.",
+    "receipts.value_status_hash reimplemented exactly for JSON-shaped saved values (16 hex chars); config_access.checkpoint_fingerprint reimplemented for saved JSON domain. No deserialized receipt is treated as live proof.",
+    "Function body and AST reviewed by author; no model/test/runtime invocation by author."
+  ],
+  "required_root_controls": [
+    "Review script independently before relying on its result.",
+    "Run actual saved artifacts; preserve raw audit result and separate semantic_proof_missing list.",
+    "On in-memory/copy fixtures, independently verify that bad/missing final hash, stale num_heads target, duplicate decision, missing decision, wrong reader and default relabelled checkpoint each fail. Do not mutate actual captured files."
+  ],
+  "limitations": [
+    "This verifies persisted record association under the original capture bracket; it does not reauthenticate live reader authority or prove mechanism semantics.",
+    "Llama only. Registered diffusion defaults, arbitrary aliases/normalization, other models and other event targets require separate contracts.",
+    "No blessing, output-delta acceptance, matrix acceptance or S9-A completion follows from PASS."
+  ]
+}

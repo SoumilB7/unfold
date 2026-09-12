@@ -1,0 +1,11 @@
+# Bloom regression diagnosis —7168440
+
+The full bracket stops at Bloom in test_sable_regression_corpus:159other tests in batch019pass. Both the SVG hash signature and labeled view signature drift. The log says4locked views→4current views; it does **not** establish that all4SVGs changed. It gives no new hashes or affected labels.
+
+The regression harness calls sable(render_images=False). The final page and diagram exist only locally inside that call; check_regression returns drift strings and does not retain actual output. No exact current Bloom artifact was found in the batch output. Existing older preview pages are not substitutes: the old preview matches0locked hashes, run77matches only the FFN hash.
+
+The strongest source candidate is graph_engine._draw_parallel:428–448. Previously every empty lane was skipped; it now paints an explicit source tap and destination rail. region_to_graph:133–141 creates such a lane from an already present canonical direct edge into a merge. The correction can therefore affect non-UNet residual/direct paths; it is not gated by model family. The other independent-input layout additions are guarded by src=None. Canonical opgraph construction, region lowering and visual hashing are unchanged at the two source pins. Bloom is not established here to be gated, and no particular attention edge is claimed yet.
+
+A single exact Bloom Sable parse after the serial lane releases is the minimum next probe: retain final realIR/HTML/Graph/Region data and per-view hashes; then reuse that same typedIR to compare current drawing with only original83140_draw_parallel in a diagnostic in-memory override. This can attribute changed glyphs to exact declared edges and test whether the old function recovers all locked views without a second parse. All outputs must be preserved and actually reviewed. A universal empty-lane correction is not automatically an accepted blessing delta.
+
+This receipt contains source hashes, exact old/current critical source, the graph-engine diff, original fixture and failure log. No model, pytest, production edit, baseline change or blessing occurred. The actual-output probe is prepared as a specific request and has not been run while the full/preservation lane remains active.

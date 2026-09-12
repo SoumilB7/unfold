@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3",
+  "reference26_seal": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "cf66d7c13fe76633cd77c371e0cef809330835bac7e0394a0d495c6cad9f9895",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_cohere2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "8429149478ebb3424cc9cab80494eb7ff90dd32c0b21a7969b57b585a2ea2cc0",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_cohere2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

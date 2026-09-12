@@ -1,0 +1,5 @@
+# Failed final candidate b44dd25 — actual HTML retained
+
+SDXL ordinary rendered actual HTML, then failed at114.868 seconds in `UNetPrimaryPortProof.summary` (`unet_primary_ports.py:110`) because `ClaimProofSummary` requires canonical sorted unique citation values. No qualified-facts archive or final result was completed. Full traceback, source/script/input pin, cold command receipt and partial facts/IR/actual HTML are retained. Primary proof summary is invalid until corrected; this run is not accepted.
+
+Actual HTML SHA256 `f3bb34f15525822ac737737b3426c2681670fdb07d258aef479b7d1fa9d24f59`,6,599,463 bytes,1,381 baked SVGs→101 distinct native views. Seven were inspected; exact scope and conditioning observations are in native-visual-manifest.json. Actual HTML and exhaustive generated native gallery are shipped at root z-docs/12-design/S8/final-b44dd25/. Rendering success does not imply proof success. No dependent controls, pytest or blessing. This failure remains preserved; a corrected candidate needs a fresh output root.

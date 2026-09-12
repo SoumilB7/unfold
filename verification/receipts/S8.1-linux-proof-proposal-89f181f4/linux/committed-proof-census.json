@@ -1,0 +1,21 @@
+[
+  {
+    "model": "stable-diffusion-xl-base-1-0.json.gz",
+    "summaries": 200,
+    "indices": {
+      "09fc7b6a95f66c670862b0660094bce1078a3b341e2c963b5da40d3e19673f9d": 8,
+      "14f56c8ae9acd61f6cf43b673a4143dcb3593dfa2124757f63bdcc635d5a637e": 192
+    },
+    "proof_kinds": {
+      "constructed_stages_and_skip_route": 8,
+      "required_root_formal_to_selected_context_argument": 61,
+      "omitted_constructor_parameter_default_declarations": 1,
+      "guarded_primary_state_argument_result_ports": 16,
+      "concat_output_to_constructed_child_input": 6,
+      "exact_cell_return_and_conditional_arithmetic": 17,
+      "exact_constructed_member_call_result_to_argument": 17,
+      "selected_spatial_primitive_return_route": 4,
+      "selected_composite_ffn_return_route": 70
+    }
+  }
+]

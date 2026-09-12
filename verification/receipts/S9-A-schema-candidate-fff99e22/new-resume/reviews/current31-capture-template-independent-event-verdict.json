@@ -1,0 +1,22 @@
+{
+  "verdict": "PASS_SOURCE_REVIEW_RUNTIME_PENDING",
+  "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current31-capture-template/manifest.json",
+  "manifest_sha256": "5b210cd332b55149ee1b11d1d7e8023c5c06c565e81ea8f9b2e240344b94e6e9",
+  "reviewer": "event_executor",
+  "checks": [
+    "All six held executable/contract files match manifest; plan targets and active matrix pins unchanged from reviewed30. Only five plan coordinates move to31.",
+    "Launcher and guard source differ solely by generation coordinates; strict required CLI source pin, all exact source/deletion rows, independent full production Python census, before/after script/input brackets and standard lane controls preserved.",
+    "Portable source helper unchanged byte-for-byte; original live DocumentBinding/proof validation, actual before/after IR, exact HTML and presentation census remain.",
+    "New local_context_snapshot reads every dataclass field from the actual active RenderContext immediately after page publication and before live census. It calls no rendering, parser, proof reconstruction or mechanism code.",
+    "All current RenderContext fields are covered: scalars, event/receipt/chip/annotation dataclasses, tuple/list paths, string-only sets and string-keyed dict fact rows. Unsupported values raise a typed capture failure rather than stringify silently.",
+    "Tuple arrays and tagged sorted string sets are explicitly diagnostic encodings; original scalar values and local context tokens remain, no portable identity or authority replay claim.",
+    "Immediate HTML publication survives later snapshot/census failure; output remains unblessed."
+  ],
+  "limitations": [
+    "No actual31 snapshot execution or page/HTML/browser verdict performed by reviewer.",
+    "Unexpected future non-string mapping/set members or non-JSON field types cause explicit capture failure; diagnostic encoding does not claim class round-trip reconstruction.",
+    "Frozen31 template would need a separate coordinate/pin revision if root chooses a later source generation."
+  ],
+  "no_production_changes": true,
+  "no_runtime": true
+}

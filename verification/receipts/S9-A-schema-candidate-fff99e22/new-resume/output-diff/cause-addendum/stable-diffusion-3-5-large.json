@@ -1,0 +1,1585 @@
+{
+  "counts": {
+    "activation": 1,
+    "geometry": 2,
+    "mechanism": 2,
+    "references": 1,
+    "scope": 43,
+    "tie": 1,
+    "unknown": 2,
+    "width": 6
+  },
+  "existing_fact_triples_unchanged": true,
+  "new_fact_keys": [],
+  "raw_deltas": 58,
+  "rows": [
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        19,
+        0
+      ],
+      "raw_delta_index": 0,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        19,
+        1
+      ],
+      "raw_delta_index": 1,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        20,
+        1
+      ],
+      "raw_delta_index": 2,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        21,
+        1
+      ],
+      "raw_delta_index": 3,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        22,
+        1
+      ],
+      "raw_delta_index": 4,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        23,
+        1
+      ],
+      "raw_delta_index": 5,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        24,
+        1
+      ],
+      "raw_delta_index": 6,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        25,
+        1
+      ],
+      "raw_delta_index": 7,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        26,
+        1
+      ],
+      "raw_delta_index": 8,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        27,
+        1
+      ],
+      "raw_delta_index": 9,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        28,
+        1
+      ],
+      "raw_delta_index": 10,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        29,
+        1
+      ],
+      "raw_delta_index": 11,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        30,
+        1
+      ],
+      "raw_delta_index": 12,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        31,
+        1
+      ],
+      "raw_delta_index": 13,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        32,
+        1
+      ],
+      "raw_delta_index": 14,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        33,
+        1
+      ],
+      "raw_delta_index": 15,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        34,
+        0
+      ],
+      "raw_delta_index": 16,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        34,
+        1
+      ],
+      "raw_delta_index": 17,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        35,
+        1
+      ],
+      "raw_delta_index": 18,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        36,
+        1
+      ],
+      "raw_delta_index": 19,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        37,
+        0
+      ],
+      "raw_delta_index": 20,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        37,
+        1
+      ],
+      "raw_delta_index": 21,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        38,
+        1
+      ],
+      "raw_delta_index": 22,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        39,
+        1
+      ],
+      "raw_delta_index": 23,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        40,
+        1
+      ],
+      "raw_delta_index": 24,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        41,
+        1
+      ],
+      "raw_delta_index": 25,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        42,
+        1
+      ],
+      "raw_delta_index": 26,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        43,
+        0
+      ],
+      "raw_delta_index": 27,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        43,
+        1
+      ],
+      "raw_delta_index": 28,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        44,
+        1
+      ],
+      "raw_delta_index": 29,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        45,
+        1
+      ],
+      "raw_delta_index": 30,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        46,
+        0
+      ],
+      "raw_delta_index": 31,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        46,
+        1
+      ],
+      "raw_delta_index": 32,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        47,
+        1
+      ],
+      "raw_delta_index": 33,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        48,
+        0
+      ],
+      "raw_delta_index": 34,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        48,
+        1
+      ],
+      "raw_delta_index": 35,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        49,
+        0
+      ],
+      "raw_delta_index": 36,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        49,
+        1
+      ],
+      "raw_delta_index": 37,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        50,
+        1
+      ],
+      "raw_delta_index": 38,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        51,
+        0
+      ],
+      "raw_delta_index": 39,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        51,
+        1
+      ],
+      "raw_delta_index": 40,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        52,
+        1
+      ],
+      "raw_delta_index": 41,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "scope",
+      "details": {
+        "complete_sequence_equals_sorted_baseline_plus_one": true,
+        "inserted_scope": [
+          "model",
+          "model_hidden_size_value"
+        ]
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_coverage",
+        "receipted_scopes",
+        53
+      ],
+      "raw_delta_index": 42,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "63ed4117f4c89159",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        1,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 43,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "63ed4117f4c89159",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        1,
+        "mechanism"
+      ],
+      "raw_delta_index": 44,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "b259a70b49b9febe",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_2",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_2",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 45,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "b259a70b49b9febe",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_2",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_2",
+            "path": "hidden_size",
+            "spelling": "hidden_size"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_2.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        8,
+        "mechanism"
+      ],
+      "raw_delta_index": 46,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "67951bb3d9db1731",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_3",
+            "path": "d_model",
+            "spelling": "d_model"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_3",
+            "path": "d_model",
+            "spelling": "d_model"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        15,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 47,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "width",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "67951bb3d9db1731",
+          "mechanism": "model_hidden_size_value",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_3",
+            "path": "d_model",
+            "spelling": "d_model"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "hidden_size",
+            "component": "root.text_encoder_3",
+            "path": "d_model",
+            "spelling": "d_model"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "hidden_size",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        15,
+        "mechanism"
+      ],
+      "raw_delta_index": 48,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "activation",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "23863c00c40b5f69",
+          "mechanism": "ffn_activation",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "dense_act_fn",
+            "component": "root.text_encoder_3",
+            "path": "dense_act_fn",
+            "spelling": "dense_act_fn"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "activation",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.ffn"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "2ae9486fbe34f17c",
+          "mechanism": "ffn_activation",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "dense_act_fn",
+            "component": "root.text_encoder_3",
+            "path": "dense_act_fn",
+            "spelling": "dense_act_fn"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "activation",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.ffn"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        18,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 49,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "mechanism",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "a615d6a9effdcd21",
+          "mechanism": "attention_mechanism",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "mechanism",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "attention_mechanism",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_heads",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        24,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 50,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "mechanism",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "a615d6a9effdcd21",
+          "mechanism": "attention_mechanism",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "mechanism",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "attention_mechanism",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "num_heads",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        24,
+        "target",
+        "key"
+      ],
+      "raw_delta_index": 51,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "geometry",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "9d9e06feeb3fc38a",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "e3e7a8b28cd345ba",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "num_heads",
+            "component": "root.text_encoder_3",
+            "path": "num_heads",
+            "spelling": "num_heads"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        25,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 52,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "geometry",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "9d9e06feeb3fc38a",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "d_kv",
+            "component": "root.text_encoder_3",
+            "path": "d_kv",
+            "spelling": "d_kv"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "e3e7a8b28cd345ba",
+          "mechanism": "attention_head_geometry",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "d_kv",
+            "component": "root.text_encoder_3",
+            "path": "d_kv",
+            "spelling": "d_kv"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "head_geometry",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.decoder.attention"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        26,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 53,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "tie",
+      "details": {
+        "actual_fact_limit": "Nested parser event exists but enclosing IR exposes only its own fact ledger; no fabricated child proof.",
+        "after_obligation": {
+          "expected_value_status_hash": "34b451cd19670900",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "tie_word_embeddings",
+            "component": "root.text_encoder_3",
+            "path": "tie_word_embeddings",
+            "spelling": "tie_word_embeddings"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "tie_word_embeddings",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "before_obligation": {
+          "expected_value_status_hash": "",
+          "mechanism": "",
+          "reason": "no projection receipt exists yet",
+          "source": {
+            "canonical": "tie_word_embeddings",
+            "component": "root.text_encoder_3",
+            "path": "tie_word_embeddings",
+            "spelling": "tie_word_embeddings"
+          },
+          "state": "unreceipted",
+          "target": {
+            "key": "tie_word_embeddings",
+            "kind": "fact",
+            "owner": "root.text_encoder_3.model"
+          }
+        },
+        "serializer_source": "obligation"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "config_access",
+        "projection_obligations",
+        28,
+        "expected_value_status_hash"
+      ],
+      "raw_delta_index": 54,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "references",
+      "details": {
+        "claim_kind": "connection",
+        "proof_kind": "retained_reader_projection",
+        "proof_was_not_invented_by_serializer": true,
+        "reference_snapshot_source": "reference_snapshot"
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "fact_provenance",
+        "root.denoiser.diffusion_root_topology",
+        "presentation_reference"
+      ],
+      "raw_delta_index": 55,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "unknown",
+      "details": {
+        "before_kind": "embedding",
+        "before_resolved": false
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "render",
+        "model_blocks",
+        1,
+        "unknown_reason"
+      ],
+      "raw_delta_index": 56,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    },
+    {
+      "cause": "unknown",
+      "details": {
+        "before_kind": "norm",
+        "before_resolved": false
+      },
+      "findings": [],
+      "path": [
+        "extras",
+        "render",
+        "model_blocks",
+        2,
+        "unknown_reason"
+      ],
+      "raw_delta_index": 57,
+      "status": "CAUSE_ATTRIBUTED_NOT_ACCEPTED"
+    }
+  ],
+  "slug": "stable-diffusion-3-5-large"
+}

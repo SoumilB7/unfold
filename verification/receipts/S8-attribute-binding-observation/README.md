@@ -1,0 +1,13 @@
+# Requested attribute lookup observation
+
+Neutral worker extension for explicitly requested owner-path/attribute addresses. BuildRequest.attribute_lookups and ModuleNode.attribute_bindings are optional; empty fields are omitted from existing request/result serialization. No model-name hook or new canonical architecture IR.
+
+The observation captures exact object lookup; actual plain Python callable source/code identity; bounded depth-two function/scalar closure cells; exact builtin property fget plus safe direct instance-storage names; canonical builtin enumerate/getattr/hasattr/len/super bindings; actual super class-cell identity in the owner MRO and exact next Module fallback; and exact ModuleList iteration/length with ordered registered slots including aliases and None. Wrapped metadata never selects the function body. Whole source bytes compile without execution and must match the current code object; machine filenames are excluded from executable hashes.
+
+Custom fallback reads have a separate observed_registered_child disposition. They record actual fallback code, before/after bounded owner snapshots and whether registered slots retain object identity/order. These are one-time observations, never future-call authority. The entire construction inventory is frozen before potentially executable fallback observations, so observation side effects cannot silently change its denominator/shapes. A false observed_state_changed value means only that the bounded captured state agrees, not an exhaustive no-effects proof. Source selection, temporal stability, helper effects, guards and branch meaning remain reader obligations.
+
+Fourteen dedicated standalone test functions pass (standalone-results.json); no pytest or full model lane run by this agent. Controls include actual callable replacement, executable/source disagreement, instance shadow, custom descriptors/lookup, changed iterator and length, builtin shadow, alias/None slots, wrapped metadata poison, property storage shadow, alternating getter, construction-before-observation ordering and serialization.
+
+installed-class-probe.json uses a tiny object with the actual installed UNet class/MRO, Module initialization and a small Linear/ModuleList fixture. It is not an SDXL construction or execution. Actual forward resolves to the peft wrapper, its captured forward_fn cell resolves to the source UNet forward, ModelMixin fallback carries MRO anchor 1, and config is an exact builtin property getter. Diagnostic USE_PEFT_BACKEND=False is retained as a local inspection value; it is not a worker request witness or architectural fact.
+
+Production source reader/projection integration and full frozen candidate verification remain executor-owned. No outputs blessed.

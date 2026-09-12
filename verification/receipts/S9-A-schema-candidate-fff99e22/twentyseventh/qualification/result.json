@@ -1,0 +1,11 @@
+{
+  "name": "limited-document-writer-authority",
+  "returncode": 1,
+  "duration": 184.4777969580009,
+  "before": "bd1aa4289e7cd98b2106e4f6060d0dbf256ab88d9de151854e9e994d20f98b10",
+  "after": "bd1aa4289e7cd98b2106e4f6060d0dbf256ab88d9de151854e9e994d20f98b10",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-twentyseventh/qualification/limited-document-writer-authority.log",
+  "passed": false
+}

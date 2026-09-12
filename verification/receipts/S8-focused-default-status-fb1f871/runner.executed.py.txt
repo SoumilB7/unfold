@@ -1,0 +1,18 @@
+import hashlib,json,os,subprocess,sys,time
+from pathlib import Path
+root=Path('/private/tmp/unfold-s8-focused-fb1f871')
+out=Path('/private/tmp/unfold-s8-focused-results-fb1f871');out.mkdir(exist_ok=True)
+def pins():
+ return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for folder in ('model_unfolder','physics','tests','test_support') for p in sorted((root/folder).rglob('*')) if p.is_file() and p.suffix in ('.py','.json','.yaml','.yml')}
+before=pins();(out/'source-before.json').write_text(json.dumps(before,indent=2)+'\n')
+targets=['tests/test_diffusion.py::test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells']
+cmd=[sys.executable,'-m','pytest','-v','--tb=short',*targets]
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
+(out/'invocation.json').write_text(json.dumps({'command':cmd,'cwd':str(root),'targets':len(targets),'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()},indent=2)+'\n')
+start=time.monotonic()
+with (out/'pytest.log').open('w') as log:
+ result=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+after=pins();(out/'source-after.json').write_text(json.dumps(after,indent=2)+'\n')
+record={'exit_code':result.returncode,'elapsed_seconds':time.monotonic()-start,'source_pins_equal':before==after,'log_sha256':hashlib.sha256((out/'pytest.log').read_bytes()).hexdigest()}
+(out/'result.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record),flush=True)
+sys.exit(result.returncode or (0 if before==after else 2))

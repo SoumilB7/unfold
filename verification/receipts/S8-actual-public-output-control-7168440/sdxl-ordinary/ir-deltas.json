@@ -1,0 +1,72 @@
+{
+  "metadata_lists": [
+    {
+      "actual_card_facts_order_unchanged": true,
+      "block_id": "denoiser",
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        6,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults"
+      ],
+      "public_source_order": [
+        "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+        "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+        "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+      ],
+      "reviewed_saved_fact_order": [
+        "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+        "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+        "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+      ],
+      "unique_same_exact_members": true
+    }
+  ],
+  "scalar_differences": [
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        6,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        0
+      ],
+      "public": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        6,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        1
+      ],
+      "public": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 dropout: 0.0 (checkpoint omitted)"
+    },
+    {
+      "path": [
+        "extras",
+        "render",
+        "loop_blocks",
+        6,
+        "detail",
+        "fact_display_lines",
+        "root.denoiser.declared_constructor_defaults",
+        2
+      ],
+      "public": "Declared class default \u00b7 attention_type: \"default\" (checkpoint omitted)",
+      "reviewed": "Declared class default \u00b7 reverse_transformer_layers_per_block: null (checkpoint omitted)"
+    }
+  ]
+}

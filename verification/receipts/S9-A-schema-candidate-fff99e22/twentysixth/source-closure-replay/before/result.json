@@ -1,0 +1,12 @@
+{
+  "name": "portable-source-closure",
+  "returncode": 0,
+  "duration": 166.43084791699948,
+  "before": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+  "after": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-twentysixth/source-closure-replay/before/portable-source-closure.log",
+  "phase": "before",
+  "passed": true
+}

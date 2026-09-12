@@ -1,0 +1,144 @@
+{
+  "directories": [
+    {
+      "archived": "eleventh/diagnostic-lane",
+      "original": "/private/tmp/unfold-s9a-eleventh/diagnostic-lane"
+    },
+    {
+      "archived": "eleventh/qualification",
+      "original": "/private/tmp/unfold-s9a-eleventh/qualification"
+    },
+    {
+      "archived": "eleventh-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source"
+    },
+    {
+      "archived": "eleventh-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/model_unfolder"
+    },
+    {
+      "archived": "eleventh-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "eleventh-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "eleventh/actual-llama-reader-reasons.json",
+      "bytes": 656,
+      "original": "/private/tmp/unfold-s9a-eleventh/actual-llama-reader-reasons.json",
+      "sha256": "d9aea63bc1199aeb739f024b2d674e308a4e02975306df5d7ee34dc8e9b84a2f"
+    },
+    {
+      "archived": "eleventh/diagnose.py",
+      "bytes": 1240,
+      "original": "/private/tmp/unfold-s9a-eleventh/diagnose.py",
+      "sha256": "83b699595e80032916cac0bc168ef38f67a4b15beb6b6e761699d3eeeefe8a2a"
+    },
+    {
+      "archived": "eleventh/diagnostic-lane/actual-llama-reader-diagnostic.log",
+      "bytes": 656,
+      "original": "/private/tmp/unfold-s9a-eleventh/diagnostic-lane/actual-llama-reader-diagnostic.log",
+      "sha256": "d9aea63bc1199aeb739f024b2d674e308a4e02975306df5d7ee34dc8e9b84a2f"
+    },
+    {
+      "archived": "eleventh/diagnostic-lane/result.json",
+      "bytes": 556,
+      "original": "/private/tmp/unfold-s9a-eleventh/diagnostic-lane/result.json",
+      "sha256": "4b3808849d576f9848d19dd6b0a1e152a11463a00e6b05f3eb9749935e1b4e6f"
+    },
+    {
+      "archived": "eleventh/qualification/result.json",
+      "bytes": 537,
+      "original": "/private/tmp/unfold-s9a-eleventh/qualification/result.json",
+      "sha256": "c2c6218e4a14abe302323f8902544fc63413004ae9b1107d8e1cb012b00d6432"
+    },
+    {
+      "archived": "eleventh/qualification/schema-proof-metadata.log",
+      "bytes": 7879,
+      "original": "/private/tmp/unfold-s9a-eleventh/qualification/schema-proof-metadata.log",
+      "sha256": "654cb72569aa5a08df85e9679d3372973cb8e3f649133591aca80e181973371f"
+    },
+    {
+      "archived": "eleventh/run-diagnostic.py",
+      "bytes": 1302,
+      "original": "/private/tmp/unfold-s9a-eleventh/run-diagnostic.py",
+      "sha256": "bb1175fe87370e427c213352b286291b06f4ee579c1e7cdc66695c0697f4d76e"
+    },
+    {
+      "archived": "eleventh/run.py",
+      "bytes": 1294,
+      "original": "/private/tmp/unfold-s9a-eleventh/run.py",
+      "sha256": "3cf703e5de27f703fbc44c66e4b00e08b0b9b3627b7296fa7637da04d03f2c83"
+    },
+    {
+      "archived": "eleventh/source-manifest.json",
+      "bytes": 14545,
+      "original": "/private/tmp/unfold-s9a-eleventh/source-manifest.json",
+      "sha256": "404019b93ad2e0cba16496ab67c27a0d88769c60120ff6e4512407f9195b22f9"
+    },
+    {
+      "archived": "eleventh-independent-review/review.md",
+      "bytes": 1351,
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/review.md",
+      "sha256": "a1c75ca0e78c182dff99b083a8a6a47c08a18c248358bf63e79aa630a66380de"
+    },
+    {
+      "archived": "eleventh-independent-review/source/model_unfolder/evidence/activation_registry.py",
+      "bytes": 32745,
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/model_unfolder/evidence/activation_registry.py",
+      "sha256": "cea4cdfb95ea5c7557784a240f3333f53b1e0af23ae39463e35205718b33f564"
+    },
+    {
+      "archived": "eleventh-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "eleventh-independent-review/source/tests/test_reader_claims.py",
+      "bytes": 50889,
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/source/tests/test_reader_claims.py",
+      "sha256": "0cb451ce7c2c07c7ce87eb137eef2201071ab032ff20183a31395c9f612e7507"
+    },
+    {
+      "archived": "eleventh-independent-review/verdict.json",
+      "bytes": 916,
+      "original": "/private/tmp/unfold-s9a-independent-eleventh-review/verdict.json",
+      "sha256": "c5970284ca3345d0c3aa2a721ba13fa8516890acdae3d1153a1511bccbcef3b2"
+    }
+  ],
+  "scope": "Released eleventh candidate and eleventh independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "eleventh/changed-sources.tar.gz",
+      "archive_sha256": "05a3d757c955a9d5f8974d3da14a3b6c7c06497f3bd879a61ea743c61428432a",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 99,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-eleventh",
+      "manifest_sha256": "404019b93ad2e0cba16496ab67c27a0d88769c60120ff6e4512407f9195b22f9",
+      "phase": "eleventh",
+      "uncompressed_bytes": 3522610
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 270795,
+    "copied_files": 14,
+    "source_files": 99
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

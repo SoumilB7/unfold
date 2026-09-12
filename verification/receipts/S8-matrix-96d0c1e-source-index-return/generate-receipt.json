@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "-u",
+    "scripts/generate_s7_shadow.py"
+  ],
+  "elapsed_seconds": 2892.094,
+  "exit_code": 1,
+  "implementation_unchanged": true
+}

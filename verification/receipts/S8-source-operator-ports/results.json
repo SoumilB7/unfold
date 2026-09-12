@@ -1,0 +1,21 @@
+{
+  "scope": "Synthetic source-port renderer/projection control, no model or acceptance",
+  "results": [
+    {
+      "kind": "source_operation",
+      "clickable_cards": 3,
+      "incoming_operand_rails": 2,
+      "result_arrow": 1,
+      "card_crossings": 0,
+      "dispatch_and_mutation": "unresolved"
+    },
+    {
+      "kind": "inplace_operation",
+      "clickable_cards": 3,
+      "incoming_operand_rails": 2,
+      "result_arrow": 1,
+      "card_crossings": 0,
+      "dispatch_and_mutation": "unresolved"
+    }
+  ]
+}

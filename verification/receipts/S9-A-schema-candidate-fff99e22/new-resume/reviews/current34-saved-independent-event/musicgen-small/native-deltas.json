@@ -1,0 +1,92 @@
+[
+  {
+    "after": "relation",
+    "after_present": true,
+    "after_type": "str",
+    "before": null,
+    "before_present": true,
+    "before_type": "NoneType",
+    "path": [
+      "decoder.attention.cross_attention_schedule",
+      "claim_kind"
+    ]
+  },
+  {
+    "after": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cross_attention_schedule:9a03252db7d72224",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.cross_attention_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "after_present": true,
+    "after_type": "dict",
+    "before": null,
+    "before_present": true,
+    "before_type": "NoneType",
+    "path": [
+      "decoder.attention.cross_attention_schedule",
+      "claim_proof"
+    ]
+  },
+  {
+    "after": "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path",
+    "after_present": true,
+    "before": null,
+    "before_present": false,
+    "path": [
+      "decoder.attention.cross_attention_schedule",
+      "claim_readers",
+      0
+    ]
+  },
+  {
+    "after": "decoder.num_hidden_layers",
+    "after_present": true,
+    "before": null,
+    "before_present": false,
+    "path": [
+      "decoder.attention.cross_attention_schedule",
+      "config_paths",
+      0
+    ]
+  },
+  {
+    "after": "code_and_config",
+    "after_present": true,
+    "after_type": "str",
+    "before": "code_proven",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      "decoder.attention.cross_attention_schedule",
+      "status"
+    ]
+  }
+]

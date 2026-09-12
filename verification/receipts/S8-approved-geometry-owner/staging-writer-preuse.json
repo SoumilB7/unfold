@@ -1,0 +1,18 @@
+{
+  "reviewer": "root",
+  "decision": "ACCEPT bounded staging writers",
+  "files": {
+    "bless_one.py": "ac7cd7b4117203bfaf02b176c00eadb8a551e7f028a918414b67139ae645d211",
+    "build_expected.py": "831118b409a68fe66711659afcdee9b2a905cab870b6f265b70864b8a889d52f"
+  },
+  "basis": [
+    "Staged corpus path and exact original witness identity are checked before the existing unchanged bless call.",
+    "The sole observer retains the actual offline result and returns it unchanged; no fabricated passing report.",
+    "Exact signature and independent reviewer enforcement remain in production bless. Root verdicts also pin full gallery pixel review and original proof lists.",
+    "Python and vocabulary sources, exact input/report/verdict/gallery files, and selected external sources are pinned before/finally.",
+    "Only the existing live expected-manifest writer runs for all29; historical baseline generation is not called.",
+    "The expected-manifest writer runs after all19 new gallery reviews and blessings, and pins full staged corpus/gallery bytes.",
+    "Generated output remains staged until actual delta comparison verifies approved scope."
+  ],
+  "scope": "Root is independent of these executor-authored orchestration scripts. This accepts execution, not a future passing result or broadened output delta."
+}

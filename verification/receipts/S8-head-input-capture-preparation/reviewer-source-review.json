@@ -1,0 +1,52 @@
+{
+  "verdict": "Kandinsky published head config verified; DeepFloyd publisher config unavailable (HTTP401). No model execution.",
+  "kandinsky": {
+    "cached_revision": "9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3",
+    "source_url": "https://huggingface.co/kandinsky-community/kandinsky-2-2-decoder/blob/9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3/unet/config.json",
+    "source_path": "/Users/soumil/.cache/huggingface/hub/models--kandinsky-community--kandinsky-2-2-decoder/snapshots/9ae140d347fed8ce6e8bb3005dcc1f48543bb8e3/unet/config.json",
+    "sha256": "4f30206052776397195b5f1c9df9d7f7e34f50b1cb1ad9a027856021a94b62d6",
+    "published_attention_head_dim": 64,
+    "published_num_attention_heads_present": false,
+    "published_block_out_channels": [
+      384,
+      768,
+      1152,
+      1536
+    ],
+    "test_block_out_channels": [
+      384,
+      768,
+      1536,
+      3072
+    ],
+    "published_resnet_time_scale_shift": "scale_shift",
+    "test_resnet_time_scale_shift": "omitted; installed default default",
+    "minimal_synthetic_change": {
+      "remove": "num_attention_heads:64",
+      "add": "attention_head_dim:64"
+    },
+    "scope": "This repair is a deliberately different synthetic constructor input. It is not equivalent to64 heads and not the exact published model. Full publisher config is retained for a publisher witness."
+  },
+  "deepfloyd": {
+    "identified_stage": "IF-I/base-generation-like input3\u2192output6 and text width4096; exact size/model cannot be established from this synthetic fixture",
+    "publisher_retrieval": "IF-I-XL/L/M config endpoints all HTTP401, no local cache. No mirror or inferred value substituted.",
+    "published_head_value": null,
+    "minimal_source_compatible_counterpart": "Remove rejected num_attention_heads; retain omitted attention_head_dim so installed default8 is explicit provenance. This is synthetic SimpleCrossAttn text-conditioned regression, not a verified publisher checkpoint.",
+    "alternative_explicit64": "May choose attention_head_dim64 as a distinct synthetic operand supported by constructor source, but cannot label it publisher-verified or rename-equivalent.",
+    "primary_stage_reference": "https://github.com/deep-floyd/IF#integration-with--diffusers"
+  },
+  "source_forwarding": {
+    "rejection": "UNet2DConditionModel lines242\u2013245 rejects every non-None num_attention_heads before construction. Default attention_head_dim is8.",
+    "down": "root367\u2013391 forwards attention_head_dim[i] to factory; factory150\u2013170 selects SimpleCrossAttnDownBlock2D and forwards same value; cell1875\u20131877 sets num_heads=out_channels//attention_head_dim and Attention uses dim_head=attention_head_dim.",
+    "mid": "root397\u2013415 forwards attention_head_dim[-1]; factory293\u2013305 forwards it to SimpleCrossAttn mid; cell915\u2013918 divides in_channels by that operand.",
+    "meaning": "For these SimpleCrossAttn cells, attention_head_dim denotes channels per head. Root historical num_attention_heads fallback does not change this selected-factory forwarding. No global alias equivalence claimed.",
+    "effects": "Synthetic Kandinsky dimension64 gives attention stage head counts12,24,48; publisher widths instead12,18,24. Synthetic text fixture default8 gives attention stages80,160,160; explicit64 would give10,20,20. Actual construction remains queued, not claimed tested."
+  },
+  "installed_source_pins": {
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_condition.py": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/unets/unet_2d_blocks.py": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/pipelines/deepfloyd_if/pipeline_if.py": "7de6ef3eb72d1c80fb0f1aa49877344320a52a98577145788812e1af04071d45",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/pipelines/deepfloyd_if/pipeline_if_superresolution.py": "58eeef5fb8c70e55743fa5ae7614fedb25e1b62de2c282d087a5c0cf8060478e"
+  },
+  "limitations": "Source/head compatibility only. Original invalid fixtures must remain negative controls; positive construction/HTML must be separately captured. Publisher fields never prove mechanism by spelling."
+}

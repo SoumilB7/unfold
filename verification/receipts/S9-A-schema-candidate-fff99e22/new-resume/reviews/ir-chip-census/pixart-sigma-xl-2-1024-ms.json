@@ -1,0 +1,306 @@
+{
+  "slug": "pixart-sigma-xl-2-1024-ms",
+  "inputs": [
+    {
+      "path": "capture/pixart-sigma-xl-2-1024-ms/ir-before-render.json.gz",
+      "sha256": "1e6e1b7d47dadf2563eb33017a09b7afd53975d2fe16b8f94a665fe5a8735b43"
+    },
+    {
+      "path": "capture/pixart-sigma-xl-2-1024-ms/ir-after-render.json.gz",
+      "sha256": "1e6e1b7d47dadf2563eb33017a09b7afd53975d2fe16b8f94a665fe5a8735b43"
+    },
+    {
+      "path": "capture/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "sha256": "474e7f13acbaf7c6c94f003c88355df02cdba9f6b3788a6042a57fc9751d8935"
+    }
+  ],
+  "phases": {
+    "ir-before-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 2,
+      "serialized_annotation_count": 2,
+      "annotation_reason_counts": {
+        "investigation_missing": 2
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            3,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            3,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "norm_placement"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "norm_placement"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "opaque_layer_block"
+          ],
+          "markers": [
+            "resolved_false"
+          ],
+          "reason_issue": "missing_or_nonclosed_reason"
+        }
+      ]
+    },
+    "ir-after-render.json.gz": {
+      "schema_unknown_count": 0,
+      "architectural_unknown_envelope_count": 2,
+      "serialized_annotation_count": 2,
+      "annotation_reason_counts": {
+        "investigation_missing": 2
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            3,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            3,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "norm_placement"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            1,
+            "norm_placement"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "opaque_layer_block"
+          ],
+          "markers": [
+            "resolved_false"
+          ],
+          "reason_issue": "missing_or_nonclosed_reason"
+        }
+      ]
+    }
+  },
+  "html": {
+    "chip_emissions_by_kind": {},
+    "inline_chip_emissions": {},
+    "packed_card_chip_emissions": {},
+    "packed_payloads": [],
+    "unknown_group_count": 1,
+    "unique_rendered_unknown_paths": 2,
+    "missing_annotation_paths": [],
+    "unexpected_annotation_paths": [],
+    "findings": [],
+    "chip_style_rules": {
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;",
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;"
+    },
+    "four_styles_present_and_distinct": true
+  },
+  "before_after_metadata_counts_equal": {
+    "schema_unknown_count": true,
+    "architectural_unknown_envelope_count": true,
+    "serialized_annotation_count": true,
+    "chip_distinct_canonical_declarations": true,
+    "unknown_fact_count": true
+  }
+}

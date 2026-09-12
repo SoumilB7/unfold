@@ -1,0 +1,179 @@
+{
+  "actual_portable_seal": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766",
+  "reference26_seal": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766",
+  "scope": "Actual32 source index;26 is a comparison reference, not a32 matrix.",
+  "source_multiset": [
+    {
+      "component": "audio_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 24
+}

@@ -1,0 +1,174 @@
+{
+  "production_commit": "736fdab",
+  "verdict": "bounded receipt correction ACCEPT; Bloom geometry RETURN; S8 NOT DONE",
+  "blessed": false,
+  "verified_artifacts": {
+    "S8-primitive-render-736fdab": {
+      "files_checked": 137,
+      "manifest_sha256": "9891284f06ea7e72ec6e46b83ffaeadcaf1dd3a667a81849f0c52f857acf62f2"
+    },
+    "S8-bloom-actual-736fdab": {
+      "files_checked": 47,
+      "manifest_sha256": "eb55f5315920140ae976fac1dc53d2f41e38edf4d7598b820d671bad8b89e065"
+    }
+  },
+  "actual_saved_render_cases": [
+    {
+      "case": "svd-exact",
+      "raw_html_sha256": "bc78852a117bfb2943fa6dbb22ccecd1942fcfdb6683262c4fa605b308968782",
+      "old_events": 226,
+      "new_label_events": 1006,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-ordinary",
+      "raw_html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "old_events": 2610,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-sparse",
+      "raw_html_sha256": "be5b87d341330dc591075cd69d3482680a2b02e86a02919b14f5f96ee7ddcdad",
+      "old_events": 2610,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-misleading",
+      "raw_html_sha256": "3dfc7b490f6792cc19a1b12d3700eca053a23ff886422f0f9901a26ed1ec839f",
+      "old_events": 2610,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-rewrite",
+      "raw_html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "old_events": 2610,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-unchanged",
+      "raw_html_sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "old_events": 2610,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-changed",
+      "raw_html_sha256": "d97fe77c7d694aa4412b996737cea080651be1c23d96dad5f15298f147d6e63c",
+      "old_events": 2622,
+      "new_label_events": 1357,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-missing",
+      "raw_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+      "old_events": 2410,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sd14-ordinary",
+      "raw_html_sha256": "c647b578c95d03ba2f268aa9624509411cbde790de5b8fb529844d3261936385",
+      "old_events": 2557,
+      "new_label_events": 481,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-refiner",
+      "raw_html_sha256": "f34f5e5f253cda344ac7e39ee33f35ab3b102cb5dab63b790fdfe0487834ac7a",
+      "old_events": 2630,
+      "new_label_events": 917,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "sdxl-inpainting",
+      "raw_html_sha256": "cea6daff923346ca9df3a2196acc391a513b8a1c11dca7070ca26fb6f505c951",
+      "old_events": 2599,
+      "new_label_events": 1293,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    },
+    {
+      "case": "ddpm-cifar10",
+      "raw_html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+      "old_events": 794,
+      "new_label_events": 212,
+      "old_event_sequence_exact": true,
+      "input_pins_exact": true
+    }
+  ],
+  "bloom_ledger": {
+    "value_deltas": 1,
+    "added_registry_scopes": [
+      [
+        "root.denoiser",
+        "cell_arithmetic"
+      ],
+      [
+        "root.denoiser",
+        "cell_connections"
+      ],
+      [
+        "root.denoiser",
+        "constructed_modules"
+      ],
+      [
+        "root.denoiser",
+        "constructed_parameter_shapes"
+      ],
+      [
+        "root.denoiser",
+        "constructed_stage_relations"
+      ],
+      [
+        "root.denoiser",
+        "context_connections"
+      ],
+      [
+        "root.denoiser",
+        "declared_constructor_defaults"
+      ],
+      [
+        "root.denoiser",
+        "ffn_mechanisms"
+      ],
+      [
+        "root.denoiser",
+        "primary_state_ports"
+      ],
+      [
+        "root.denoiser",
+        "runtime_primitives"
+      ],
+      [
+        "root.denoiser",
+        "spatial_mechanisms"
+      ],
+      [
+        "root.denoiser",
+        "stage_join_connections"
+      ]
+    ],
+    "removed": [],
+    "producer": "parser.py projection_coverage serialization of receipts.py receipted_scopes derived from global registry; capability declaration, not Bloom denoiser use"
+  },
+  "limits": [
+    "SVD 1006 containment receipts; four root bookends outside this emitter",
+    "Other 28 preservation witness deltas require exact per-witness proof",
+    "Bloom two restored canonical attention connections are warranted; rail crossing two boxes returned for correction",
+    "Saved-IR rerenders are not fresh model constructions"
+  ]
+}

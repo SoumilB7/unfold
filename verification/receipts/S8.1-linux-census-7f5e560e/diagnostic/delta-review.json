@@ -1,0 +1,7 @@
+{
+  "status": "EXACT_LINUX_CENSUS_DELTA_REPRODUCED",
+  "candidate_sha256": "744e016f59246446b7c3802f000215a6ec7571e173a3ac723b86594f371781d5",
+  "only_artifact": "docs/COR5_NET1_MIGRATION_DEBT.md",
+  "changes": "existing SDXL audit_incomplete; two UNCLASSIFIED act_fn/norm_eps;32 additional pending exact occurrences; no classification/consumption/code changes",
+  "linux_diff_exact": true
+}

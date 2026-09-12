@@ -1,0 +1,22 @@
+{
+  "sparse": {
+    "card_id": "denoiser",
+    "sha256": "af13a25016d0fd5680c62b2ca93f513a7a495ac0ba1c72c3525a40bf19c87347",
+    "scope": "Exact actual HTML card excerpt; text/artifact verification only, not browser/native card pixels",
+    "default_chip_count": 36,
+    "hidden_act_present": false
+  },
+  "misleading": {
+    "card_id": "denoiser",
+    "sha256": "1991cb868d71e64ae169e0d71b6a75ebe7a41e30b5546dd8b900733b3d24062a",
+    "scope": "Exact actual HTML card excerpt; text/artifact verification only, not browser/native card pixels",
+    "default_chip_count": 3,
+    "hidden_act_present": false,
+    "disclosure": {
+      "file": "misleading/actual-field-disclosure.html",
+      "sha256": "4ea22edadb907ddda8ad0582881724a981795d18a5dcedaf0d382516674cd840",
+      "location": "top-level unread-config evidence disclosure, not the denoiser card",
+      "hidden_act_present": true
+    }
+  }
+}

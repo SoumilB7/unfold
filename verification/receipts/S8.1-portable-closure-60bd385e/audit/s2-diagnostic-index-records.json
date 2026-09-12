@@ -1,0 +1,191 @@
+[
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-deepseek-v3-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "7ec9f7f2bff6f73ee4a9ebacadbc2c6f33a91c5e5b20b038ac50bb49a1c17d6c"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-deepseek-v3-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "7ec9f7f2bff6f73ee4a9ebacadbc2c6f33a91c5e5b20b038ac50bb49a1c17d6c"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-deepseek-v3-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "7ec9f7f2bff6f73ee4a9ebacadbc2c6f33a91c5e5b20b038ac50bb49a1c17d6c"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-llama-7b-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "894ef7ad556c0cd0b0c572a731b4beced7c99c88f8d73f17094203c0014ace21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-llama-7b-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "894ef7ad556c0cd0b0c572a731b4beced7c99c88f8d73f17094203c0014ace21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-llama-7b-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "894ef7ad556c0cd0b0c572a731b4beced7c99c88f8d73f17094203c0014ace21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-musicgen-small-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "ef03e8388554000cf5071dfc6e955902ced64c6ad9c72f26ad75ffb59113bc23"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-musicgen-small-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "ef03e8388554000cf5071dfc6e955902ced64c6ad9c72f26ad75ffb59113bc23"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-musicgen-small-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "ef03e8388554000cf5071dfc6e955902ced64c6ad9c72f26ad75ffb59113bc23"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-pixart-sigma-xl-2-1024-ms-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "4aae00cb2a492366edee320323553a8c5128420f2a7a19feaac82d232848d548"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-pixart-sigma-xl-2-1024-ms-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "4aae00cb2a492366edee320323553a8c5128420f2a7a19feaac82d232848d548"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-pixart-sigma-xl-2-1024-ms-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "4aae00cb2a492366edee320323553a8c5128420f2a7a19feaac82d232848d548"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen2-vl-7b-instruct-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "12747392facc3efea22ce135b93b1dd30a17a446502b838a7a809b3e927989c6"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen2-vl-7b-instruct-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "12747392facc3efea22ce135b93b1dd30a17a446502b838a7a809b3e927989c6"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen2-vl-7b-instruct-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "12747392facc3efea22ce135b93b1dd30a17a446502b838a7a809b3e927989c6"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen3-omni-30b-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "e1b4d9fcf69ad4c6076b42bdf06d8d7e7b0c4f9465763ed80e2d320745e03a21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen3-omni-30b-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "e1b4d9fcf69ad4c6076b42bdf06d8d7e7b0c4f9465763ed80e2d320745e03a21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-qwen3-omni-30b-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "e1b4d9fcf69ad4c6076b42bdf06d8d7e7b0c4f9465763ed80e2d320745e03a21"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-stable-diffusion-3-5-large-1.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "830bc71172c1139b030573d3b29b71d4a0e9c7cacf3d24a1dfd39a9af2305d1a"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-stable-diffusion-3-5-large-2.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "830bc71172c1139b030573d3b29b71d4a0e9c7cacf3d24a1dfd39a9af2305d1a"
+      }
+    ]
+  },
+  {
+    "logical": "verification/receipts/S2-latency/raw/budgets/program-index-stable-diffusion-3-5-large-3.json",
+    "fields": [
+      {
+        "path": "$.index_fingerprint",
+        "value": "830bc71172c1139b030573d3b29b71d4a0e9c7cacf3d24a1dfd39a9af2305d1a"
+      }
+    ]
+  }
+]

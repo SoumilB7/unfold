@@ -1,0 +1,477 @@
+--- twentyfourth/model_unfolder/evidence/reader_placement.py
++++ candidate/model_unfolder/evidence/reader_placement.py
+@@ -0,0 +1,142 @@
++"""Exact reader-addressed placement, independent of semantic proof strength.
++
++Semantic dependency spans explain a mechanism. They do not identify every
++constructed occurrence of the referenced class as drawn. This closed receipt
++retains the actual reader's positive caller/callee binding separately.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass, replace
++
++from .component_owner import OwnerOccurrenceId
++
++
++_MIGRATED_SLOTS = frozenset({("decoder.layer", "norm_kind")})
++_MIGRATED_READERS = frozenset({
++    "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path",
++})
++
++
++def requires_reader_occurrence_citation(fact):
++    """Finite migration denial, never an inferred occurrence address.
++
++    Missing/serialized receipts cannot restore the old shared-class span join.
++    The slot guard also covers transport which discarded reader declarations.
++    """
++    return ((fact.owner, fact.key) in _MIGRATED_SLOTS
++            or bool(_MIGRATED_READERS.intersection(fact.claim_readers)))
++
++
++@dataclass(frozen=True)
++class AddressedReaderOccurrences:
++    """Positive targets and contextual callers, never whole-caller placement."""
++
++    callers: tuple[OwnerOccurrenceId, ...]
++    targets: tuple[OwnerOccurrenceId, ...]
++
++    def __post_init__(self):
++        for values in (self.callers, self.targets):
++            if not isinstance(values, tuple) or any(type(value) is not OwnerOccurrenceId for value in values) \
++                    or len(set(values)) != len(values):
++                raise ValueError("placement addresses are unique exact static occurrences")
++        if not self.callers:
++            raise ValueError("reader placement retains its exact selected caller scope")
++
++
++class ReaderOccurrenceCitation:
++    """Process-local actual reader receipt; deepcopy exposes portable addresses only."""
++
++    __slots__ = ("_result", "_index", "_document", "_owner", "_key", "_addresses")
++
++    def __init__(self, result, index, document, owner, key):
++        object.__setattr__(self, "_result", result)
++        object.__setattr__(self, "_index", index)
++        object.__setattr__(self, "_document", document)
++        object.__setattr__(self, "_owner", owner)
++        object.__setattr__(self, "_key", key)
++        witness = self._binding()
++        addresses = witness.placement_occurrences(owner, key)
++        if type(addresses) is not AddressedReaderOccurrences:
++            raise TypeError("reader placement needs its finite typed address projection")
++        object.__setattr__(self, "_addresses", addresses)
++
++    def __setattr__(self, name, value):
++        raise AttributeError("reader occurrence citations are immutable")
++
++    def _binding(self):
++        from .decoder_norm import DecoderNormClaimWitness
++        from .reader_claims import retained_reader_attempt
++        witness = self._result.claim_witness
++        if type(witness) is not DecoderNormClaimWitness:
++            raise TypeError("placement requires a closed migrated reader witness")
++        symbol, index, document, _occurrence = retained_reader_attempt(self._result)
++        from .reader_claims import _has_mapping_snapshot
++        if not _has_mapping_snapshot(document):
++            raise ValueError("placement needs an exact prepared-document mapping binding")
++        if symbol != witness.reader_symbol or index is not self._index \
++                or witness.index is not index or document is not self._document or document is None:
++            raise ValueError("placement receipt belongs to another reader/index/document")
++        witness.validate_result(self._result)
++        return witness
++
++    def validate_fact(self, fact):
++        if (fact.owner, fact.key) != (self._owner, self._key):
++            raise ValueError("placement receipt belongs to another fact slot")
++        witness = self._binding()
++        if fact.claim_readers and fact.claim_readers != (self._result.claim_reader_symbol,):
++            raise ValueError("placement receipt belongs to another fact reader")
++        if fact.claim_evidence is not None:
++            from .reader_claims import ReaderProjectionClaimProof
++            proof = fact.claim_evidence
++            if type(proof) is not ReaderProjectionClaimProof or proof.reader_result is not self._result \
++                    or proof.index is not self._index or proof.prepared_document is not self._document:
++                raise ValueError("semantic and placement evidence must share the actual reader/source/document")
++        if witness.placement_occurrences(self._owner, self._key) != self._addresses:
++            raise ValueError("placement addresses differ from their actual reader binding")
++
++    def addresses(self, fact, index):
++        self.validate_fact(fact)
++        if index is not self._index:
++            raise ValueError("placement cannot join another source index")
++        return self._addresses
++
++    def portable_summary(self):
++        from dataclasses import asdict
++        from .program_index import portable_source_index_fingerprint
++        from .reconciliation import _occurrence_ref
++        witness = self._binding()
++        if witness.placement_occurrences(self._owner, self._key) != self._addresses:
++            raise ValueError("placement addresses changed before portable transport")
++        return {
++            "fact_id": f"{self._owner}.{self._key}",
++            "reader_symbol": self._result.claim_reader_symbol,
++            "source_index_fingerprint": portable_source_index_fingerprint(self._index),
++            "callers": [asdict(_occurrence_ref(row)) for row in self._addresses.callers],
++            "targets": [asdict(_occurrence_ref(row)) for row in self._addresses.targets],
++        }
++
++    def __deepcopy__(self, memo):
++        # dataclasses.asdict must never traverse process-local reader/index/doc
++        # objects or publish their repr, IDs, tokens or absolute source paths.
++        return self.portable_summary()
++
++
++def attach_reader_occurrence_citation(fact, result, index, document):
++    """Attach the finite migrated placement rail without qualifying semantics."""
++    from .decoder_norm import DecoderNormClaimWitness
++    if result is None or type(result.claim_witness) is not DecoderNormClaimWitness:
++        return fact
++    if fact.occurrence_citation is not None:
++        citation = fact.occurrence_citation
++        citation.validate_fact(fact)
++        if citation._result is not result or citation._index is not index or citation._document is not document:
++            raise ValueError("cannot reuse placement from another actual reader/source/document")
++        return fact
++    from .reader_claims import _has_mapping_snapshot
++    if not _has_mapping_snapshot(document):
++        # Config objects have no immutable checkpoint binding. They stay
++        # parseable with their reader declaration, but grant no placement
++        # authority (and the migrated slot never falls back to class spans).
++        return fact
++    citation = ReaderOccurrenceCitation(result, index, document, fact.owner, fact.key)
++    return replace(fact, occurrence_citation=citation)
+--- twentyfourth/model_unfolder/evidence/facts.py
++++ candidate/model_unfolder/evidence/facts.py
+@@ -167,6 +167,10 @@
+     # stable proof summary: object identity is a validation seal, not portable
+     # provenance.
+     claim_document_token: str = field(default="", repr=False, compare=False)
++    # Exact addressed product targets are separate from semantic dependency
++    # spans and from whether this fact's meaning has a qualified proof. The
++    # live reader receipt is omitted by ordinary fact/presentation transport.
++    occurrence_citation: Any = field(default=None, repr=False, compare=False)
+     # Producer authority, distinct from explanation prose and display transport.
+     # Omission on an unresolved fact records class-1 metadata debt, not an
+     # invented completed investigation.
+@@ -218,6 +222,11 @@
+                 f"{self.key}: a {self.status} negative ({self.value!r}) requires "
+                 f"complete inspection; got completeness={self.completeness!r} — "
+                 "record ambiguous/unknown instead (I-3)")
++        if self.occurrence_citation is not None:
++            from .reader_placement import ReaderOccurrenceCitation
++            if type(self.occurrence_citation) is not ReaderOccurrenceCitation:
++                raise TypeError("fact placement needs an exact typed reader occurrence citation")
++            self.occurrence_citation.validate_fact(self)
+         # §16.3: a DERIVED negative is sound only if the derivation's effective
+         # completeness (its weakest premise) is complete — an absent/NoPE
+         # conclusion derived from a presence-only premise cannot prove absence.
+@@ -313,6 +322,7 @@
+         object.__setattr__(obj, "claim_readers", ())
+         object.__setattr__(obj, "claim_evidence", None)
+         object.__setattr__(obj, "claim_document_token", "")
++        object.__setattr__(obj, "occurrence_citation", None)
+         object.__setattr__(obj, "unknown_reason", None)
+         object.__setattr__(obj, "migrated_legacy", True)
+         obj._validate(migrated=True)
+--- twentyfourth/model_unfolder/evidence/reader_claims.py
++++ candidate/model_unfolder/evidence/reader_claims.py
+@@ -608,6 +608,8 @@
+ 
+ def qualify_reader_fact(fact, reader_result, index, prepared_document):
+     """Attach only a migrated reader's exact finite projection, or abstain."""
++    from .reader_placement import attach_reader_occurrence_citation
++    fact = attach_reader_occurrence_citation(fact, reader_result, index, prepared_document)
+     if reader_result is None or reader_result.claim_witness is None \
+             or not _has_mapping_snapshot(prepared_document):
+         return declare_reader_fact(fact, reader_result, index, prepared_document)
+@@ -672,6 +674,10 @@
+         raise ValueError("investigation requires an actual retained reader invocation")
+     _reference, index, witness, document, fingerprint, token, symbol, scope, reads = binding
+     _validate_producer_callable(symbol)
++    if witness is not result.claim_witness or symbol != result.claim_reader_symbol:
++        raise ValueError("reader attempt carries another retained witness or producer")
++    if not _has_mapping_snapshot(document) and (fingerprint or token or scope):
++        raise ValueError("investigation document changed after its invocation")
+     if _has_mapping_snapshot(document) and (
+             not verify_prepared_document_token(document, fingerprint, token)
+             or _prepared_scope_fingerprint(document) != scope):
+--- twentyfourth/model_unfolder/evidence/decoder_norm.py
++++ candidate/model_unfolder/evidence/decoder_norm.py
+@@ -604,6 +604,23 @@
+                 or result.value != kind):
+             raise ValueError('norm result differs from its retained actual candidate proofs')
+ 
++    def placement_occurrences(self, owner, key):
++        from .reader_placement import AddressedReaderOccurrences
++        if (owner, key) != ('decoder.layer', 'norm_kind'):
++            raise ValueError('decoder norm placement belongs to its exact fact slot')
++        self._kind()  # Revalidates selected owners and every positive call.
++        callers, targets = [], []
++        for claim in self.owner_claims:
++            callers.append(claim.owner)
++            for call, construction, primitive in claim.examined:
++                if primitive.status != 'resolved' or primitive.value not in _NORMS:
++                    continue
++                for alternative in construction.alternatives:
++                    if alternative.kind == 'internal':
++                        targets.append(alternative.internal_occurrence)
++        return AddressedReaderOccurrences(tuple(dict.fromkeys(callers)),
++                                          tuple(dict.fromkeys(targets)))
++
+     def project(self, owner, key, document):
+         if (owner, key) != ('decoder.layer', 'norm_kind'):
+             raise ValueError('decoder norm cannot author another fact projection')
+--- twentyfourth/model_unfolder/evidence/reconciliation.py
++++ candidate/model_unfolder/evidence/reconciliation.py
+@@ -772,11 +772,22 @@
+     fact: EvidenceFact,
+     static_claims: Sequence[StaticOccurrenceClaim],
+ ) -> tuple[StaticOccurrenceClaim, ...]:
+-    """Join fact source spans to exact indexed class spans.
+-
+-    The join is content/source/line based.  Owner names and ledger-key words do
+-    not participate, so a renamed class or fact key cannot change the result.
+-    """
++    """Use migrated reader targets, or the explicitly unmigrated span join."""
++    from .reader_placement import (
++        ReaderOccurrenceCitation, requires_reader_occurrence_citation,
++    )
++    if fact.occurrence_citation is not None:
++        if type(fact.occurrence_citation) is not ReaderOccurrenceCitation:
++            raise TypeError("portable placement summaries are not live reader citations")
++        addresses = fact.occurrence_citation.addresses(fact, index)
++        targets = {_occurrence_ref(item) for item in addresses.targets}
++        # Callers establish context only. A child norm fact does not draw its
++        # whole caller. Independent product citations may still place it.
++        return tuple(claim for claim in static_claims if claim.occurrence in targets)
++    if requires_reader_occurrence_citation(fact):
++        return ()
++    # Legacy placement remains an unmigrated span-based join. Migrated reader
++    # receipts, including empty, missing, or erased receipts, never fall back.
+     source_by_path: dict[str, Any] = {}
+     for node in getattr(index, "source_nodes", ()):
+         canonical = str(Path(node.source_id.canonical_path).resolve())
+@@ -891,8 +902,9 @@
+         candidates: dict[str, dict[str, EvidenceFact]] = {}
+         for key in event_facts:
+             fact = facts[key]
+-            claims = fact_claim_cache.setdefault(
+-                key, _fact_static_claims(index, fact, static_claims))
++            if key not in fact_claim_cache:
++                fact_claim_cache[key] = _fact_static_claims(index, fact, static_claims)
++            claims = fact_claim_cache[key]
+             for claim in claims:
+                 for path in paths:
+                     if not _path_matches(path, claim.path_pattern):
+--- twentyfourth/tests/test_s9_reader_placement.py
++++ candidate/tests/test_s9_reader_placement.py
+@@ -0,0 +1,206 @@
++"""A shared mechanism implementation never identifies unrelated drawn occurrences."""
++from dataclasses import asdict, replace
++import json
++
++import pytest
++
++from model_unfolder.evidence.config_access import bound_document
++from model_unfolder.evidence.context import FactLedger
++from model_unfolder.evidence.decoder_norm import decoder_norm_kind_for_path
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument
++from model_unfolder.evidence.reader_claims import qualify_reader_fact
++from model_unfolder.evidence.reader_placement import ReaderOccurrenceCitation
++from model_unfolder.evidence.reconciliation import _fact_static_claims, static_claims_from_owner_graph
++from test_embedding_bookend import _SOURCE, _pipeline
++from test_reader_claims import _native_fact
++
++
++def _fixture(tmp_path, *, primitive='CustomNorm', constructor=None, document=None):
++    constructor = constructor or f'{primitive}(config)'
++    source = _SOURCE.replace('''        def __init__(self, config): pass
++        def forward(self, x): return x
++''', f'''        def __init__(self, config):
++            self.n1 = {constructor}
++            self.n2 = {constructor}
++        def forward(self, x):
++            x = self.n1(x)
++            return self.n2(x)
++''')
++    source = source.replace('    class Core:', '''    class Embedder:
++        def __init__(self, config):
++            self.shared = CustomNorm(config)
++        def forward(self, x): return self.shared(x)
++
++    class Core:''')
++    source = source.replace('            self.entry = CustomNorm(config)', '''            self.entry = CustomNorm(config)
++            self.final = CustomNorm(config)
++            self.audio = Embedder(config)
++            self.vision = Embedder(config)''')
++    bundle, index, root, *_ = _pipeline(tmp_path, source)
++    document = document or PreparedDocument({}, {})
++    with bound_document(DocumentBinding('root', (), document)):
++        result = decoder_norm_kind_for_path(index, bundle, (), allow_root_stage=False)
++        assert result.status == 'resolved', result.failures
++        raw = replace(_native_fact(result, owner='decoder.layer', key='norm_kind'),
++                      completeness='presence_only')
++        fact = qualify_reader_fact(raw, result, index, document)
++    return bundle, index, root, document, result, fact
++
++
++def test_shared_primitive_spans_keep_exact_decoder_targets_and_exclude_towers_and_final_norm(tmp_path):
++    _bundle, index, root, _document, result, fact = _fixture(tmp_path)
++    claims = static_claims_from_owner_graph(root.graph)
++    matched = _fact_static_claims(index, fact, claims)
++    assert {row.path_pattern for row in matched} == {
++        ('core', 'units', '*', 'n1'), ('core', 'units', '*', 'n2')}
++    # The same dependency class is instantiated outside the selected decoder.
++    unrelated = {('core', 'audio', 'shared'), ('core', 'vision', 'shared'),
++                 ('core', 'final'), ('core', 'entry')}
++    assert unrelated <= {row.path_pattern for row in claims}
++    assert not unrelated & {row.path_pattern for row in matched}
++    citation = fact.occurrence_citation
++    addresses = citation.addresses(fact, index)
++    assert set(addresses.callers) == set(result.claim_witness.selected_candidates.value.occurrences)
++    # A norm child fact alone also cannot declare the whole layer rendered.
++    assert ('core', 'units', '*') not in {row.path_pattern for row in matched}
++    assert fact.source_spans == _native_fact(result).source_spans
++    primitive_lines = {record.span.line for record in index.classes
++                       if record.symbol.qualified_name == 'CustomNorm'}
++    assert primitive_lines  # The full shared implementation remains indexed.
++    assert fact.claim_evidence.summary().evidence_refs
++
++
++def test_placement_survives_unqualified_fact_without_laundering_semantic_proof(tmp_path):
++    _bundle, index, root, _document, _result, fact = _fixture(tmp_path)
++    unqualified = replace(fact, claim_evidence=None, claim_document_token='')
++    assert unqualified.occurrence_citation is fact.occurrence_citation
++    assert _fact_static_claims(index, unqualified, static_claims_from_owner_graph(root.graph)) \
++        == _fact_static_claims(index, fact, static_claims_from_owner_graph(root.graph))
++    assert unqualified.claim_evidence is None
++
++
++def test_placement_rejects_copied_reader_foreign_slot_document_and_source_index(tmp_path):
++    bundle, index, _root, document, result, fact = _fixture(tmp_path)
++    with pytest.raises(ValueError, match='actual retained reader invocation'):
++        ReaderOccurrenceCitation(replace(result), index, document, fact.owner, fact.key)
++    with pytest.raises(ValueError, match='fact slot'):
++        ReaderOccurrenceCitation(result, index, document, 'model', 'final_norm_kind')
++    with pytest.raises(ValueError, match='reader/index/document'):
++        ReaderOccurrenceCitation(result, index, PreparedDocument({}, {}), fact.owner, fact.key)
++    with pytest.raises(ValueError, match='another fact slot'):
++        replace(fact, owner='model', key='final_norm_kind')
++    from model_unfolder.evidence.program_index import build_program_index
++    from pathlib import Path
++    source = Path(bundle.files[0])
++    source.write_text(source.read_text() + '\n# changed exact source snapshot\n')
++    changed_index = build_program_index(bundle)
++    with pytest.raises(ValueError, match='another source index'):
++        fact.occurrence_citation.addresses(fact, changed_index)
++
++
++def test_placement_refuses_changed_preparation_and_never_serializes_live_objects(tmp_path):
++    _bundle, _index, _root, document, _result, fact = _fixture(tmp_path)
++    ledger = FactLedger()
++    ledger.record_typed(fact)
++    wire = ledger.to_dict()[fact.ledger_key()]
++    assert 'occurrence_citation' not in wire
++    unqualified = replace(fact, claim_evidence=None, claim_document_token='')
++    portable = asdict(unqualified)['occurrence_citation']
++    assert portable == fact.occurrence_citation.portable_summary()
++    encoded = json.dumps(portable)
++    assert str(tmp_path) not in encoded and 'document_token' not in encoded
++    assert 'reader_symbol' in portable and portable['targets']
++    document.document['changed'] = True
++    with pytest.raises(ValueError, match='document changed'):
++        fact.occurrence_citation.validate_fact(fact)
++
++
++def test_missing_migrated_citation_cannot_restore_shared_class_placement(tmp_path):
++    _bundle, index, root, _document, _result, fact = _fixture(tmp_path)
++    claims = static_claims_from_owner_graph(root.graph)
++    without_citation = replace(fact, occurrence_citation=None)
++    assert _fact_static_claims(index, without_citation, claims) == ()
++    without_declaration = replace(without_citation, claim_kind=None, claim_readers=(),
++                                  claim_evidence=None, claim_document_token='')
++    assert without_declaration.source_spans
++    assert _fact_static_claims(index, without_declaration, claims) == ()
++
++
++def test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback(tmp_path):
++    _bundle, index, root, _document, _result, fact = _fixture(
++        tmp_path, constructor='nn.LayerNorm(config.hidden)')
++    addresses = fact.occurrence_citation.addresses(fact, index)
++    assert addresses.callers and addresses.targets == ()
++    assert _fact_static_claims(index, fact, static_claims_from_owner_graph(root.graph)) == ()
++
++
++def test_object_config_remains_parseable_and_declared_without_placement_or_mapping_proof(tmp_path):
++    from types import SimpleNamespace
++    from model_unfolder.evidence.document import prepare_document
++    raw = SimpleNamespace(hidden=8, layers=2, eps=1e-5)
++    document = prepare_document(raw)
++    assert document.failure.kind == 'no_mapping'
++    _bundle, index, root, _, result, fact = _fixture(tmp_path, document=document)
++    assert fact.claim_kind == 'applied_function'
++    assert fact.claim_readers == (result.claim_reader_symbol,)
++    assert fact.claim_evidence is None and not fact.claim_document_token
++    assert fact.occurrence_citation is None
++    assert _fact_static_claims(index, fact, static_claims_from_owner_graph(root.graph)) == ()
++    with pytest.raises(ValueError, match='mapping binding'):
++        ReaderOccurrenceCitation(result, index, document, fact.owner, fact.key)
++
++
++def test_portable_summary_and_deepcopy_cannot_be_replayed_as_live_placement(tmp_path):
++    from copy import deepcopy
++    _bundle, index, root, _document, _result, fact = _fixture(tmp_path)
++    unqualified = replace(fact, claim_evidence=None, claim_document_token='')
++    copied = deepcopy(unqualified)
++    assert isinstance(copied.occurrence_citation, dict)
++    with pytest.raises(TypeError, match='not live reader citations'):
++        _fact_static_claims(index, copied, static_claims_from_owner_graph(root.graph))
++    with pytest.raises(TypeError, match='exact typed reader occurrence citation'):
++        replace(unqualified, occurrence_citation=fact.occurrence_citation.portable_summary())
++
++
++def test_mapping_binding_cannot_be_removed_after_placement_issuance(tmp_path):
++    from types import SimpleNamespace
++    _bundle, _index, _root, document, _result, fact = _fixture(tmp_path)
++    object.__setattr__(document, 'checkpoint', SimpleNamespace())
++    with pytest.raises(ValueError, match='document changed'):
++        fact.occurrence_citation.validate_fact(fact)
++
++
++def test_explicit_canonical_block_keeps_r4_placement_with_missing_norm_receipt(tmp_path):
++    from test_s7_reconciliation import _inventory, _product_ir, _product_index
++    from model_unfolder.evidence.reconciliation import (
++        ProjectionFactFinding, projection_claims_from_product,
++    )
++    _bundle, _index, _root, _document, _result, fact = _fixture(tmp_path)
++    unqualified = replace(fact, occurrence_citation=None,
++                          claim_evidence=None, claim_document_token='')
++    ir = _product_ir(head=False)
++    ir.extras['render']['model_blocks'].append({
++        'id': 'explicit_norm_card', 'kind': 'opaque', 'label': 'Explicit occurrence',
++        'source_instance_path': 'blocks', 'source_fact_keys': [fact.ledger_key()]})
++    claims = projection_claims_from_product(
++        index=_product_index(), inventory=_inventory(), static_claims=(),
++        ir=ir, facts={fact.ledger_key(): unqualified}, render_events=())
++    row = next(row for row in claims if row.instance_path == 'blocks')
++    assert row.axis.kind == 'rendered'
++    assert row.axis.fact_findings == (ProjectionFactFinding(fact.ledger_key()),)
++
++
++def test_placement_rejects_substituted_retained_witness_and_addresses(tmp_path):
++    from model_unfolder.evidence.reader_placement import AddressedReaderOccurrences
++    _bundle, _index, _root, _document, result, fact = _fixture(tmp_path)
++    witness = result.claim_witness
++    object.__setattr__(result, 'claim_witness', replace(witness))
++    with pytest.raises(ValueError, match='another retained witness'):
++        fact.occurrence_citation.validate_fact(fact)
++    object.__setattr__(result, 'claim_witness', witness)
++    citation = fact.occurrence_citation
++    addresses = citation._addresses
++    object.__setattr__(citation, '_addresses', AddressedReaderOccurrences(
++        addresses.callers, addresses.callers))
++    with pytest.raises(ValueError, match='addresses differ'):
++        citation.validate_fact(fact)

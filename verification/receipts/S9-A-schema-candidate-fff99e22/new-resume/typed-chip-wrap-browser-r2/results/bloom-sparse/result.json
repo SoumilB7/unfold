@@ -1,0 +1,118 @@
+{
+  "input": "S9-schema/defaults-thirtysixth/bloom/sparse.html",
+  "sha256": "b48d04cc265a019ce426134dbe970afec6532fe5c4cee2e4c61c5d51021e61c9",
+  "bytes": 54532,
+  "load_ms": 43.888332998903934,
+  "initial_dom": {
+    "elements": 417,
+    "cards": 27,
+    "op_nodes": 24,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [
+      "class_default"
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1489
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "attn",
+      "click_to_card_ms": 75.75774999713758,
+      "card": {
+        "id": "attn",
+        "text": "Attention\nMulti-head self-attention \u2014 every head attends over the sequence.\n112 heads\nhead dim 128\nALiBi\nmask unresolved\n+bias\nQK norm unresolved\nin/out 14,336\nclass_default \u00b7 position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]\nin (14,336)\nLinear (QKV)\nK/V cache\nupdate + read\nQ K^T\nsqrt(dim)\nSoftmax\nConcat heads\nLinear (out)\nSplit Q\nSplit K\nSplit V\nALiBi bias\nRelative positions",
+        "rect": {
+          "x": 348,
+          "y": 85.59375,
+          "width": 644,
+          "height": 825.4375,
+          "top": 85.59375,
+          "right": 992,
+          "bottom": 911.03125,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": [
+          {
+            "kind": "class_default",
+            "text": "class_default \u00b7 position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]",
+            "rect": {
+              "x": 348,
+              "y": 194.4375,
+              "width": 644,
+              "height": 47,
+              "top": 194.4375,
+              "right": 992,
+              "bottom": 241.4375,
+              "left": 348
+            },
+            "style": {
+              "background": "rgb(239, 246, 255)",
+              "color": "rgb(30, 58, 138)",
+              "border": "1px solid rgb(96, 165, 250)",
+              "whiteSpace": "normal",
+              "overflowWrap": "anywhere"
+            }
+          }
+        ]
+      },
+      "dom": {
+        "elements": 417,
+        "cards": 27,
+        "op_nodes": 24,
+        "visible_cards": [
+          "attn"
+        ],
+        "chip_kinds": [
+          "class_default"
+        ],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 2264
+        }
+      }
+    }
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 417,
+    "cards": 27,
+    "op_nodes": 24,
+    "visible_cards": [
+      "attn"
+    ],
+    "chip_kinds": [
+      "class_default"
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 2264
+    }
+  }
+}

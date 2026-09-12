@@ -1,0 +1,488 @@
+[
+  {
+    "from": "tests/test_attention_clip.py",
+    "name": "_bundle",
+    "retained_definition_lines": 48,
+    "to": "test_support/s9_fixtures/attention_clip.py"
+  },
+  {
+    "from": "tests/test_attention_clip.py",
+    "name": "_read",
+    "retained_definition_lines": 3,
+    "to": "test_support/s9_fixtures/attention_clip.py"
+  },
+  {
+    "from": "tests/test_attention_geometry.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 35,
+    "to": "test_support/s9_fixtures/attention_geometry.py"
+  },
+  {
+    "from": "tests/test_attention_geometry.py",
+    "name": "_config",
+    "retained_definition_lines": 17,
+    "to": "test_support/s9_fixtures/attention_geometry.py"
+  },
+  {
+    "from": "tests/test_attention_geometry.py",
+    "name": "_context",
+    "retained_definition_lines": 11,
+    "to": "test_support/s9_fixtures/attention_geometry.py"
+  },
+  {
+    "from": "tests/test_attention_geometry.py",
+    "name": "_real_schedule",
+    "retained_definition_lines": 6,
+    "to": "test_support/s9_fixtures/attention_geometry.py"
+  },
+  {
+    "from": "tests/test_attention_geometry.py",
+    "name": "_selector",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/attention_geometry.py"
+  },
+  {
+    "from": "tests/test_attention_mechanism.py",
+    "name": "_PREFIX",
+    "retained_definition_lines": 5,
+    "to": "test_support/s9_fixtures/attention_mechanism.py"
+  },
+  {
+    "from": "tests/test_attention_mechanism.py",
+    "name": "_gated_delta_mixer",
+    "retained_definition_lines": 41,
+    "to": "test_support/s9_fixtures/attention_mechanism.py"
+  },
+  {
+    "from": "tests/test_attention_mechanism.py",
+    "name": "_pipeline",
+    "retained_definition_lines": 18,
+    "to": "test_support/s9_fixtures/attention_mechanism.py"
+  },
+  {
+    "from": "tests/test_attention_mechanism.py",
+    "name": "_source",
+    "retained_definition_lines": 20,
+    "to": "test_support/s9_fixtures/attention_mechanism.py"
+  },
+  {
+    "from": "tests/test_attention_mechanism.py",
+    "name": "_split_attention",
+    "retained_definition_lines": 16,
+    "to": "test_support/s9_fixtures/attention_mechanism.py"
+  },
+  {
+    "from": "tests/test_attention_sinks.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 50,
+    "to": "test_support/s9_fixtures/attention_sinks.py"
+  },
+  {
+    "from": "tests/test_attention_sinks.py",
+    "name": "_reader",
+    "retained_definition_lines": 12,
+    "to": "test_support/s9_fixtures/attention_sinks.py"
+  },
+  {
+    "from": "tests/test_cell_topology.py",
+    "name": "_GUARDED_AUGMENTED_CELL",
+    "retained_definition_lines": 22,
+    "to": "test_support/s9_fixtures/cell_topology.py"
+  },
+  {
+    "from": "tests/test_cell_topology.py",
+    "name": "_GUARDED_NORMS",
+    "retained_definition_lines": 7,
+    "to": "test_support/s9_fixtures/cell_topology.py"
+  },
+  {
+    "from": "tests/test_cell_topology.py",
+    "name": "_read",
+    "retained_definition_lines": 39,
+    "to": "test_support/s9_fixtures/cell_topology.py"
+  },
+  {
+    "from": "tests/test_cell_topology.py",
+    "name": "_source",
+    "retained_definition_lines": 63,
+    "to": "test_support/s9_fixtures/cell_topology.py"
+  },
+  {
+    "from": "tests/test_cross_attention_replacement.py",
+    "name": "_case",
+    "retained_definition_lines": 65,
+    "to": "test_support/s9_fixtures/cross_attention_replacement.py"
+  },
+  {
+    "from": "tests/test_cross_attention_replacement.py",
+    "name": "_selector",
+    "retained_definition_lines": 5,
+    "to": "test_support/s9_fixtures/cross_attention_replacement.py"
+  },
+  {
+    "from": "tests/test_cross_attention_schedule.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 52,
+    "to": "test_support/s9_fixtures/cross_attention_schedule.py"
+  },
+  {
+    "from": "tests/test_decoder_norm.py",
+    "name": "_read",
+    "retained_definition_lines": 61,
+    "to": "test_support/s9_fixtures/decoder_norm.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "CONFIG",
+    "retained_definition_lines": 10,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "REGISTERED_SOURCE",
+    "retained_definition_lines": 48,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "SOURCE",
+    "retained_definition_lines": 43,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "_bind",
+    "retained_definition_lines": 10,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "_inputs",
+    "retained_definition_lines": 14,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_config_binding.py",
+    "name": "_write",
+    "retained_definition_lines": 5,
+    "to": "test_support/s9_fixtures/diffusion_config_binding.py"
+  },
+  {
+    "from": "tests/test_diffusion_reader_claims.py",
+    "name": "_projected",
+    "retained_definition_lines": 7,
+    "to": "test_support/s9_fixtures/diffusion_reader_claims.py"
+  },
+  {
+    "from": "tests/test_embedding_bookend.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 34,
+    "to": "test_support/s9_fixtures/embedding_bookend.py"
+  },
+  {
+    "from": "tests/test_embedding_bookend.py",
+    "name": "_pipeline",
+    "retained_definition_lines": 14,
+    "to": "test_support/s9_fixtures/embedding_bookend.py"
+  },
+  {
+    "from": "tests/test_embedding_bookend.py",
+    "name": "_with_final_norm",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/embedding_bookend.py"
+  },
+  {
+    "from": "tests/test_embedding_bookend.py",
+    "name": "_write",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/embedding_bookend.py"
+  },
+  {
+    "from": "tests/test_ffn_mechanism.py",
+    "name": "_ATTENTION",
+    "retained_definition_lines": 13,
+    "to": "test_support/s9_fixtures/ffn_mechanism.py"
+  },
+  {
+    "from": "tests/test_ffn_mechanism.py",
+    "name": "_PREFIX",
+    "retained_definition_lines": 7,
+    "to": "test_support/s9_fixtures/ffn_mechanism.py"
+  },
+  {
+    "from": "tests/test_ffn_mechanism.py",
+    "name": "_config_selected_wrapper_reader",
+    "retained_definition_lines": 71,
+    "to": "test_support/s9_fixtures/ffn_mechanism.py"
+  },
+  {
+    "from": "tests/test_ffn_mechanism.py",
+    "name": "_reader",
+    "retained_definition_lines": 42,
+    "to": "test_support/s9_fixtures/ffn_mechanism.py"
+  },
+  {
+    "from": "tests/test_ffn_schedule.py",
+    "name": "_CORPUS",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/ffn_schedule.py"
+  },
+  {
+    "from": "tests/test_ffn_schedule.py",
+    "name": "_config",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/ffn_schedule.py"
+  },
+  {
+    "from": "tests/test_ffn_schedule.py",
+    "name": "_real_result",
+    "retained_definition_lines": 6,
+    "to": "test_support/s9_fixtures/ffn_schedule.py"
+  },
+  {
+    "from": "tests/test_ffn_schedule.py",
+    "name": "_selector",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/ffn_schedule.py"
+  },
+  {
+    "from": "tests/test_mixer_schedule.py",
+    "name": "_CORPUS",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/mixer_schedule.py"
+  },
+  {
+    "from": "tests/test_mixer_schedule.py",
+    "name": "_config",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/mixer_schedule.py"
+  },
+  {
+    "from": "tests/test_mixer_schedule.py",
+    "name": "_real_result",
+    "retained_definition_lines": 6,
+    "to": "test_support/s9_fixtures/mixer_schedule.py"
+  },
+  {
+    "from": "tests/test_mixer_schedule.py",
+    "name": "_selector",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/mixer_schedule.py"
+  },
+  {
+    "from": "tests/test_mtp.py",
+    "name": "_read",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/mtp.py"
+  },
+  {
+    "from": "tests/test_mtp.py",
+    "name": "_source",
+    "retained_definition_lines": 70,
+    "to": "test_support/s9_fixtures/mtp.py"
+  },
+  {
+    "from": "tests/test_portable_claim_summary.py",
+    "name": "_defaults",
+    "retained_definition_lines": 38,
+    "to": "test_support/s9_fixtures/portable_claim_summary.py"
+  },
+  {
+    "from": "tests/test_position_absolute.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 34,
+    "to": "test_support/s9_fixtures/position_absolute.py"
+  },
+  {
+    "from": "tests/test_position_absolute.py",
+    "name": "_result",
+    "retained_definition_lines": 10,
+    "to": "test_support/s9_fixtures/position_absolute.py"
+  },
+  {
+    "from": "tests/test_position_fixed.py",
+    "name": "_CORPUS",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/position_fixed.py"
+  },
+  {
+    "from": "tests/test_position_fixed.py",
+    "name": "_context",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/position_fixed.py"
+  },
+  {
+    "from": "tests/test_position_fixed.py",
+    "name": "_pipeline",
+    "retained_definition_lines": 11,
+    "to": "test_support/s9_fixtures/position_fixed.py"
+  },
+  {
+    "from": "tests/test_position_fixed.py",
+    "name": "_source",
+    "retained_definition_lines": 51,
+    "to": "test_support/s9_fixtures/position_fixed.py"
+  },
+  {
+    "from": "tests/test_position_initialization.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 83,
+    "to": "test_support/s9_fixtures/position_initialization.py"
+  },
+  {
+    "from": "tests/test_position_initialization.py",
+    "name": "_result",
+    "retained_definition_lines": 28,
+    "to": "test_support/s9_fixtures/position_initialization.py"
+  },
+  {
+    "from": "tests/test_position_linear_bias.py",
+    "name": "_pipeline",
+    "retained_definition_lines": 11,
+    "to": "test_support/s9_fixtures/position_linear_bias.py"
+  },
+  {
+    "from": "tests/test_position_linear_bias.py",
+    "name": "_source",
+    "retained_definition_lines": 58,
+    "to": "test_support/s9_fixtures/position_linear_bias.py"
+  },
+  {
+    "from": "tests/test_position_relative_bias.py",
+    "name": "_CORPUS",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/position_relative_bias.py"
+  },
+  {
+    "from": "tests/test_position_relative_bias.py",
+    "name": "_t5_context",
+    "retained_definition_lines": 5,
+    "to": "test_support/s9_fixtures/position_relative_bias.py"
+  },
+  {
+    "from": "tests/test_position_schedule.py",
+    "name": "_SOURCE",
+    "retained_definition_lines": 69,
+    "to": "test_support/s9_fixtures/position_schedule.py"
+  },
+  {
+    "from": "tests/test_position_schedule.py",
+    "name": "_result",
+    "retained_definition_lines": 25,
+    "to": "test_support/s9_fixtures/position_schedule.py"
+  },
+  {
+    "from": "tests/test_program_index.py",
+    "name": "_bundle",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/program_index.py"
+  },
+  {
+    "from": "tests/test_program_index.py",
+    "name": "_class",
+    "retained_definition_lines": 2,
+    "to": "test_support/s9_fixtures/program_index.py"
+  },
+  {
+    "from": "tests/test_program_index.py",
+    "name": "_index",
+    "retained_definition_lines": 3,
+    "to": "test_support/s9_fixtures/program_index.py"
+  },
+  {
+    "from": "tests/test_program_index.py",
+    "name": "_write",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/program_index.py"
+  },
+  {
+    "from": "tests/test_reader_claims.py",
+    "name": "_native_fact",
+    "retained_definition_lines": 8,
+    "to": "test_support/s9_fixtures/reader_claims.py"
+  },
+  {
+    "from": "tests/test_reader_claims.py",
+    "name": "_qualified_final",
+    "retained_definition_lines": 8,
+    "to": "test_support/s9_fixtures/reader_claims.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "CLASS",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "CONFIG_HASH",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "FP",
+    "retained_definition_lines": 1,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "_inventory",
+    "retained_definition_lines": 28,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "_product_index",
+    "retained_definition_lines": 9,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s7_reconciliation.py",
+    "name": "_product_ir",
+    "retained_definition_lines": 7,
+    "to": "test_support/s9_fixtures/s7_reconciliation.py"
+  },
+  {
+    "from": "tests/test_s9_class_default_value.py",
+    "name": "_fact",
+    "retained_definition_lines": 8,
+    "to": "test_support/s9_fixtures/s9_class_default_value.py"
+  },
+  {
+    "from": "tests/test_s9_class_default_value.py",
+    "name": "_read",
+    "retained_definition_lines": 29,
+    "to": "test_support/s9_fixtures/s9_class_default_value.py"
+  },
+  {
+    "from": "tests/test_s9_fact_unknowns.py",
+    "name": "investigated",
+    "retained_definition_lines": 19,
+    "to": "test_support/s9_fixtures/s9_fact_unknowns.py"
+  },
+  {
+    "from": "tests/test_s9_scalar_decisions.py",
+    "name": "_config",
+    "retained_definition_lines": 4,
+    "to": "test_support/s9_fixtures/s9_scalar_decisions.py"
+  },
+  {
+    "from": "tests/test_s9_scalar_decisions.py",
+    "name": "_parse",
+    "retained_definition_lines": 10,
+    "to": "test_support/s9_fixtures/s9_scalar_decisions.py"
+  },
+  {
+    "from": "tests/test_weight_tying.py",
+    "name": "_reader",
+    "retained_definition_lines": 10,
+    "to": "test_support/s9_fixtures/weight_tying.py"
+  },
+  {
+    "from": "tests/test_weight_tying.py",
+    "name": "_source",
+    "retained_definition_lines": 58,
+    "to": "test_support/s9_fixtures/weight_tying.py"
+  }
+]

@@ -1,0 +1,44 @@
+........................................................................ [ 24%]
+........................................................................ [ 49%]
+........................................................................ [ 74%]
+.................................................F...................... [ 99%]
+..                                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_unavailable_receipts_are_reported_not_clean _______________
+
+    def test_unavailable_receipts_are_reported_not_clean():
+        """§7 case 7, as cut over by U2: the global ``projection_receipts_available``
+        boolean is GONE — coverage is owner/mechanism-SCOPED.  U8 has migrated
+        Llama's position/mask/mixer/FFN schedules onto real-consumer receipts, while
+        unrelated legacy obligations remain outside coverage.  Net 2 must validate
+        the covered subset without promoting the uncovered subset to clean proof."""
+        import model_unfolder as mu
+        from model_unfolder.sable import sable
+        from test_support import LLAMA
+    
+        ca = (mu.unfold(LLAMA).to_ir().get("extras") or {}).get("config_access") or {}
+        assert "projection_receipts_available" not in ca      # the bool is retired
+        assert "receipted_scopes" in (ca.get("projection_coverage") or {})
+        assert ca.get("projection_obligations"), "obligations must be published"
+        receipted = {tuple(s) for s in ca["projection_coverage"]["receipted_scopes"]}
+        covered = [ob for ob in ca["projection_obligations"]
+                   if (ob["target"]["owner"], ob["mechanism"]) in receipted]
+        uncovered = [ob for ob in ca["projection_obligations"]
+                     if (ob["target"]["owner"], ob["mechanism"]) not in receipted]
+>       assert {(ob["target"]["owner"], ob["mechanism"])
+                for ob in covered} == {
+            ("decoder.attention", "position_schedule"),
+            ("decoder.attention", "mask_schedule"),
+            ("decoder.attention", "mixer_schedule"),
+            ("decoder.ffn", "ffn_schedule"),
+        }
+E       AssertionError: assert {('decoder.at..._size_value')} == {('decoder.at...fn_schedule')}
+E         
+E         Extra items in the left set:
+E         ('model', 'model_hidden_size_value')
+E         Use -v to get more diff
+
+tests/test_config_access.py:677: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_config_access.py::test_unavailable_receipts_are_reported_not_clean
+1 failed, 289 passed in 16.29s

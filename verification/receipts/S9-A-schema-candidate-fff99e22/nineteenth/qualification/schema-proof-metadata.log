@@ -1,0 +1,459 @@
+..................................FF..........................F......... [ 18%]
+...........................................................FF........... [ 37%]
+........................................................................ [ 56%]
+........................................................................ [ 75%]
+......................................................................F. [ 93%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+_ test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs[False] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5882/test_actual_parser_records_sam0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c0fc3b0>
+omitted = False
+
+    @pytest.mark.parametrize('omitted', [False, True])
+    def test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs(tmp_path, monkeypatch, omitted):
+        from model_unfolder.adapters.transformer import parser
+        from model_unfolder.evidence import class_default_value, config_access
+        from model_unfolder.evidence.context import ParseContext, capture_facts
+        checkpoint = {'architectures': ['Wrapper'], 'num_hidden_layers': 2, 'vocab_size': 100,
+                      'num_attention_heads': 4, 'intermediate_size': 128, 'hidden_act': 'silu',
+                      'tie_word_embeddings': False}
+        if not omitted:
+            checkpoint['hidden_size'] = 64
+        result, index, document = _read(tmp_path, checkpoint=checkpoint)
+        if omitted:
+            assert result.status == 'resolved', result.failures
+            bundle = result.claim_witness.bundle
+        else:
+            # This public source descriptor is data only. No source-default reader
+            # is needed to prove the ordinary checkpoint scalar consumption.
+            bundle = SourceBundle(source='local', files=(str(tmp_path / 'modeling_default.py'),),
+                component_files={'root': (str(tmp_path / 'modeling_default.py'),)},
+                supporting_files={'root': (str(tmp_path / 'configuration_default.py'),)},
+                component_architectures={'root': 'Wrapper'}, architecture='Wrapper')
+            def forbidden(*args, **kwargs):
+                raise AssertionError('ordinary width must not invoke the default source reader')
+            monkeypatch.setattr(class_default_value, 'model_hidden_size_class_default', forbidden)
+        context = ParseContext(bundle, class_defaults={'hidden_size': 64},
+                               class_defaults_by_path={(): {'hidden_size': 64}})
+        context._program_index = index
+        with bound_document(DocumentBinding('root', (), document)), \
+                config_access.capture_events(context.config_access), capture_facts(context.facts):
+>           ir = parser.parse(document.document, context=context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_class_default_value.py:202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:3316: in parse
+    _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
+model_unfolder/adapters/transformer/parser.py:901: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'model.hidden_size': FactRecord(value=64, status='config_declared', source='adapters.transformer.p...vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='bias', owner='decoder.attention', value=None, status='ambiguous', completeness='uninspected', source...investigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): bias: registry requires a complete negative, got completeness='uninspected'
+
+model_unfolder/evidence/context.py:116: ValueError
+_ test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs[True] _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5882/test_actual_parser_records_sam1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c1062a0>
+omitted = True
+
+    @pytest.mark.parametrize('omitted', [False, True])
+    def test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs(tmp_path, monkeypatch, omitted):
+        from model_unfolder.adapters.transformer import parser
+        from model_unfolder.evidence import class_default_value, config_access
+        from model_unfolder.evidence.context import ParseContext, capture_facts
+        checkpoint = {'architectures': ['Wrapper'], 'num_hidden_layers': 2, 'vocab_size': 100,
+                      'num_attention_heads': 4, 'intermediate_size': 128, 'hidden_act': 'silu',
+                      'tie_word_embeddings': False}
+        if not omitted:
+            checkpoint['hidden_size'] = 64
+        result, index, document = _read(tmp_path, checkpoint=checkpoint)
+        if omitted:
+            assert result.status == 'resolved', result.failures
+            bundle = result.claim_witness.bundle
+        else:
+            # This public source descriptor is data only. No source-default reader
+            # is needed to prove the ordinary checkpoint scalar consumption.
+            bundle = SourceBundle(source='local', files=(str(tmp_path / 'modeling_default.py'),),
+                component_files={'root': (str(tmp_path / 'modeling_default.py'),)},
+                supporting_files={'root': (str(tmp_path / 'configuration_default.py'),)},
+                component_architectures={'root': 'Wrapper'}, architecture='Wrapper')
+            def forbidden(*args, **kwargs):
+                raise AssertionError('ordinary width must not invoke the default source reader')
+            monkeypatch.setattr(class_default_value, 'model_hidden_size_class_default', forbidden)
+        context = ParseContext(bundle, class_defaults={'hidden_size': 64},
+                               class_defaults_by_path={(): {'hidden_size': 64}})
+        context._program_index = index
+        with bound_document(DocumentBinding('root', (), document)), \
+                config_access.capture_events(context.config_access), capture_facts(context.facts):
+>           ir = parser.parse(document.document, context=context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_class_default_value.py:202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:3316: in parse
+    _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
+model_unfolder/adapters/transformer/parser.py:901: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'model.hidden_size': FactRecord(value=64, status='class_default', source='model_unfolder.evidence....vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='bias', owner='decoder.attention', value=None, status='ambiguous', completeness='uninspected', source...investigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): bias: registry requires a complete negative, got completeness='uninspected'
+
+model_unfolder/evidence/context.py:116: ValueError
+__ test_parser_does_not_keep_provisional_shape_default_after_override_refusal __
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5882/test_parser_does_not_keep_prov0')
+
+    def test_parser_does_not_keep_provisional_shape_default_after_override_refusal(tmp_path):
+        from model_unfolder.adapters.transformer import parser
+        from model_unfolder.evidence import config_access
+        from model_unfolder.evidence.context import ParseContext, capture_facts
+        checkpoint = {'architectures': ['Wrapper'], 'vocab_size': 100}
+        result, index, document = _read(tmp_path, checkpoint=checkpoint,
+            after_super='        config.hidden_size = 32\n')
+        assert result.status == 'failed'
+        bundle = SourceBundle(source='local', files=(str(tmp_path / 'modeling_default.py'),),
+            component_files={'root': (str(tmp_path / 'modeling_default.py'),)},
+            supporting_files={'root': (str(tmp_path / 'configuration_default.py'),)},
+            component_architectures={'root': 'Wrapper'}, architecture='Wrapper')
+        defaults = {'hidden_size': 64, 'num_hidden_layers': 2, 'num_attention_heads': 4}
+        context = ParseContext(bundle, class_defaults=defaults, class_defaults_by_path={(): defaults})
+        context._program_index = index
+        # No checkpoint shape operand: this enters the pre-existing broad shape
+        # default channel. The provisional width must be cleared on failed proof.
+        assert not parser._has_transformer_shape(checkpoint)
+        with bound_document(DocumentBinding('root', (), document)), \
+                config_access.capture_events(context.config_access), capture_facts(context.facts):
+>           ir = parser.parse(document.document, context=context)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_class_default_value.py:283: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:3316: in parse
+    _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
+model_unfolder/adapters/transformer/parser.py:901: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'decoder.ffn.activation': FactRecord(value=None, status='ambiguous', source=None), 'decoder.layer....vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='bias', owner='decoder.attention', value=None, status='ambiguous', completeness='uninspected', source...investigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): bias: registry requires a complete negative, got completeness='uninspected'
+
+model_unfolder/evidence/context.py:116: ValueError
+_ test_manual_weight_assignment_declares_existing_scalar_without_sharing_proof _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5882/test_manual_weight_assignment_0')
+
+    def test_manual_weight_assignment_declares_existing_scalar_without_sharing_proof(tmp_path):
+        from test_weight_tying import _reader
+        from model_unfolder.evidence.reader_claims import retained_reader_attempt
+        document = PreparedDocument({}, {})
+        with bound_document(DocumentBinding("root", (), document)):
+            result = _reader(tmp_path)
+            assert result.status == "resolved"
+            _, index, _, _ = retained_reader_attempt(result)
+            fact = EvidenceFact(owner="model", key="tie_word_embeddings", value=True,
+                                status="code_proven", completeness="complete")
+            declared = qualify_reader_fact(fact, result, index, document)
+            assert declared.value is True and declared.status == "code_proven"
+            assert declared.claim_kind == "value"
+            assert declared.claim_evidence is None and declared.claim_document_token == ""
+            with pytest.raises(ValueError, match="intended claim kind"):
+>               qualify_reader_fact(replace(fact, claim_kind="relation"), result, index, document)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_reader_declarations.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = EvidenceFact(key='tie_word_embeddings', owner='model', value=True, status='code_proven', completeness='complete', sour...re_kind=None, claim_kind='relation', claim_readers=(), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+
+    def _validate(self, *, migrated: bool) -> None:
+        if self.status not in TYPED_FACT_STATUSES:
+            raise ValueError(f"unknown fact status {self.status!r}")
+        if self.completeness not in COMPLETENESS_LEVELS:
+            raise ValueError(f"unknown completeness {self.completeness!r}")
+        if self.status in _FAILURE_STATUSES:
+            if self.unknown_reason is None:
+                object.__setattr__(self, "unknown_reason", UnknownReason(
+                    "investigation_missing", "unknown_reason_unrecorded"))
+            if not isinstance(self.unknown_reason, UnknownReason):
+                raise TypeError("unresolved fact requires authoritative UnknownReason")
+            investigation = self.unknown_reason.investigation
+            if investigation is not None and (
+                    investigation.claim_key != self.ledger_key() or
+                    investigation.declared_reader_ids != self.claim_readers):
+                raise ValueError("unknown investigation belongs to another fact or reader declaration")
+            if investigation is not None:
+                investigation.validate(self)
+        elif self.unknown_reason is not None:
+            raise ValueError("only unresolved facts may carry an unknown reason")
+        if isinstance(self.value, (RawObservation, BoundObservation)):
+            raise TypeError(
+                "a raw/bound observation is not an architectural fact; run it "
+                "through a mechanism reader and record what was PROVEN")
+        # The negative-proof law (I-3) governs NATIVE construction.  A legacy
+        # lift never recorded completeness — inventing ``complete`` would
+        # fabricate the very metadata the old row lacked — so lifts are exempt
+        # (migrated=True) and counted as debt; a NATIVE code-negative still
+        # requires complete proof.
+        if (not migrated and self.status in _CODE_CLAIM_STATUSES
+                and is_negative_value(self.value) and self.completeness != "complete"):
+            raise NegativeProofError(
+                f"{self.key}: a {self.status} negative ({self.value!r}) requires "
+                f"complete inspection; got completeness={self.completeness!r} — "
+                "record ambiguous/unknown instead (I-3)")
+        # §16.3: a DERIVED negative is sound only if the derivation's effective
+        # completeness (its weakest premise) is complete — an absent/NoPE
+        # conclusion derived from a presence-only premise cannot prove absence.
+        if (not migrated and self.status == "derived"
+                and is_negative_value(self.value) and self.completeness != "complete"):
+            raise NegativeProofError(
+                f"{self.key}: a derived negative ({self.value!r}) requires effective "
+                f"completeness 'complete'; got {self.completeness!r} — a presence-only "
+                "premise cannot prove absence (I-3/I-5)")
+        if self.status == "derived" and not self.premises:
+            raise ValueError(f"{self.key}: derived facts must name their premises (I-5)")
+        if self.premises and self.status != "derived":
+            raise ValueError(
+                f"{self.key}: only derived facts carry premises; a {self.status} "
+                "claim must stand on its own reader evidence (I-5)")
+        if self.failure_kind is not None:
+            if self.failure_kind not in FAILURE_KINDS:
+                raise ValueError(f"unknown failure kind {self.failure_kind!r}")
+            if self.status not in _FAILURE_STATUSES:
+                raise ValueError(
+                    f"{self.key}: a typed reader failure ({self.failure_kind}) can "
+                    f"only ride {sorted(_FAILURE_STATUSES)}, not {self.status!r} (I-9)")
+        if self.claim_kind is None:
+            if self.claim_readers or self.claim_evidence is not None \
+                    or self.claim_document_token:
+                raise ValueError(
+                    "claim readers/evidence/document require a reader declaration")
+        else:
+            from .claim_evidence import CLAIM_KINDS, validate_fact_claim
+            if self.claim_kind not in CLAIM_KINDS:
+                raise ValueError("fact claim kind is outside the closed vocabulary")
+            if tuple(sorted(set(self.claim_readers))) != self.claim_readers \
+                    or not self.claim_readers:
+>               raise ValueError(
+                    "a reader claim declaration needs canonical exact readers")
+E               ValueError: a reader claim declaration needs canonical exact readers
+
+model_unfolder/evidence/facts.py:254: ValueError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5882/test_manual_weight_assignment_0')
+
+    def test_manual_weight_assignment_declares_existing_scalar_without_sharing_proof(tmp_path):
+        from test_weight_tying import _reader
+        from model_unfolder.evidence.reader_claims import retained_reader_attempt
+        document = PreparedDocument({}, {})
+        with bound_document(DocumentBinding("root", (), document)):
+            result = _reader(tmp_path)
+            assert result.status == "resolved"
+            _, index, _, _ = retained_reader_attempt(result)
+            fact = EvidenceFact(owner="model", key="tie_word_embeddings", value=True,
+                                status="code_proven", completeness="complete")
+            declared = qualify_reader_fact(fact, result, index, document)
+            assert declared.value is True and declared.status == "code_proven"
+            assert declared.claim_kind == "value"
+            assert declared.claim_evidence is None and declared.claim_document_token == ""
+>           with pytest.raises(ValueError, match="intended claim kind"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Regex pattern did not match.
+E             Expected regex: 'intended claim kind'
+E             Actual message: 'a reader claim declaration needs canonical exact readers'
+
+tests/test_s9_reader_declarations.py:243: AssertionError
+_ test_actual_missing_source_rows_keep_values_statuses_and_declared_questions __
+
+    def test_actual_missing_source_rows_keep_values_statuses_and_declared_questions():
+        from model_unfolder.evidence.models import SourceBundle
+        from model_unfolder.adapters.transformer.parser import parse
+        config = {"model_type": "synthetic_missing", "hidden_size": 8,
+                  "num_hidden_layers": 1, "num_attention_heads": 2,
+                  "num_key_value_heads": 2, "intermediate_size": 16,
+                  "vocab_size": 32, "hidden_act": "relu"}
+        context = ParseContext(SourceBundle(source="missing", files=()))
+        document = PreparedDocument(config, dict(config))
+        with capture_events(context.config_access), owner_scope("root"), \
+                bound_document(DocumentBinding("root", (), document)):
+>           parse(config, context=context)
+
+tests/test_s9_reader_declarations.py:258: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:3316: in parse
+    _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
+model_unfolder/adapters/transformer/parser.py:901: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'model.hidden_size': FactRecord(value=8, status='config_declared', source='adapters.transformer.pa...vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='bias', owner='decoder.attention', value=None, status='oracle_missing', completeness='uninspected', s...investigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): bias: registry requires a complete negative, got completeness='uninspected'
+
+model_unfolder/evidence/context.py:116: ValueError
+_______________ test_unavailable_receipts_are_reported_not_clean _______________
+
+    def test_unavailable_receipts_are_reported_not_clean():
+        """§7 case 7, as cut over by U2: the global ``projection_receipts_available``
+        boolean is GONE — coverage is owner/mechanism-SCOPED.  U8 has migrated
+        Llama's position/mask/mixer/FFN schedules onto real-consumer receipts; S9-A
+        adds the exact model hidden-size value. Unrelated legacy obligations remain
+        outside coverage. Net 2 must validate
+        the covered subset without promoting the uncovered subset to clean proof."""
+        import model_unfolder as mu
+        from model_unfolder.sable import sable
+        from test_support import LLAMA
+    
+        ca = (mu.unfold(LLAMA).to_ir().get("extras") or {}).get("config_access") or {}
+        assert "projection_receipts_available" not in ca      # the bool is retired
+        assert "receipted_scopes" in (ca.get("projection_coverage") or {})
+        assert ca.get("projection_obligations"), "obligations must be published"
+        receipted = {tuple(s) for s in ca["projection_coverage"]["receipted_scopes"]}
+        covered = [ob for ob in ca["projection_obligations"]
+                   if (ob["target"]["owner"], ob["mechanism"]) in receipted]
+        uncovered = [ob for ob in ca["projection_obligations"]
+                     if (ob["target"]["owner"], ob["mechanism"]) not in receipted]
+        assert {(ob["target"]["owner"], ob["mechanism"])
+                for ob in covered} == {
+            ("decoder.attention", "position_schedule"),
+            ("decoder.attention", "mask_schedule"),
+            ("decoder.attention", "mixer_schedule"),
+            ("decoder.ffn", "ffn_schedule"),
+            ("model", "model_hidden_size_value"),
+        }
+        assert uncovered, "unmigrated obligations must remain visibly advisory"
+>       rep = sable(LLAMA, render_images=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_config_access.py:687: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/sable.py:561: in sable
+    _zero_asserted_census_findings(cfg, source),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/sable.py:248: in _zero_asserted_census_findings
+    config_to_ir(stripped, parse_context=context)
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:3316: in parse
+    _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
+model_unfolder/adapters/transformer/parser.py:901: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'model.hidden_size': FactRecord(value=4096, status='config_declared', source='adapters.transformer...vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='bias', owner='decoder.attention', value=None, status='oracle_missing', completeness='uninspected', s...investigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): bias: registry requires a complete negative, got completeness='uninspected'
+
+model_unfolder/evidence/context.py:116: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_s9_class_default_value.py::test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs[False]
+FAILED tests/test_s9_class_default_value.py::test_actual_parser_records_same_scalar_on_checkpoint_and_source_default_rungs[True]
+FAILED tests/test_s9_class_default_value.py::test_parser_does_not_keep_provisional_shape_default_after_override_refusal
+FAILED tests/test_s9_reader_declarations.py::test_manual_weight_assignment_declares_existing_scalar_without_sharing_proof
+FAILED tests/test_s9_reader_declarations.py::test_actual_missing_source_rows_keep_values_statuses_and_declared_questions
+FAILED tests/test_config_access.py::test_unavailable_receipts_are_reported_not_clean
+6 failed, 377 passed in 11.05s

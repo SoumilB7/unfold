@@ -1,0 +1,61 @@
+{
+  "historical": "7168440",
+  "current": "fb1f871",
+  "production_equal_779739b": true,
+  "changed_files": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "old_sha256": "3069e45262ffdcf12daa81562979caf81213b349be8884307bbfa5f458f1ff7b",
+      "new_sha256": "478b14edfe83e7d74a25b5da8871db5da539550c02117eb3183e4e880593e7cf",
+      "changed_top_level_definitions": []
+    },
+    {
+      "path": "model_unfolder/evidence/unet_call_binding.py",
+      "old_sha256": "f6a1d4c1b179eb81de2f4315f7c885be5a03be648bf845b846d19648dc882bad",
+      "new_sha256": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78",
+      "changed_top_level_definitions": [
+        "demanded_root_lookups",
+        "extend_lookup_sources"
+      ]
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/registry.py",
+      "old_sha256": "1410cd80eda6da06c6936b269299fb1d926dc82f354ca63217b7bf8e5e0bf414",
+      "new_sha256": "02f5726b5e6a0e39fca6369824b8c7ee4975efa68d288dad99b6a003b659731e",
+      "changed_top_level_definitions": []
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/unet.py",
+      "old_sha256": "677e74f6cc2b5793fc5177cdb8593d641bd44e98b56b392ab123b2ab6ea449ce",
+      "new_sha256": "632a25c18fcd9b89eb7a69b3dbf4d537b7de3a62d16347545d2542d9b0296800",
+      "changed_top_level_definitions": [
+        "build_constructed_children_view"
+      ]
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "old_sha256": "809ceb195532cb7e0eecea89ffb9d144dc152c0b8c9c64ed8badba50324f534c",
+      "new_sha256": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+      "changed_top_level_definitions": [
+        "ConditionalProjector",
+        "conditional_projector_pairs",
+        "conditional_surface_leaves"
+      ]
+    },
+    {
+      "path": "model_unfolder/renderers/html/graph_engine.py",
+      "old_sha256": "b7a206c3677cecd013afef9b0835d1aaa428898b67fc393e8277177c231ad0cc",
+      "new_sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+      "changed_top_level_definitions": [
+        "_draw_parallel"
+      ]
+    },
+    {
+      "path": "physics/instance_inventory.py",
+      "old_sha256": "f28e18e35ebf25890d928ef2e9809eb7bc2947bb9494190c6c8f122be23c2444",
+      "new_sha256": "8cabfff97d57d573dbb2c1fe6ec9205b064d37b780ff082f227599b530679e82",
+      "changed_top_level_definitions": []
+    }
+  ],
+  "status": "prepared source census only; final per-output and matrix reconciliation pending"
+}

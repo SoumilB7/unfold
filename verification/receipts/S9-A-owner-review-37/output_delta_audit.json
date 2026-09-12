@@ -1,0 +1,568 @@
+{
+ "witnesses": {
+  "auraflow-v0-3": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 75
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 47,
+    "presentation_or_unknown_metadata": 9
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "bloom": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1,
+    "fact_citation_list": 70
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 93,
+    "presentation_or_unknown_metadata": 24,
+    "STRUCTURAL_OR_UNCLASSIFIED": 2
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "cogvideox-5b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 87
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 51,
+    "presentation_or_unknown_metadata": 7
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "dbrx-base": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 53,
+    "presentation_or_unknown_metadata": 28,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "deepseek-v3": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 80,
+    "presentation_or_unknown_metadata": 29,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "flux-2-dev": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 114
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 53,
+    "presentation_or_unknown_metadata": 10
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "fluxtransformer2dmodel": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 116
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 56,
+    "presentation_or_unknown_metadata": 9
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "gemma-2-2b-it": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 26,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "glm-4-5": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 31,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "gpt-oss-20b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 53,
+    "presentation_or_unknown_metadata": 28,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "granite-3-0-8b-instruct": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 26,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "hunyuanvideo": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 122
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 61,
+    "presentation_or_unknown_metadata": 20
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "llama-7b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 25,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "ltx-video": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 86
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 51,
+    "presentation_or_unknown_metadata": 7
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "lumina-image-2-0": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 63
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 9
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "mochi-1-preview": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 50
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 51,
+    "presentation_or_unknown_metadata": 3
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "musicgen-small": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 74,
+    "extras_added:render": 1,
+    "fact_citation_list": 24
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 96,
+    "presentation_or_unknown_metadata": 26,
+    "STRUCTURAL_OR_UNCLASSIFIED": 2
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "olmo-2-1124-7b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 27,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "pixart-sigma-xl-2-1024-ms": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 4
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 51,
+    "presentation_or_unknown_metadata": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "prxpixel-t2i": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 50
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 7
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "qwen-image": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 122
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 55,
+    "presentation_or_unknown_metadata": 7
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "qwen2-vl-7b-instruct": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 2,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 55,
+    "presentation_or_unknown_metadata": 23,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "qwen3-5-27b-text": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 1,
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 26,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "qwen3-8b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 27,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "sana-1600m-1024px-diffusers": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 63
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 7
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "stable-diffusion-3-5-large": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 4
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 55,
+    "presentation_or_unknown_metadata": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "stable-diffusion-xl-base-1-0": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 6866
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 52,
+    "presentation_or_unknown_metadata": 12
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "stablelm-2-1-6b": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "extras_added:render": 1
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 54,
+    "presentation_or_unknown_metadata": 27,
+    "STRUCTURAL_OR_UNCLASSIFIED": 1
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  },
+  "wan2-2-t2v-a14b-diffusers": {
+   "surfaces_changed": [
+    "html_meta",
+    "ir",
+    "ledgers",
+    "sable"
+   ],
+   "ir_classes": {
+    "presentation_or_unknown_metadata": 42
+   },
+   "ledger_classes": {
+    "config_accounting_metadata": 47,
+    "presentation_or_unknown_metadata": 4
+   },
+   "sable_classes": {
+    "STRUCTURAL_OR_UNCLASSIFIED": 14
+   }
+  }
+ },
+ "totals": {
+  "ir:presentation_or_unknown_metadata": 7948,
+  "ledgers:config_accounting_metadata": 1654,
+  "ledgers:presentation_or_unknown_metadata": 486,
+  "sable:STRUCTURAL_OR_UNCLASSIFIED": 406,
+  "ir:extras_added:render": 14,
+  "ir:fact_citation_list": 94,
+  "ledgers:STRUCTURAL_OR_UNCLASSIFIED": 16
+ },
+ "surface_changed_counts": {
+  "html_meta": 29,
+  "ir": 29,
+  "ledgers": 29,
+  "sable": 29
+ },
+ "fact_value_or_status_rows": []
+}

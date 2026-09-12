@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "50f7bf923aa9812921984ac26027942943a7465d38aee8b2427bbffe4d03ad3b",
+  "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+  "input_sha256": "3fb6ef34f671f4f98d7d6c828d78be6e8a54f771bb09ebaffdc059088af13530",
+  "resolved_class": {
+    "module": "transformers.models.qwen3_vl_moe.modeling_qwen3_vl_moe",
+    "qualname": "Qwen3VLMoeForConditionalGeneration"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

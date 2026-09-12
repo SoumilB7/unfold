@@ -1,0 +1,39 @@
+{
+  "state": "approved install, HEAD113d159f with exact10file uncommitted overlay",
+  "model_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+  "matrix_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+  "claim_summary_nonempty_index_fields": 200,
+  "claim_portable_mapping_counts": {
+    "da6dcc0fb04a1b1751240838c08858850b61ec18c40b3413f7a12b004e490680": 8,
+    "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382": 192
+  },
+  "source_index_fields": 39,
+  "relation_plan_index_fields": 98,
+  "total_nonempty_index_fields": 337,
+  "other_active_nonportable_index_seals_identified": 0,
+  "literal_host_path_files": 6,
+  "literal_host_path_tokens": 38,
+  "literal_host_path_json_leaves": 6,
+  "host_path_roles": {
+    "verification/s7/observations/dbrx-base.json.gz": [
+      "$.attempts[0].stderr"
+    ],
+    "verification/s7/observations/fluxtransformer2dmodel.json.gz": [
+      "$.attempts[0].stderr"
+    ],
+    "verification/s7/observations/gpt-oss-20b.json.gz": [
+      "$.attempts[0].stderr"
+    ],
+    "verification/s7/observations/qwen-image.json.gz": [
+      "$.attempts[0].stderr"
+    ],
+    "verification/s7/observations/qwen3-vl-235b.json.gz": [
+      "$.attempts[0].stderr"
+    ],
+    "verification/s7/observations/sana-1600m-1024px-diffusers.json.gz": [
+      "$.attempts[0].stderr"
+    ]
+  },
+  "semantic_host_path_field_count": 0,
+  "limits": "Other116 payload bytes retained from completed original/candidate exact comparison and installation guard; final overall scan also visits them. Recognition scope is scanner declared host root, Windows drive and file URI pattern. Zero applies to identified current cross-machine proof identity defects, never historical raw path occurrences."
+}

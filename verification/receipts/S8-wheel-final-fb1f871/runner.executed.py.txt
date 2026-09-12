@@ -1,0 +1,27 @@
+from pathlib import Path
+import hashlib,io,json,os,subprocess,sys,tarfile
+repo=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg');base=Path('/private/tmp/unfold-s8-wheel-fb1f871');base.mkdir(exist_ok=False);src=base/'source';src.mkdir();out=repo/'verification/receipts/S8-wheel-final-fb1f871';out.mkdir(exist_ok=False)
+paths=['pyproject.toml','README.md','model_unfolder','physics'];archive=subprocess.check_output(['git','archive','fb1f871',*paths],cwd=repo);(base/'source.tar').write_bytes(archive)
+with tarfile.open(fileobj=io.BytesIO(archive)) as t:t.extractall(src,filter='data')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+pins={str(p.relative_to(src)):sha(p) for p in src.rglob('*') if p.is_file()};(out/'build-inputs.json').write_text(json.dumps(pins,indent=2)+'\n');commands=[]
+def run(args,name,cwd,env=None):
+ commands.append(args)
+ with (out/(name+'.log')).open('w') as log:r=subprocess.run(args,cwd=cwd,env=env,stdout=log,stderr=subprocess.STDOUT)
+ assert r.returncode==0,(name,r.returncode)
+run([sys.executable,'-m','pip','wheel','--no-index','--no-deps','--no-build-isolation','--wheel-dir',str(base/'wheels'),str(src)],'build',base)
+wheel=next((base/'wheels').glob('*.whl'));target=base/'installed'
+run([sys.executable,'-m','pip','install','--no-index','--no-deps','--target',str(target),str(wheel)],'install',base)
+prior=json.loads((repo/'verification/receipts/S8-wheel-final-7168440/result.json').read_text());modules=list(prior['installed_imports'])
+program=f'''import importlib,json,pathlib
+root=pathlib.Path({str(target)!r})
+result={{m:importlib.import_module(m).__file__ for m in {modules!r}}}
+assert all(pathlib.Path(v).is_relative_to(root) for v in result.values())
+from model_unfolder.ir import ConstructionSummary,ComponentEntry
+from physics.instance_inventory import AttributeLookupRequest,PythonFunctionWitness
+from physics.attribute_bindings import AttributeLookupRequest as DirectRequest,PythonFunctionWitness as DirectFunction
+assert AttributeLookupRequest is DirectRequest and PythonFunctionWitness is DirectFunction
+print(json.dumps(result))
+'''
+env=dict(os.environ,PYTHONPATH=str(target),HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',DIFFUSERS_OFFLINE='1');run([sys.executable,'-c',program],'import',base,env)
+assert all(sha(src/p)==h for p,h in pins.items());imports=json.loads((out/'import.log').read_text());result={'commit':'fb1f871','production_commit':'779739b','status':'PASS','archive_sha256':hashlib.sha256(archive).hexdigest(),'wheel_sha256':sha(wheel),'build_inputs_unchanged':True,'installed_imports':imports,'public_dto_identity':True,'commands':commands,'scope':'Offline exact archive build/install using host dependencies; no model, pytest, render, clean-environment, release or baseline claim'};(out/'result.json').write_text(json.dumps(result,indent=2)+'\n');(out/'README.md').write_text('# Offline wheel at fb1f871\n\nPASS: exact archived inputs, offline wheel build and separate-target installation. Eleven production/physics imports resolve to the installed wheel; both public request/witness DTO reexports retain identity with their defining classes. Original archived inputs remain unchanged. Host dependencies were reused. No models, pytest, rendering, baseline changes or release.\n');print(json.dumps({'status':'PASS','imports':len(imports),'build_input_files':len(pins),'wheel_sha256':result['wheel_sha256']}))

@@ -1,0 +1,52 @@
+{
+  "status": "SOURCE_ONLY_RUNTIME_PENDING",
+  "base": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfirst",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/config_registration.py",
+      "sha256": "cc99cfd8a62081685bd019629b0b13989eaae82b552d57cd0827f5e3704849c9",
+      "bytes": 18839,
+      "base_sha256": "97288c4881016168751e11f72ac8a48401ed7cf0b26796277a9a2b0cd404bbbb"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py",
+      "sha256": "9420b3aa5f107826847129792b51901a9c3f9622329c7a16c5608066660b23c7",
+      "bytes": 46791,
+      "base_sha256": "12441bc00e61589fbc2c51f387afc6fb8d635f6960a17324abbe7c794fb01b12"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/config_binding.py",
+      "sha256": "2b19cee8207e1f34b6d784c6e04fad8b8abc7dcbf18032cf6e37bb4b8fe6fb27",
+      "bytes": 37449,
+      "base_sha256": "fc05c6f60997bf261c6db32e415481fc65963b8c35e6ff7a5c2a83a4034fa8da"
+    },
+    {
+      "path": "tests/test_s9_registered_default_events.py",
+      "sha256": "19ab376ffbf131c8c6a6811abc63f6186d79e60f1d3fcdfb4957c73a7ec690da",
+      "bytes": 6105,
+      "base_sha256": null
+    },
+    {
+      "path": "model_unfolder/evidence/config_access.py",
+      "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4",
+      "bytes": 98010,
+      "base_sha256": "3f3251d6b301ddc5aa235829b8cb500d7bd841e85d931ce96b34ee07bd6caaba"
+    },
+    {
+      "path": "tests/test_s9_default_consumption.py",
+      "sha256": "67e47e00a2745d692a6583c64e012f21c5e70fe079f352c695f71b81632be72e",
+      "bytes": 6921,
+      "base_sha256": null
+    }
+  ],
+  "external_handoff": {
+    "path": "/private/tmp/unfold-s9a-default-accounting-v2-handoff.json",
+    "sha256": "358178e35f0ee231c07f31a73e1993f09d18c603149855546d6f53386c098af2"
+  },
+  "helper_relocation_check": "AST exact compared with reviewed diffusion v2 after only function-name and now-local self-import normalization",
+  "focused_command": "python -m pytest -q tests/test_s9_registered_default_events.py tests/test_s9_default_consumption.py tests/test_s9_diffusion_defaults.py tests/test_diffusion_config_binding.py tests/test_diffusion_reader_claims.py",
+  "separate_test_correction_manifest": "/private/tmp/unfold-s9a-diffusion-default-test-correction/manifest.json",
+  "scope": "Source-owned exact RegisteredConstructorDefaultPremise; validated before the first resolve event; no overlay inference, checkpoint occurrence, or stronger mechanism proof.",
+  "supersedes_manifest_sha256": "41f39eaf0941253eb81bd215c804b9e0f8914e61d190e0ab1167e9a3e7cff060",
+  "combined_scope": "Exact four source-provider files plus two config-access owner files from v2 handoff; six files held together."
+}

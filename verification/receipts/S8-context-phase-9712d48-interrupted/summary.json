@@ -1,0 +1,59 @@
+{
+  "status": "owner_requested_hold_for_final_source_pin",
+  "completed": [
+    {
+      "case": "sdxl-misleading",
+      "status": "passed_before_owner_hold",
+      "html_sha256": "c323a34cceecbbd051540d809305a6f6be340fbd20594e5ea4091b65390d2728",
+      "checks": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    },
+    {
+      "case": "sdxl-ordinary",
+      "status": "passed_before_owner_hold",
+      "html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "checks": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    },
+    {
+      "case": "sdxl-rewrite",
+      "status": "passed_before_owner_hold",
+      "html_sha256": "d499a0e62b809bbf52f6408255628b85a6bb1c1b70c773591bcc00e7ee07b047",
+      "checks": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    },
+    {
+      "case": "sdxl-sparse",
+      "status": "passed_before_owner_hold",
+      "html_sha256": "8eee98a90eba288c18a0ff745bda6f88ee5d6a35b381b4b0d98c128977d10d58",
+      "checks": {
+        "validate_block_tree": [],
+        "validate_click_coupling": [],
+        "validate_no_dotted_arrows": [],
+        "validate_no_dotted_boundaries": [],
+        "validate_unique_ref_ids": []
+      }
+    }
+  ],
+  "interrupted_directories": [
+    "sdxl-unchanged"
+  ],
+  "exit_code": 130,
+  "no_model_run": true,
+  "blessed": false
+}

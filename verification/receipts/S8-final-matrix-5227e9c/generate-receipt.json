@@ -1,0 +1,14 @@
+{
+  "denominator": 39,
+  "elapsed_seconds": 1211.069,
+  "exit_code": 0,
+  "fresh39_model_run": false,
+  "implementation_unchanged": true,
+  "original26_artifact_bytes_unchanged": true,
+  "phase_counts": {
+    "fresh_final_source_generation": 12,
+    "preserved_96d0c1e_separately_replayed_address": 1,
+    "preserved_generation_96d0c1e": 25,
+    "saved_evidence_final_source_reconciliation": 1
+  }
+}

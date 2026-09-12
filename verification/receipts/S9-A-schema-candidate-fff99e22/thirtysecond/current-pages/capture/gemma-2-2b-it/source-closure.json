@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21",
+  "reference26_seal": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21",
+  "scope": "Actual32 source index;26 is a comparison reference, not a32 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "d81e5abd688436da573ae299a65598d01ea871a8874d0cabeb5149967855ca07",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

@@ -1,0 +1,41 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "proposal_manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/shared-alias-default-proposal-r2/manifest.json",
+  "proposal_manifest_sha256": "70c06b2a5bd91045093808faebc5853d5eeff8341070dd4d58ab02208084c906",
+  "verified_files": [
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "proposed_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "proposed_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    {
+      "path": "tests/test_s9_shared_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "6635e585ee23d1758eafa6949c13a4880c756a8994a51a80552703374c46a01d"
+    }
+  ],
+  "base_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "scope": "Existing supported-alias class-default operand consistency; no general hydration or mechanism proof expansion.",
+  "findings": [],
+  "checks": [
+    "All three proposed files and two documents match immutable manifest; live before hashes match exact35; new test path absent; all proposed Python sources parse via stdlib AST only.",
+    "Checkpoint occurrence arbitration runs first through the unchanged ConfigAccess resolver. Present null/zero and ambiguous aliases cannot fall through to class defaults.",
+    "Default selection is gated by allow_aliases through the existing load_aliases vocabulary, successful prepared document, absent checkpoint channel, and exact same container path. No model names, added aliases, or new default sources.",
+    "All supported present overlay addresses must have identical operand hashes; disagreements raise a concrete ValueError. Equal defaults use the existing vocabulary order.",
+    "Selected alias re-enters the same resolver once with aliases disabled; it returns only with an existing typed default premise. The premise retains its actual overlay path/value and prepared-document/source-container seal. ReaderOperand.source_path remains the original source expression path.",
+    "Dry and event-producing operand resolution share the implementation; dry proof validation uses _resolve_for_claim_proof and emits no events. Initial absent inspections are retained; consumption names the supplying alias path.",
+    "Parser removes its duplicated supported-alias loop and requests one canonical shared operand only in the existing absent layer-count slot. Existing schedule producers, graph/card code, claim schema and all previous tests are untouched.",
+    "New fourteen parameterized test cases cover count/width aliases, nested/root address distinction, actual default_path and emitted config_path, dry/event parity, opt-out, overlay disagreement, checkpoint null/zero/ambiguity, foreign/changed/failed/unbound documents and unsupported spellings.",
+    "Existing eight count cases and six actual schedule visibility cases remain required, including real sparse Bloom/GPT2 and ordinary/sparse MusicGen/Bloom. No assertion was weakened."
+  ],
+  "limits": [
+    "No tests, model parses, product imports, or output acceptance performed in this source review. Root must verify actual sparse Bloom relation proof/status and HTML before expensive fleet/matrix lanes.",
+    "Alias vocabulary supplies scalar-address equivalence only; each architectural mechanism and relation still requires its existing source reader proof.",
+    "35 fleet/matrix/preservation were not executed; future generation comparisons must retain executed34 fleet and original31 recovered preservation baseline origins."
+  ]
+}

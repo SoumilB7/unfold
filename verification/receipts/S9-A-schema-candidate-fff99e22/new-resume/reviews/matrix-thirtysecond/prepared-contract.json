@@ -1,0 +1,26 @@
+{
+  "status": "PREPARED ONLY; current32 matrix and completed root bracket pending. Prepared31 remains preserved and unexecuted.",
+  "script_sha256": "2df86b20d28e3f65b251360ebe85f24cb24b7a80e7911f326fb8b0aae50ab33e",
+  "reused_prior_script_sha256": "95b66d0d1526311ae29079110991b99aaa37f6aefdaafed5f2eda1dfa30d0531",
+  "expected_source32": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+  "candidate_root": "/private/tmp/unfold-s9a-thirtysecond/matrix",
+  "checks": [
+    "Require completed successful root matrix lane with exact32 source and protected-artifact equal brackets.",
+    "Exact39 membership/order/denominator; every model, observation and relation artifact byte hash verified before and after.",
+    "Active/archived22/archived26 versus32 comparison, including all occurrence membership/order/runtime/static identity, construction and execution values, schedules and relation identities/order.",
+    "Exact leaves for every changed row including full provenance and projection, with absent/list order distinguished; full payload/table metadata and companion deltas enumerated.",
+    "Every union citation removed/gained/retained; original16324 findings classified retained-qualified, retained-unqualified or removed. Citation removal never counts as qualification.",
+    "Original274 interim placement outcomes retained using22; every new32 projection-kind delta shown against both active and26.",
+    "All remaining candidate fact findings enumerated by exact key; report real values rather than assert86/142/481 unchanged.",
+    "Independent relation-plan receipt hashes and source-index consistency.",
+    "Raw summary deltas retained; no normalization, source re-stamp, example or approved rows written."
+  ],
+  "limits": [
+    "Saved serialized proof presence/kind and qualification transport are not fresh live proof validation; root current32 pages must validate actual proof objects.",
+    "Portable source closure hash causes require separate exact source capture; changed seals remain deltas.",
+    "Report is audit evidence only, not automatic PASS, owner approval or unit acceptance.",
+    "No test/model/project imports: source preparation uses stdlib ast only."
+  ],
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/matrix-thirtysecond/audit.py --candidate /private/tmp/unfold-s9a-thirtysecond/matrix --completion-result <root completed matrix result.json> --output /private/tmp/unfold-s9a-thirtysecond/independent-matrix-audit.json.gz",
+  "candidate_source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e"
+}

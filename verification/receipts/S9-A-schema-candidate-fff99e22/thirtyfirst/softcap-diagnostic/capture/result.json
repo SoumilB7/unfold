@@ -1,0 +1,326 @@
+{
+  "cases": [
+    {
+      "caps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "case": "injected_missing",
+      "consumed_softcap_events": 0,
+      "layers": 32,
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": false,
+        "status": "unknown",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        },
+        "value": null
+      },
+      "native_softcap_present": true,
+      "page_bytes": 70227,
+      "page_sha256": "56395c22c3746499aef56c3cebf74a69e4206652378b4323d994776bad94fd59",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "resolved"
+        ]
+      ]
+    },
+    {
+      "caps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "case": "plain_missing",
+      "consumed_softcap_events": 0,
+      "layers": 32,
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": false,
+        "status": "unknown",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        },
+        "value": null
+      },
+      "native_softcap_present": true,
+      "page_bytes": 70227,
+      "page_sha256": "164b5f21f0ddbbf87218a635f6926a514cd65f0ffabd0e037557035c4059769d",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "resolved"
+        ]
+      ]
+    },
+    {
+      "caps": [
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0,
+        17.0
+      ],
+      "case": "explicit_17",
+      "consumed_softcap_events": 1,
+      "layers": 32,
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": true,
+        "status": "code_and_config",
+        "unknown_reason": null,
+        "value": 17.0
+      },
+      "native_softcap_present": true,
+      "page_bytes": 69944,
+      "page_sha256": "2cea1af04e9352332325c3aada985385e6fb2a36bff90945e15cf1ffa9feea06",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "resolved"
+        ]
+      ]
+    },
+    {
+      "caps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "case": "explicit_none",
+      "consumed_softcap_events": 0,
+      "layers": 32,
+      "native_softcap": null,
+      "native_softcap_present": false,
+      "page_bytes": 70908,
+      "page_sha256": "f30b12e223ea1b641a3a4e63d46b2243502ddea82552c3c8074e238079e1b461",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "resolved"
+        ]
+      ]
+    },
+    {
+      "caps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "case": "no_mechanism",
+      "consumed_softcap_events": 0,
+      "layers": 32,
+      "native_softcap": null,
+      "native_softcap_present": false,
+      "page_bytes": 69944,
+      "page_sha256": "96e50884b912a75e3fdc3e12802e20ac22a118da48dd2b0a2314b89c519b66f4",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "failed"
+        ]
+      ]
+    },
+    {
+      "caps": [
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0,
+        50.0
+      ],
+      "case": "gemma_default",
+      "consumed_softcap_events": 1,
+      "layers": 26,
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": true,
+        "status": "class_default",
+        "unknown_reason": null,
+        "value": 50.0
+      },
+      "native_softcap_present": true,
+      "page_bytes": 108210,
+      "page_sha256": "f5f09c6802fd0565d14386f1b4742f7dd401985bbe9dc735c70794fdf07772d5",
+      "reader_statuses": [
+        [
+          "('decoder.attention.logit_softcap', ())",
+          "resolved"
+        ]
+      ]
+    }
+  ],
+  "fixture_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+  "scope": "Actual original producer observation; no normalization, acceptance or repair"
+}

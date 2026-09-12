@@ -1,0 +1,32 @@
+{
+  "scope": "Current36 source/focused runtime checkpoint; no acceptance/bless",
+  "before": [
+    {
+      "path": "before/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "0d799a5cd267e30e4a4723cc8b6b15b3d79da91c2a3c0080e20a37ab2c8dcf9a"
+    },
+    {
+      "path": "before/z-docs/11-execution/S9-A.md",
+      "sha256": "4e098b75bb0ab96ea55f75480787df1e3b0b34893e9bce227db8dff5f8690d69"
+    },
+    {
+      "path": "before/z-docs/READ_AFTER_COMPACTION.md",
+      "sha256": "557e076af882ef697c9f2612b853d90156dda8a4ec84c66d611051e770c20cc9"
+    }
+  ],
+  "after": [
+    {
+      "path": "z-docs/11-execution/S9-A.md",
+      "sha256": "857b1764326bc6263520bc467698ffeca63b10eca5d6728e99379f6b88b7e728"
+    },
+    {
+      "path": "unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "9edb7209e4be814625ebd724b3be1a81dd26a5ce11c9ffce5c7910a236f390fe"
+    },
+    {
+      "path": "z-docs/READ_AFTER_COMPACTION.md",
+      "sha256": "f17741d06b8bc2ebe7a7956030b5274ee2d5a12a91a1c6be937ad4b358aa39c3"
+    }
+  ],
+  "script_sha256": "2c1f13aa886f360392b02576c8413e89bb233eebfe41cc9425cc93c4b606be28"
+}

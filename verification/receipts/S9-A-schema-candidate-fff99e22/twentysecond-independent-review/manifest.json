@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "model_unfolder/evidence/claim_evidence.py",
+      "sha256": "5cda8903f32cf8084db611bf5e3f67b4522370b26c5f7ab3c6e5d47a5c9e49b8"
+    },
+    {
+      "path": "tests/test_s7_reconciliation.py",
+      "sha256": "a36b888defdda5604908adb5f2dc4c946543b6d24eaab7a7cd99d4c9a67573e5"
+    }
+  ],
+  "scope": "Preserve and validate existing reader proofs at S7 config fallback; refuse another consumer identity for unqualified facts.",
+  "runtime": "not run"
+}

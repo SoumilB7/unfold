@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a",
+  "reference26_seal": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "18933b09a5e5edcb2cdf09e586571c289ffaca0785c73a9c9d344ff02ed87f63",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_stablelm.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "40c2ede0bcc2942dbd1538400a780446cdc71645725cb29e154010d69ffe2a1d",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_stablelm.py"
+    }
+  ],
+  "source_node_count": 5
+}

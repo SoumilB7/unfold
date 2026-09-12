@@ -1,0 +1,187 @@
+{
+  "mapped_obligations": 25,
+  "extra_specific_negative_instances": 3,
+  "view_census": 1,
+  "total_targets": 29,
+  "prior_run_status": "28PASS/1FAIL, preserved without relabelling",
+  "corrected_single_test": "1PASS64.27s",
+  "no_production_delta": "779739b to fb1f871 changes only the exact test status assertion",
+  "rows": [
+    {
+      "old_test": "test_sdxl_unet_conditioning_is_honest",
+      "current_test": "test_sdxl_retains_both_encoders_and_conditional_added_embedding",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_image_conditioned_unet_draws_no_text_tower",
+      "current_test": "test_published_image_decoder_keeps_own_projection_without_text_tower",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence",
+      "current_test": "test_valid_synthetic_simple_cross_text_variant_retains_bounded_cells",
+      "status": "PASS",
+      "actual_commit": "fb1f871",
+      "receipt": "S8-focused-default-status-fb1f871"
+    },
+    {
+      "old_test": "test_spatio_temporal_unet_draws_temporal_branch",
+      "current_test": "test_spatio_temporal_occurrences_and_proved_mixer_argument_are_drawn",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_image_unet_is_not_temporal",
+      "current_test": "test_image_unet_has_2d_occurrences_without_temporal_fabrication",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_sdxl_still_draws_transformer2d_cell",
+      "current_test": "test_sdxl_draws_constructed_transformer2d_and_qualified_ffn",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_text_conditioned_unet_still_says_encoded_text",
+      "current_test": "test_unet_context_argument_does_not_assert_unproved_kv_role",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_stage_part_kinds_resolve_for_all_block_variants",
+      "current_test": "test_simple_cross_stage_occurrences_are_constructed_and_carded",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_structure_parsed",
+      "current_test": "test_unet_structure_has_constructed_stages_and_nonzero_summary",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_renders_loop_and_ushape",
+      "current_test": "test_unet_component_entry_and_constructed_stages_couple",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_custom_stage_is_visible_but_unapproved",
+      "current_test": "test_unet_unsupported_stage_factory_is_a_visible_typed_failure",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_view_shows_text_conditioning_rail",
+      "current_test": "test_unet_overview_draws_the_source_bound_context_route",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_encoded_text_box_drills_into_the_concat_view",
+      "current_test": "test_dual_encoder_internals_survive_without_an_inferred_concat",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill",
+      "current_test": "test_encoder_bridge_own_linear_shape_and_conditional_call_ports",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_stage_drills_show_per_stage_dims",
+      "current_test": "test_unet_stage_drills_show_each_occurrences_own_weight_shape",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_resnet_block_has_no_repeat_pill",
+      "current_test": "test_unet_resnet_is_one_drawn_occurrence_not_a_repeated_cell",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_attention_internals_do_not_gain_unproved_u4b_details",
+      "current_test": "test_unet_attention_containment_does_not_invent_inner_compute",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_text_conditioning_propagates_through_drill_levels",
+      "current_test": "test_unet_context_reference_couples_at_each_proved_deep_drill",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_cross_attention_drill_shows_text_entering",
+      "current_test": "test_unet_external_context_drill_is_distinct_from_self_attention",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_hero_denoiser_labeled_unet_not_dit",
+      "current_test": "test_unet_component_entry_uses_its_actual_denoiser_label",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_view_stages_clickable_carded_and_clean",
+      "current_test": "test_unet_overview_stage_occurrences_and_skip_routes_are_carded",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_hero_loop_has_arrows",
+      "current_test": "test_unet_entry_arrows_are_declared_ports_not_a_sampling_claim",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_stage_drills_into_resnet_and_transformer_reusing_openers",
+      "current_test": "test_unet_stage_drills_keep_occurrence_cards_and_qualified_ffn_opener",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_mid_block_is_resnet_transformer_resnet_sandwich",
+      "current_test": "test_unet_mid_occurrences_preserve_shapes_with_stage_order_open",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    },
+    {
+      "old_test": "test_unet_resnet_view_shows_timestep_injection_and_correct_residual",
+      "current_test": "test_unet_resnet_draws_proved_fragments_and_conditional_arithmetic",
+      "status": "PASS",
+      "actual_commit": "779739b",
+      "receipt": "S8-focused-migration-779739b"
+    }
+  ],
+  "three_negatives_and_view_census": "PASS at779739b; retained exact invocation and raw log"
+}

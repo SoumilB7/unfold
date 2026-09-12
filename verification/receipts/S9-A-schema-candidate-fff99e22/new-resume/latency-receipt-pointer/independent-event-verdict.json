@@ -1,0 +1,123 @@
+{
+  "verdict": "PASS_SOURCE_AND_SAVED_DATA_POINTER_REPAIR_ONLY",
+  "reviewer": "event_executor independent of root implementation",
+  "scope": "No models, tests, product imports, output acceptance or blessing.",
+  "before": {
+    "path": ".claude/worktrees/verify-s9-a-twentyseventh/verification/latency_budgets.json",
+    "sha256": "d2468dc7e1a9c471c341adb35d03c705afd679f25547e31e11b7ccf8cb31d547"
+  },
+  "after": {
+    "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/latency-receipt-pointer/source/verification/latency_budgets.json",
+    "sha256": "c54f86d62df83ce357564ba098817b8a640fd90a2f8e5abf8aac8d6c0d278431"
+  },
+  "exact_byte_delta": {
+    "occurrences": 1,
+    "json_path": "$.unet_instance.baseline_receipt.artifact_map_sha256",
+    "before": "a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04",
+    "after": "269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c",
+    "all_other_bytes_identical": true
+  },
+  "map": {
+    "path": "verification/receipts/S10-1-unet-deletion-fff99e22/artifact-map.json",
+    "sha256": "269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c"
+  },
+  "campaign": {
+    "sha256": "4c57fe6d3f29b6f2baef92bc0778a1ff00024f9212686a994726d97b904aba5a",
+    "bytes": 17013
+  },
+  "samples": [
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
+      "raw_sha256": "63c5d537fd5145451ba71d87e088f03c4eccf57ace4816a4268554388c523741",
+      "raw_bytes": 51764,
+      "stored_sha256": "38a90d19b85a2f1c0d68218c66e0498eff9a768922790785435b45a2e65d7d0c",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
+      "raw_sha256": "1bedee5cb271766ea77932065218fe3b1587e809ed340e8816ea48ca2272709d",
+      "raw_bytes": 4264,
+      "stored_sha256": "9aa822dec4001653165d71dd9f44789233e5528aa2a04710eaf0559a8ef698fb",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
+      "raw_sha256": "2fd06ad7b1e44f994c0558a56eb9d5aa1f010569a3dd93aad4f7041fba69a54f",
+      "raw_bytes": 51756,
+      "stored_sha256": "724e8354f44b64cd6bcf43f901f485203e2cd7dd918bfdf66ee0fa10f8d164f5",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
+      "raw_sha256": "b34eab4507e06e23ceaf20fda946deb6f5d5b999e0dc0f34eb882710d00effbe",
+      "raw_bytes": 4255,
+      "stored_sha256": "f791084741782517ca58f98fc8c686bdbf66f5140a7cfe29460483795adf1468",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
+      "raw_sha256": "d9d70ed9305e993d9b46372be1341cbb203325b63f2921c2a31633fb77842755",
+      "raw_bytes": 51764,
+      "stored_sha256": "2e5c9465bc05033c65174841726c2a1b6143f55c486c6c86ce38599b75db86bc",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
+      "raw_sha256": "35f65c97c1fc248093839482442262c13d38396d61cafbb70f18835dea121c36",
+      "raw_bytes": 4266,
+      "stored_sha256": "3375081e9f30d5813bbdebe4be50fc5b41ac1e04c1af8f2b74461d84a8e15805",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/0/cold/result.json",
+      "raw_sha256": "93d84b91660bbef98ce8d8b8b30eb2e65da0ba321b1920e02a02057ab94bcfd7",
+      "raw_bytes": 51427,
+      "stored_sha256": "ef0d438db126d6de2ac2e0a5f32076402cb14d87e1cb426307916cf2f4a6d30d",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/0/warm/result.json",
+      "raw_sha256": "33beae1e3c902a91efd3f77fade11f3c4e7baa9cd10f1f37f199921553f5c212",
+      "raw_bytes": 3929,
+      "stored_sha256": "545d8321be7cdb46f25400f96bc4b794872df04b59b1e208e42ba940803ac879",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/1/cold/result.json",
+      "raw_sha256": "7d7b4f54d97845399c0515afb1084716be597e2e235cc16e10f1859a932a7456",
+      "raw_bytes": 51430,
+      "stored_sha256": "1acb74f133c45df6cab3fef10cd6bdea87ec4883d9aadc2bd44315cff0c9fa7b",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/1/warm/result.json",
+      "raw_sha256": "59038f2a2af50b81b31286463b8d892205c4d2e191187dd72ca3a4a151ecfb26",
+      "raw_bytes": 3932,
+      "stored_sha256": "011a9a2e7bed2edc8a4fcccadb0f5e204b19705328ca96bfa9994155528b51e4",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/2/cold/result.json",
+      "raw_sha256": "378d86dd64617e8c4ca07030126355e4a0090fe6f27bea38044f804cc0f3273d",
+      "raw_bytes": 51427,
+      "stored_sha256": "e51e4ae2dbffba6f6df4a8195b2cc68fed21ca1fc737472fb9c7e2a679cda5ed",
+      "all_sample_timings_and_host_fields_equal": true
+    },
+    {
+      "logical_path": "latency-unet/samples/sd-v1-4/2/warm/result.json",
+      "raw_sha256": "aa6f059d3a6c7590f520debdd3b271f13e48013406c4a679f9d2901f922fbb95",
+      "raw_bytes": 3937,
+      "stored_sha256": "7da0f8c03fe4e6f3c6ba7c6e882819af74edf1b88470e029136fd76e6097ab08",
+      "all_sample_timings_and_host_fields_equal": true
+    }
+  ],
+  "recomputed_medians_equal": true,
+  "budgets_unchanged": {
+    "cold": 37.0,
+    "warm": 11.0
+  },
+  "limits": [
+    "Original sample bytes validated by decompressing persisted packed receipt members and checking both stored and raw hashes against map plus budget descriptors; no separate original scratch samples were available.",
+    "This review establishes exact content addressing of the held receipt, not independent remeasurement."
+  ]
+}

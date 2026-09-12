@@ -1,0 +1,13 @@
+{
+  "reviewer": "root",
+  "decision": "ACCEPT exact EOF-only maintained review derivative",
+  "original_review_sha256": "b7d4d8f2936effd323c91f232bdf35c56069c9cc37b5fb3025e65acb77ae54db",
+  "maintained_review_sha256": "28a4d1ab08b6348a508d7b7ed6787a97077e35228ba8ea1d77b97c845386a92a",
+  "difference": "One terminal LF removed; all image rows and judgments byte-identical",
+  "original_manifest_sha256": "84f0df7ade2f311adefbbb14f8ac0732b941f98d6110723f6554530a1d14b390",
+  "only_changed_manifest_field": "witnesses.stable-diffusion-xl-base-1-0.surfaces.gallery",
+  "old_gallery_hash": "8156164b3f0fa700b62539513a94bcd1556404688127d401c219f1e4e93f8378",
+  "new_gallery_hash": "55e5dcd9a10ebb2f4d70b403ae4acf48a52f3ca46760a8c73d6e40526a2f10f2",
+  "final_manifest_sha256": "00bf924b13aeff81ac6bcfd0f842fda2a9922ce5da2a299d582e3d8709c3e2bc",
+  "source_or_model_run": false
+}

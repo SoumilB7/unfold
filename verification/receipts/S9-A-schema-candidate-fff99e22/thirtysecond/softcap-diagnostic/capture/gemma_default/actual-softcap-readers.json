@@ -1,0 +1,1279 @@
+[
+  {
+    "failures": [],
+    "key": [
+      "decoder.attention.logit_softcap",
+      []
+    ],
+    "provenance": [
+      {
+        "config_paths": [],
+        "detail": "exact stage address plus exact repeated-container invocation proof",
+        "kind": "derived",
+        "spans": []
+      },
+      {
+        "config_paths": [
+          [
+            "attn_logit_softcapping"
+          ]
+        ],
+        "detail": "exact score/cap -> tanh -> *cap path binds the same parameter to one exact config occurrence",
+        "kind": "code_and_config",
+        "spans": [
+          {
+            "col": 36,
+            "end_col": 9,
+            "end_line": 295,
+            "line": 284,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 19,
+            "end_col": 83,
+            "end_line": 222,
+            "line": 222,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 0,
+            "end_col": 21,
+            "end_line": 25,
+            "line": 25,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 19,
+            "end_col": 66,
+            "end_line": 212,
+            "line": 212,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 0,
+            "end_col": 12,
+            "end_line": 24,
+            "line": 24,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 18,
+            "end_col": 58,
+            "end_line": 224,
+            "line": 224,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 20,
+            "end_col": 47,
+            "end_line": 293,
+            "line": 293,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 8,
+            "end_col": 45,
+            "end_line": 215,
+            "line": 215,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 23,
+            "end_col": 47,
+            "end_line": 216,
+            "line": 216,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 8,
+            "end_col": 45,
+            "end_line": 217,
+            "line": 217,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 4,
+            "end_col": 45,
+            "end_line": 217,
+            "line": 214,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        ]
+      }
+    ],
+    "status": "resolved",
+    "value": {
+      "attention_occurrence": {
+        "root": {
+          "qualified_name": "Gemma2ForCausalLM",
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "sites": [
+          {
+            "enclosing_callable": {
+              "qualified_name": "Gemma2ForCausalLM.__init__",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Gemma2ForCausalLM",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 21,
+              "end_col": 40,
+              "end_line": 484,
+              "line": 484,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Gemma2Model.__init__",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Gemma2Model",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 13,
+              "end_col": 50,
+              "end_line": 402,
+              "line": 402,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Gemma2DecoderLayer.__init__",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Gemma2DecoderLayer",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 25,
+              "end_col": 76,
+              "end_line": 307,
+              "line": 307,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ]
+      },
+      "block_occurrence": {
+        "root": {
+          "qualified_name": "Gemma2ForCausalLM",
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "sites": [
+          {
+            "enclosing_callable": {
+              "qualified_name": "Gemma2ForCausalLM.__init__",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Gemma2ForCausalLM",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 21,
+              "end_col": 40,
+              "end_line": 484,
+              "line": 484,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Gemma2Model.__init__",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Gemma2Model",
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 13,
+              "end_col": 50,
+              "end_line": 402,
+              "line": 402,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ]
+      },
+      "compute_callable": {
+        "qualified_name": "eager_attention_forward",
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+          "component_key": "root",
+          "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "config_path": [
+        "attn_logit_softcapping"
+      ],
+      "divide_span": {
+        "col": 8,
+        "end_col": 45,
+        "end_line": 215,
+        "line": 215,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+          "component_key": "root",
+          "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "guard_span": {
+        "col": 4,
+        "end_col": 45,
+        "end_line": 217,
+        "line": 214,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+          "component_key": "root",
+          "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "multiply_span": {
+        "col": 8,
+        "end_col": 45,
+        "end_line": 217,
+        "line": 217,
+        "source": {
+          "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+          "component_key": "root",
+          "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "parameter": "softcap",
+      "score_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "query",
+            "operator": "",
+            "source_segment": "query",
+            "span": {
+              "col": 32,
+              "end_col": 37,
+              "end_line": 212,
+              "line": 212,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "const_value": null,
+                    "keyword_children": [],
+                    "kind": "name",
+                    "name": "key_states",
+                    "operator": "",
+                    "source_segment": "key_states",
+                    "span": {
+                      "col": 39,
+                      "end_col": 49,
+                      "end_line": 212,
+                      "line": 212,
+                      "source": {
+                        "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                        "component_key": "root",
+                        "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                        "external": false,
+                        "external_provenance": ""
+                      }
+                    }
+                  }
+                ],
+                "const_value": null,
+                "keyword_children": [],
+                "kind": "attribute",
+                "name": "transpose",
+                "operator": "",
+                "source_segment": "key_states.transpose",
+                "span": {
+                  "col": 39,
+                  "end_col": 59,
+                  "end_line": 212,
+                  "line": 212,
+                  "source": {
+                    "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                    "component_key": "root",
+                    "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              },
+              {
+                "children": [],
+                "const_value": 2,
+                "keyword_children": [],
+                "kind": "constant",
+                "name": "",
+                "operator": "",
+                "source_segment": "2",
+                "span": {
+                  "col": 60,
+                  "end_col": 61,
+                  "end_line": 212,
+                  "line": 212,
+                  "source": {
+                    "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                    "component_key": "root",
+                    "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              },
+              {
+                "children": [],
+                "const_value": 3,
+                "keyword_children": [],
+                "kind": "constant",
+                "name": "",
+                "operator": "",
+                "source_segment": "3",
+                "span": {
+                  "col": 63,
+                  "end_col": 64,
+                  "end_line": 212,
+                  "line": 212,
+                  "source": {
+                    "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                    "component_key": "root",
+                    "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              }
+            ],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "call",
+            "name": "",
+            "operator": "",
+            "source_segment": "key_states.transpose(2, 3)",
+            "span": {
+              "col": 39,
+              "end_col": 65,
+              "end_line": 212,
+              "line": 212,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "torch",
+              "operator": "",
+              "source_segment": "torch",
+              "span": {
+                "col": 19,
+                "end_col": 24,
+                "end_line": 212,
+                "line": 212,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "matmul",
+          "operator": "",
+          "source_segment": "torch.matmul",
+          "span": {
+            "col": 19,
+            "end_col": 31,
+            "end_line": 212,
+            "line": 212,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager_attention_forward",
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [],
+        "kwargs": [],
+        "lexical_order": 3,
+        "owner": null,
+        "receiver": {
+          "children": [],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "name",
+          "name": "torch",
+          "operator": "",
+          "source_segment": "torch",
+          "span": {
+            "col": 19,
+            "end_col": 24,
+            "end_line": 212,
+            "line": 212,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 19,
+          "end_col": 66,
+          "end_line": 212,
+          "line": 212,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      },
+      "softmax_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "attn_weights",
+            "operator": "",
+            "source_segment": "attn_weights",
+            "span": {
+              "col": 41,
+              "end_col": 53,
+              "end_line": 222,
+              "line": 222,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "nn",
+                  "operator": "",
+                  "source_segment": "nn",
+                  "span": {
+                    "col": 19,
+                    "end_col": 21,
+                    "end_line": 222,
+                    "line": 222,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                      "component_key": "root",
+                      "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "attribute",
+              "name": "functional",
+              "operator": "",
+              "source_segment": "nn.functional",
+              "span": {
+                "col": 19,
+                "end_col": 32,
+                "end_line": 222,
+                "line": 222,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "softmax",
+          "operator": "",
+          "source_segment": "nn.functional.softmax",
+          "span": {
+            "col": 19,
+            "end_col": 40,
+            "end_line": 222,
+            "line": 222,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager_attention_forward",
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [],
+        "kwargs": [
+          [
+            "dim",
+            {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": 1,
+                  "keyword_children": [],
+                  "kind": "constant",
+                  "name": "",
+                  "operator": "",
+                  "source_segment": "1",
+                  "span": {
+                    "col": 60,
+                    "end_col": 61,
+                    "end_line": 222,
+                    "line": 222,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                      "component_key": "root",
+                      "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "unaryop",
+              "name": "",
+              "operator": "-",
+              "source_segment": "-1",
+              "span": {
+                "col": 59,
+                "end_col": 61,
+                "end_line": 222,
+                "line": 222,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          [
+            "dtype",
+            {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "torch",
+                  "operator": "",
+                  "source_segment": "torch",
+                  "span": {
+                    "col": 69,
+                    "end_col": 74,
+                    "end_line": 222,
+                    "line": 222,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                      "component_key": "root",
+                      "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "attribute",
+              "name": "float32",
+              "operator": "",
+              "source_segment": "torch.float32",
+              "span": {
+                "col": 69,
+                "end_col": 82,
+                "end_line": 222,
+                "line": 222,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ]
+        ],
+        "lexical_order": 7,
+        "owner": null,
+        "receiver": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "nn",
+              "operator": "",
+              "source_segment": "nn",
+              "span": {
+                "col": 19,
+                "end_col": 21,
+                "end_line": 222,
+                "line": 222,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "functional",
+          "operator": "",
+          "source_segment": "nn.functional",
+          "span": {
+            "col": 19,
+            "end_col": 32,
+            "end_line": 222,
+            "line": 222,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 19,
+          "end_col": 83,
+          "end_line": 222,
+          "line": 222,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      },
+      "spans": [
+        {
+          "col": 36,
+          "end_col": 9,
+          "end_line": 295,
+          "line": 284,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 19,
+          "end_col": 83,
+          "end_line": 222,
+          "line": 222,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 0,
+          "end_col": 21,
+          "end_line": 25,
+          "line": 25,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 19,
+          "end_col": 66,
+          "end_line": 212,
+          "line": 212,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 0,
+          "end_col": 12,
+          "end_line": 24,
+          "line": 24,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 18,
+          "end_col": 58,
+          "end_line": 224,
+          "line": 224,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 20,
+          "end_col": 47,
+          "end_line": 293,
+          "line": 293,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 8,
+          "end_col": 45,
+          "end_line": 215,
+          "line": 215,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 23,
+          "end_col": 47,
+          "end_line": 216,
+          "line": 216,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 8,
+          "end_col": 45,
+          "end_line": 217,
+          "line": 217,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 4,
+          "end_col": 45,
+          "end_line": 217,
+          "line": 214,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      ],
+      "tanh_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "attn_weights",
+            "operator": "",
+            "source_segment": "attn_weights",
+            "span": {
+              "col": 34,
+              "end_col": 46,
+              "end_line": 216,
+              "line": 216,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "torch",
+              "operator": "",
+              "source_segment": "torch",
+              "span": {
+                "col": 23,
+                "end_col": 28,
+                "end_line": 216,
+                "line": 216,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "tanh",
+          "operator": "",
+          "source_segment": "torch.tanh",
+          "span": {
+            "col": 23,
+            "end_col": 33,
+            "end_line": 216,
+            "line": 216,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager_attention_forward",
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 4,
+              "end_col": 45,
+              "end_line": 217,
+              "line": 214,
+              "source": {
+                "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                "component_key": "root",
+                "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "softcap",
+                  "operator": "",
+                  "source_segment": "softcap",
+                  "span": {
+                    "col": 7,
+                    "end_col": 14,
+                    "end_line": 214,
+                    "line": 214,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                      "component_key": "root",
+                      "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "constant",
+                  "name": "",
+                  "operator": "",
+                  "source_segment": "None",
+                  "span": {
+                    "col": 22,
+                    "end_col": 26,
+                    "end_line": 214,
+                    "line": 214,
+                    "source": {
+                      "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                      "component_key": "root",
+                      "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "compare",
+              "name": "",
+              "operator": "is not",
+              "source_segment": "softcap is not None",
+              "span": {
+                "col": 7,
+                "end_col": 26,
+                "end_line": 214,
+                "line": 214,
+                "source": {
+                  "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+                  "component_key": "root",
+                  "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "kwargs": [],
+        "lexical_order": 5,
+        "owner": null,
+        "receiver": {
+          "children": [],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "name",
+          "name": "torch",
+          "operator": "",
+          "source_segment": "torch",
+          "span": {
+            "col": 23,
+            "end_col": 28,
+            "end_line": 216,
+            "line": 216,
+            "source": {
+              "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+              "component_key": "root",
+              "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 23,
+          "end_col": 47,
+          "end_line": 216,
+          "line": 216,
+          "source": {
+            "canonical_path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py",
+            "component_key": "root",
+            "content_fingerprint": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    }
+  }
+]

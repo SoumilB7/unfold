@@ -1,0 +1,26 @@
+[
+  {
+    "body": "self._modules['second'] = replacement",
+    "member_stays_bound": false
+  },
+  {
+    "body": "self.__dict__['second'] = replacement",
+    "member_stays_bound": false
+  },
+  {
+    "body": "self.storage.nested[slot] = replacement",
+    "member_stays_bound": false
+  },
+  {
+    "body": "del self.second",
+    "member_stays_bound": false
+  },
+  {
+    "body": "alias = self\ndel alias.second",
+    "member_stays_bound": false
+  },
+  {
+    "body": "value = value",
+    "member_stays_bound": true
+  }
+]

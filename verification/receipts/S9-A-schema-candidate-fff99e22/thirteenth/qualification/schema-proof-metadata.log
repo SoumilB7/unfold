@@ -1,0 +1,149 @@
+.........................................................FF............. [ 36%]
+.................................................................F...... [ 72%]
+......................................................                   [100%]
+=================================== FAILURES ===================================
+__ test_exact_imported_registry_key_retains_instantiated_primitive[relu-relu] __
+
+raw = 'relu', primitive = 'relu'
+
+    @pytest.mark.parametrize("raw,primitive", [("relu", "relu"), ("swish", "silu")])
+    def test_exact_imported_registry_key_retains_instantiated_primitive(raw, primitive):
+        from test_ffn_schedule import _config
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.ffn_mechanism import decoder_ffn_mechanism_for_path
+        config = _config("llama-7b")
+        config["hidden_act"] = raw
+        context = ParseContext.build(config)
+        document = PreparedDocument(dict(config), dict(config))
+        with bound_document(DocumentBinding("root", (), document)):
+            result = decoder_ffn_mechanism_for_path(context.program_index(), context.source_bundle,
+                                                   (), allow_root_stage=True)
+>           proof = ReaderProjectionClaimProof("decoder.ffn.activation", result,
+                                               context.program_index(), document)
+
+tests/test_reader_claims.py:478: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:414: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FFNMechanismClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(can..._gap='activation registry: reflected activation ancestor result has a receiver mutation at configuration_utils.py:256')
+owner = 'decoder.ffn', key = 'activation'
+document = PreparedDocument(document={'_name_or_path': 'huggyllama/llama-7b', 'architectures': ['LlamaForCausalLM'], 'attention_b...ransformers_version': '5.12.1', 'use_cache': True, 'vocab_size': 32000}, class_overlay={}, provenance={}, failure=None)
+
+    def project(self, owner, key, document):
+        if owner != "decoder.ffn" or key not in {"gated", "activation", "projection_mode"}:
+            raise ValueError("ordinary FFN cannot author this projection")
+        value = self.mechanism
+        operands = []
+        if isinstance(value, ConfigSelectedFFNMechanism):
+            selected = reader_operand(document, value.selector_config_path, allow_aliases=False)
+            validate_reader_operands(document, ((value.selector_config_path,
+                selected.source_kind, value.selector_value),))
+            operands.append(selected)
+        if key == "activation":
+            if value.activation is not None:
+                projected = value.activation
+            elif value.activation_config_path:
+                selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+                operands.append(selected)
+                raw = selected.value
+                if not self.activation_applications or any(
+                        application.key != raw for application in self.activation_applications):
+>                   raise ReaderClaimUnavailable(self.activation_gap or
+                        "FFN dispatch requires exact activation registry key-membership evidence")
+E                   model_unfolder.evidence.reader_claims.ReaderClaimUnavailable: activation registry: reflected activation ancestor result has a receiver mutation at configuration_utils.py:256
+
+model_unfolder/evidence/ffn_mechanism.py:799: ReaderClaimUnavailable
+_ test_exact_imported_registry_key_retains_instantiated_primitive[swish-silu] __
+
+raw = 'swish', primitive = 'silu'
+
+    @pytest.mark.parametrize("raw,primitive", [("relu", "relu"), ("swish", "silu")])
+    def test_exact_imported_registry_key_retains_instantiated_primitive(raw, primitive):
+        from test_ffn_schedule import _config
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.ffn_mechanism import decoder_ffn_mechanism_for_path
+        config = _config("llama-7b")
+        config["hidden_act"] = raw
+        context = ParseContext.build(config)
+        document = PreparedDocument(dict(config), dict(config))
+        with bound_document(DocumentBinding("root", (), document)):
+            result = decoder_ffn_mechanism_for_path(context.program_index(), context.source_bundle,
+                                                   (), allow_root_stage=True)
+>           proof = ReaderProjectionClaimProof("decoder.ffn.activation", result,
+                                               context.program_index(), document)
+
+tests/test_reader_claims.py:478: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:414: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FFNMechanismClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(can..._gap='activation registry: reflected activation ancestor result has a receiver mutation at configuration_utils.py:256')
+owner = 'decoder.ffn', key = 'activation'
+document = PreparedDocument(document={'_name_or_path': 'huggyllama/llama-7b', 'architectures': ['LlamaForCausalLM'], 'attention_b...ransformers_version': '5.12.1', 'use_cache': True, 'vocab_size': 32000}, class_overlay={}, provenance={}, failure=None)
+
+    def project(self, owner, key, document):
+        if owner != "decoder.ffn" or key not in {"gated", "activation", "projection_mode"}:
+            raise ValueError("ordinary FFN cannot author this projection")
+        value = self.mechanism
+        operands = []
+        if isinstance(value, ConfigSelectedFFNMechanism):
+            selected = reader_operand(document, value.selector_config_path, allow_aliases=False)
+            validate_reader_operands(document, ((value.selector_config_path,
+                selected.source_kind, value.selector_value),))
+            operands.append(selected)
+        if key == "activation":
+            if value.activation is not None:
+                projected = value.activation
+            elif value.activation_config_path:
+                selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+                operands.append(selected)
+                raw = selected.value
+                if not self.activation_applications or any(
+                        application.key != raw for application in self.activation_applications):
+>                   raise ReaderClaimUnavailable(self.activation_gap or
+                        "FFN dispatch requires exact activation registry key-membership evidence")
+E                   model_unfolder.evidence.reader_claims.ReaderClaimUnavailable: activation registry: reflected activation ancestor result has a receiver mutation at configuration_utils.py:256
+
+model_unfolder/evidence/ffn_mechanism.py:799: ReaderClaimUnavailable
+_ test_reflected_ancestor_field_storage_retains_address_without_inventing_mutation _
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5876/test_reflected_ancestor_field_0')
+
+    def test_reflected_ancestor_field_storage_retains_address_without_inventing_mutation(tmp_path):
+        check = _registry_use_fixture(tmp_path, full=True, consumer_tail='''
+    import torch
+    class Config:
+        def update(self):
+            self.dtype = getattr(torch, self.dtype)
+            self.ready = True
+    ''')
+>       assert check()[0] == "relu"
+               ^^^^^^^
+
+tests/test_reader_claims.py:970: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_reader_claims.py:598: in check
+    _selected_activation_use_closure(index, assignment.symbol.source, selected, backing)
+model_unfolder/evidence/activation_registry.py:494: in _selected_activation_use_closure
+    _unavailable("reflected activation ancestor result has a receiver mutation "
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+detail = 'reflected activation ancestor result has a receiver mutation at consumer.py:8'
+
+    def _unavailable(detail):
+>       raise ReaderClaimUnavailable("activation registry: " + detail)
+E       model_unfolder.evidence.reader_claims.ReaderClaimUnavailable: activation registry: reflected activation ancestor result has a receiver mutation at consumer.py:8
+
+model_unfolder/evidence/activation_registry.py:42: ReaderClaimUnavailable
+=========================== short test summary info ============================
+FAILED tests/test_reader_claims.py::test_exact_imported_registry_key_retains_instantiated_primitive[relu-relu]
+FAILED tests/test_reader_claims.py::test_exact_imported_registry_key_retains_instantiated_primitive[swish-silu]
+FAILED tests/test_reader_claims.py::test_reflected_ancestor_field_storage_retains_address_without_inventing_mutation
+3 failed, 195 passed in 26.50s

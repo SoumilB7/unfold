@@ -1,0 +1,13 @@
+{
+  "activation_card_changes": [],
+  "actual_html_only_declared_card_titles_and_component_header": true,
+  "added_exact_receipt_events": 5,
+  "after_event_count": 2410,
+  "before_event_count": 2405,
+  "case": "sdxl-missing",
+  "component_header_change": null,
+  "new_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+  "old_html_sha256": "1204f6c7766c1e2b1aa671dfd223a95610eef85d11cb8d4b769b54e8cb4f2257",
+  "prior_events_retained": true,
+  "svg_bytes_unchanged": true
+}

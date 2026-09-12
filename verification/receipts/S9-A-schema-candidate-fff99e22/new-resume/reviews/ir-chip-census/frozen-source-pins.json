@@ -1,0 +1,69 @@
+{
+  "tree": ".claude/worktrees/verify-s9-a-twentysixth",
+  "files": [
+    {
+      "path": "model_unfolder/presentation.py",
+      "sha256": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4"
+    },
+    {
+      "path": "model_unfolder/evidence/presentation_projection.py",
+      "sha256": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff"
+    },
+    {
+      "path": "model_unfolder/evidence/presentation_census.py",
+      "sha256": "25c0ff92f392e6b000fc3def8e2c9e1abbbb45f6fbe50e60dbd8d9add13ddef7"
+    },
+    {
+      "path": "model_unfolder/renderers/html/styles.py",
+      "sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3"
+    },
+    {
+      "path": "model_unfolder/renderers/html/views.py",
+      "sha256": "04232b0952d12e16111d13f29cf3e7e56894a626af2cb3cc74c9a54cc6e4db9d"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/registry.py",
+      "sha256": "21b4e0f150a2c1a63b4c3d910062435618e73afcf6f27a66c3f7e4d59e4cfdcb"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/attention.py",
+      "sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/text_encoder.py",
+      "sha256": "334e85068ab3f08eefe2d2e14835f30726302136980c2804775de1bc4f66f0f8"
+    },
+    {
+      "path": "model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py",
+      "sha256": "75e32339a8713da3e4e1967f114b613777e60602aa70bd9aae95dab084261dfb"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/blocks/attention.py",
+      "sha256": "9cc66206130627216a6dc3cd4e3e6e5f668904a58e1e079dffb3ad7657372643"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/blocks/feed_forward.py",
+      "sha256": "bd596ffb43ea73400c64de8609e646eebb4940147538ca781701d657a09efc6a"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py",
+      "sha256": "f3e86b3ddcdcb65853ee739565dff1daea789b32dec0138594e8552774a53377"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/special_parts/modalities/fusion.py",
+      "sha256": "6accc82e4f336a36199d6849e2ce0da7fe2ab7d77da72a27f029c593a0aaeb85"
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/blocks.py",
+      "sha256": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8"
+    },
+    {
+      "path": "model_unfolder/submodel.py",
+      "sha256": "d0456bd359730bc465c98010f1818a7d2972fb48b1bd46eed332ce42e5739ed3"
+    },
+    {
+      "path": "model_unfolder/sable.py",
+      "sha256": "922d99334cd41194366d8cec2e89e494cb934ec5beb3cec69f4fd0c16ca9f340"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "acd367e439a2e7fc418febe7089a5945c2322dfd922aa6e8ad60a1e85b415427",
+  "baseline_output": {
+    "ir_after_sha256": "83636a56fd9ce59faed65e70d4fd46f9f17bf9e7f0594a73795bd2bcdc128a95",
+    "ir_before_sha256": "83636a56fd9ce59faed65e70d4fd46f9f17bf9e7f0594a73795bd2bcdc128a95",
+    "page_bytes": 101612,
+    "page_sha256": "912ddda72dbc942739764ad731241c46a4263dfb6e0fda96a075ba5f433dac6a",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "acd367e439a2e7fc418febe7089a5945c2322dfd922aa6e8ad60a1e85b415427",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "acd367e439a2e7fc418febe7089a5945c2322dfd922aa6e8ad60a1e85b415427",
+  "seconds": 1.7495752909999283,
+  "slug": "mochi-1-preview",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_mochi.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

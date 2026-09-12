@@ -1,0 +1,9 @@
+{
+  "files": {
+    "before/model_unfolder/renderers/html/styles.py": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+    "contract.json": "6ccc7c8d14de3ea695c3db362bb4cb78ba9c832947cf04193851114fdb44643b",
+    "inserted-rule.txt": "5460fe8c8ea203d5b34caaac28eb42cb0758eedfe0f58a9341550767e9394898",
+    "proposed/model_unfolder/renderers/html/styles.py": "8019b75e1d9349dc0b238e62c2f65f57c93c0431dfba033e321a004614967eb3",
+    "source.diff": "53233cf05fa5ab27ecaa32449767702226a796b2c540a8dcb79a37cabe8e7c42"
+  }
+}

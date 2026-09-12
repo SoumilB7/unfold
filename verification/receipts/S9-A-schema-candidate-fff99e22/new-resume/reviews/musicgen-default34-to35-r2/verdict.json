@@ -1,0 +1,546 @@
+{
+  "verdict": "PASS_SAVED_MUSICGEN_DIAGNOSTIC_SCOPE",
+  "cases": {
+    "ordinary": {
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 6,
+        "input.json": 0,
+        "ir.json": 24,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "result": {
+        "case": "ordinary",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "native_records_exactly_equal": true,
+      "alias_probe_inventory_delta": {
+        "added": [],
+        "removed": [],
+        "raw_position_deltas": [],
+        "cause": "35 parser absent-count supported-alias probes record these missing reads; no supplied value/tier/proof changes."
+      },
+      "ir_metadata_addition_count": 24,
+      "metadata_field_counts": {
+        "source_fact_keys": 24
+      },
+      "actual_html_chips": [],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "deferred_payloads": 0,
+      "svg_count": 9,
+      "all_svg_bytes_equal_after_exact_recorded_mount_pairing": true,
+      "html_bytes": [
+        108794,
+        108794
+      ],
+      "html_sha256": [
+        "ea0ec8c5ef4dd9e5317ff5f07ae28deb23e643cb5a4fa3d845cdf86243ba7cb2",
+        "9e266a776cfcffc862b83fd9ba58c687450806913111cc780ae9b0f7c0787f65"
+      ],
+      "paired_mounts": [
+        "uf-8530ad6ec8",
+        "uf-237f77d452"
+      ],
+      "paired_mount_comparison_authority": "Finite raw cause accounting only; not an output acceptance normalization.",
+      "html_hunk_count": 0
+    },
+    "missing_decoder_count": {
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 5,
+        "input.json": 0,
+        "ir.json": 127,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "result": {
+        "case": "missing_decoder_count",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "native_records_exactly_equal": true,
+      "alias_probe_inventory_delta": {
+        "added": [
+          "root:encoder_layers",
+          "root:n_blocks",
+          "root:n_layer",
+          "root:n_layers",
+          "root:num_blocks",
+          "root:num_layers"
+        ],
+        "removed": [],
+        "raw_position_deltas": [
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              5
+            ],
+            "before": "root:feed_forward_proj",
+            "after": "root:encoder_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              6
+            ],
+            "before": "root:final_logit_softcapping",
+            "after": "root:feed_forward_proj"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              7
+            ],
+            "before": "root:hidden_size_per_layer_input",
+            "after": "root:final_logit_softcapping"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              8
+            ],
+            "before": "root:is_gated_act",
+            "after": "root:hidden_size_per_layer_input"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              9
+            ],
+            "before": "root:layer_norm_eps",
+            "after": "root:is_gated_act"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              10
+            ],
+            "before": "root:layer_norm_epsilon",
+            "after": "root:layer_norm_eps"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              11
+            ],
+            "before": "root:logits_scaling",
+            "after": "root:layer_norm_epsilon"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              12
+            ],
+            "before": "root:max_window_layers",
+            "after": "root:logits_scaling"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              13
+            ],
+            "before": "root:mlp_bias",
+            "after": "root:max_window_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              14
+            ],
+            "before": "root:moe_intermediate_size",
+            "after": "root:mlp_bias"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              15
+            ],
+            "before": "root:norm_type",
+            "after": "root:moe_intermediate_size"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              16
+            ],
+            "before": "root:num_experts",
+            "after": "root:n_blocks"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              17
+            ],
+            "before": "root:num_experts_per_tok",
+            "after": "root:n_layer"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              18
+            ],
+            "before": "root:num_hidden_layers",
+            "after": "root:n_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              19
+            ],
+            "before": "root:num_mtp_layers",
+            "after": "root:norm_type"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              20
+            ],
+            "before": "root:num_nextn_predict_layers",
+            "after": "root:num_blocks"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              21
+            ],
+            "before": "root:num_shared_experts",
+            "after": "root:num_experts"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              22
+            ],
+            "before": "root:query_pre_attn_scalar",
+            "after": "root:num_experts_per_tok"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              23
+            ],
+            "before": "root:rms_norm_eps",
+            "after": "root:num_hidden_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              24
+            ],
+            "before": "root:sliding_window",
+            "after": "root:num_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              25
+            ],
+            "before": "root:sliding_window_pattern",
+            "after": "root:num_mtp_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              26
+            ],
+            "before": "root:swiglu_limit",
+            "after": "root:num_nextn_predict_layers"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              27
+            ],
+            "before": "root:use_bidirectional_attention",
+            "after": "root:num_shared_experts"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              28
+            ],
+            "before": "root:use_sliding_window",
+            "after": "root:query_pre_attn_scalar"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              29
+            ],
+            "before": "root:vocab_size_per_layer_input",
+            "after": "root:rms_norm_eps"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              30
+            ],
+            "added": "root:sliding_window"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              31
+            ],
+            "added": "root:sliding_window_pattern"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              32
+            ],
+            "added": "root:swiglu_limit"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              33
+            ],
+            "added": "root:use_bidirectional_attention"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              34
+            ],
+            "added": "root:use_sliding_window"
+          },
+          {
+            "path": [
+              "extras",
+              "config_access",
+              "absent_default",
+              35
+            ],
+            "added": "root:vocab_size_per_layer_input"
+          }
+        ],
+        "cause": "35 parser absent-count supported-alias probes record these missing reads; no supplied value/tier/proof changes."
+      },
+      "ir_metadata_addition_count": 96,
+      "metadata_field_counts": {
+        "presentation_aliases": 24,
+        "presentation_chips": 24,
+        "presentation_path": 24,
+        "source_fact_keys": 24
+      },
+      "actual_html_chips": [
+        {
+          "kind": "class_default",
+          "owner": "decoder.attention",
+          "card": "cross_attn",
+          "tag": "span",
+          "classes": "uf-fact uf-chip-class_default",
+          "text": "class_default \u00b7 cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+          "depth": 9
+        }
+      ],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "deferred_payloads": 0,
+      "svg_count": 9,
+      "all_svg_bytes_equal_after_exact_recorded_mount_pairing": true,
+      "html_bytes": [
+        108794,
+        109420
+      ],
+      "html_sha256": [
+        "ff8572c3e717d97644d42b721adb2f3d0fa6f05131642105de8dc3698b4ea47e",
+        "b41ac90eca41763976e03b4b09c4b7db0fda776dfa8cb5cefac6cb20a5496093"
+      ],
+      "paired_mounts": [
+        "uf-c5022de4d0",
+        "uf-77305c325e"
+      ],
+      "paired_mount_comparison_authority": "Finite raw cause accounting only; not an output acceptance normalization.",
+      "html_hunk_count": 1
+    },
+    "explicit_null": {
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "result": {
+        "case": "explicit_null",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "native_records_exactly_equal": true,
+      "limited_result_unchanged": true
+    },
+    "explicit_zero": {
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "result": {
+        "case": "explicit_zero",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "native_records_exactly_equal": true,
+      "limited_result_unchanged": true
+    }
+  },
+  "scope": "Native values/status/proof snapshots and layers unchanged. Ordinary card citations add metadata only; sparse default adds one actual span in inline cross_attn card, with exact native reference and text, no new SVG/card. Null/zero remain limited. No CSS-string shortcut, browser visibility claim, new proof/occurrence inference, model/test runtime or blessing.",
+  "input_pins_sha256": "4efb097fcc026d32ac24f9660df87808e7834550e7efc67175618ae6d2634709"
+}

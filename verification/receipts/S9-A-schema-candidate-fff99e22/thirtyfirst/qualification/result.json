@@ -1,0 +1,11 @@
+{
+  "name": "qualification",
+  "returncode": 0,
+  "duration": 93.37296674999743,
+  "before": "f914480fda2cc445d36f0e3332489d3e3afcdc2e58e086932debf97dc6d12d3c",
+  "after": "f914480fda2cc445d36f0e3332489d3e3afcdc2e58e086932debf97dc6d12d3c",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyfirst/qualification/qualification.log",
+  "passed": true
+}

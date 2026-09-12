@@ -1,0 +1,14 @@
+{
+  "name": "actual34-pages-presentation-closures",
+  "returncode": 0,
+  "duration": 149.15750012499848,
+  "before": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "after": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyfourth/current-pages/actual34-pages-presentation-closures.log",
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "pins_equal": true,
+  "passed": true,
+  "scope": "Actual34 capture and presentation findings; no blessing, browser verdict or normalization."
+}

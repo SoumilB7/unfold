@@ -1,0 +1,439 @@
+"""Thin canonical projection of qualified UNet facts.
+
+No source, config, or module-name classification occurs in this consumer.
+Construction cards describe containment; execution edges require their own
+connection facts and cannot be inferred from the order of these cards.
+"""
+from ...block_schema import Block
+from ...ir import ModelIR
+from ...opgraph import ffn_region
+import json
+from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
+
+
+def _block_id(path):
+    return "instance_" + path.replace(".", "__") if path else "denoiser"
+
+
+def _port_route_block(route, block_id, fact_key):
+    """Project typed source port routes; opaque calls never become identity."""
+    kind = route["kind"]
+    labels = {"formal": "Input: " + route.get("formal", ""),
+              "region_input": "Region input", "source_operation": "Source operation",
+              "loop_carried": "Loop input: " + route.get("formal", ""),
+              "loop_result": "Loop result",
+              "inplace_operation": "Conditional update",
+              "selection": "Select saved value", "call_result": "Call result",
+              "conditional": "Conditional route", "literal": "Source literal",
+              "sequence": "Input sequence", "unresolved": "Input unresolved"}
+    block = {"id": block_id, "kind": "opaque", "label": labels[kind],
+             "title": labels[kind], "role": "source_port_route",
+             "description": route.get("reason", "Exact source argument/result port wiring."),
+             "source_fact_keys": [fact_key], "facts": []}
+    if kind in {"formal", "loop_carried", "region_input"}:
+        block["kind"] = "source"
+        if kind == "loop_carried" and "initial_route" in route:
+            block.update(view="constructed_children", children=[_port_route_block(
+                route["initial_route"], block_id + "__initial", fact_key)])
+            block["facts"].append("Current iteration input; first iteration is seeded by the shown initial route")
+    elif kind == "literal":
+        block["facts"] = ["Source value: " + json.dumps(route["value"])]
+    elif kind == "selection":
+        block.update(kind="slice", children=[_port_route_block(route["source"], block_id + "__source", fact_key)],
+                     view="runtime_port_route", detail={"port_route_kind": kind})
+        block["facts"] = ["Selection: " + json.dumps(route["selection"], sort_keys=True)]
+    elif kind == "call_result":
+        arguments = list(route["arguments"])
+        if route.get("receiver") is not None:
+            arguments.append({"port": "lookup receiver", "route": route["receiver"]["route"]})
+        block.update(resolved=False, view="runtime_port_route",
+                     detail={"port_route_kind": kind, "result_slot": route["result_slot"]},
+                     children=[_port_route_block(argument["route"], block_id + f"__arg_{number}", fact_key)
+                               for number, argument in enumerate(arguments)])
+        for child, argument in zip(block["children"], arguments):
+            child["facts"].append("Call argument port: " + argument["port"])
+            child.setdefault("detail", {})["argument_port"] = argument["port"]
+        block["detail"]["argument_ids"] = [child["id"] for child in block["children"]]
+        boundary = block_id + "__call"
+        block["detail"]["boundary_id"] = boundary
+        block["children"].append({"id": boundary, "kind": "unknown", "label": "Unresolved call",
+                                  "title": "Source call boundary", "resolved": False,
+                                  "description": "These arguments enter this call; the selected output leaves it. No particular input-to-output dependence is asserted.",
+                                  "source_fact_keys": [fact_key]})
+        block["facts"] = ["Returned slot: " + json.dumps(route["result_slot"]),
+                          "Internal computation unresolved; argument-to-result dependence not asserted"]
+    elif kind == "conditional":
+        block.update(resolved=False, view="runtime_port_route", detail={"port_route_kind": kind},
+                     children=[_port_route_block(route[key], block_id + "__" + key, fact_key)
+                               for key in ("when_true", "when_false")])
+        block["children"][0]["facts"].append("Source guard true")
+        block["children"][1]["facts"].append("Source guard false alternative")
+        block["facts"] = ["Guard selection unresolved; both source alternatives retained"]
+    elif kind == "loop_result":
+        block.update(resolved=False, view="constructed_children", children=[
+            _port_route_block(route["initial_route"], block_id + "__initial", fact_key),
+            _port_route_block(route["iteration_result"], block_id + "__iteration", fact_key)])
+        block["children"][0]["facts"].append("Initial value; also the result when no iteration executes")
+        block["children"][1]["facts"].append("Value at the end of a loop iteration; count and guarded choice unresolved")
+        block["facts"] = ["Source loop boundary; iteration count unresolved"]
+    elif kind == "sequence":
+        block.update(view="constructed_children", children=[_port_route_block(
+            item, block_id + f"__item_{number}", fact_key) for number, item in enumerate(route["items"])])
+    elif kind in {"inplace_operation", "source_operation"}:
+        operator = route["operator"] + ("=" if kind == "inplace_operation" else "")
+        block.update(resolved=False, view="runtime_port_route",
+                     detail={"port_route_kind": kind, "source_operator": operator}, children=[_port_route_block(
+            item, block_id + f"__operand_{number}", fact_key) for number, item in enumerate(route["operands"])])
+        for number, child in enumerate(block["children"]):
+            child.setdefault("detail", {})["argument_port"] = str(number)
+            child["facts"].append("Source operand port: " + str(number))
+        boundary = block_id + "__operator"
+        block["detail"].update(argument_ids=[child["id"] for child in block["children"]], boundary_id=boundary)
+        block["children"].append({"id": boundary, "kind": "unknown", "label": "Source " + operator,
+                                  "title": "Source operator boundary: " + operator, "resolved": False,
+                                  "description": "These source operands enter the operator boundary. Operand dispatch, internal dependence and mutation behavior remain unresolved.",
+                                  "source_fact_keys": [fact_key]})
+        block["facts"] = ["Source operator: " + operator,
+                          "investigation_missing · operand dispatch and mutation semantics · owner: S8"]
+    elif kind == "unresolved":
+        block.update(kind="unknown", resolved=False)
+        block["facts"] = ["investigation_missing · input route · owner: S8"]
+    return block
+
+
+def project_unet(*, facts, handoffs, name, architecture, table=None, mechanism_findings=None):
+    modules = facts["root.denoiser.constructed_modules"].value
+    shapes = facts["root.denoiser.constructed_parameter_shapes"].value
+    relations = facts["root.denoiser.constructed_stage_relations"].value
+    population_key = "root.denoiser.constructed_modules"
+    shape_key = "root.denoiser.constructed_parameter_shapes"
+    relation_key = "root.denoiser.constructed_stage_relations"
+    ffn_key = "root.denoiser.ffn_mechanisms"
+    ffns = facts[ffn_key].value if ffn_key in facts else {}
+    join_key = "root.denoiser.stage_join_connections"
+    joins = facts[join_key].value if join_key in facts else {}
+    primitive_key = "root.denoiser.runtime_primitives"
+    primitives = facts[primitive_key].value if primitive_key in facts else {}
+    connection_key = "root.denoiser.cell_connections"
+    connections = facts[connection_key].value if connection_key in facts else {}
+    context_key = "root.denoiser.context_connections"
+    contexts = facts[context_key].value if context_key in facts else {}
+    arithmetic_key = "root.denoiser.cell_arithmetic"
+    arithmetic = facts[arithmetic_key].value if arithmetic_key in facts else {}
+    defaults_key = "root.denoiser.declared_constructor_defaults"
+    defaults = facts[defaults_key].value if defaults_key in facts else {}
+    spatial_key = "root.denoiser.spatial_mechanisms"
+    spatial = facts[spatial_key].value if spatial_key in facts else {}
+    context_formals = list(dict.fromkeys(row["source_formal"] for row in contexts.values()))
+    context_ids = {formal: f"unet_context_{number}" for number, formal in enumerate(context_formals)}
+    dispositions = ({row.provenance.instance_path: row for row in table.occurrences}
+                    if table is not None else {})
+
+    def card(path):
+        module = modules[path]
+        children = [card(f"{path}.{child}".lstrip(".")) for child in module["children"]]
+        parameters = [(key, row) for key, row in shapes["parameters"].items()
+                      if key.rpartition(".")[0] == path]
+        chips = [f"{shapes['by_module'][path]:,} parameters in subtree"]
+        if path in (mechanism_findings or {}):
+            chips.append(mechanism_findings[path])
+        disposition = dispositions.get(path)
+        if disposition is not None and disposition.execution.kind == "execution_unresolved":
+            chips.append("Execution: " + disposition.execution.reason_class)
+            chips.append(disposition.execution.detail or disposition.execution.reason)
+        chips.extend(f"{key.rpartition('.')[2]}: " + " × ".join(map(str, row["shape"]))
+                     for key, row in parameters)
+        block: Block = {
+            "id": _block_id(path), "kind": "opaque", "role": "constructed",
+            "label": path.rpartition(".")[2], "title": module["class_name"],
+            "description": (
+                "Constructed occurrence: " + path + ". "
+                "The children below show containment. Their order does not establish execution order."),
+            "facts": chips, "source_instance_path": path,
+            "source_fact_keys": [population_key, shape_key],
+            "source_component": "root", "source_owner": module["class_name"],
+        }
+        if children:
+            block.update(children=children, view="constructed_children")
+        if path in primitives:
+            primitive = primitives[path]
+            block.update(kind=primitive["kind"], label=primitive["label"],
+                         title=primitive["label"],
+                         description="Operation established by the exact constructed framework type. Caller connections require their own source proof.")
+            block["source_fact_keys"].append(primitive_key)
+        if path in connections:
+            connection = connections[path]
+            nodes = {}
+            for key, row in connection["calls"].items():
+                meaning = primitives.get(row["member"], {})
+                nodes[key] = {"id": _block_id(path) + "__" + key,
+                              "target": _block_id(row["member"]),
+                              "kind": meaning.get("kind", "opaque"),
+                              "label": meaning.get("label", "Constructed child call"),
+                              "guard": row["guard"]}
+            block.update(view="runtime_cell_connections",
+                         detail={"connection_calls": nodes,
+                                 "connections": connection["connections"]})
+            block["facts"].append(connection["unresolved"])
+            block["source_fact_keys"].append(connection_key)
+            if any(row["member"] in primitives for row in connection["calls"].values()):
+                block["source_fact_keys"].append(primitive_key)
+        if path in ffns:
+            mechanism = ffns[path]
+            ffn = {"kind": "dense", **mechanism}
+            namespace = _block_id(path) + "__op_"
+            operations = []
+            for op in ffn_region(ffn, None).ops:
+                if op.kind == "input":
+                    continue
+                operations.append({
+                    "id": namespace + op.id, "kind": op.kind,
+                    "role": "operation", "label": op.label or op.fn or op.id,
+                    "title": op.label or op.fn or op.id,
+                    "description": "Operation on the source-proven returned FFN computation.",
+                    "source_fact_keys": [ffn_key],
+                })
+            block.update(kind="ffn", role="ffn", label="Feed-forward", view="runtime_ffn",
+                         title="Source-proven feed-forward computation",
+                         detail={"ffn": ffn, "op_namespace": namespace},
+                         children=operations + children)
+            block["facts"].extend(["Activation: " + mechanism["activation"],
+                                    "Projection storage: " + mechanism["projection_mode"]])
+            for field in ("input_projection", "output_projection"):
+                weight = shapes["parameters"].get(mechanism[field] + ".weight")
+                if weight is not None:
+                    block["facts"].append(field.replace("_", " ") + ": "
+                                          + " × ".join(map(str, weight["shape"])))
+            block["source_fact_keys"].append(ffn_key)
+        if path in arithmetic:
+            mechanism = arithmetic[path]
+            operands = []
+            for number, label in enumerate(("First add input", "Second add input")):
+                operand_id = _block_id(path) + f"__return_operand_{number}"
+                operands.append(operand_id)
+                children.append({"id": operand_id, "kind": "unknown", "role": "unresolved_branch",
+                                 "label": label, "title": label,
+                                 "description": "This operand of the return addition is proven. Its complete internal route remains under investigation.",
+                                 "facts": ["investigation_missing · branch lineage · owner: S8"],
+                                 "source_fact_keys": [arithmetic_key], "resolved": False})
+            detail = dict(block.get("detail", {}))
+            detail.setdefault("connections", [])
+            detail.setdefault("connection_calls", {})
+            detail["return_arithmetic"] = {"operands": operands, "scale": mechanism["return_scale"]}
+            add_id = _block_id(path) + "__return_add"
+            children.append({"id": add_id, "kind": "residual_add", "label": "Add",
+                             "title": "Return addition", "description": "Source-proven addition on the returned computation.",
+                             "source_fact_keys": [arithmetic_key]})
+            if mechanism["return_scale"] == "divide":
+                children.append({"id": _block_id(path) + "__return_scale", "kind": "opaque",
+                                 "label": "Divide", "title": "Return division",
+                                 "description": "The returned sum is divided by the source expression; divisor value is unresolved.",
+                                 "facts": ["investigation_missing · divisor value · owner: S8"],
+                                 "source_fact_keys": [arithmetic_key]})
+            conditioning_routes = []
+            for number, injection in enumerate(mechanism["conditioning"]):
+                ports = []
+                for slot, route in enumerate(injection["operand_routes"]):
+                    operand_id = _block_id(path) + f"__conditioning_{number}_operand_{slot}"
+                    ports.append(operand_id)
+                    children.append(_port_route_block(route, operand_id, arithmetic_key))
+                if len(ports) != 2:
+                    continue
+                merge_id = _block_id(path) + f"__conditioning_{number}_add"
+                children.append({"id": merge_id, "kind": "residual_add", "label": "Add",
+                                 "title": "Conditional addition" if injection["conditional"] else "Addition",
+                                 "description": "The source applies addition to these exact operand ports; internal helper dependence remains open.",
+                                 "facts": ["Guard selection unresolved"] if injection["conditional"] else [],
+                                 "source_fact_keys": [arithmetic_key]})
+                conditioning_routes.append({"operands": ports, "merge": merge_id,
+                                             "conditional": injection["conditional"]})
+            detail["conditioning_arithmetic"] = conditioning_routes
+            block.update(view="runtime_cell_connections", detail=detail, children=children)
+            block["source_fact_keys"].append(arithmetic_key)
+            for injection in mechanism["conditioning"]:
+                block["facts"].append(("Conditional " if injection["conditional"] else "")
+                                      + injection["operation"] + " arithmetic; operand call boundaries retained")
+        if path in joins:
+            routes = []
+            by_path = {child.get("source_instance_path"): child for child in children}
+            for number, row in enumerate(joins[path]):
+                parents = {target.rpartition(".")[0] for target in row["targets"]}
+                if len(parents) != 1 or next(iter(parents)) not in by_path:
+                    continue
+                target = by_path[next(iter(parents))]
+                operands = []
+                for slot in row["operand_slots"]:
+                    operand_id = _block_id(path) + f"__join_{number}_operand_{slot}"
+                    operands.append(operand_id)
+                    children.append(_port_route_block(row["operand_routes"][slot], operand_id, join_key))
+                join_id = _block_id(path) + f"__join_{number}"
+                children.append({"id": join_id, "kind": "concat", "role": "connector",
+                                 "label": "Concatenate", "title": "Concatenate inputs",
+                                 "description": "The source concatenates these operand values before the repeated child call.",
+                                 "source_fact_keys": [join_key]})
+                routes.append({"operands": operands, "target": target["id"], "join": join_id})
+                target["facts"].append("Source-proven concat output feeds the repeated child call")
+                target["source_fact_keys"].append(join_key)
+            if routes:
+                block.update(view="runtime_stage_connections", detail={"join_routes": routes}, children=children)
+                block["source_fact_keys"].append(join_key)
+        if path in contexts:
+            row = contexts[path]
+            block["facts"].extend(["External context input proven", row["reason"],
+                                    "investigation_missing · cross-attention query role · owner: S8"])
+            block["source_fact_keys"].append(context_key)
+            block.update(view="runtime_context_connection", detail={
+                "source": context_ids[row["source_formal"]],
+                "source_label": "External context input",
+                "target_formal": row["target_formal"]})
+        if path in spatial:
+            row = spatial[path]
+            label = "Spatial reduction" if row["effect"] == "reduce" else "Spatial resize"
+            block.update(label=label, title=label)
+            block["facts"].append("Source-proven spatial primitive: " + row["primitive"])
+            if row["operand"] is not None:
+                block["facts"].append("Stride: " + str(row["operand"]))
+            else:
+                block["facts"].append("Resize direction: investigation_missing")
+            block["source_fact_keys"].append(spatial_key)
+        return block
+
+    stage_paths = (relations["producer_stages"] + relations["intermediate_stages"]
+                   + relations["consumer_stages"])
+    stage_cards = [card(path) for path in stage_paths]
+    for block in stage_cards:
+        block["label"] = block["source_instance_path"]
+        block["source_fact_keys"].append(relation_key)
+        block["facts"].append("Cross-attention role: investigation_missing · owner: S8")
+    contained = set(stage_paths)
+    other_paths = [path for path in modules
+                   if path and not any(path == parent or path.startswith(parent + ".")
+                                       for parent in contained)
+                   and path.rpartition(".")[0] == ""
+                   and path not in {relations["producer_field"], relations["consumer_field"]}]
+    other_cards = [card(path) for path in other_paths]
+    other_cards.append({
+        "id": "unet_skip_bank", "kind": "opaque", "role": "skip_accumulator",
+        "label": "Saved skip outputs", "title": "Source-proven skip accumulator",
+        "description": "Repeated producer calls contribute bypass outputs to an accumulator. Later calls receive a selected portion. Individual producer-to-consumer pairings remain under investigation.",
+        "facts": ["Accumulation and selected-input route proven", "Exact tensor-to-cell pairing: investigation_missing · owner: S8"],
+        "source_fact_keys": [relation_key],
+    })
+    skip_routes = ([{"source": _block_id(path), "target": "unet_skip_bank"}
+                    for path in relations["producer_stages"]]
+                   + [{"source": "unet_skip_bank", "target": _block_id(path)}
+                      for path in relations["consumer_stages"]])
+    other_cards.extend({
+        "id": context_ids[formal], "kind": "source", "role": "context_input",
+        "label": "External context input", "title": "Root input: " + formal,
+        "description": "Required root input transported by the proven source route to the selected context argument.",
+        "facts": ["Connection proven; cross-attention query role remains under investigation"],
+        "source_fact_keys": [context_key],
+    } for formal in context_formals)
+    context_routes = list({(context_ids[row["source_formal"]], _block_id(row["stage"])): {
+        "source": context_ids[row["source_formal"]], "target": _block_id(row["stage"])}
+        for row in contexts.values()}.values())
+    primary_key = "root.denoiser.primary_state_ports"
+    primary = facts[primary_key].value if primary_key in facts else {"regions": []}
+    primary_regions = []
+    for row in primary["regions"]:
+        region_id = "unet_primary_region_" + str(row["position"])
+        region = _port_route_block(row["route"], region_id, primary_key)
+        label = {"for": "Repeat boundary", "while": "Repeat boundary", "if": "Conditional boundary"}.get(row["kind"], "Call / operation boundary")
+        if row["stage_fields"]:
+            label += ": " + ", ".join(row["stage_fields"])
+        region.update(label=label, title=label)
+        region["facts"].extend(["Source port wiring; call targets and guard choices remain unresolved",
+                                 "Constructed stages are contained here; individual iteration-to-module binding is not asserted"])
+        other_cards.append(region)
+        primary_regions.append({"id": region_id, "kind": row["kind"],
+                                "receives_previous_state": row["receives_previous_state"],
+                                "stage_block_ids": [_block_id(path) for path in row["constructed_stages"]]})
+    geom = dict(handoffs)
+    geom.update({
+        "denoiser_family": "source_projected",
+        "denoiser_label": ["U-Net", "Denoiser"],
+        "denoiser_title": "Constructed U-Net denoiser",
+        "denoiser_desc": "Exact constructed stages and parameter shapes. Open execution relations remain visible.",
+        "denoiser_children": stage_cards + other_cards,
+        "denoiser_view": "unet_constructed",
+        "output_domain": "unknown", "block_conditioning": None,
+        "suppress_conditioning_source": True,
+    })
+    render = {
+        "family": "diffusion", "layout": "unet_pipeline", "theme": "teal",
+        "denoiser_view": "unet_constructed",
+        "loop_blocks": diffusion_loop_blocks(geom),
+        "loop_edges": diffusion_loop_edges(geom), "loop_region": diffusion_loop_region(),
+    }
+    # A denoiser checkpoint does not establish a sampler, text encoder or VAE.
+    # Keep independently supplied component handoffs, but do not let the old
+    # complete-pipeline display defaults manufacture their existence.
+    presence = handoffs.get("component_presence") or {
+        "text_encoders": bool(handoffs.get("text_encoder_specs")),
+        "scheduler": bool(handoffs.get("scheduler_class")), "vae": handoffs.get("vae") is not None}
+    full_pipeline = all(presence.get(key) for key in ("text_encoders", "scheduler", "vae"))
+    if not full_pipeline:
+        retained = {"denoiser"}
+        if presence.get("vae"):
+            retained.add("vae_decode")
+        if presence.get("scheduler"):
+            retained.add("scheduler")
+        retained.update("encoder_" + str(number)
+                        for number, _ in enumerate(handoffs.get("text_encoder_specs") or ()))
+        render["loop_blocks"] = [block for block in render["loop_blocks"] if block["id"] in retained]
+        render["loop_edges"] = []
+        render.pop("loop_region")
+        render["component_scope"] = "denoiser" if len(retained) == 1 else "partial_pipeline"
+        formals = set()
+
+        def collect_formals(value):
+            if isinstance(value, dict):
+                if value.get("kind") == "formal":
+                    formals.add(value["formal"])
+                for child in value.values():
+                    collect_formals(child)
+            elif isinstance(value, list):
+                for child in value:
+                    collect_formals(child)
+
+        collect_formals(primary)
+        render["component_input_ids"] = []
+        for number, formal in enumerate(sorted(formals)):
+            key = "unet_root_input_" + str(number)
+            render["component_input_ids"].append(key)
+            render["loop_blocks"].append({
+                "id": key, "kind": "source", "label": formal,
+                "title": "Declared forward input: " + formal,
+                "description": "This source formal is read by the selected denoiser implementation. Its external producer is not established by this checkpoint.",
+                "source_fact_keys": [primary_key]})
+            render["loop_edges"].append({"from": key, "to": "denoiser"})
+    # The old loop builder has a denoiser-kind display default. Supply the
+    # explicit view and citations at the actual block boundary.
+    for block in render["loop_blocks"]:
+        if block["id"] == "denoiser":
+            block.update(view="unet_constructed", source_instance_path="",
+                         source_fact_keys=[population_key, shape_key, relation_key])
+            if contexts:
+                block["source_fact_keys"].append(context_key)
+            if primary["regions"]:
+                block["source_fact_keys"].append(primary_key)
+            if defaults:
+                block["source_fact_keys"].append(defaults_key)
+                block["facts"] = list(block.get("facts") or ()) + [
+                    f"Declared class default · {key}: {json.dumps(row['value'])} (checkpoint omitted)"
+                    for key, row in defaults.items()]
+    return ModelIR(
+        name=name, architecture=architecture, vocab_size=0, hidden_size=None,
+        max_position_embeddings=None, tie_word_embeddings=None, layers=[],
+        extras={"render": render, "unet": {
+            "stage_relations": relations,
+            "stage_block_ids": {path: _block_id(path) for path in stage_paths},
+            "other_block_ids": [_block_id(path) for path in other_paths],
+            "context_routes": context_routes,
+            "skip_routes": skip_routes,
+            "primary_regions": primary_regions,
+            "parameter_shapes": shapes,
+        }},
+        warnings=[row["reason"] for row in relations["unresolved_relations"]],
+    )

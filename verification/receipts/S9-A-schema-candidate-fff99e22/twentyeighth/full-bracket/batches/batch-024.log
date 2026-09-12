@@ -1,0 +1,106 @@
+.............F.................F...........F............................ [ 43%]
+........................................................................ [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_u2_projection_and_census_nets_are_wired_blocking_and_clean ________
+
+    def test_u2_projection_and_census_nets_are_wired_blocking_and_clean():
+        """U2 P4: net #13 (projection-audit) and net #14 (zero-asserted census) are
+        both blocking mechanical nets and both pass on a real decoder; the
+        accessed-but-unprojected upgrade is blocking under S4's visible-receipt
+        contract."""
+        report = sable(LLAMA, render_images=False)
+        by_name = {c.name: c for c in report.checks}
+        assert by_name["projection_audit"].blocking is True
+>       assert by_name["projection_audit"].passed, by_name["projection_audit"].findings
+E       AssertionError: ["ledger fact 'model.hidden_size' (config_declared) is proven from evidence but no render surface projects it — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"]
+E       assert False
+E        +  where False = SableCheck(name='projection_audit', findings=["ledger fact 'model.hidden_size' (config_declared) is proven from eviden...t — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"], note='', blocking=True).passed
+
+tests/test_sable.py:274: AssertionError
+_______________ test_sable_mechanical_pass_on_corpus[LLAMA-cfg2] _______________
+
+name = 'LLAMA'
+cfg = {'architectures': ['LlamaForCausalLM'], 'hidden_act': 'silu', 'hidden_size': 4096, 'intermediate_size': 14336, ...}
+
+    @pytest.mark.parametrize("name,cfg", CORPUS)
+    def test_sable_mechanical_pass_on_corpus(name, cfg):
+        r = sable(cfg, render_images=False)
+        assert r.oracle == "present", r.oracle      # modeling source resolved
+>       assert r.mechanical_passed, r.summary()
+E       AssertionError: SABLE · LlamaForCausalLM
+E           oracle: present
+E           mechanical: FAIL  (4 distinct views, no PNGs)
+E             [       ok] click_coupling
+E             [       ok] dangling_connectors
+E             [       ok] unique_ref_ids
+E             [       ok] no_dotted_arrows
+E             [       ok] no_dotted_boundaries
+E             [       ok] config_field_audit
+E             [       ok] op_conformance
+E             [       ok] wiring_conformance
+E             [       ok] fact_conformance
+E             [       ok] nested_conformance
+E             [       ok] label_lint
+E             [       ok] evidence_ambiguity
+E             [       ok] asserted_facts
+E             [ FAIL (1)] projection_audit
+E                 · ledger fact 'model.hidden_size' (config_declared) is proven from evidence but no render surface projects it — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)
+E             [       ok] presentation_census
+E             [       ok] pending_design  — 0 proven presentation obligations await design; these are visibly marked and not drawn.
+E             [       ok] qualified_projection_values
+E             [       ok] zero_asserted_census
+E             [       ok] config_accessed_unprojected
+E             [       ok] config_migration_claims
+E             [       ok] config_consumed_unreceipted
+E             [       ok] receipt_fabrication
+E             [       ok] config_audit_incomplete
+E             [       ok] document_boundary_completeness
+E             [       ok] config_standing_unconsumed
+E             [       ok] structural_debt_register
+E             [       ok] config_ambiguity
+E           visual review: PENDING  (inspect the gallery against report.rubric)
+E       assert False
+E        +  where False = SableReport(model='LlamaForCausalLM', checks=[SableCheck(name='click_coupling', findings=[], note='', blocking=True), ..._reason_counts': {'investigation_missing': 1, 'structure_unaccounted': 0, 'mechanism_unresolved': 0}, 'findings': []}}).mechanical_passed
+
+tests/test_sable.py:503: AssertionError
+_________________________ test_sable_regression_corpus _________________________
+
+    def test_sable_regression_corpus():
+        """Every blessed model retains its SVG lock.  Old blessings newly invalidated
+        by exact source attribution stay pinned as explicit unresolved debt; they are
+        not silently re-blessed without a fresh Dable review."""
+        # Unit 10 (2026-07-03) resolved the last pinned unresolved debt: the UNet
+        # string-factory (get_down_block) is followed generally now, so NO fixture
+        # may carry unresolved nested-conformance findings.
+        expected_unresolved: dict[str, set] = {}
+        corpus = load_corpus()
+        if not corpus:
+            pytest.skip("no blessed models in the corpus yet")
+        for filename, fixture in corpus:
+            drift = check_regression(fixture)
+            expected = expected_unresolved.get(filename, set())
+            actual_expected = {
+                view for view in expected
+                if any(item.startswith(f"nested_conformance: {view}: no code unit resolved")
+                       for item in drift)
+            }
+            unexpected = [item for item in drift
+                          if not any(item.startswith(
+                              f"nested_conformance: {view}: no code unit resolved"
+                          ) for view in expected)]
+            assert actual_expected == expected, f"{filename} lost pinned unresolved coverage: {drift}"
+>           assert unexpected == [], f"{filename} regressed:\n  " + "\n  ".join(unexpected)
+E           AssertionError: bloom.json regressed:
+E               projection_audit: ledger fact 'model.hidden_size' (config_declared) is proven from evidence but no render surface projects it — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)
+E           assert ['projection_...ently drops)'] == []
+E             
+E             Left contains one more item: "projection_audit: ledger fact 'model.hidden_size' (config_declared) is proven from evidence but no render surface projects it — add its leaf to the surface's facts_projected (a proven fact the diagram silently drops)"
+E             Use -v to get more diff
+
+tests/test_sable.py:766: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_sable.py::test_u2_projection_and_census_nets_are_wired_blocking_and_clean
+FAILED tests/test_sable.py::test_sable_mechanical_pass_on_corpus[LLAMA-cfg2]
+FAILED tests/test_sable.py::test_sable_regression_corpus - AssertionError: bl...
+3 failed, 163 passed in 428.67s (0:07:08)

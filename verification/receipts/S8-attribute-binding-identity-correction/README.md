@@ -1,0 +1,11 @@
+# Frozen occurrence identity correction
+
+Correction to the independent worker RETURN in ../S8-attribute-binding-independent/. The historical review artifacts were not overwritten.
+
+The completed construction snapshot now retains its exact occurrence object map and exact registered slot tuples. Requested lookup observations use that snapshot. Every positive child must be the original object at the exact constructed path and still reachable there through registered slots. Every iterator slot must preserve original order, name and identity, including aliases and None; newly inserted None slots and reordered aliases are refused. Missing construction maps yield a typed limitation, never an inferred address.
+
+Failed custom lookup now retains its before/after bounded state and fallback function. Failure, selected-target mismatch or observed direct state change conservatively contaminates the shared lookup session; later requests, including on other owners, are unresolved. A successful observation that silently changes a nested slot cannot make its replacement a frozen occurrence: the later exact slot check rejects the iterator witness. Construction paths and shapes remain unchanged.
+
+Verification: 18 standalone controls PASS; no pytest/full model run. The independent reviewer’s exact probe classes were imported and replayed into independent-replay.json. Failed first lookup now yields custom_fallback_raised_RuntimeError with state retained, and the next lookup is unresolved/contaminated. Nested replacement leaves the original stages container observed, but iteration is absent with modulelist_slots_differ_from_construction; no replacement receives stages.0. Both frozen weights remain [2,2]. Added controls reject a detached old owner and inserted None/reordered alias slots.
+
+The updated tiny installed-class fixture in installed_class.py supplies explicit frozen object/slot maps and preserves the positive actual wrapper, builtin config property, ModelMixin fallback/super anchor and exact ModuleList iteration including None. It is not an actual SDXL constructor or execution. Source consumer authority and the separate ProgramIndex stop remain outside this correction. No new lookup forms, no blessings.

@@ -1,0 +1,24 @@
+{
+  "s7-stamp": {
+    "name": "s7-stamp",
+    "returncode": 0,
+    "duration": 10.442271625157446,
+    "before": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+    "after": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "log_path": "/private/tmp/unfold-s81-approved-portable-committed-checks/s7-stamp.log",
+    "passed": true
+  },
+  "coverage": {
+    "name": "coverage",
+    "returncode": 0,
+    "duration": 818.2154702078551,
+    "before": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+    "after": "5779a6685782df9af7d8f2b27568b784f0d0197a48299f7020e8b212ea419157",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "log_path": "/private/tmp/unfold-s81-approved-portable-committed-checks/coverage.log",
+    "passed": true
+  }
+}

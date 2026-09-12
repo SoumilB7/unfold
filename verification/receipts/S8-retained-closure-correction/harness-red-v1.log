@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s8-retained-index-replay.py", line 69, in <module>
+    artifact,obs,rels=g._one(target,write_relations=False,output=original)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py", line 490, in _one
+    context, index, root, static_claims, ir = _source_inputs(config, inventory)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-retained-index-replay.py", line 50, in source_inputs
+    result=original_source_inputs(config,inventory);context,index,resolved,claims,ir=result
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/generate_s7_shadow.py", line 317, in _source_inputs
+    ir = config_to_ir(config, parse_context=context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/model_unfolder/parser.py", line 102, in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/model_unfolder/evidence/config_access.py", line 1605, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/model_unfolder/adapters/diffusor/parser.py", line 664, in parse
+    result = build_unet_cutover(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/model_unfolder/adapters/diffusor/unet_cutover.py", line 38, in build_unet_cutover
+    result = build_resolved_instance(binding.prepared, context.source_bundle, root,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/unfold-s8-retained-index-replay.py", line 46, in cached_build
+    assert set(demand.storage_attributes)<=available
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

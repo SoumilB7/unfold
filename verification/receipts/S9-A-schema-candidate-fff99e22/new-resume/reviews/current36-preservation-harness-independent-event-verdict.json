@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT_SERIAL_EXECUTION",
+  "manifest_sha256": "eec499944e9ffc1cf73b98f422933e7ff5ab3afe31f2b988792729f4a9157087",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "source_rows_rehashed": 199,
+  "import_source_files_and_membership_rehashed": 391,
+  "input_counts_rehashed": {
+    "corpus": 511,
+    "historical_baseline": 203
+  },
+  "source_delta_from_accepted34": [
+    "model_unfolder/adapters/transformer/parser.py",
+    "model_unfolder/evidence/reader_claims.py"
+  ],
+  "checks": [
+    "All held manifest members rehashed. Five executable scripts match accepted34 exactly after current34-to36 generation coordinates; stdlib AST only, no execution.",
+    "All391 import source files and membership,199 manifest rows including3 deletions, complete corpus/historical inputs and original test/expected manifest rehashed.",
+    "Original31 baseline_recovery_origin and entire baseline lane remain exactly equal to accepted34 and original31. Saved baseline inventory unchanged.",
+    "Current lane output remains fresh-only. Existing canonical functions and unchanged29-witness/52-test observer collect each surface/view; exact committed expected hash gates retained.",
+    "Read-only compare-recovered validates the original31 recovery through its original pinned contract. No rerun of the original baseline producer; no guarded writer or active baseline mutation."
+  ],
+  "limits": [
+    "118 historical canonical expectation mismatches remain non-authoritative despite203 historical files matching their pins. Only recoveredfff canonical surfaces matching committed expectations enter exact leaf comparison.",
+    "No model/test execution by reviewer, no output delta approval or baseline blessing.",
+    "Stable internal UNFOLD_S9A32_OUTPUT_CAPTURE key is deliberately retained identically on both producer and consumer."
+  ]
+}

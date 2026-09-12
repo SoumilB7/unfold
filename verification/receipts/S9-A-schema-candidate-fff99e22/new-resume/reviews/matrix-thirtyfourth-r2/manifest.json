@@ -1,0 +1,25 @@
+{
+  "scope": "Independent-review-return correction: candidate34 identity, source map and exact saved-data comparisons; no runtime",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "58c86ee7b6dfb4d3f2225724b026e4c1a1674dd74326db43b33498f01816c8a1"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "d032028aee76344b7c3d0196a8c352862b60835eaeec776bcf0606bd7b664d9b"
+    },
+    {
+      "path": "expected-generation-sources.json",
+      "sha256": "fdc201d50c0aec9096869f485eac6f45228666eb4a066384c1a7139733391541"
+    },
+    {
+      "path": "generation-source-law.py.txt",
+      "sha256": "cbb31d6624395a69fb46a96df7bdb1716a1dc2988a55a7ffad5f3f24dba9a896"
+    },
+    {
+      "path": "prepared-contract.json",
+      "sha256": "7bb2b8ceb084a0d1aa9aefd120636a3337cc92d043d9c92b64fb5721dbc2d35a"
+    }
+  ]
+}

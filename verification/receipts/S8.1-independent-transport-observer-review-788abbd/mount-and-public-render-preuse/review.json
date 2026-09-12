@@ -1,0 +1,23 @@
+{
+  "decision": "ACCEPT_STATIC_AND_PREUSE",
+  "reviewer": "independent_review",
+  "pins": {
+    "model_unfolder/renderers/html/card_payload.py": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e",
+    "model_unfolder/renderers/html/interactions.py": "2b025b1ead179d51f78aabc8a8f3403ac29abdc92a221fd91d1134d8b11ba730",
+    "tests/test_card_payload.py": "e5865f077372aff0f9d06664ec6d94a9c70dc9d2f4c24cdf7c9e76896c18409d",
+    "verification/receipts/S8.1-card-payload/measure_html.py": "10f354fe0a5d0e2f1f256168472f39651f93125b78a4249ab4479ed779369628"
+  },
+  "scope": [
+    "Declared-mount literal factoring with collision fallback and exact inverse.",
+    "Payload lookup binds digest and mount; existing comparator unchanged.",
+    "Public render uses retained IR and existing warning producer metadata, guarded imports/origin and final pins."
+  ],
+  "pending": [
+    "Actual codec controls and generated page inverse.",
+    "Native browser behavior and performance."
+  ],
+  "limits": [
+    "No model, renderer, tests or browser executed by this reviewer.",
+    "HTML observer source manifest currently covers model_unfolder; physics source scope clarification requested."
+  ]
+}

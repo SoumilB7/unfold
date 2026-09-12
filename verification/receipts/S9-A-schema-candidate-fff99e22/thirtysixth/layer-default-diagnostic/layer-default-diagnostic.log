@@ -1,0 +1,6 @@
+[transformers] Model config: pad_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+[transformers] Model config: bos_token_id must be `None` or an integer within the vocabulary (between 0 and 2047), got 2048. This may result in unexpected behavior.
+{"case": "ordinary", "layers": 24, "error": null, "count_traces": 1}
+{"case": "missing_decoder_count", "layers": 24, "error": null, "count_traces": 1}
+{"case": "explicit_null", "layers": null, "error": {"type": "ConfigParseError", "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help."}, "count_traces": 1}
+{"case": "explicit_zero", "layers": null, "error": {"type": "ConfigParseError", "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help."}, "count_traces": 1}

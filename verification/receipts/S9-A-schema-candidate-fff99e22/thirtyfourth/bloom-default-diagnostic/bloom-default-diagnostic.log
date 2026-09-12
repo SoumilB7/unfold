@@ -1,0 +1,7 @@
+{"case": "ordinary", "layers": 70, "error": null, "count_traces": 4}
+{"case": "missing_root_count", "layers": null, "error": {"type": "ConfigParseError", "message": "Loaded 'bloom' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help."}, "count_traces": 1}
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s9a-thirtyfourth/bloom-default-diagnostic.py", line 40, in <module>
+    assert rows[1]['layers'] > 0 and rows[1]['error'] is None
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'

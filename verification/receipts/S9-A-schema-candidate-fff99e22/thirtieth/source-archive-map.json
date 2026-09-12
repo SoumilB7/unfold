@@ -1,0 +1,21 @@
+{
+  "scope": "source snapshot only; runtime still in progress",
+  "files": [
+    {
+      "path": "changed-sources.tar.gz",
+      "sha256": "f6e2cf3b779ba9b6669d41bfd5c19129036eb7e7619300c44412a2f28c68eed9"
+    },
+    {
+      "path": "composition.json",
+      "sha256": "423692fa2e2277e0aac52e210f2a705de9ad1059e0a19b101b74b95e3db41729"
+    },
+    {
+      "path": "s10-receipt-inputs.json",
+      "sha256": "69ecc79834ee454d81c884dc4373d0c2cbde739bf84bd7421471e1394ed609f1"
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "e4636c47c40267792d6ab489818bcd1c02deeb7c52ffe8cc44f2e8d60e6b9d43"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "9c7f1b9fe1e05467e653bf4e4cc4b560e109eb22eeb7a1f8ef09ef29e1e52d2b",
+  "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+  "input_sha256": "6524299358f7eb28d00c1a163a219e7931083281d7a64b3990721bd392fe549c",
+  "resolved_class": {
+    "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+    "qualname": "Qwen3_5ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

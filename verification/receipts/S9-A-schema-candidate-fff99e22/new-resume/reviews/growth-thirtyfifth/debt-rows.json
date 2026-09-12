@@ -1,0 +1,1243 @@
+[
+  {
+    "args": [
+      "softcap",
+      "model",
+      "final vocabulary-logit softcap descriptor as raw extras; the attention cap and query-score operand have left this legacy lane",
+      "U14",
+      "fact_routed:final_logit_softcap"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "occurrence": "text_cfg final_logit_softcapping"
+    }
+  },
+  {
+    "args": [
+      "block_diffusion",
+      "root",
+      "block-diffusion canvas descriptor as raw extras",
+      "U14",
+      "fact_registered:block_diffusion_canvas"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/views_diffusion.py::_build_block_diffusion_view",
+      "occurrence": "cfg canvas_length"
+    }
+  },
+  {
+    "args": [
+      "block_diffusion.canvas_length",
+      "root",
+      "canvas length as a raw extras leaf",
+      "U14",
+      "fact_registered:block_diffusion_canvas"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/views_diffusion.py::_build_block_diffusion_view"
+    }
+  },
+  {
+    "args": [
+      "render",
+      "root",
+      "PRESENTATION render-spec (theme/layout/blocks) \u2014 renderer semantics, not architecture; retires by reclassification to a scoped presentation register, not by becoming a fact",
+      "U5",
+      "no_writer:extras:render"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/sections.py::_stats_banner",
+      "module": "model_unfolder/adapters/transformer/assembly.py",
+      "symbol": "decoder_extras"
+    }
+  },
+  {
+    "args": [
+      "render",
+      "root.denoiser",
+      "U10-F3 source-projected render DTO; presentation remains a raw extras transport until the U14 renderer boundary is typed",
+      "U14",
+      "no_writer:extras:render"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/metadata.py::_block_lookup",
+      "module": "model_unfolder/adapters/diffusor/parser.py",
+      "occurrence": "U10 source projection + U11/U12/U13 handoffs",
+      "symbol": "_parse_projected_denoiser"
+    }
+  },
+  {
+    "args": [
+      "render",
+      "root.denoiser",
+      "canonical UNet facts still use the raw render transport",
+      "U14",
+      "no_writer:extras:render"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/metadata.py::_block_lookup",
+      "module": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "occurrence": "source-backed UNet cards and invocation ports",
+      "symbol": "project_unet"
+    }
+  },
+  {
+    "args": [
+      "unet",
+      "root.denoiser",
+      "canonical stage relations, shapes and port routes still use raw extras",
+      "U14",
+      "no_writer:extras:unet"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "consumer": "model_unfolder/renderers/html/block_views/unet.py::build_unet_constructed_view",
+      "module": "model_unfolder/adapters/diffusor/unet_projection.py",
+      "occurrence": "source-backed UNet relation and parameter-shape facts",
+      "symbol": "project_unet"
+    }
+  },
+  {
+    "args": [
+      "modalities",
+      "root",
+      "multimodal tower descriptors merged into extras via the dynamic-keyed _merge_extras loop",
+      "U14",
+      "writer_gone:model_unfolder/adapters/transformer/assembly.py::_merge_extras:extras:<dynamic>"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "census": "<dynamic>",
+      "consumer": "model_unfolder/evidence/conformance.py::_check_recursive_component_facts",
+      "module": "model_unfolder/adapters/transformer/assembly.py",
+      "occurrence": "vision/audio/video sub-configs + source-bundle tower/projector/fusion evidence",
+      "symbol": "_merge_extras"
+    }
+  },
+  {
+    "args": [
+      "modalities.inputs",
+      "root",
+      "modality input-path payload authored by the multimodal builder",
+      "U14",
+      "writer_gone:model_unfolder/adapters/transformer/special_parts/modalities/builder.py::multimodal_extras:extras:<dynamic>"
+    ],
+    "factory": "_extras",
+    "kwargs": {
+      "census": "<dynamic>",
+      "consumer": "model_unfolder/evidence/conformance.py::_check_recursive_component_facts",
+      "module": "model_unfolder/adapters/transformer/special_parts/modalities/builder.py",
+      "occurrence": "vision/audio/video sub-configs",
+      "symbol": "multimodal_extras"
+    }
+  },
+  {
+    "args": [
+      "the conditioning card on the denoiser view",
+      "root.denoiser",
+      "max_sequence_length",
+      "max text-token sequence the denoiser conditions on (Mochi) \u2014 a declared conditioning limit",
+      "U15",
+      "classified:max_sequence_length"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the composite conditioning encoder's attention geometry",
+      "root.conditioning",
+      "text_encoder.num_heads",
+      "U9 now proves the exact task-specific text-encoder occurrence and projects its code-bound head geometry through the typed component result.  The remaining debt is U14's FactLedger + projection-receipt cutover for the modality extras surface; until then this raw checkpoint operand remains visibly unread rather than being falsely marked consumed by the old parser",
+      "U14",
+      "fact_registered:conditioning_attention_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning encoder FFN width operand",
+      "root.conditioning",
+      "text_encoder.d_ff",
+      "the exact conditioning FFN occurrence is source-qualified, but U14 must bind and receipt its affine width before projection",
+      "U14",
+      "fact_registered:conditioning_ffn_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning encoder activation alias",
+      "root.conditioning",
+      "text_encoder.dense_act_fn",
+      "the checkpoint activation alias awaits U14's exact winning-path fact and projection receipt",
+      "U14",
+      "fact_registered:conditioning_ffn_activation"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning encoder FFN protocol declaration",
+      "root.conditioning",
+      "text_encoder.feed_forward_proj",
+      "the source-qualified FFN protocol remains unprojected until U14 owns its config operand as a typed fact",
+      "U14",
+      "fact_registered:conditioning_ffn_protocol"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning encoder gated-activation declaration",
+      "root.conditioning",
+      "text_encoder.is_gated_act",
+      "the checkpoint gate declaration cannot author a mechanism; U14 must join it to the exact FFN occurrence and receipt the result",
+      "U14",
+      "fact_registered:conditioning_ffn_gating"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning encoder repetition operand",
+      "root.conditioning",
+      "text_encoder.num_layers",
+      "U9 proves the exact repeated stage; U14 must ledger and receipt the checkpoint count operand on the modality projection",
+      "U14",
+      "fact_registered:conditioning_tower_depth"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning token-embedding vocabulary operand",
+      "root.conditioning",
+      "text_encoder.vocab_size",
+      "the declared vocabulary size awaits an exact embedding-owner fact and U14 projection receipt",
+      "U14",
+      "fact_registered:conditioning_vocab_size"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser FFN activation dispatch",
+      "root.denoiser",
+      "activation_fn",
+      "the activation operand is visible, but only an exact denoiser constructor dispatch may project it as FFN mechanism evidence",
+      "U15",
+      "classified:activation_fn"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE-decoder ResNet cells' activation chip",
+      "root.vae",
+      "_vae_config.act_fn",
+      "the VAE decoder's convolution activation (video VAEs) \u2014 a constructor record",
+      "U12",
+      "fact_registered:vae_act_fn"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE latent-depth / temporal-axis chip",
+      "root.vae",
+      "_vae_config.temporal_compression_ratio",
+      "the VAE's own temporal compression (HunyuanVideo/Wan) \u2014 distinct from the denoiser-level ratio",
+      "U12",
+      "fact_registered:vae_temporal_compression"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE encoder intake chip",
+      "root.vae",
+      "_vae_config.in_channels",
+      "VAE encoder input channels \u2014 awaits the source-derived VAE component graph (V-02)",
+      "U12",
+      "fact_registered:vae_in_channels"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE sample-geometry chip (height)",
+      "root.vae",
+      "_vae_config.sample_height",
+      "VAE declared sample height (CogVideoX) \u2014 V-02",
+      "U12",
+      "fact_registered:vae_sample_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE sample-geometry chip (width)",
+      "root.vae",
+      "_vae_config.sample_width",
+      "VAE declared sample width (CogVideoX) \u2014 V-02",
+      "U12",
+      "fact_registered:vae_sample_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE patchify chip",
+      "root.vae",
+      "_vae_config.patch_size",
+      "patchified VAE spatial patch (FLUX.2/LTX) \u2014 V-03",
+      "U12",
+      "fact_registered:vae_patchify"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE temporal-patchify chip",
+      "root.vae",
+      "_vae_config.patch_size_t",
+      "patchified VAE temporal patch (LTX) \u2014 V-03",
+      "U12",
+      "fact_registered:vae_patchify"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the VAE decoder attention chip",
+      "root.vae",
+      "_vae_config.attention_head_dim",
+      "DC-AE decoder attention head width (Sana) \u2014 V-05",
+      "U12",
+      "fact_registered:vae_decoder_attention"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the interleaved multimodal rotary application",
+      "root",
+      "rope_parameters.mrope_interleaved",
+      "the checkpoint declaration is visible, but the modality-owned T/H/W coordinate split and its exact rotary application belong to U9, not the text-layer position schedule",
+      "U9",
+      "fact_registered:mrope_interleaving"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary coordinate partition",
+      "root",
+      "rope_parameters.mrope_section",
+      "the exact checkpoint operand is visible, but only the U9 wrapper coordinate construction can prove how its T/H/W sections reach the text attention's supplied phase",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary frequency base",
+      "root",
+      "rope_parameters.rope_theta",
+      "the text attention proves rotation but not the wrapper-owned phase producer that consumes this frequency base",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary initializer selector",
+      "root",
+      "rope_parameters.rope_type",
+      "the selector cannot author a mechanism; U9 must bind the exact selected wrapper phase initializer",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary width operand",
+      "root",
+      "rope_parameters.partial_rotary_factor",
+      "the operand changes wrapper-produced phase width, but its exact coordinate/phase chain is outside the U8 text-layer boundary",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the duplicate multimodal rotary width declaration",
+      "root",
+      "partial_rotary_factor",
+      "the root duplicate remains visible until U9 proves which exact wrapper normalization/initializer spelling is enacted",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary coordinate partition",
+      "root",
+      "text_config.rope_parameters.mrope_section",
+      "the exact checkpoint operand is visible, but only the U9 wrapper/modality coordinate construction can prove how its T/H/W sections reach Q/K rotation",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary frequency base",
+      "root",
+      "text_config.rope_parameters.rope_theta",
+      "the numeric operand cannot author rotation; U9 must bind it to the exact multimodal frequency initializer used by the wrapper",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the multimodal rotary initializer selector",
+      "root",
+      "text_config.rope_parameters.rope_type",
+      "selector syntax is not mechanism evidence; U9 must resolve the selected callable and its multimodal application",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the legacy multimodal rotary initializer selector",
+      "root",
+      "text_config.rope_parameters.type",
+      "the legacy selector spelling remains exact visible debt until U9 proves and classifies the selected multimodal callable",
+      "U9",
+      "fact_registered:mrope_coordinates"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser projection-bias fact",
+      "root.denoiser",
+      "attention_bias",
+      "declaration awaits exact denoiser projection-construction binding",
+      "U15",
+      "classified:attention_bias"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser Q/K-normalization fact",
+      "root.denoiser",
+      "qk_norm",
+      "declaration awaits exact denoiser Q/K norm execution binding",
+      "U15",
+      "classified:qk_norm"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser rotary-application fact",
+      "root.denoiser",
+      "use_rotary_positional_embeddings",
+      "declaration awaits exact denoiser positional call binding; it cannot independently author Q/K rotation",
+      "U15",
+      "classified:use_rotary_positional_embeddings"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser rotary-geometry fact",
+      "root.denoiser",
+      "rope_theta",
+      "numeric rotary operand awaits the denoiser-owned positional application and geometry proof in U10",
+      "U15",
+      "classified:rope_theta"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the UNet ResNet-cell norm chip",
+      "root.denoiser",
+      "norm_num_groups",
+      "GroupNorm group count declared on UNet/legacy-DiT denoisers \u2014 U-06 derives the cell norm from source",
+      "U11",
+      "fact_registered:unet_cell_norm"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the projector output-width chip",
+      "root.vision",
+      "vision_config.hidden_size",
+      "the vision config's declared merger/output width (qwen2-vl: 3584 beside internal embed_dim=1280) \u2014 a config comparison may NOT infer its meaning.  COR-4: where construction evidence exists the source-bound projector CONSUMES it exactly (fact projector_out_features), discharging the occurrence; it stays visible debt only for source-less grid towers",
+      "U9",
+      "fact_registered:hidden_size"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound vision tower repetition operand",
+      "root.vision",
+      "vision_config.depth",
+      "U9 proves the exact repeated vision stage and binds this depth operand; U14 must ledger and receipt the modality projection",
+      "U14",
+      "fact_registered:vision_tower_depth"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound vision hidden-width operands",
+      "root.vision",
+      "vision_config.embed_dim",
+      "U9 binds this width to exact vision constructors; U14 must ledger its owner-qualified projections",
+      "U14",
+      "fact_registered:vision_hidden_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound vision FFN activation",
+      "root.vision",
+      "vision_config.hidden_act",
+      "U9 proves the activation dispatch at the exact vision FFN; U14 must ledger and receipt that mechanism operand",
+      "U14",
+      "fact_registered:vision_ffn_activation"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound patch input-channel operand",
+      "root.vision",
+      "vision_config.in_chans",
+      "U9 binds this spelling to the exact patch constructor; U14 must ledger the patch-geometry projection",
+      "U14",
+      "fact_registered:vision_patch_input_channels"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound vision FFN expansion operand",
+      "root.vision",
+      "vision_config.mlp_ratio",
+      "U9 binds this ratio to the exact vision FFN construction; U14 must ledger and receipt the derived width",
+      "U14",
+      "fact_registered:vision_ffn_ratio"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound vision attention head count",
+      "root.vision",
+      "vision_config.num_heads",
+      "U9 binds this count to the exact vision attention occurrence; U14 must ledger and receipt its geometry",
+      "U14",
+      "fact_registered:vision_attention_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound spatial patch-size operand",
+      "root.vision",
+      "vision_config.patch_size",
+      "U9 binds this size to the exact patch constructor; U14 must ledger and receipt the patch-geometry projection",
+      "U14",
+      "fact_registered:vision_patch_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound spatial merge-size operand",
+      "root.vision",
+      "vision_config.spatial_merge_size",
+      "U9 binds this size to the exact merger/position route; U14 must ledger and receipt the owner-qualified projection",
+      "U14",
+      "fact_registered:vision_projector_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the source-bound temporal patch-size operand",
+      "root.vision",
+      "vision_config.temporal_patch_size",
+      "U9 binds this size to the exact 3D patch constructor; U14 must ledger and receipt the temporal patch geometry",
+      "U14",
+      "fact_registered:vision_temporal_patch_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the latent scale chip (VAE-owned)",
+      "root.denoiser",
+      "scaling_factor",
+      "pipeline-level latent-scale duplicate on the denoiser config (Lumina); the VAE's own scaling_factor is the drawn read",
+      "U12",
+      "fact_registered:latent_io"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "feature-absence classification (VQ-embedding absent)",
+      "root.denoiser",
+      "num_vector_embeds",
+      "explicit-null VQ-embedding declaration on the legacy DiT config",
+      "U11",
+      "classified:num_vector_embeds"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "pipeline watermark flag \u2014 no structural target; candidate for scoped-ignore deletion",
+      "root.denoiser",
+      "add_watermarker",
+      "explicit-null pipeline watermark flag on the UNet config",
+      "U11",
+      "classified:add_watermarker"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "class-conditioning absence classification",
+      "root.denoiser",
+      "class_embed_type",
+      "explicit-null class-conditioning declaration (feature absent)",
+      "U11",
+      "classified:class_embed_type"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "cross-attention norm absence classification",
+      "root.denoiser",
+      "cross_attention_norm",
+      "explicit-null cross-attention norm declaration",
+      "U11",
+      "classified:cross_attention_norm"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "mid-block attention-mode absence classification",
+      "root.denoiser",
+      "mid_block_only_cross_attention",
+      "explicit-null mid-block attention-mode declaration",
+      "U11",
+      "classified:mid_block_only_cross_attention"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "class-embedding-count absence classification",
+      "root.denoiser",
+      "num_class_embeds",
+      "explicit-null class-embedding count declaration",
+      "U11",
+      "classified:num_class_embeds"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "timestep-embedding width \u2014 binds to the source-derived time-embed cell when non-null",
+      "root.denoiser",
+      "time_embedding_dim",
+      "explicit-null timestep-embedding width declaration",
+      "U11",
+      "classified:time_embedding_dim"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the model-stage embedding-input scale",
+      "root",
+      "embedding_multiplier",
+      "the checkpoint value affects the root embedding path, whose exact source-bound input projection is U14 work",
+      "U14",
+      "fact_registered:embedding_scale"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the language-head logits divisor",
+      "root",
+      "logits_scaling",
+      "the checkpoint value affects the root output head, whose exact source-bound output projection is U14 work",
+      "U14",
+      "fact_registered:logits_scale"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "classification of a config value copied into attention state but excluded from the proved position initializer",
+      "root",
+      "attn_config.rope_theta",
+      "the exact attention constructor stores this checkpoint value, while the exact applied Q/K rotation is initialized independently from a framework-normalized code default; because the attention object is also passed to a selectable backend, absence of a direct field read is not yet a complete global deadness proof",
+      "U11",
+      "classified:attn_config.rope_theta"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the drawn UNet stage-channel ladder",
+      "root.denoiser",
+      "block_out_channels",
+      "UNet structure reaches render only through raw extras.unet",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "per-stage attention placement of the drawn U (down path)",
+      "root.denoiser",
+      "down_block_types",
+      "raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "per-stage attention placement of the drawn U (up path)",
+      "root.denoiser",
+      "up_block_types",
+      "raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the drawn bottleneck stage + its declared provenance",
+      "root.denoiser",
+      "mid_block_type",
+      "raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "per-stage ResNet counts of the drawn U",
+      "root.denoiser",
+      "layers_per_block",
+      "raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "per-stage Transformer2D depth (SDXL mid=10)",
+      "root.denoiser",
+      "transformer_layers_per_block",
+      "raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the drawn encoder-to-cross-attn width bridge (text_proj card)",
+      "root.denoiser",
+      "encoder_hid_dim",
+      "builds the bridge card; raw extras.unet only",
+      "U11",
+      "fact_registered:unet_blocks"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning-modality resolution (kv_label / projector / kv_text)",
+      "root.denoiser",
+      "encoder_hid_dim_type",
+      "declared enum decides the drawn K/V modality story; lands in raw extras.diffusion.conditioning",
+      "U11",
+      "fact_registered:diffusion_meta"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the SDXL text_time micro-conditioning card (added-cond)",
+      "root.denoiser",
+      "addition_embed_type",
+      "render-only added-conditioning block today",
+      "U11",
+      "fact_registered:unet_added_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "added-cond time-embed width (SDXL/SVD)",
+      "root.denoiser",
+      "addition_time_embed_dim",
+      "render-only added-conditioning block today",
+      "U11",
+      "fact_registered:unet_added_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "added-cond projection-in width",
+      "root.denoiser",
+      "projection_class_embeddings_input_dim",
+      "render-only added-conditioning block today",
+      "U11",
+      "fact_registered:unet_added_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the added-conditioning attention head count",
+      "root.denoiser",
+      "addition_embed_type_num_heads",
+      "the checkpoint declaration needs the exact U11 added-conditioning constructor before it can parameterize a drawn mechanism",
+      "U11",
+      "fact_registered:unet_added_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the denoiser input-centering operation",
+      "root.denoiser",
+      "center_input_sample",
+      "field presence cannot create the input arithmetic; U11 must bind the exact root-forward branch",
+      "U11",
+      "fact_registered:unet_input_centering"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the class-conditioning concatenation",
+      "root.denoiser",
+      "class_embeddings_concat",
+      "U11 must prove where the class embedding joins the state",
+      "U11",
+      "fact_registered:unet_class_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the input-convolution kernel",
+      "root.denoiser",
+      "conv_in_kernel",
+      "numeric declaration awaits the exact U11 input-convolution owner",
+      "U11",
+      "fact_registered:unet_input_projection"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the output-convolution kernel",
+      "root.denoiser",
+      "conv_out_kernel",
+      "numeric declaration awaits the exact U11 output-convolution owner",
+      "U11",
+      "fact_registered:unet_output_projection"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the downsampling padding",
+      "root.denoiser",
+      "downsample_padding",
+      "numeric declaration awaits the exact U11 downsampler occurrence",
+      "U11",
+      "fact_registered:unet_downsampling"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the dual-cross-attention selector",
+      "root.denoiser",
+      "dual_cross_attention",
+      "a boolean declaration cannot prove the constructed attention path",
+      "U11",
+      "fact_registered:unet_attention"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the mid-block residual scale",
+      "root.denoiser",
+      "mid_block_scale_factor",
+      "the scale must bind to the exact U11 mid-block residual expression",
+      "U11",
+      "fact_registered:unet_residual_topology"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the ResNet output residual scale",
+      "root.denoiser",
+      "resnet_out_scale_factor",
+      "the scale must bind to the exact U11 ResNet residual expression",
+      "U11",
+      "fact_registered:unet_residual_topology"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the time-activation skip branch",
+      "root.denoiser",
+      "resnet_skip_time_act",
+      "U11 must prove the exact ResNet timestep-conditioning dataflow",
+      "U11",
+      "fact_registered:unet_time_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the ResNet time scale/shift mechanism",
+      "root.denoiser",
+      "resnet_time_scale_shift",
+      "the enum cannot select modulation until U11 binds its source branch",
+      "U11",
+      "fact_registered:unet_time_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the timestep-condition projection width",
+      "root.denoiser",
+      "time_cond_proj_dim",
+      "numeric declaration awaits the exact U11 condition projector",
+      "U11",
+      "fact_registered:unet_time_conditioning"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the timestep-embedding activation",
+      "root.denoiser",
+      "time_embedding_act_fn",
+      "activation spelling awaits the exact U11 embedding operation",
+      "U11",
+      "fact_registered:unet_time_embedding"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the timestep-embedding mechanism",
+      "root.denoiser",
+      "time_embedding_type",
+      "the enum cannot create an embedding graph without U11 source proof",
+      "U11",
+      "fact_registered:unet_time_embedding"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the timestep post-activation",
+      "root.denoiser",
+      "timestep_post_act",
+      "activation spelling awaits the exact U11 post-embedding operation",
+      "U11",
+      "fact_registered:unet_time_embedding"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the conditioning card's max-text-tokens chip (CogVideoX spelling)",
+      "root.denoiser",
+      "max_text_seq_length",
+      "declared conditioning limit \u2014 the same mechanism as the max_sequence_length row; chip-only today",
+      "U15",
+      "classified:max_text_seq_length"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the DiT FFN inner-width derivation",
+      "root.denoiser",
+      "ffn_dim_multiplier",
+      "Lumina-family inner width = round(2/3*4h; multiple_of, ffn_dim_multiplier); chip-only today while the drawn width stays unknown until the derivation is registered",
+      "U15",
+      "classified:ffn_dim_multiplier"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the DiT FFN inner-width derivation (rounding quantum)",
+      "root.denoiser",
+      "multiple_of",
+      "pairs with ffn_dim_multiplier",
+      "U15",
+      "classified:multiple_of"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the cross-attention sublayer's own head geometry",
+      "root.denoiser",
+      "num_cross_attention_heads",
+      "Sana declares distinct cross heads; the drawn cross-attn sublayer reuses the SELF spec today (chip only)",
+      "U15",
+      "classified:num_cross_attention_heads"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the cross-attention sublayer's own head geometry (head width)",
+      "root.denoiser",
+      "cross_attention_head_dim",
+      "pairs with num_cross_attention_heads",
+      "U15",
+      "classified:cross_attention_head_dim"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the vision tower position table (raw spelling probe)",
+      "root.text_encoder.vision",
+      "rope_scaling",
+      "bare-theta towers signal rope without a table; the table spelling probe stays an inspection on them",
+      "U9",
+      "fact_registered:vision_position"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the vision tower depth (host-level spelling)",
+      "root.text_encoder.vision",
+      "num_hidden_layers",
+      "host-level depth read beside the vision_config chain",
+      "U9",
+      "fact_registered:vision_tower_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the cross-attention schedule derivation (text depth)",
+      "root.text_encoder.vision",
+      "text_config.num_hidden_layers",
+      "freq x text-depth authors the schedule only on cross-attn models; plain VL models keep an inspected read",
+      "U9",
+      "fact_registered:cross_attention_schedule"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the cross-attention schedule derivation (text depth)",
+      "root.vision",
+      "text_config.num_hidden_layers",
+      "freq x text-depth authors the schedule only on cross-attn models; plain VL models keep an inspected read",
+      "U9",
+      "fact_registered:cross_attention_schedule"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the patch-embedding input channels (losing rival spelling)",
+      "root.text_encoder.vision",
+      "vision_config.in_channels",
+      "the winning spelling is consumed; a config declaring the rival too leaves it as an input-stage inspection",
+      "U9",
+      "fact_registered:vision_patch_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "the patch-embedding input channels (losing rival spelling)",
+      "root.vision",
+      "vision_config.in_channels",
+      "the winning spelling is consumed; a config declaring the rival too leaves it as an input-stage inspection",
+      "U9",
+      "fact_registered:vision_patch_geometry"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "class-stamped decoderness boilerplate on the text sub-config",
+      "root",
+      "text_config.is_encoder_decoder",
+      "class-serialized copy the parse never reads (the root-level occurrence is the consumed decoderness read)",
+      "U9",
+      "classified:text_config.is_encoder_decoder"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  },
+  {
+    "args": [
+      "class-stamped decoderness boilerplate on the vision sub-config",
+      "root.vision",
+      "vision_config.is_encoder_decoder",
+      "class-serialized copy the parse never reads (the root-level occurrence is the consumed decoderness read)",
+      "U9",
+      "classified:vision_config.is_encoder_decoder"
+    ],
+    "factory": "_config",
+    "kwargs": {}
+  }
+]

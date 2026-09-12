@@ -9,20 +9,18 @@ model header.
 """
 from __future__ import annotations
 
+from ...ir import layer_signature
 from ...labels import (
-    activation_label,
-    attention_summary as _attention_summary,
-    ffn_summary as _ffn_summary,
+    ffn_short,
+    ffn_title,
     is_sliding,
     kind_long,
     kind_short,
     mask_chip,
     mask_short,
     mask_title,
-    router_facts as _router_facts,
 )
 from .metadata_modalities import _modality_badges, _multimodal_block_lookup
-from .utils import _fmt_int
 
 
 def _make_info(ir: dict) -> dict:
@@ -54,20 +52,12 @@ def _make_info(ir: dict) -> dict:
 
     period = _detect_period(sigs)
 
-    if groups:
-        dominant = max(groups, key=lambda group: len(group["indices"]))
-    else:
-        dominant = {
-            "sig": "",
-            "indices": [],
-            "runs": [],
-            "spec": {
-                "attention": {"kind": "mha", "num_heads": 0, "num_kv_heads": 0},
-                "ffn": {"kind": "dense", "activation": "silu", "intermediate_size": 0, "gated": True},
-            },
-        }
-
-    blocks = _block_lookup(ir, dominant["spec"])
+    dominant = (
+        max(groups, key=lambda group: len(group["indices"]))
+        if groups else None
+    )
+    spec = dominant["spec"] if dominant is not None else {}
+    blocks = _block_lookup(ir, spec)
     return {
         "groups": groups,
         "dominant": dominant,
@@ -75,7 +65,14 @@ def _make_info(ir: dict) -> dict:
         "n_layers": len(layers),
         "layer_sigs": sigs,
         "blocks": blocks,
-        "meta": _meta_for(ir, dominant["spec"], blocks),
+        # With no repeated layer there is no layer spec from which presentation
+        # may manufacture conventional cards.  Genuine model-level blocks keep
+        # their own authored title/description/facts.
+        "meta": (
+            _meta_for(ir, spec, blocks)
+            if dominant is not None
+            else _block_meta(blocks)
+        ),
     }
 
 
@@ -97,49 +94,15 @@ def _detect_period(sigs: list) -> int | None:
 
 
 def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
-    """Tooltip / detail-card text for one layer-type's spec.  Re-computed per
-    variant so a heterogeneous model (e.g. DeepSeek-V3 dense + MoE) gets
-    correct tooltips for whichever layer type is currently displayed."""
-    attention = spec.get("attention", {})
-    ffn = spec.get("ffn", {})
-    hidden = _fmt_int(ir.get("hidden_size"))
-    vocab = _fmt_int(ir.get("vocab_size"))
-    activation = activation_label(ffn.get("activation") or "silu")
-    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    tied = bool(ir.get("tie_word_embeddings"))
-    attn_desc, attn_facts = _attention_summary(attention)
-    ffn_desc, ffn_facts = _ffn_summary(ffn)
-    expert = ("One expert — a dense FFN; only the routed tokens pass through it.",
-              [f"{hidden} → {inter} → {hidden}", activation])
-    fallback = {
-        "tok_text": ("Tokenized text", "Input token IDs.", ["shape [batch, seq_len]"]),
-        "embed": ("Token embedding",
-                  "Maps each token id to its vector" + (" — weights tied with the output head." if tied else "."),
-                  [f"{vocab} vocab", f"{hidden}-d"]),
-        "rms1": ("Pre-attention norm", "RMSNorm keeps activation scales stable before attention.", [f"dim {hidden}"]),
-        "attn": ("Attention", attn_desc, attn_facts),
-        "add1": ("Residual add", "block input + attention output", []),
-        "rms2": ("Pre-FFN norm", "RMSNorm keeps activation scales stable before the FFN.", [f"dim {hidden}"]),
-        "ffn": ("Mixture of experts" if ffn.get("kind") == "moe" else "Feed-forward", ffn_desc, ffn_facts),
-        "add2": ("Residual add", "post-attention + FFN output", []),
-        "final_rms": ("Final norm", "RMSNorm over the last hidden state before the output head.", [f"dim {hidden}"]),
-        "lm_head": ("LM head",
-                    "Projects the final hidden state into vocabulary logits" + (" — weights tied with the embedding." if tied else "."),
-                    [f"{hidden} → {vocab}"]),
-        "router": ("Router", "Scores every expert per token and keeps the top-k.", _router_facts(ffn)),
-        "add_moe": ("Weighted sum", "Combines selected expert outputs, weighted by router probabilities.", []),
-        "expert_1": ("Expert", *expert),
-        "expert_k": ("Expert", *expert),
-        "expert_kp1": ("Expert", *expert),
-        "expert_n": ("Expert", *expert),
-        "down_proj": ("Down projection", "Linear back to the residual width.", [f"{inter} → {hidden}"]),
-        "mul": ("Gate product", "activation(gate) × up projection", []),
-        "silu": ("Activation", "Element-wise non-linearity.", [activation]),
-        "up_proj": ("Up projection", "Linear into the FFN's inner width.", [f"{hidden} → {inter}"]),
-        "gate_proj": ("Gate projection", "Linear producing the gate path.", [f"{hidden} → {inter}"]),
-    }
-    fallback.update(_block_meta(blocks if blocks is not None else _block_lookup(ir, spec)))
-    return fallback
+    """Project card metadata from canonical blocks only.
+
+    U4-E removes the former conventional dictionary for attention, FFN, norms,
+    residuals and model bookends.  A fact/spec value may format an existing
+    block, but it cannot create a card when no block was authored.
+    """
+    return _block_meta(
+        blocks if blocks is not None else _block_lookup(ir, spec)
+    )
 
 
 def _ensure_declared_op_cards(block: dict) -> None:
@@ -219,7 +182,7 @@ def _group_label(group: dict, info: dict | None = None) -> str:
     if attn.get("mask") and attn.get("mask") != "causal":
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
-    bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")
+    bits.append(ffn_short(ffn))
     if _has_cross_attention_adapter(group["spec"]) and not attn.get("cross_attention"):
         bits.append("Vision XAttn")
     return f"{' · '.join(bits)}  ({_indices_summary(group, info)})"
@@ -253,39 +216,9 @@ def _indices_summary(group: dict, info: dict | None) -> str:
     return f"{n} layers · L{indices[0]}–L{indices[-1]}"
 
 
-def _signature(layer: dict) -> str:
-    attention = layer.get("attention", {})
-    ffn = layer.get("ffn", {})
-    return "|".join(
-        str(value)
-        for value in (
-            attention.get("kind"),
-            attention.get("mask"),
-            attention.get("window_size"),
-            attention.get("qk_norm"),
-            attention.get("shared"),
-            attention.get("no_rope"),
-            attention.get("cross_attention"),
-            ffn.get("kind"),
-            ffn.get("num_experts"),
-            layer.get("norm_kind"),
-            layer.get("norm_placement"),
-            # Parallel topology is structural — it separates e.g. Flux
-            # double-stream (sequential) from single-stream (a parallel branch
-            # split: attn ∥ MLP → ‖). Both a side-LANE FFN and a BRANCH split
-            # count; external lanes (conditioning side-rails) aren't topology.
-            any((b.get("lane") and not str(b.get("lane")).startswith("external"))
-                or b.get("branch_side")
-                for b in layer.get("blocks", []) or []),
-            _has_cross_attention_adapter(layer),
-            # The attention VARIANT tag is itself a topology discriminator — it
-            # separates streams that share the same op-signature but differ in how
-            # text enters (AuraFlow: 4 dual-stream MM-DiT blocks vs 32 concat-joint
-            # "text + latent" blocks — both sequential gated, identical op-set, so
-            # only the variant tells them apart). No-op for single-variant models.
-            (attention.get("variant") or {}).get("tag"),
-        )
-    )
+def _signature(layer: dict) -> tuple:
+    """Project the IR's one canonical layer grouping contract."""
+    return layer_signature(layer)
 
 
 def _has_cross_attention_adapter(layer: dict) -> bool:
@@ -334,7 +267,10 @@ def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
             }
         )
     else:
-        badges.append({"text": "Dense FFN", "title": "Dense feed-forward"})
+        badges.append({
+            "text": ffn_short(ffn),
+            "title": ffn_title(ffn),
+        })
 
     if len(info["groups"]) > 1:
         badges.append({"text": f"{len(info['groups'])} layer types", "title": ""})

@@ -1,0 +1,72 @@
+{
+  "verdict": "PASS_BOUNDED_CSS_WRAP_AND_OUTLINE_BROWSER_COMPARISON",
+  "cases": {
+    "llama": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "sdxl": {
+      "before_scroll_width": 2267,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "bloom-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "bloom-sparse": {
+      "before_scroll_width": 1419,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "musicgen-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "musicgen-sparse": {
+      "before_scroll_width": 3161,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    }
+  },
+  "proposal_manifest_sha256": "4946bf76eeb07504ad944be1d5a9055a8fe09333d6cf9f068e4f95786b4e8b7c",
+  "runtime_manifest_sha256": "840cc6316f4d834b9850292831bd19467ad784cbe3eaac8d9186b71b4c93855a",
+  "before_runtime_manifest_sha256": "caa71a4996fa7192313bfe961ca9a73963014122375353ae5e9e480afb1e57cf",
+  "full_original_HTML_preserved_except_exact_recorded_CSS_insertions": true,
+  "four_long_token_style_boxes_fit750px_host": true,
+  "four_style_borders_colors_distinct": true,
+  "radius4px_avoids_multiline_capsule_intersection": true,
+  "screenshots_visually_inspected": [
+    "musicgen-sparse/card-viewport.png",
+    "four-style-probe.png"
+  ],
+  "limits": "Derived exact saved36 HTML plus only rendered proposed CSS, including SDXL embedded stylesheet. Full text/IDs/counts verified; zero JS errors and all6 card clicks/nestedSDXL pass. Actual37 regeneration and browser rerun pending. Long JSON remains verbose; no information redesign or output blessing.",
+  "runtime_limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection."
+}

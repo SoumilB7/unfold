@@ -1,0 +1,28 @@
+--- frozen28/tests/test_position_initialization.py
++++ candidate/tests/test_position_initialization.py
+@@ -463,14 +463,23 @@
+     config = json.loads(
+         (Path(__file__).parent / "sable_test_corpus" / "llama-7b.json")
+         .read_text())["config"]
+-    ir = config_to_ir(config)
++    from model_unfolder.evidence.context import ParseContext
++    from model_unfolder.presentation import ChipFactReference
++
++    context = ParseContext.build(config)
++    ir = config_to_ir(config, parse_context=context)
+     assert {layer.attention.rope_theta for layer in ir.layers} == {10000.0}
+     fact = ir.extras["fact_provenance"]["decoder.attention.rope_theta"]
+-    assert fact == {
++    assert set(fact) == {"value", "status", "source", "presentation_reference"}
++    assert {key: fact[key] for key in ("value", "status", "source")} == {
+         "value": 10000.0,
+         "status": "code_and_config",
+         "source": "position_frequency_initialization",
+     }
++
++    native = context.facts.typed_records()["decoder.attention.rope_theta"]
++    assert native.claim_kind == "value" and native.claim_evidence is not None
++    assert fact["presentation_reference"] == ChipFactReference.from_fact(native).to_dict()
+ 
+ 
+ def test_unresolved_source_cannot_project_a_declared_theta():

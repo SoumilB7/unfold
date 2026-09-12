@@ -1,0 +1,272 @@
+"""Inspect-card HTML for architecture block clicks."""
+from __future__ import annotations
+
+import re
+
+from .block_views import attention_card, block_detail_svg, sub_block_detail_svg
+from .utils import _attr, _fmt_int, _html, facts_html
+
+_VIEWBOX_RE = re.compile(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"')
+
+
+def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
+    """Cards-only HTML for the L2 inspect panel."""
+    dominant = info.get("dominant")
+    panels: list[str] = [_hint_card(
+        "default",
+        ("Click a block above to inspect it" if dominant else
+         "No repeated layer structure is available; inspect the proven model boundaries"),
+    )]
+
+    for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
+                    "position_ids", "position_embed", "position_add"):
+        block = info.get("blocks", {}).get(node_id)
+        if block is None:
+            continue
+        if not dominant and node_id != "tok_text" \
+                and block.get("resolved") is not True:
+            continue
+        panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
+
+    # With no materialized layer, the model-level entry/output boundary cards
+    # are still real and clickable.  Return them without inventing any layer
+    # cards; the adapter-authored opaque body is static by construction.
+    if not dominant:
+        for node_id in ("final_rms", "lm_head"):
+            block = info.get("blocks", {}).get(node_id)
+            if block is not None and (
+                    node_id == "lm_head" or block.get("resolved") is True):
+                panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
+        return "".join(panels)
+
+    spec = dominant["spec"]
+    layer_blocks = spec.get("blocks") or []
+
+    for node_id in ("vision_path", "video_path", "audio_path", "conditioning_path", "fusion"):
+        block = info.get("blocks", {}).get(node_id)
+        if not block:
+            continue
+        svg = block_detail_svg(ir, info, mount_id, block)
+        title, desc, facts = _meta(info, node_id)
+        if svg:
+            panels.append(_rich_card(node_id, title, desc, svg, facts, block=block))
+        else:
+            panels.append(_simple_card(node_id, title, desc, facts, block=block))
+
+    for block in layer_blocks:
+        kind = block.get("kind")
+        node_id = block["id"]
+        # Tier-2 connectors (static) are glyphs on the topology, not clickable
+        # blocks — they get no inspect card (mirrors their non-clickable render).
+        if block.get("static"):
+            continue
+        if kind == "attention":
+            svg = block_detail_svg(ir, info, mount_id, block)
+            if svg:
+                title, desc, facts = _meta(info, node_id)
+                panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir), block=block))
+            else:
+                panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
+            continue
+
+        svg = block_detail_svg(ir, info, mount_id, block)
+        if svg:
+            title, desc, facts = _meta(info, node_id)
+            panels.append(_rich_card(node_id, title, desc, svg, facts + _io_dim_fact(ir), block=block))
+        else:
+            panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
+
+    for node_id in ("final_rms", "lm_head"):
+        if node_id in info.get("blocks", {}):
+            panels.append(_simple_card(node_id, *_meta(info, node_id), block=info.get("blocks", {}).get(node_id)))
+
+    entry_block = info.get("blocks", {}).get("entry_stage")
+    if entry_block:
+        svg = block_detail_svg(ir, info, mount_id, entry_block)
+        title, desc, facts = _meta(info, "entry_stage")
+        if svg:
+            panels.append(_rich_card("entry_stage", title, desc, svg, facts, block=entry_block))
+        else:
+            panels.append(_simple_card("entry_stage", title, desc, facts, block=entry_block))
+
+    mtp_block = info.get("blocks", {}).get("mtp")
+    if mtp_block:
+        svg = block_detail_svg(ir, info, mount_id, mtp_block)
+        title, desc, facts = _meta(info, "mtp")
+        if svg:
+            panels.append(_rich_card("mtp", title, desc, svg, facts, block=mtp_block))
+        else:
+            panels.append(_simple_card("mtp", title, desc, facts, block=mtp_block))
+
+    return "".join(panels)
+
+
+def _build_nested_inspect_panels(ir: dict, info: dict, mount_id: str) -> list[str]:
+    """Cards-only HTML for recursive nested inspect panels."""
+    levels = _nested_child_levels(info)
+    return [_nested_panel(ir, info, mount_id, children) for children in levels if children]
+
+
+def _meta(info: dict, node_id: str) -> tuple[str, str, list[str]]:
+    """Card meta normalized to (title, desc, facts) — older 2-tuples get []"""
+    entry = info.get("meta", {}).get(node_id, (node_id, ""))
+    if len(entry) >= 3:
+        return entry[0], entry[1], list(entry[2] or [])
+    return entry[0], entry[1], []
+
+
+def _io_dim_fact(ir: dict) -> list[str]:
+    hidden = _fmt_int(ir.get("hidden_size"))
+    return [f"in/out {hidden}"] if hidden else []
+
+
+def _card_facts_html(node_id: str, facts, block: dict | None) -> str:
+    """Receipt only the exact declared lines emitted on this card."""
+    rendered = facts_html(facts)
+    if block is None or block.get("id") != node_id:
+        return rendered
+    from .render_context import current_render_context
+
+    context = current_render_context()
+    lines_by_fact = (block.get("detail") or {}).get("fact_display_lines")
+    if context is None or not isinstance(lines_by_fact, dict):
+        return rendered
+    cited = set(block.get("source_fact_keys") or ())
+    displayed = frozenset(
+        key for key, lines in lines_by_fact.items()
+        if isinstance(key, str) and key in cited
+        and isinstance(lines, (list, tuple)) and lines
+        and all(isinstance(line, str) and line.strip()
+                and f'<span class="uf-fact">{_html(line)}</span>' in rendered
+                for line in lines)
+    )
+    if displayed:
+        with context.block(block):
+            context.note_facts_projected("card_fact_lines", displayed, node_ids=(node_id,))
+    return rendered
+
+
+def _simple_card(node_id: str, title: str, desc: str, facts: list[str] | None = None,
+                 *, block: dict | None = None) -> str:
+    return (
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}" data-card-size="compact">'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f"{_card_facts_html(node_id, facts, block)}"
+        "</div>"
+    )
+
+
+def _hint_card(node_id: str, hint: str) -> str:
+    return (
+        f'<div class="uf-card-detail uf-card-hint uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}" data-card-size="hint">'
+        f"{_html(hint)}"
+        "</div>"
+    )
+
+
+def _nested_panel(ir: dict, info: dict, mount_id: str, children: list[dict]) -> str:
+    panels: list[str] = [_nested_card("default", "", "")]
+    for child in _unique_children(children):
+        child_id = child.get("id")
+        if not child_id or child.get("static"):
+            continue
+        svg = sub_block_detail_svg(ir, info, mount_id, child)
+        title = child.get("title") or child.get("label") or child_id
+        panels.append(_nested_card(child_id, title, child.get("description", ""), svg,
+                                   child.get("facts"), block=child))
+    return "".join(panels)
+
+
+def _nested_card(node_id: str, title: str, desc: str, svg: str | None = None,
+                 facts: list[str] | None = None, *, block: dict | None = None) -> str:
+    svg_html = f'<div class="uf-card-svg">{svg}</div>' if svg else ""
+    size_attrs = _size_attrs(svg)
+    return (
+        f'<div class="uf-card-detail" data-card-id="{_attr(node_id)}"{size_attrs}>'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f"{_card_facts_html(node_id, facts, block)}"
+        f"{svg_html}"
+        "</div>"
+    )
+
+
+def _rich_card(node_id: str, title: str, desc: str, svg: str,
+               facts: list[str] | None = None, *, block: dict | None = None) -> str:
+    size_attrs = _size_attrs(svg)
+    return (
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}"{size_attrs}>'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f"{_card_facts_html(node_id, facts, block)}"
+        f'<div class="uf-card-svg">{svg}</div>'
+        "</div>"
+    )
+
+
+def _size_attrs(svg: str | None) -> str:
+    size, width, height = _card_size(svg)
+    attrs = f' data-card-size="{_attr(size)}"'
+    if width is not None and height is not None:
+        attrs += f' data-svg-width="{_attr(width)}" data-svg-height="{_attr(height)}"'
+    return attrs
+
+
+def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
+    if not svg:
+        return "compact", None, None
+    match = _VIEWBOX_RE.search(svg)
+    if not match:
+        return "diagram", None, None
+    width = int(float(match.group(1)))
+    height = int(float(match.group(2)))
+    if height >= 640:
+        return "diagram-tall", width, height
+    if height >= 540:
+        return "diagram", width, height
+    return "diagram-compact", width, height
+
+
+def _sub_inspect_children(info: dict) -> list[dict]:
+    children: list[dict] = []
+    for block in info.get("blocks", {}).values():
+        # The enumerated MODEL-LEVEL drill hosts: modality paths, MTP, and the
+        # entry-stage refiner slot.  (A blanket view-and-children rule pulled
+        # pipeline blocks' children into an extra nested depth.)
+        if (block.get("role") in {"modality_input", "fusion", "mtp"}
+                or block.get("id") == "entry_stage"):
+            children.extend(block.get("children") or [])
+    dominant = info.get("dominant")
+    if dominant:
+        for block in (dominant["spec"].get("blocks") or []):
+            children.extend(block.get("children") or [])
+    return children
+
+
+def _nested_child_levels(info: dict) -> list[list[dict]]:
+    levels: list[list[dict]] = []
+    current = _sub_inspect_children(info)
+    while current:
+        current = _unique_children(current)
+        levels.append(current)
+        next_level: list[dict] = []
+        for child in current:
+            next_level.extend(child.get("children") or [])
+        current = next_level
+    return levels
+
+
+def _unique_children(children: list[dict]) -> list[dict]:
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for child in children:
+        child_id = child.get("id")
+        if not child_id or child_id in seen:
+            continue
+        seen.add(child_id)
+        unique.append(child)
+    return unique

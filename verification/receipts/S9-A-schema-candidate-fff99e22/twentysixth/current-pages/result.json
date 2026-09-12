@@ -1,0 +1,13 @@
+{
+  "name": "actual-pages-declarations",
+  "returncode": 0,
+  "duration": 136.97843658300008,
+  "before": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+  "after": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-twentysixth/current-pages/actual-pages-declarations.log",
+  "script_before": "6a4d6aa243a0c83a4406e749804c2fe93d0fedeb6013cd5d9295c3d56d40ce2a",
+  "script_after": "6a4d6aa243a0c83a4406e749804c2fe93d0fedeb6013cd5d9295c3d56d40ce2a",
+  "passed": true
+}

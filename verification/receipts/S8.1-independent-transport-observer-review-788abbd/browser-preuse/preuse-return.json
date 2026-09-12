@@ -1,0 +1,10 @@
+{
+  "decision": "RETURN_PRE_USE",
+  "script_sha256": "f752862344cca3c27d613a037bcb7609cea696a8b21d32365c448b4ad9a54657",
+  "findings": [
+    "Clicktarget identity alone doesnotprove expectedcardbecamevisible",
+    "Assertinputbeforeafter equality; reconcileJSexceptions beforeok",
+    "Ensureownedprocessgroupcleanup evenif browsermainalreadyexited andsocketclosefails"
+  ],
+  "reviewer_launched_browser": false
+}

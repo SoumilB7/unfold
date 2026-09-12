@@ -1,0 +1,18 @@
+--- before/tests/test_submodel_parity.py
++++ held/tests/test_submodel_parity.py
+@@ -148,6 +148,7 @@
+     assert not context.prepared_documents
+     limited = parse_transformer(cfg, context=context)
+     # A hydrated candidate on the context is not an active default premise.
++    assert len(limited.layers) == 24
+     assert all(layer.attention.head_dim is None for layer in limited.layers)
+     assert not context.prepared_documents
+     assert current_prepared_document.get() is None
+@@ -157,6 +158,7 @@
+     prepared = actual_context.prepared_documents["root"].prepared
+     assert operand not in prepared.checkpoint
+     assert prepared.class_overlay[operand] == expected
++    assert len(standalone.layers) == 24
+     assert all(layer.attention.head_dim == expected for layer in standalone.layers)
+     if name == "llama_gqa_rope":
+         assert "attention_bias" not in cfg

@@ -1,0 +1,128 @@
+[
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      3,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      6,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      6,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      6,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "3e4c446996ef4c0a96ac342ef9a0c9c2",
+    "after_present": true,
+    "after_type": "str",
+    "before": "fdded7827a7a4f079f4ba2b94d8adcee",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      7,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

@@ -1,0 +1,1449 @@
+{
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "reference_capture": "/private/tmp/unfold-s9a-thirtyfourth/current-pages/capture",
+  "plan_sha256": "bf464518d923cb5d2e648bf965a4ce0c0b80229a832a53a58f24ea700d7d02ff",
+  "capture_result_sha256": "8493808cc06bb50d4d4b3fad5a4e223e0ddf0ba9e8743c456172c317d582b967",
+  "models": [
+    {
+      "slug": "auraflow-v0-3",
+      "native": {
+        "facts": 9,
+        "status": {
+          "code_proven": 7,
+          "code_and_config": 2
+        },
+        "claim_kind": {
+          "connection": 7,
+          "value": 2
+        },
+        "qualified": 9,
+        "qualified_kinds": {
+          "connection": 7,
+          "value": 2
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 879,
+      "unknown_envelopes": 74,
+      "metadata_findings": 0,
+      "html_bytes": 165273,
+      "element_count": 1084,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "bloom",
+      "native": {
+        "facts": 24,
+        "status": {
+          "code_proven": 13,
+          "code_and_config": 8,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 7,
+          "value": 3
+        },
+        "qualified": 22,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 5,
+          "value": 3
+        },
+        "without_proof": 2
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 140,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 63372,
+      "element_count": 488,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "cogvideox-5b",
+      "native": {
+        "facts": 7,
+        "status": {
+          "code_proven": 4,
+          "code_and_config": 3
+        },
+        "claim_kind": {
+          "connection": 5,
+          "value": 2
+        },
+        "qualified": 7,
+        "qualified_kinds": {
+          "connection": 5,
+          "value": 2
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1324,
+      "unknown_envelopes": 86,
+      "metadata_findings": 0,
+      "html_bytes": 191828,
+      "element_count": 1179,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "dbrx-base",
+      "native": {
+        "facts": 26,
+        "status": {
+          "code_proven": 11,
+          "code_and_config": 9,
+          "ambiguous": 3,
+          "class_default": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 5,
+          "relation": 8,
+          "applied_function": 9,
+          "value": 3
+        },
+        "qualified": 20,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 5,
+          "relation": 7,
+          "applied_function": 4,
+          "value": 3
+        },
+        "without_proof": 6
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 480,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 89743,
+      "element_count": 614,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "deepseek-v3",
+      "native": {
+        "facts": 28,
+        "status": {
+          "code_and_config": 15,
+          "code_proven": 9,
+          "ambiguous": 2,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "relation": 9,
+          "applied_function": 8,
+          "connection": 5,
+          "value": 5
+        },
+        "qualified": 21,
+        "qualified_kinds": {
+          "existence": 1,
+          "relation": 7,
+          "applied_function": 4,
+          "connection": 5,
+          "value": 4
+        },
+        "without_proof": 7
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 244,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 146263,
+      "element_count": 1257,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "flux-2-dev",
+      "native": {
+        "facts": 10,
+        "status": {
+          "code_and_config": 3,
+          "code_proven": 7
+        },
+        "claim_kind": {
+          "value": 3,
+          "connection": 5,
+          "applied_function": 2
+        },
+        "qualified": 10,
+        "qualified_kinds": {
+          "value": 3,
+          "connection": 5,
+          "applied_function": 2
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1684,
+      "unknown_envelopes": 113,
+      "metadata_findings": 0,
+      "html_bytes": 218135,
+      "element_count": 1284,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "native": {
+        "facts": 9,
+        "status": {
+          "code_and_config": 3,
+          "code_proven": 6
+        },
+        "claim_kind": {
+          "value": 3,
+          "connection": 5,
+          "applied_function": 1
+        },
+        "qualified": 9,
+        "qualified_kinds": {
+          "value": 3,
+          "connection": 5,
+          "applied_function": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1474,
+      "unknown_envelopes": 115,
+      "metadata_findings": 0,
+      "html_bytes": 240162,
+      "element_count": 1545,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "native": {
+        "facts": 26,
+        "status": {
+          "code_and_config": 14,
+          "code_proven": 9,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 23,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 52,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 108210,
+      "element_count": 902,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "glm-4-5",
+      "native": {
+        "facts": 31,
+        "status": {
+          "code_and_config": 17,
+          "code_proven": 11,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 10,
+          "applied_function": 9,
+          "value": 5
+        },
+        "qualified": 25,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 9,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 6
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 0,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 128712,
+      "element_count": 1117,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "native": {
+        "facts": 27,
+        "status": {
+          "code_and_config": 12,
+          "code_proven": 11,
+          "ambiguous": 2,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 23,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 4
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 264,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 139275,
+      "element_count": 1127,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "native": {
+        "facts": 26,
+        "status": {
+          "code_and_config": 14,
+          "code_proven": 9,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 23,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 80,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 67122,
+      "element_count": 512,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "hunyuanvideo",
+      "native": {
+        "facts": 20,
+        "status": {
+          "code_proven": 9,
+          "code_and_config": 9,
+          "class_default": 2
+        },
+        "claim_kind": {
+          "connection": 12,
+          "value": 6,
+          "applied_function": 2
+        },
+        "qualified": 20,
+        "qualified_kinds": {
+          "connection": 12,
+          "value": 6,
+          "applied_function": 2
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1530,
+      "unknown_envelopes": 121,
+      "metadata_findings": 0,
+      "html_bytes": 241036,
+      "element_count": 1538,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "llama-7b",
+      "native": {
+        "facts": 25,
+        "status": {
+          "code_and_config": 12,
+          "code_proven": 10,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 7,
+          "value": 4
+        },
+        "qualified": 22,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 4,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 64,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 60032,
+      "element_count": 465,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "ltx-video",
+      "native": {
+        "facts": 7,
+        "status": {
+          "code_and_config": 2,
+          "code_proven": 5
+        },
+        "claim_kind": {
+          "value": 2,
+          "connection": 5
+        },
+        "qualified": 7,
+        "qualified_kinds": {
+          "value": 2,
+          "connection": 5
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1450,
+      "unknown_envelopes": 85,
+      "metadata_findings": 0,
+      "html_bytes": 175517,
+      "element_count": 991,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "native": {
+        "facts": 9,
+        "status": {
+          "code_and_config": 4,
+          "code_proven": 5
+        },
+        "claim_kind": {
+          "value": 4,
+          "connection": 5
+        },
+        "qualified": 9,
+        "qualified_kinds": {
+          "value": 4,
+          "connection": 5
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 934,
+      "unknown_envelopes": 62,
+      "metadata_findings": 0,
+      "html_bytes": 204280,
+      "element_count": 1409,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "mochi-1-preview",
+      "native": {
+        "facts": 3,
+        "status": {
+          "code_proven": 2,
+          "code_and_config": 1
+        },
+        "claim_kind": {
+          "connection": 2,
+          "value": 1
+        },
+        "qualified": 3,
+        "qualified_kinds": {
+          "connection": 2,
+          "value": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 838,
+      "unknown_envelopes": 49,
+      "metadata_findings": 0,
+      "html_bytes": 130639,
+      "element_count": 876,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "musicgen-small",
+      "native": {
+        "facts": 21,
+        "status": {
+          "ambiguous": 6,
+          "code_and_config": 7,
+          "code_proven": 6,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "relation": 6,
+          "applied_function": 6,
+          "connection": 5,
+          "value": 3
+        },
+        "qualified": 13,
+        "qualified_kinds": {
+          "relation": 6,
+          "connection": 3,
+          "value": 3,
+          "applied_function": 1
+        },
+        "without_proof": 8
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 817,
+      "unknown_envelopes": 73,
+      "metadata_findings": 0,
+      "html_bytes": 108794,
+      "element_count": 618,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "native": {
+        "facts": 27,
+        "status": {
+          "code_and_config": 13,
+          "code_proven": 11,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 24,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 0,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 59318,
+      "element_count": 470,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "native": {
+        "facts": 0,
+        "status": {},
+        "claim_kind": {},
+        "qualified": 0,
+        "qualified_kinds": {},
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 22,
+      "unknown_envelopes": 3,
+      "metadata_findings": 0,
+      "html_bytes": 125034,
+      "element_count": 1026,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "native": {
+        "facts": 7,
+        "status": {
+          "code_and_config": 2,
+          "code_proven": 5
+        },
+        "claim_kind": {
+          "value": 2,
+          "connection": 4,
+          "applied_function": 1
+        },
+        "qualified": 7,
+        "qualified_kinds": {
+          "value": 2,
+          "connection": 4,
+          "applied_function": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 724,
+      "unknown_envelopes": 49,
+      "metadata_findings": 0,
+      "html_bytes": 119832,
+      "element_count": 749,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen-image",
+      "native": {
+        "facts": 7,
+        "status": {
+          "code_and_config": 4,
+          "code_proven": 3
+        },
+        "claim_kind": {
+          "value": 3,
+          "connection": 3,
+          "applied_function": 1
+        },
+        "qualified": 7,
+        "qualified_kinds": {
+          "value": 3,
+          "connection": 3,
+          "applied_function": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1810,
+      "unknown_envelopes": 121,
+      "metadata_findings": 0,
+      "html_bytes": 190030,
+      "element_count": 963,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "native": {
+        "facts": 22,
+        "status": {
+          "code_proven": 9,
+          "code_and_config": 9,
+          "ambiguous": 2,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "relation": 5,
+          "applied_function": 6,
+          "connection": 5,
+          "value": 5
+        },
+        "qualified": 16,
+        "qualified_kinds": {
+          "existence": 1,
+          "relation": 5,
+          "applied_function": 2,
+          "connection": 5,
+          "value": 3
+        },
+        "without_proof": 6
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 284,
+      "unknown_envelopes": 1,
+      "metadata_findings": 0,
+      "html_bytes": 119309,
+      "element_count": 937,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "native": {
+        "facts": 25,
+        "status": {
+          "code_and_config": 11,
+          "code_proven": 10,
+          "ambiguous": 2,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 8,
+          "value": 3
+        },
+        "qualified": 20,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 6,
+          "applied_function": 4,
+          "value": 3
+        },
+        "without_proof": 5
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 480,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 115246,
+      "element_count": 851,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen3-8b",
+      "native": {
+        "facts": 27,
+        "status": {
+          "code_and_config": 13,
+          "code_proven": 11,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 24,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 0,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 63225,
+      "element_count": 490,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "native": {
+        "facts": 7,
+        "status": {
+          "code_proven": 6,
+          "code_and_config": 1
+        },
+        "claim_kind": {
+          "connection": 5,
+          "applied_function": 1,
+          "value": 1
+        },
+        "qualified": 7,
+        "qualified_kinds": {
+          "connection": 5,
+          "applied_function": 1,
+          "value": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1004,
+      "unknown_envelopes": 62,
+      "metadata_findings": 0,
+      "html_bytes": 183876,
+      "element_count": 1195,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "native": {
+        "facts": 1,
+        "status": {
+          "code_proven": 1
+        },
+        "claim_kind": {
+          "connection": 1
+        },
+        "qualified": 1,
+        "qualified_kinds": {
+          "connection": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 54,
+      "unknown_envelopes": 3,
+      "metadata_findings": 0,
+      "html_bytes": 163771,
+      "element_count": 1373,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "native": {
+        "facts": 12,
+        "status": {
+          "code_proven": 11,
+          "class_default": 1
+        },
+        "claim_kind": {
+          "applied_function": 4,
+          "connection": 4,
+          "existence": 1,
+          "value": 2,
+          "relation": 1
+        },
+        "qualified": 12,
+        "qualified_kinds": {
+          "applied_function": 4,
+          "connection": 4,
+          "existence": 1,
+          "value": 2,
+          "relation": 1
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 26,
+      "unknown_envelopes": 6862,
+      "metadata_findings": 0,
+      "html_bytes": 4458597,
+      "element_count": 261,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "native": {
+        "facts": 27,
+        "status": {
+          "code_and_config": 15,
+          "code_proven": 9,
+          "ambiguous": 1,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 8,
+          "value": 4
+        },
+        "qualified": 24,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 8,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 3
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 0,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 58561,
+      "element_count": 451,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "native": {
+        "facts": 4,
+        "status": {
+          "code_and_config": 2,
+          "code_proven": 2
+        },
+        "claim_kind": {
+          "value": 2,
+          "connection": 2
+        },
+        "qualified": 4,
+        "qualified_kinds": {
+          "value": 2,
+          "connection": 2
+        },
+        "without_proof": 0
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 699,
+      "unknown_envelopes": 41,
+      "metadata_findings": 0,
+      "html_bytes": 119750,
+      "element_count": 787,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "command-a-03-2025",
+      "native": {
+        "facts": 21,
+        "status": {
+          "code_and_config": 9,
+          "code_proven": 10,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "relation": 6,
+          "applied_function": 6,
+          "connection": 5,
+          "value": 3
+        },
+        "qualified": 19,
+        "qualified_kinds": {
+          "existence": 1,
+          "relation": 6,
+          "applied_function": 4,
+          "connection": 5,
+          "value": 3
+        },
+        "without_proof": 2
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 512,
+      "unknown_envelopes": 0,
+      "metadata_findings": 0,
+      "html_bytes": 106671,
+      "element_count": 760,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "native": {
+        "facts": 22,
+        "status": {
+          "ambiguous": 4,
+          "code_and_config": 8,
+          "code_proven": 8,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "applied_function": 7,
+          "relation": 7,
+          "connection": 4,
+          "value": 3
+        },
+        "qualified": 14,
+        "qualified_kinds": {
+          "applied_function": 3,
+          "relation": 5,
+          "value": 3,
+          "connection": 3
+        },
+        "without_proof": 8
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 432,
+      "unknown_envelopes": 27,
+      "metadata_findings": 0,
+      "html_bytes": 95710,
+      "element_count": 672,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "native": {
+        "facts": 15,
+        "status": {
+          "ambiguous": 9,
+          "code_and_config": 1,
+          "code_proven": 3,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "applied_function": 6,
+          "connection": 4,
+          "relation": 2,
+          "value": 2
+        },
+        "qualified": 5,
+        "qualified_kinds": {
+          "relation": 1,
+          "connection": 1,
+          "applied_function": 1,
+          "value": 2
+        },
+        "without_proof": 10
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1204,
+      "unknown_envelopes": 87,
+      "metadata_findings": 0,
+      "html_bytes": 89370,
+      "element_count": 326,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "native": {
+        "facts": 21,
+        "status": {
+          "ambiguous": 8,
+          "code_and_config": 7,
+          "code_proven": 4,
+          "config_declared": 1,
+          "class_default": 1
+        },
+        "claim_kind": {
+          "existence": 1,
+          "relation": 6,
+          "applied_function": 6,
+          "connection": 4,
+          "value": 4
+        },
+        "qualified": 8,
+        "qualified_kinds": {
+          "relation": 5,
+          "connection": 1,
+          "applied_function": 1,
+          "value": 1
+        },
+        "without_proof": 13
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 608,
+      "unknown_envelopes": 61,
+      "metadata_findings": 0,
+      "html_bytes": 203040,
+      "element_count": 1470,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "jamba-v0-1",
+      "native": {
+        "facts": 13,
+        "status": {
+          "ambiguous": 11,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "applied_function": 6,
+          "connection": 3,
+          "relation": 1,
+          "value": 2
+        },
+        "qualified": 2,
+        "qualified_kinds": {
+          "value": 2
+        },
+        "without_proof": 11
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 992,
+      "unknown_envelopes": 65,
+      "metadata_findings": 0,
+      "html_bytes": 74438,
+      "element_count": 289,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "native": {
+        "facts": 24,
+        "status": {
+          "code_proven": 10,
+          "code_and_config": 9,
+          "ambiguous": 3,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 6,
+          "applied_function": 7,
+          "value": 4
+        },
+        "qualified": 20,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 4,
+          "relation": 6,
+          "applied_function": 5,
+          "value": 4
+        },
+        "without_proof": 4
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 64,
+      "unknown_envelopes": 16,
+      "metadata_findings": 0,
+      "html_bytes": 65251,
+      "element_count": 480,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "native": {
+        "facts": 13,
+        "status": {
+          "ambiguous": 9,
+          "code_proven": 2,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "applied_function": 6,
+          "connection": 3,
+          "relation": 1,
+          "value": 2
+        },
+        "qualified": 4,
+        "qualified_kinds": {
+          "applied_function": 2,
+          "value": 2
+        },
+        "without_proof": 9
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1560,
+      "unknown_envelopes": 104,
+      "metadata_findings": 0,
+      "html_bytes": 99990,
+      "element_count": 333,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "native": {
+        "facts": 25,
+        "status": {
+          "code_and_config": 11,
+          "code_proven": 9,
+          "ambiguous": 3,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 7,
+          "applied_function": 8,
+          "value": 3
+        },
+        "qualified": 19,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 6,
+          "relation": 6,
+          "applied_function": 3,
+          "value": 3
+        },
+        "without_proof": 6
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 484,
+      "unknown_envelopes": 1,
+      "metadata_findings": 0,
+      "html_bytes": 202076,
+      "element_count": 1629,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "native": {
+        "facts": 13,
+        "status": {
+          "ambiguous": 11,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "applied_function": 6,
+          "connection": 3,
+          "relation": 1,
+          "value": 2
+        },
+        "qualified": 2,
+        "qualified_kinds": {
+          "value": 2
+        },
+        "without_proof": 11
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1501,
+      "unknown_envelopes": 97,
+      "metadata_findings": 0,
+      "html_bytes": 142583,
+      "element_count": 684,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "native": {
+        "facts": 24,
+        "status": {
+          "code_and_config": 9,
+          "code_proven": 7,
+          "ambiguous": 6,
+          "config_declared": 2
+        },
+        "claim_kind": {
+          "existence": 1,
+          "connection": 5,
+          "relation": 8,
+          "applied_function": 7,
+          "value": 3
+        },
+        "qualified": 17,
+        "qualified_kinds": {
+          "existence": 1,
+          "connection": 3,
+          "relation": 7,
+          "applied_function": 3,
+          "value": 3
+        },
+        "without_proof": 7
+      },
+      "native_delta_keys": 0,
+      "unknown_scalar_addresses": 1508,
+      "unknown_envelopes": 95,
+      "metadata_findings": 0,
+      "html_bytes": 176532,
+      "element_count": 989,
+      "missing_rendered_paths": 0,
+      "unexpected_rendered_paths": 0,
+      "four_styles_distinct": true,
+      "class3_records": 0,
+      "capture_census_findings": 0,
+      "actual_unresolved_softcap": false
+    }
+  ],
+  "scope": "Saved JSON/HTML only; portable proofs are display summaries, not reconstructed live authority. No normalization or blessing. Scalar banner receipts never prove occurrence placement; actual36 matrix join remains required.",
+  "totals": {
+    "native_delta_keys": 0,
+    "unknown_scalar_addresses": 26222,
+    "unknown_envelopes": 8473,
+    "metadata_findings": 0,
+    "html_bytes": 9510603,
+    "element_count": 34191,
+    "missing_rendered_paths": 0,
+    "unexpected_rendered_paths": 0,
+    "class3_records": 0,
+    "capture_census_findings": 0
+  }
+}

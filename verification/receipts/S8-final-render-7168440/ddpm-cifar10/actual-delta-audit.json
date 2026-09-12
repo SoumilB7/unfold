@@ -1,0 +1,23 @@
+{
+  "activation_card_changes": [],
+  "actual_html_only_declared_card_titles_and_component_header": true,
+  "added_exact_receipt_events": 5,
+  "after_event_count": 794,
+  "before_event_count": 789,
+  "case": "ddpm-cifar10",
+  "component_header_change": {
+    "input_ids": [
+      "unet_root_input_0",
+      "unet_root_input_1",
+      "unet_root_input_2",
+      "unet_root_input_3"
+    ],
+    "root_id": "denoiser",
+    "subtitle": "Declared denoiser interface \u00b7 click to open its architecture",
+    "title": "DENOISER COMPONENT"
+  },
+  "new_html_sha256": "c333ad65c974debb9a1153d64227db64f721d55fab587fb7a8afe89e1a269b99",
+  "old_html_sha256": "534f8a861f4f5640e74481d845184079649543db3a1c1613871db594028ca909",
+  "prior_events_retained": true,
+  "svg_bytes_unchanged": true
+}

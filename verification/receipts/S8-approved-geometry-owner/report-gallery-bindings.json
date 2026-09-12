@@ -1,0 +1,898 @@
+{
+  "status": "Owner independently verified all18report semantic fields, retainedsource pins, completeimage bytes/manifest and unchangedprovenfact lists; pixelreviews separate",
+  "input_manifest_sha256": "4d827363a5b06b83ef03057b236a3a13e64d233c525d39954bf5258653d4ebf5",
+  "witnesses": [
+    {
+      "slug": "bloom",
+      "model": "bloom",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/bloom/report.json",
+      "report_sha256": "0c48ee20247222cafb581a2c4a2a5985dd7dfd7d8a1cf39c615a5be457a9d71c",
+      "original_report_sha256": "b8294a5509b155c91c95ad4996c7405c6ebff7c7b4f9fee41ef015edb4805d78",
+      "html_sha256": "a462772409d59537e326d4abe198a3d1fbceaaf106b9ec62fa0555dde7527101",
+      "image_bindings_sha256": "9d53d9bfcdfc2744f822c004d66323acccd9ddf7879ab3009d00824a0088e30c",
+      "manifest_sha256": "32cea6f5c598d376533d4ab68e90d8a61b5c3baaf76898e31ac8fed1739c1943",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "5448b42b14f8bdfa7b1a94772980d791"
+        },
+        {
+          "label": "architecture",
+          "hash": "f10a4ff3b20dfd43c8b41e303c5535ca"
+        },
+        {
+          "label": "attn",
+          "hash": "e2e095e621ec7be281944b7039d42b70"
+        },
+        {
+          "label": "ffn",
+          "hash": "9690073a99b038727d8ddfc9d75359d6"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual736-report-plus-approved-final-render",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "dbrx-base",
+      "model": "dbrx-base",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/dbrx-base/report.json",
+      "report_sha256": "9a193f96881261ec000a1bbe7ac2fc9553fb8bba7e7ec5ffc4284d7b3d848445",
+      "original_report_sha256": "7d8773b0d2c7b2d3c56fe615ada44e503454a9f721194ea06852b756005b3f7a",
+      "html_sha256": "28dd1bf17d1ae687ca2a5f3ee26679aad52e5aef9248570c99863baefc378aa7",
+      "image_bindings_sha256": "7c38774a90b0f3377f61cf4e76889d7e98dca7f52fb4f58f8e25163341622824",
+      "manifest_sha256": "14b26ae6defba667e120492c2ae8b7aa75709bdcbd2886409d6b205d65604c72",
+      "image_count": 6,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "9bdbcf5d2def935a5841d12f719e4acd"
+        },
+        {
+          "label": "architecture",
+          "hash": "ff13ffe154dd7f96056aadbbcdf40c13"
+        },
+        {
+          "label": "attn",
+          "hash": "bc9d0edec6f3689d7d3fe8e1a514eaf5"
+        },
+        {
+          "label": "expert_1",
+          "hash": "7c73b6aeef876249dabbc347060d78fb"
+        },
+        {
+          "label": "ffn",
+          "hash": "2c3e3357139af0916fcf15e9b15d8bb2"
+        },
+        {
+          "label": "router",
+          "hash": "457c6853dedb78425e5c85c2cc171b63"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "deepseek-v3",
+      "model": "DeepSeek-V3",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/deepseek-v3/report.json",
+      "report_sha256": "9b13de015f83a4d1aa1a1b856dbc815bf1c9cd2fc0e2af38c0a5530d80f8cf75",
+      "original_report_sha256": "1d649ba38304fa4e88f4548b267f3623704da38494aa45dfc3e593954c5b0106",
+      "html_sha256": "ad37a8d88357fd300cfcc3c954b82b530c3d26710a625a89558c3d1f2e35f377",
+      "image_bindings_sha256": "5de659fa775d7395e0533db9a0a4523c71fcee7cc30a2538b1be0c8a2268d849",
+      "manifest_sha256": "6eb4dbe4d2da270877f208c3c8e88c4feb7afbbde7e0cdd25af7d68c680c7fff",
+      "image_count": 11,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "416d725caccdd424f1705abacf2d35ee"
+        },
+        {
+          "label": "architecture",
+          "hash": "ca026191feecce8406387cba4e5995c9"
+        },
+        {
+          "label": "architecture_v1",
+          "hash": "2d40684da4d9cf65c1e52ec90ef37e4d"
+        },
+        {
+          "label": "attn",
+          "hash": "f81f29a8d6da195b64df83582a7b82ee"
+        },
+        {
+          "label": "expert_1",
+          "hash": "b76b2685a593fe3ca207a48a0388086b"
+        },
+        {
+          "label": "ffn",
+          "hash": "de7213a6eaa4c7f502da0289d968a99e"
+        },
+        {
+          "label": "ffn",
+          "hash": "fe7dbad6aaa0ecd58090855148c95349"
+        },
+        {
+          "label": "g_topk",
+          "hash": "0d62405c9f25c10421e350c162c03419"
+        },
+        {
+          "label": "mla_kv_path",
+          "hash": "957109c7d03856fac96f612ceb3694e8"
+        },
+        {
+          "label": "mla_query_path",
+          "hash": "dabf1599258da7e9cac35423b6af665a"
+        },
+        {
+          "label": "router",
+          "hash": "987f778581b3af9ef0a802b9c788612f"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "flux-2-dev",
+      "model": "FLUX.2-dev",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/flux-2-dev/report.json",
+      "report_sha256": "e04d6a5b109f353463336309a1e09a070cd57025926a22d06004418123b3853e",
+      "original_report_sha256": "0feeec232630a162cfdd5b0dd9e0178eab0d74d0483d82e75c825ebc5a2d4a43",
+      "html_sha256": "a29472afe9674bd7d820a8f6b9dccaf3fd30ce2d78923e734bde3ee8056949d6",
+      "image_bindings_sha256": "ca6730e1eb018782d6969042a7b69e8b2c59fbe6a71d44fa96d0daaf2eda564a",
+      "manifest_sha256": "b93656a1056c40f924659fe62953097d6acc79503633e2c718870f098064aa90",
+      "image_count": 16,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "7aae638a87e842508ee10e0762b1cd3e"
+        },
+        {
+          "label": "architecture",
+          "hash": "915f743f155e2fffe09f215eac102e3f"
+        },
+        {
+          "label": "attn",
+          "hash": "920615e9b0555b9d140a982b5b2c93c7"
+        },
+        {
+          "label": "denoiser",
+          "hash": "2ddd715e8b65531f304b9153475225d7"
+        },
+        {
+          "label": "denoiser",
+          "hash": "7f603e777da042c858de0b3e5be83467"
+        },
+        {
+          "label": "encoder_0",
+          "hash": "0c4d54d74dbaf9faa10d2c86b62152ab"
+        },
+        {
+          "label": "encoder_0_op_ffn",
+          "hash": "2a2dd9aa80c5b81de5969cadfcb98e30"
+        },
+        {
+          "label": "encoder_0_op_selfattn",
+          "hash": "4da73671b5fe35135386c8e8f60a6643"
+        },
+        {
+          "label": "ffn",
+          "hash": "f9e174412a64197f5fc2fe2012f1762c"
+        },
+        {
+          "label": "scheduler",
+          "hash": "17c4013edb73ab284de6a7fe44a96ff1"
+        },
+        {
+          "label": "vae_decode",
+          "hash": "e60e4f00008fdd1f3e9bb1582c0ad6a5"
+        },
+        {
+          "label": "vae_decoder_block_1",
+          "hash": "1d4bfd5ea6a35d7a8d8b7cab02306d63"
+        },
+        {
+          "label": "vae_decoder_block_2",
+          "hash": "a759406e5f5eb86007274717b92c59a5"
+        },
+        {
+          "label": "vae_decoder_block_3",
+          "hash": "8c34ab04eded9602ef9bc1449606e686"
+        },
+        {
+          "label": "vae_decoder_block_4",
+          "hash": "09100bb2c03d93e81e3cfbb0adf9b8e5"
+        },
+        {
+          "label": "vae_mid_block",
+          "hash": "b28b57af7a35527bb97d9eae2fdf5ffb"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "model": "gemma-2-2b-it",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/gemma-2-2b-it/report.json",
+      "report_sha256": "16ec3ee2c322bef7f3119977fa2e16bada40ecf221aa8de9ddc3d08d6822c719",
+      "original_report_sha256": "bbe14d23d713f9b18f5a24f62d26778a9283a8b8142dce76911997adbfa5df91",
+      "html_sha256": "d5104e3f48bfee5f04b223f953b5303ba8116be8c664edc47ab1dde3580493fb",
+      "image_bindings_sha256": "c943066d2a6290ca57fdbc882a61fa8709655bd5cd556edfd7ff7ffb586e0df7",
+      "manifest_sha256": "3e00fe3354d98591e56985d601ec8a78256233918ef950283a7ba4cfbc3d250e",
+      "image_count": 6,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "68570bcb6435c2ea2b437552619c855b"
+        },
+        {
+          "label": "architecture",
+          "hash": "c04b54df771bbdda0357c0ef633b605f"
+        },
+        {
+          "label": "architecture_v1",
+          "hash": "c7c4603b4cac6cce53cac6c02d226a49"
+        },
+        {
+          "label": "attn",
+          "hash": "95d96b9664bef14933b5e69bd26b59b6"
+        },
+        {
+          "label": "attn",
+          "hash": "a9d491d62b3614aebf1c972525f01990"
+        },
+        {
+          "label": "ffn",
+          "hash": "52a8b14de9f77cc647e93c81572bd05a"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "glm-4-5",
+      "model": "GLM-4.5",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/glm-4-5/report.json",
+      "report_sha256": "7e42b9f7bc1c814fcda5350282558f4fca6d5a5239396776c5f20e49ca922a36",
+      "original_report_sha256": "a883b55110d737dbab49e13aff7cb3a0021778be0eade29f5327e09878754adb",
+      "html_sha256": "ef4a73be689bce3ea88e8ce47adc56a095e72b876ba762e707d2c9c8d07d1a86",
+      "image_bindings_sha256": "0ae35a39bad61d9886a1637458d43a0a1ff60699603a04dc3dcbc7149e71fefe",
+      "manifest_sha256": "d0e68f3efdb7d31f1ec6224f0ba0d00eee1e7741a72466f9ab4dc2100d8067f2",
+      "image_count": 9,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "bc5df722fc681af5bf5ef5d127daa955"
+        },
+        {
+          "label": "architecture",
+          "hash": "d08a31aea8f3894b54d243ea115ebb9e"
+        },
+        {
+          "label": "architecture_v1",
+          "hash": "48ffc71f29e33d83b6558475a9c256fa"
+        },
+        {
+          "label": "attn",
+          "hash": "f3548d1e25ff73d275bb5df4b556af89"
+        },
+        {
+          "label": "expert_1",
+          "hash": "0ab3484877f3ffc1f5aae70428678459"
+        },
+        {
+          "label": "ffn",
+          "hash": "1a58f54930d25fa7f9b24be19fed4cbb"
+        },
+        {
+          "label": "ffn",
+          "hash": "a39b1c9708734671c499bce8772b066f"
+        },
+        {
+          "label": "g_topk",
+          "hash": "bdefc6faf978f47be8662e9e530a4ebb"
+        },
+        {
+          "label": "router",
+          "hash": "14116d9baf3e2c6b075d22750390f718"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "model": "gpt-oss-20b",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/gpt-oss-20b/report.json",
+      "report_sha256": "4429464c9d27bebc418c448f1f7b41711e6caae7191be90cba65b400e8b07497",
+      "original_report_sha256": "96506d6d8a8a4c563092829806b3d51c3c43aab4e8d6a52d1f48991b878e5360",
+      "html_sha256": "8b449f485bfe5d0e5203c10de86ee2fea6be36a2189d302e993e7ca021bc917b",
+      "image_bindings_sha256": "df4913f6555617614d6bd685e14d9ccbbb17f9cb1412e764e6db8edde0054689",
+      "manifest_sha256": "cfd8f20054db44dcfadc4c59b4c9c034ffcddc89376135aeda026748e9ea6ac8",
+      "image_count": 8,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "9c61b6c1799a8a0e41ca220558ade62f"
+        },
+        {
+          "label": "architecture",
+          "hash": "f3df89820579dc3b4bf7ee5b51fc79e9"
+        },
+        {
+          "label": "architecture_v1",
+          "hash": "19f54d71ceafc7386057dea86cbd0031"
+        },
+        {
+          "label": "attn",
+          "hash": "1df4a3b83d10b550972b52f5e1eedb76"
+        },
+        {
+          "label": "attn",
+          "hash": "851eaadd3f4bd3719ab304dee3f5d18d"
+        },
+        {
+          "label": "expert_1",
+          "hash": "5649037dd75f6c481afb2ae7124aaf39"
+        },
+        {
+          "label": "ffn",
+          "hash": "5b1391184ca2e87a94708a850e6a8ad9"
+        },
+        {
+          "label": "router",
+          "hash": "617ce03749b7fbeb4ed3b7ef445ab849"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "model": "granite-3.0-8b-instruct",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/granite-3-0-8b-instruct/report.json",
+      "report_sha256": "0240bb78288d48e7a20a5f7fca5db71956059e89e85a78e272ee227a5ccf58cf",
+      "original_report_sha256": "3b8188954a39b33171aeb8a637e1d4c1f2b4c062b4a79addb574e8f7272b729f",
+      "html_sha256": "220a2cc08284b1fe0350b72eefd04ca38ea3e977257cfaae45158165542491c2",
+      "image_bindings_sha256": "8892ffaaf3bcd061c9abe75bba53e9914a14d077ac4aa4736f27164386479b53",
+      "manifest_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "154318821bfdf4e94f21004e6cfdff94"
+        },
+        {
+          "label": "architecture",
+          "hash": "b9bd7e832832ab39a70a21e88c847e0b"
+        },
+        {
+          "label": "attn",
+          "hash": "181b573a48a8c651325ce60225f36b32"
+        },
+        {
+          "label": "ffn",
+          "hash": "b9d53f917b41a0bafc1fbe12bed67e26"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "hunyuanvideo",
+      "model": "HunyuanVideo",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/hunyuanvideo/report.json",
+      "report_sha256": "ecaa04d6329e60b6444fcde1c3288fda15ea5d5b0b888efa7710697cf0b91bd0",
+      "original_report_sha256": "7eaeb0bf00c0baf08a384052267af2df1e16bf4d6c6c6113903d7271799bd89f",
+      "html_sha256": "fafdd1f6ec0dc9f1d574201cdbf31004942b0f2bfb85387d33156051a43241ff",
+      "image_bindings_sha256": "3970d790c2707c6a6cbf373c0ecac9fc63fc5ef157c7d564c7bbfce0cfeea4a9",
+      "manifest_sha256": "dbe323e4b12250bf81fbf44576cfcb9555f8abc58a0cf596dd3361cad16f94eb",
+      "image_count": 20,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "2c9c2c0065847964ec88ebbe372cd5bd"
+        },
+        {
+          "label": "architecture",
+          "hash": "34745baa907ad91bd27af32239c6d5ac"
+        },
+        {
+          "label": "attn",
+          "hash": "d1c84104e399fd2b01a9463008f05c8b"
+        },
+        {
+          "label": "denoiser",
+          "hash": "133c5ed972f7e0529d0c866eee5821b0"
+        },
+        {
+          "label": "denoiser",
+          "hash": "e0e26ad22437675e48e0c9bf06d3d56c"
+        },
+        {
+          "label": "encoder_0",
+          "hash": "b659f21587c423bd7f132f2db073db23"
+        },
+        {
+          "label": "encoder_0_op_ffn",
+          "hash": "98cc1a1085bcbd1bf37bca2d7bc8f0b5"
+        },
+        {
+          "label": "encoder_0_op_selfattn",
+          "hash": "f6c365994068765fcb8ed31a8e927c88"
+        },
+        {
+          "label": "encoder_1",
+          "hash": "395f5467388ed1bdadb8c91c7e5e96c7"
+        },
+        {
+          "label": "encoder_1_op_ffn",
+          "hash": "5629211bc9efbd086f2f26426877c1af"
+        },
+        {
+          "label": "encoder_1_op_selfattn",
+          "hash": "e61a83137bf7f8efd7fa6bc30ad12024"
+        },
+        {
+          "label": "ffn",
+          "hash": "2d4deb7e5d271b6c70408c4d31d43018"
+        },
+        {
+          "label": "ffn",
+          "hash": "7afb01b9d7ac072ddcf62251ed13ea45"
+        },
+        {
+          "label": "scheduler",
+          "hash": "bf38a076baa29fc5858612bbd71d0fe5"
+        },
+        {
+          "label": "vae_decode",
+          "hash": "502c3ffeb9a9ffadf61a8ec993944433"
+        },
+        {
+          "label": "vae_decoder_block_1",
+          "hash": "30b5201d259e95a942012b0a27fe6d7f"
+        },
+        {
+          "label": "vae_decoder_block_2",
+          "hash": "511bc69086c757f55d1a4e9922fd78ed"
+        },
+        {
+          "label": "vae_decoder_block_3",
+          "hash": "34829e302343eaa19667bcba8a150848"
+        },
+        {
+          "label": "vae_decoder_block_4",
+          "hash": "30514691da513ec4ac4962bb1d572db9"
+        },
+        {
+          "label": "vae_mid_block",
+          "hash": "8df75c06f9f0a30aab0fb5cbcde3a971"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "llama-7b",
+      "model": "llama-7b",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/llama-7b/report.json",
+      "report_sha256": "8ccdd725d23a6c88f3b07b30da8c6ec11bf459ef71b4a99db21accdbcd20e53b",
+      "original_report_sha256": "83c126bea9c3aa458c3de7aa820dc96c08ac989c34c3f1df14ae532ffe2f0185",
+      "html_sha256": "1befdda470e1173e71b79f2233187ae192a6400d6899d645cf0c052f74d27496",
+      "image_bindings_sha256": "c5300339942ab909d56c3f1a71e0c906f4f28e92d805a651b18a798f715ebf50",
+      "manifest_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "4015be3286774c4c736600061e47ed51"
+        },
+        {
+          "label": "architecture",
+          "hash": "e52c423d42c8caa434948f640344f933"
+        },
+        {
+          "label": "attn",
+          "hash": "a65da01ede616359451f87a5fda7620e"
+        },
+        {
+          "label": "ffn",
+          "hash": "d3314cccdb744f3767be47b560187b9c"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "model": "Lumina-Image-2.0",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/lumina-image-2-0/report.json",
+      "report_sha256": "2baa4887d42c98914acccf3b684b625c89147ba3f8de91855f6652f50fed3451",
+      "original_report_sha256": "aebdb88deb49eae95f775b4d40e660277c033088ec0e30dda8b50b09b82ed802",
+      "html_sha256": "7d85c66862651cbf5783f50c90077e89e98387eedc6851b51eb7c5ab8e787bfa",
+      "image_bindings_sha256": "dfee02ca46ef40d975ed9e408b7febf6c93069ccd6298ec4c24ab1e61f60643c",
+      "manifest_sha256": "c8d31370a79700302934d8d2a03997b33d40bede814bbbf6b7825e9a89459a4d",
+      "image_count": 16,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "e847adc67aedfd6922a3ded3a8fe39b7"
+        },
+        {
+          "label": "architecture",
+          "hash": "e8483db9c1ba9cfd194089017b390919"
+        },
+        {
+          "label": "attn",
+          "hash": "7cf4921225fcca4d43711514541a2142"
+        },
+        {
+          "label": "denoiser",
+          "hash": "b4e96f1814df3fe5ef6d6e0fce3ec841"
+        },
+        {
+          "label": "encoder_0",
+          "hash": "a2dd49449d9b57dd41f5f488d286a55a"
+        },
+        {
+          "label": "encoder_0_g0_op_ffn",
+          "hash": "7d3443fd29ef5465e5722d3dea2ff019"
+        },
+        {
+          "label": "encoder_0_g0_op_selfattn",
+          "hash": "76cfd01aec05ed837e012a41f141698a"
+        },
+        {
+          "label": "encoder_0_g1_op_selfattn",
+          "hash": "55f1f434a622b978337ce9a38dc4541f"
+        },
+        {
+          "label": "ffn",
+          "hash": "e26eed19307ea820a6ca8e23b99e5ecc"
+        },
+        {
+          "label": "scheduler",
+          "hash": "72c72e56496f2ecf5c83d5192468a0e7"
+        },
+        {
+          "label": "vae_decode",
+          "hash": "a4bd9d4acf64c641ef5d7bbe32e79a7b"
+        },
+        {
+          "label": "vae_decoder_block_1",
+          "hash": "c9548637d7d0e759e38443e69f62a120"
+        },
+        {
+          "label": "vae_decoder_block_2",
+          "hash": "c445b387e72b69a1bcb1cf0bc02975cc"
+        },
+        {
+          "label": "vae_decoder_block_3",
+          "hash": "b26496903a90d935f59b32446b1d93be"
+        },
+        {
+          "label": "vae_decoder_block_4",
+          "hash": "c09631c90c0265de4279c56e8f8a8d57"
+        },
+        {
+          "label": "vae_mid_block",
+          "hash": "cb0c2c4d1a5455f44683943e4feedaf9"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "musicgen-small",
+      "model": "MusicgenForConditionalGeneration",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/musicgen-small/report.json",
+      "report_sha256": "b1c1c9128dadcf6a79c736a50dec38b5a83d6e0d8e2e4c3ccf168bc04881058b",
+      "original_report_sha256": "b74d152d4eccf8bf6cb85ed3fbe313e9240f1a81a7ad3b8f45585ed45e95fea2",
+      "html_sha256": "54cea8f7c1275087d942e3eae8a1a65962e0966d4dd5bfbfbad7bce20f79d296",
+      "image_bindings_sha256": "0291215be415ca9aa03032082a9eacd225d76690601ccf80f08d8905f9ae7fe7",
+      "manifest_sha256": "5906d44a7e6d517d3074b8e19cdacb67a11717fb0b524e8fbbc8e74436bbeca8",
+      "image_count": 8,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "d5e7795323e0127f4d6570fe7b656e9a"
+        },
+        {
+          "label": "architecture",
+          "hash": "fc529c428f15e8c39db863da704bfe69"
+        },
+        {
+          "label": "attn",
+          "hash": "b82eac9542114e7e147947656c4f91d3"
+        },
+        {
+          "label": "conditioning_path",
+          "hash": "f50b4ae7af4f499ef3b2f943e9782f24"
+        },
+        {
+          "label": "conditioning_projector",
+          "hash": "0efd6d6afe49f19717fb93e3758924f3"
+        },
+        {
+          "label": "cross_attn",
+          "hash": "b2e5e49c0efbc17254c0b2c406251824"
+        },
+        {
+          "label": "ffn",
+          "hash": "56200b84718c960c32e37b49bdcf07a4"
+        },
+        {
+          "label": "fusion",
+          "hash": "9631ca8d3bfe9cd7525a5e455280cbe9"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "model": "OLMo-2-1124-7B",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/olmo-2-1124-7b/report.json",
+      "report_sha256": "146c0da5c25f5385cb21dfe31b50c1d6ec032e9d5a07d57d4c5503bd323f4551",
+      "original_report_sha256": "7f2cf87c5b148ecda153642e19b01a242fd8bd0f0dc76a0f27f987c159c985e8",
+      "html_sha256": "382ba1a45d04379b104e398dd77d5ea2a31d403071808349997ed24a95f8dd17",
+      "image_bindings_sha256": "eee368108cd09bb3fc4bf32efb44c73efe22561b32f014e2ba2d209bfc00b7c3",
+      "manifest_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "a0f349144aaa167b84345f9edd5eae4c"
+        },
+        {
+          "label": "architecture",
+          "hash": "d666bddcd4b65fb7b24c84d32815ae72"
+        },
+        {
+          "label": "attn",
+          "hash": "b6009b11bfe9005bb4e8d5a34cc0e2f7"
+        },
+        {
+          "label": "ffn",
+          "hash": "1ae3e6e5656fd8d7a8df14271e75d850"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "model": "prxpixel-t2i",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/prxpixel-t2i/report.json",
+      "report_sha256": "32ed6c90ba209ad4591bfbf2ff97d2da4f6f42944c152abb55b79337149c5ca8",
+      "original_report_sha256": "1c185daaec5164a379b88418a9acff300ebc415542fb22651c877da51337f424",
+      "html_sha256": "558abcb75e935ba8d3ca0bd773927c91288399282af4154d3341123ae1783939",
+      "image_bindings_sha256": "1ae541d1725976a09023971174de797c7b5452698d02415b41123b3e9c3224ff",
+      "manifest_sha256": "df433d39080d630a645f6d0e42d80351251cd43852e336cd28f46bfc81626de9",
+      "image_count": 9,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "560f734b61ef710d22939cbd933fd5ff"
+        },
+        {
+          "label": "architecture",
+          "hash": "56df7ae152bd3d291debd2406e747e83"
+        },
+        {
+          "label": "attn",
+          "hash": "cf678126205587f1b0df309e76864f36"
+        },
+        {
+          "label": "denoiser",
+          "hash": "745b88f160585a465ed286f71d584db0"
+        },
+        {
+          "label": "encoder_0",
+          "hash": "732c3da7a1ffcb0005f203266c1e092b"
+        },
+        {
+          "label": "encoder_0_op_ffn",
+          "hash": "38433759c72140f5833413de64e0bf5c"
+        },
+        {
+          "label": "encoder_0_op_selfattn",
+          "hash": "148f8a37e2ee24bc142edb77f06bcf79"
+        },
+        {
+          "label": "ffn",
+          "hash": "0c7d3c3ee6cbb10bcbe0bf91a4c3174b"
+        },
+        {
+          "label": "scheduler",
+          "hash": "455fcad6f15a7a8642673b21b0f8fcd7"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "model": "Qwen3.5-27B:text",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/qwen3-5-27b-text/report.json",
+      "report_sha256": "0565ae5eb868c821b15064c954efca433456f9616400df0aa4d9e92b87f84a09",
+      "original_report_sha256": "439bee3569e58cc23812ee81d1d6d8a5c043e1da627babf15ebd86f376acfa1a",
+      "html_sha256": "18249087246eda6218822e35efd3cebca6894b2f9e15a21b3ae6f9904294b9b0",
+      "image_bindings_sha256": "d6ee1e6b4d1b17170b37865bdf8e313369ce8f91fdf15412cdbb9fcd8ae70535",
+      "manifest_sha256": "1d336bcff5fd0ffdf7943c6b8264fcd06314fb319b137cfd9e48c0dbe14b9c48",
+      "image_count": 6,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "3fd382a6ac9b031836483d6014522a09"
+        },
+        {
+          "label": "architecture",
+          "hash": "88688a1cd544bed199bf6e020abf197f"
+        },
+        {
+          "label": "architecture_v1",
+          "hash": "c63ea70af3eb63a6c01e757802851151"
+        },
+        {
+          "label": "attn",
+          "hash": "2184bf4bcfe89c10d2dc1e4fbad1dc6b"
+        },
+        {
+          "label": "attn",
+          "hash": "71456442dff6a47c6b1fbfa9db9e1f0d"
+        },
+        {
+          "label": "ffn",
+          "hash": "f833c45d1b7e9fa29156cf20fb4edff2"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "qwen3-8b",
+      "model": "Qwen3-8B",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/qwen3-8b/report.json",
+      "report_sha256": "d28c4523a1f01189e4bf7d22c0e13406631f7a93d309d146ea1ec7ef92508bfc",
+      "original_report_sha256": "052bcad98f7dff524afec8b9df4495101cb67580417c61680a63b2370d20efc9",
+      "html_sha256": "bb47357f4d07589d1f62bd15ca6d340944acf6889b28042c67abd022eaedab41",
+      "image_bindings_sha256": "b1b011adbbf4bfe2cf81e02d0ea782c885d2142f9f89bff7df4df18d5a9b2862",
+      "manifest_sha256": "193ec00604442e023f5edb9b31585661eb8617d95e0b1728101498fb6028beb5",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "069fdfe1cc0759670a1717944c1c8071"
+        },
+        {
+          "label": "architecture",
+          "hash": "c8e5aa1a15542c375c24f3617591d104"
+        },
+        {
+          "label": "attn",
+          "hash": "3a3861a0086a7437aa44262b09b3eb19"
+        },
+        {
+          "label": "ffn",
+          "hash": "12b1bdce7140cb545f7989138979cbfe"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "model": "Sana_1600M_1024px_diffusers",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/sana-1600m-1024px-diffusers/report.json",
+      "report_sha256": "6ab4b88d4606845994137cb820ce5f2e472b66e6798476f12fc5516e310325a1",
+      "original_report_sha256": "df7e649a51c87307a194e0e7684aa8d1dfe54df0ba698b1773a56c4d9e0f7516",
+      "html_sha256": "d0bfc33072ad772a76a02072ac2b5b11b0c19b17df7da341210be759a569e189",
+      "image_bindings_sha256": "5888020064f01f24d8677785d6c56ce6a07634dc5e73f15276485067a657141a",
+      "manifest_sha256": "af9e3a5345e3e2b9e480e7a87827c932924c0552115a85772dd642ef294da52b",
+      "image_count": 12,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "2e7f2f09ae70365c0149d48dac399f3f"
+        },
+        {
+          "label": "architecture",
+          "hash": "b74fdbf963bc0fe63f5964d2018e6e8e"
+        },
+        {
+          "label": "attn",
+          "hash": "4b28977d7e010f52eeee1f027e6c7d0e"
+        },
+        {
+          "label": "cross_attn",
+          "hash": "d052e6ffcbec38cae3c36dd0b0dd66ec"
+        },
+        {
+          "label": "denoiser",
+          "hash": "1c1bb3f942a941091573a63d28df04aa"
+        },
+        {
+          "label": "encoder_0",
+          "hash": "a2dd49449d9b57dd41f5f488d286a55a"
+        },
+        {
+          "label": "encoder_0_g0_op_ffn",
+          "hash": "44214a47b62afb95cf44b9c9a99c6eae"
+        },
+        {
+          "label": "encoder_0_g0_op_selfattn",
+          "hash": "dbe671a0d554ddd944ede7da6e1e92ba"
+        },
+        {
+          "label": "encoder_0_g1_op_selfattn",
+          "hash": "080b3f8ea0fb470cff8b81073f2827e3"
+        },
+        {
+          "label": "ffn",
+          "hash": "88c41725caee80b8095553dd7841b6fd"
+        },
+        {
+          "label": "scheduler",
+          "hash": "6f3ff3d93134f0e32a666f32805babb4"
+        },
+        {
+          "label": "vae_decode",
+          "hash": "8a360c4f1e446063bd592a6f7c329e78"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "model": "stablelm-2-1_6b",
+      "report": "/private/tmp/unfold-s8-approved-galleries-710da8e/stablelm-2-1-6b/report.json",
+      "report_sha256": "265412b52516131de47517e14c8c51e910435a146317cbfed36c2af672e6f138",
+      "original_report_sha256": "d373c8f3faddc69b3311194ada4a6885ea814a8ccd6bc3b72ca17c7796a5130c",
+      "html_sha256": "755ba0d7a5fc077a94e2d19883dadea38b7eb4f45eb4869402943bebdb9fc19b",
+      "image_bindings_sha256": "161b3951ff2c95090a397c8e31eaf53084971b38da277cbc9a75ed4322618673",
+      "manifest_sha256": "d271e4ea6f747f0edfdf4685d5917882d856a3b7f207262e1e6fcdb6f20bbac2",
+      "image_count": 4,
+      "view_signature": [
+        {
+          "label": "architecture",
+          "hash": "4ac6c4d56043a2763ee966ecac18fe2d"
+        },
+        {
+          "label": "architecture",
+          "hash": "67152259fc4579dcbfe74cf141b1b812"
+        },
+        {
+          "label": "attn",
+          "hash": "7f85c056c3df0ce8eb64681078ea557a"
+        },
+        {
+          "label": "ffn",
+          "hash": "9c7ebe398faecd2478255d16c20831a3"
+        }
+      ],
+      "proven_facts_exact_old_lock": true,
+      "report_phase": "actual-fb1-Sable-capture",
+      "individual_gallery_review": "pending; required before final verdict"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "manifest_sha256": "3d2d6fc3c62d159759cd5b2a44be31e71dba67c9d2210001eb181466fe4b48d2",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "four_scripts_and_execution_copies_verified": [
+    "run-bloom-default-diagnostic.py",
+    "bloom-default-diagnostic.py",
+    "run-layer-default-diagnostic.py",
+    "layer-default-diagnostic.py"
+  ],
+  "checks": [
+    "Exact accepted36 script bytes with37 path coordinates only; normal config_to_ir/native proof/binding/operand traces unchanged.",
+    "Existing verify_commit lane source/artifact brackets,fresh output/offline loading retained."
+  ],
+  "limits": [
+    "Source pin is checked at preparation; root must require resulting broad source fingerprintc5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747 and equal protected brackets for actual37 attribution.",
+    "No runtime/output approval by reviewer."
+  ]
+}

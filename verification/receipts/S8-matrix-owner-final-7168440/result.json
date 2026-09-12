@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "exact_preserved_gzip_files": 117,
+  "exact_preserved_model_summaries": 39,
+  "changed_matrix_fields": [
+    "sources"
+  ],
+  "final_matrix_sha256": "bb9c8d3bc3f1a9fecf9221de5e27455228fdc09a5308dfce43fa69075d11daa4",
+  "fresh_39_model_run": false,
+  "base_artifact_commit": "4fdc741",
+  "production_candidate": "7168440"
+}

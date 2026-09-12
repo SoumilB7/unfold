@@ -1,0 +1,10 @@
+{
+  "verdict": "RETURN_BOUNDED_EXISTING_FALSE_OPGRAPH_RECEIPT",
+  "missing_operand_changes": "Both missing cases correctly add one unanswered native fact. Exact131 IR deltas each:128 presentation fields across32 attention blocks, one native fact row, one unresolved-fact warning update, one scratch source-location change. Layers and caps unchanged. No false softcap projection receipt or consumed fact event in either missing case.",
+  "unchanged_controls": "Explicit17/explicitNone/no_mechanism have only one IR scratch source-address delta each; Gemma IR is byte-equivalent JSON. All four HTML changes are exhaustively explained by the paired mount identity substitution, with raw diffs retained.",
+  "event_intent": "Explicit17: one bound and one consumed softcap event. Gemma: two fact-addressed absent_default events; zero consumed events is intentional for absent checkpoint fields. Missing operands: only unowned absent_default inspection; no softcap fact binding/consumption.",
+  "return_item": "Explicit17 already had an opgraph receipt for attn_softcap although actual event node_ids are block/region_out and actual HTML contains no attn_softcap. Guard actual node/operation membership and the corresponding facts_projected key; valid native applied_function proof remains intact. Scope A projection qualification. Drawing restoration is separate C/design work.",
+  "raw_report_sha256": "e4fed8d644287ce859961d08a1abc5eed98cc477b1c82c4264100ad4b2dd2d4d",
+  "approval": false,
+  "runtime": "Saved JSON/HTML and static source only."
+}

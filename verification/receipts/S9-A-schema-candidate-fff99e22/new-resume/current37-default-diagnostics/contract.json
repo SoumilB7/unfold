@@ -1,0 +1,37 @@
+{
+  "scope": "Coordinate-only actual36 diagnostic successor. Root owns all model runtime; retain public config_to_ir, real native reader/proof objects and binding/operand traces, four MusicGen/two Bloom conditions unchanged. No cached/copy output substituted.",
+  "source_manifest": "/private/tmp/unfold-s9a-thirtyseventh/source-manifest.json",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "source_pin_checked_at_preparation": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "script_origins": {
+    "run-bloom-default-diagnostic.py": {
+      "before_source": "/private/tmp/unfold-s9a-thirtysixth/run-bloom-default-diagnostic.py",
+      "before_sha256": "074a86fb0e4d0e477520720aa4ab57288ed34c306080ae5b1d3f4a63847ca52d",
+      "after_sha256": "4558dee17e88de85b66ebab6e56f0ee1492a5efdae27b39e6ac155a1cf4dfe9c",
+      "execution_copy": "/private/tmp/unfold-s9a-thirtyseventh/run-bloom-default-diagnostic.py"
+    },
+    "bloom-default-diagnostic.py": {
+      "before_source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic.py",
+      "before_sha256": "19de2c0133f1fecfafc8a2ba9227e6cc900f694b6fcc87215f7044b7577781f3",
+      "after_sha256": "24c05fc238c9ae6c22a6fa16eabf21d8a485a1ea9c657d8babc6e468acf50aff",
+      "execution_copy": "/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic.py"
+    },
+    "run-layer-default-diagnostic.py": {
+      "before_source": "/private/tmp/unfold-s9a-thirtysixth/run-layer-default-diagnostic.py",
+      "before_sha256": "e147392337ea464a8a77d64cae1c548d1981a6e0092a7a76dba75bdafd678061",
+      "after_sha256": "217e992fca6b085b277b700112ac8765c4c5c6575ee98c6f91d5835a6b054562",
+      "execution_copy": "/private/tmp/unfold-s9a-thirtyseventh/run-layer-default-diagnostic.py"
+    },
+    "layer-default-diagnostic.py": {
+      "before_source": "/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic.py",
+      "before_sha256": "683797f63e77fc6c3edac096c57c5ae6e9f0ae8d94e0468a5f414a40e2d6e2de",
+      "after_sha256": "af794897e9effb6b65ce56b78faeed76e5d2ee68135550765fd0d6889ed52085",
+      "execution_copy": "/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic.py"
+    }
+  },
+  "preserved_guards": "Original verify_commit _run_lane source/artifact before-after; fresh output and caches; offline model loading; all errors recorded. No output blessing.",
+  "commands": [
+    "python3 /private/tmp/unfold-s9a-thirtyseventh/run-bloom-default-diagnostic.py",
+    "python3 /private/tmp/unfold-s9a-thirtyseventh/run-layer-default-diagnostic.py"
+  ]
+}

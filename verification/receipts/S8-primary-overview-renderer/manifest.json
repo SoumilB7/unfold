@@ -1,0 +1,9 @@
+{
+  "scope": "Renderer-only preview: saved d3a4d61 ordinary IR + executor refreshed source-record primary-region fixture. Not a new complete production parse, no output acceptance.",
+  "renderer_sha256": "9be118b0c559957f879241fa538d22efa85df7b4300fe1a266bd275470bd9433",
+  "region_fixture_sha256": "e57be74bf1d79e3138139cba9b492ecd26c471055f854a2f9a31821a50c775e0",
+  "saved_ir_sha256": "a422af9ebc65e0d35a36abbb6ac3af307f3d96d9b207303744e4abe8dbb31cca",
+  "render_fixture_sha256": "961d6f7b9d1369e7bd953f1d92b7356e4d058cc8cfc3ea3e890fecab1372aa41",
+  "svg_sha256": "c3670f116dc0aa669e502bd6962129ce7821bfcda3b8132705607b69f52177d4",
+  "pixel_inspection": "The one native overview PNG was individually inspected. No arrow/card crossings or text overflow observed; this does not establish document-level browser behavior."
+}

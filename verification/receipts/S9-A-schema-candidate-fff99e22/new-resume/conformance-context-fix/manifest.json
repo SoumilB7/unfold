@@ -1,0 +1,10 @@
+{
+  "scope": "Repair custom test render capture to supply this Diagram own serialized fact rows, matching actual Diagram and Sable production render boundaries. Chip reference validator and conformance expectations unchanged.",
+  "files": [
+    {
+      "path": "tests/test_conformance.py",
+      "before_sha256": "131085ed713fdc3011583ddf510d4cf2f52c3e658c1b8534bfc80cff076400db",
+      "sha256": "cfb28b67c9c85ff279bb7aa840909f95f221d101770f0e8bd2ac20524735efb5"
+    }
+  ]
+}

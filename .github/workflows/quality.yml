@@ -1,0 +1,35 @@
+name: Quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main, audio-composite-support]
+
+jobs:
+  evidence-receipts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+      - run: >-
+          python -m pip install -e '.[dev]'
+          torch==2.9.1
+          transformers==5.12.1 diffusers==0.38.0 huggingface_hub==1.10.1
+      - name: S7 Linux OS network sandbox is real
+        env:
+          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+        run: python scripts/verify_linux_network_sandbox.py
+      - name: Config-consumption census is current
+        run: python scripts/census.py --check
+      - name: S7 29+10 shadow artifacts are current
+        run: python scripts/generate_s7_shadow.py --check
+      - name: S7 29+10 shadow runs behind the Linux network namespace
+        env:
+          UNFOLD_LINUX_NETWORK_SANDBOX: sudo-unshare
+        run: python scripts/generate_s7_shadow.py --ci-shadow
+      - name: Declared 29+15 support denominator has no silent failures
+        run: python scripts/coverage.py --check
+      - name: Reviewed release examples are byte-current
+        run: python scripts/generate_examples.py --check

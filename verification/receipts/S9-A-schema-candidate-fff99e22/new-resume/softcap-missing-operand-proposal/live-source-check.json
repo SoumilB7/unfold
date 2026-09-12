@@ -1,0 +1,22 @@
+[
+  {
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "live_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+    "equals_frozen30": true
+  },
+  {
+    "path": "model_unfolder/evidence/registry.py",
+    "live_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+    "equals_frozen30": true
+  },
+  {
+    "path": "model_unfolder/renderers/html/fact_projection.py",
+    "live_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+    "equals_frozen30": true
+  },
+  {
+    "path": "tests/test_attention_softcap.py",
+    "live_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+    "equals_frozen30": true
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "files": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615"
+    },
+    {
+      "path": "tests/test_fact_registry.py",
+      "sha256": "d54118763ab344d5608656f4f6a5afa1ec587899a054acaa5dce3f715f40c255"
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "sha256": "afd708256e7847c63a8d90d5383cabb90667588721b1eee06b320dfc9b362e5f"
+    }
+  ],
+  "changes": [
+    "Unresolved-status None is an unanswered question, not claimed absence; preserve incomplete inspection. False/none/claiming None remain gated.",
+    "Manual tie wrong-kind poison now supplies required reader ids, reaching the intended declaration check.",
+    "Ten exact diffusion fact definitions accept class_default under already-authorized coherent default-channel route."
+  ],
+  "runtime": "not run; root owns runtime"
+}

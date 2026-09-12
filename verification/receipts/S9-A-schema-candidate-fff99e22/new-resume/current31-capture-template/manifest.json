@@ -1,0 +1,16 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN31_PIN",
+  "base": "Held current30 capture template unchanged",
+  "base_manifest_sha256": "01af57db36973d67608e187a95a582023e04c51623d1ddc12763d03b60470f09",
+  "files": {
+    "census.py": "18945f63bafaf170fcdaf0e15f9a8fb57e5ada260244a4e6d823cc18a70b6ac4",
+    "run-census.py": "56dfe82eef352e8ad97f5d29c3d6a218ed3a5ca1b5cfeba35942070977a38d51",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "64e71f6b9abcfba1dd99b39a4b97846995d454241889b6d48383e9468e9e6ca9",
+    "plan.json": "ce13aa05def8b456a072500e5df2d734ba01fd84eb2e609d5c17cfc1cf231203",
+    "contract.json": "fe68ff0edc74b8c0d682082169b68afd330d92fd589bccfaa57db5478f86676a"
+  },
+  "no_execution": "Only source reads/writes and stdlib AST/hash inspection by placement_executor.",
+  "required_runtime_input": "--source-manifest-sha256, exact frozen31 pin supplied by root; no default or inherited pin.",
+  "change": "Generation coordinates31 plus full LOCAL_ONLY actual render-context fields captured after immediate publication and before live presentation census."
+}

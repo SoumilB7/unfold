@@ -1,0 +1,242 @@
+{
+  "checks": {
+    "asserted_facts": true,
+    "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
+    "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
+    "dangling_connectors": true,
+    "document_boundary_completeness": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "projection_audit": true,
+    "qualified_projection_values": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true,
+    "zero_asserted_census": true
+  },
+  "config": {
+    "_class_name": "FluxTransformer2DModel",
+    "_diffusers_version": "0.30.0",
+    "_scheduler_config": {
+      "num_train_timesteps": 1000,
+      "shift": 3.0
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_class_name": "CLIPTextModel",
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "intermediate_size": 3072,
+        "max_position_embeddings": 77,
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "_class_name": "T5EncoderModel",
+        "d_ff": 10240,
+        "d_model": 4096,
+        "dense_act_fn": "gelu_new",
+        "feed_forward_proj": "gated-gelu",
+        "is_gated_act": true,
+        "num_heads": 64,
+        "num_layers": 24,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "latent_channels": 16,
+      "layers_per_block": 2,
+      "out_channels": 3,
+      "scaling_factor": 0.3611
+    },
+    "attention_head_dim": 128,
+    "axes_dims_rope": [
+      16,
+      56,
+      56
+    ],
+    "guidance_embeds": true,
+    "in_channels": 64,
+    "joint_attention_dim": 4096,
+    "num_attention_heads": 24,
+    "num_layers": 19,
+    "num_single_layers": 38,
+    "patch_size": 1,
+    "pooled_projection_dim": 768,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "T5EncoderModel"
+    ]
+  },
+  "hash_signature": [
+    "0751c0064be790891edf52f8bed807bb",
+    "38766bf823a11655b9a3fe1023fbe297",
+    "395f5467388ed1bdadb8c91c7e5e96c7",
+    "48125ea1e7d6a56703533d06cb377d75",
+    "4e6b754b82db1df486b8a21c3e488ad1",
+    "565270f4d8543fb166a76073d87e00cc",
+    "798d7657951c666b91dc4d411529dfd5",
+    "824ef6a6013d508dcb66c674d9211636",
+    "9680b5f576b615bc5ee7a1dabc19b8ac",
+    "a90de20e846dafb09ac1ab7b744f0556",
+    "b354d4cb12016360e1a9612e0000ac6e",
+    "ba0a8422185c20fb776481aa67bfa522",
+    "badaa1497d2255d8845e9ce6ea4314aa",
+    "bf7b50ecd75684e8a39b4248976719b8",
+    "c30d1a27a0b953075257e7927338eb7a",
+    "c9cee6b79d339d76616db6a1f685c359",
+    "d5bf84f9a38ff56360a296307e6402ed",
+    "ee6745e71c8107ec9f61595788134b3a",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
+  ],
+  "model": "FluxTransformer2DModel",
+  "proven_facts": [
+    "root.denoiser.diffusion_bookend_geometry",
+    "root.denoiser.diffusion_bookend_operations",
+    "root.denoiser.diffusion_root_topology",
+    "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[0].cell.diffusion_norm_mechanism",
+    "root.denoiser.stacks[0].diffusion_stack_depth",
+    "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+    "root.denoiser.stacks[1].diffusion_stack_depth",
+    "root.denoiser.stacks[1].ffn.diffusion_ffn_mechanism"
+  ],
+  "source": "local",
+  "superseded_hash_signature": [
+    "0751c0064be790891edf52f8bed807bb",
+    "1b8324f57879475acf6c39e7365f7354",
+    "2c40b324832c488a353ff4a3ac719206",
+    "446dbdf34699f8ac07a5717439470221",
+    "48125ea1e7d6a56703533d06cb377d75",
+    "565270f4d8543fb166a76073d87e00cc",
+    "a90de20e846dafb09ac1ab7b744f0556",
+    "af157e1f2aadd364958e472166241ee2",
+    "b354d4cb12016360e1a9612e0000ac6e",
+    "ba0a8422185c20fb776481aa67bfa522",
+    "badaa1497d2255d8845e9ce6ea4314aa",
+    "bf7b50ecd75684e8a39b4248976719b8",
+    "c5cc5eee15e31c66f7795620d62aae28",
+    "c9cee6b79d339d76616db6a1f685c359",
+    "cab11650142d0a456aca749072e2d76c",
+    "d5bf84f9a38ff56360a296307e6402ed",
+    "ecfc076a5de5fdabf3744363aaa85405",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
+  ],
+  "view_signature": [
+    {
+      "hash": "798d7657951c666b91dc4d411529dfd5",
+      "label": "architecture"
+    },
+    {
+      "hash": "824ef6a6013d508dcb66c674d9211636",
+      "label": "architecture"
+    },
+    {
+      "hash": "bf7b50ecd75684e8a39b4248976719b8",
+      "label": "attn"
+    },
+    {
+      "hash": "c30d1a27a0b953075257e7927338eb7a",
+      "label": "denoiser"
+    },
+    {
+      "hash": "ee6745e71c8107ec9f61595788134b3a",
+      "label": "denoiser"
+    },
+    {
+      "hash": "395f5467388ed1bdadb8c91c7e5e96c7",
+      "label": "encoder_0"
+    },
+    {
+      "hash": "f3b14960315185f1921ac056d77d57be",
+      "label": "encoder_0_op_ffn"
+    },
+    {
+      "hash": "ba0a8422185c20fb776481aa67bfa522",
+      "label": "encoder_0_op_selfattn"
+    },
+    {
+      "hash": "9680b5f576b615bc5ee7a1dabc19b8ac",
+      "label": "encoder_1"
+    },
+    {
+      "hash": "f9cd9d6b2d90fbb0fe4c826bad7ef102",
+      "label": "encoder_1_g0_op_ffn"
+    },
+    {
+      "hash": "c9cee6b79d339d76616db6a1f685c359",
+      "label": "encoder_1_g0_op_selfattn"
+    },
+    {
+      "hash": "d5bf84f9a38ff56360a296307e6402ed",
+      "label": "encoder_1_g1_op_selfattn"
+    },
+    {
+      "hash": "38766bf823a11655b9a3fe1023fbe297",
+      "label": "ffn"
+    },
+    {
+      "hash": "4e6b754b82db1df486b8a21c3e488ad1",
+      "label": "ffn"
+    },
+    {
+      "hash": "b354d4cb12016360e1a9612e0000ac6e",
+      "label": "scheduler"
+    },
+    {
+      "hash": "0751c0064be790891edf52f8bed807bb",
+      "label": "vae_decode"
+    },
+    {
+      "hash": "a90de20e846dafb09ac1ab7b744f0556",
+      "label": "vae_decoder_block_1"
+    },
+    {
+      "hash": "48125ea1e7d6a56703533d06cb377d75",
+      "label": "vae_decoder_block_2"
+    },
+    {
+      "hash": "565270f4d8543fb166a76073d87e00cc",
+      "label": "vae_decoder_block_3"
+    },
+    {
+      "hash": "badaa1497d2255d8845e9ce6ea4314aa",
+      "label": "vae_decoder_block_4"
+    }
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/fluxtransformer2dmodel",
+    "manifest": true,
+    "png_count": 20
+  }
+}

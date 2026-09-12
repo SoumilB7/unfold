@@ -1,0 +1,59 @@
+{
+  "files": [
+    {
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+      "sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda",
+      "relevance": "81 attention_bias=False;84 head_dim=None;87-88 derived hidden_size//num_attention_heads"
+    },
+    {
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+      "relevance": "232 actual attention head_dim property;239 bias=config.attention_bias"
+    },
+    {
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/configuration_t5.py",
+      "sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "relevance": "41 head_dim alias d_kv;46 d_kv=64 own class default"
+    },
+    {
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py",
+      "sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "relevance": "153 key_value_proj_dim=config.d_kv;156 inner_dim formula"
+    },
+    {
+      "path": "model_unfolder/parser.py",
+      "sha256": "671ab55689057a003f246bea148db022889055159969af55ed76e3aebc8e7344",
+      "relevance": "config_to_ir root prepared boundary54-105"
+    },
+    {
+      "path": "model_unfolder/encoder_panel.py",
+      "sha256": "5b88b29de473938e7d9dbac58e36b0a8802ac93ae29cd4432f81c7622287435b",
+      "relevance": "normalize_encoder_config prepared child boundary50-75"
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "relevance": "build retains candidate overlays, not bound document321-339"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+      "relevance": "exact defaults require successful active document in _source_operand_resolution and resolve_reader_operand"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+      "relevance": "internal parse876 does not install preparation; unified exact operand helper1357"
+    },
+    {
+      "path": "test_support/__init__.py",
+      "sha256": "0cd8423f4a9ef92b480ca5165655040979cfa9aacd8fb1233a62466959f64254",
+      "relevance": "actual T5/Llama fixture operands omitted"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-thirtieth/full-bracket/batches/batch-016.log",
+      "sha256": "056af8746f94e3e3cf7d41eabd1bc3c15b599978e545bbce73f9b7c2d8d8427b",
+      "relevance": "Actual30 two parity failures: bound Llama head128/biasFalse vsunboundNone; T5head64 vsNone"
+    }
+  ]
+}

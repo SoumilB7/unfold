@@ -13,6 +13,8 @@ hierarchy down by one; everything below the denoiser reuses the existing engine.
 """
 from __future__ import annotations
 
+from html import escape
+
 from .block_views import block_detail_svg
 from .cards import (
     _build_inspect_cards,
@@ -54,7 +56,13 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     # the U-shape drawn in the denoiser card, so the DiT layer-map / per-layer
     # card machinery is skipped.
     is_unet = bool((ir.get("extras") or {}).get("unet"))
-    info = _make_info(ir) if ir.get("layers") else _stub_info()
+    render = (ir.get("extras") or {}).get("render") or {}
+    # A source-projected denoiser with zero materialized layers still owns
+    # exact model-level boundary blocks.  Build their metadata while preserving
+    # the historical UNet stub path (the UNet has its own dedicated view).
+    info = (_make_info(ir)
+            if ir.get("layers") or (not is_unet and render.get("opaque_layer_block"))
+            else _stub_info())
 
     loop_svg = _build_loop_view(ir, info, mount_id)
     # Descendant levels below the loop blocks: [0] = VAE decoder stages, [1] =
@@ -81,11 +89,15 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     else:
         loop_cards = _build_loop_cards(ir, info, mount_id)      # panel[0]  (L2)
 
+    entry = ir.get("component_entry")
+    entry_title = entry["title"] if entry is not None else "SAMPLING LOOP"
+    entry_subtitle = (entry["subtitle"] if entry is not None else
+                      "Denoiser applied iteratively · click it to open its architecture")
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
         '<summary class="uf-section-head">'
-        '<span class="uf-section-label">SAMPLING LOOP</span>'
-        '<span class="uf-section-sub">Denoiser applied iteratively · click it to open its architecture</span>'
+        f'<span class="uf-section-label">{escape(entry_title)}</span>'
+        f'<span class="uf-section-sub">{escape(entry_subtitle)}</span>'
         '<span class="uf-chevron" aria-hidden="true">›</span>'
         '</summary>'
         f'<div class="uf-section-body">{loop_svg}</div>'
@@ -219,17 +231,19 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str, *, denoiser_arch: str
                 svg = denoiser_arch
             elif denoiser_view == "unet":
                 svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
+            elif block.get("view"):
+                svg = block_detail_svg(ir, info, mount_id, block)
             else:
                 svg = _build_architecture_view(ir, info, mount_id)
-            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
-                         else _simple_card(bid, title, desc, facts))
+            cards.append(_rich_card(bid, title, desc, svg, facts, block=block) if svg
+                         else _simple_card(bid, title, desc, facts, block=block))
         elif block.get("view"):
             # e.g. the VAE decoder — render its own drill-down view as the card.
             svg = block_detail_svg(ir, info, mount_id, block)
-            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
-                         else _simple_card(bid, title, desc, facts))
+            cards.append(_rich_card(bid, title, desc, svg, facts, block=block) if svg
+                         else _simple_card(bid, title, desc, facts, block=block))
         else:
-            cards.append(_simple_card(bid, title, desc, facts))
+            cards.append(_simple_card(bid, title, desc, facts, block=block))
     return "".join(cards)
 
 
@@ -266,8 +280,8 @@ def _cards_for_children(ir: dict, info: dict, mount_id: str, children: list[dict
         desc = child.get("description", "")
         facts = child.get("facts")
         svg = block_detail_svg(ir, info, mount_id, child)
-        cards.append(_rich_card(cid, title, desc, svg, facts) if svg
-                     else _simple_card(cid, title, desc, facts))
+        cards.append(_rich_card(cid, title, desc, svg, facts, block=child) if svg
+                     else _simple_card(cid, title, desc, facts, block=child))
     return "".join(cards)
 
 
@@ -288,6 +302,43 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     render = (ir.get("extras") or {}).get("render") or {}
     blocks = {b["id"]: b for b in (render.get("loop_blocks") or [])}
     loop_edges = render.get("loop_edges") or []
+    entry = ir.get("component_entry")
+    if entry is not None:
+        # The producer explicitly supplied a component, not a sampling loop.
+        # Reuse independent incoming lanes; there is no synthetic noise,
+        # scheduler recurrence, text encoder, decoder or image boundary.
+        from .graph import Graph, Node, Parallel, Lane
+        from .graph_engine import render_graph
+        inputs = entry["input_ids"]
+        root_id = entry["root_id"]
+        visible = [blocks[key] for key in (*inputs, root_id) if key in blocks]
+
+        def input_lines(label):
+            # Keep the exact declared name, including underscores, while
+            # fitting each line within the existing incoming-lane card.
+            result = []
+            for line in ([label] if isinstance(label, str) else label):
+                while len(line) > 15:
+                    end = line.rfind("_", 0, 15) + 1 or 15
+                    result.append(line[:end])
+                    line = line[end:]
+                result.append(line)
+            return result
+
+        nodes = [Node(row["id"], row["kind"],
+                      input_lines(row["label"]) if row["id"] in inputs else row["label"],
+                      w=164 if row["id"] in inputs else 240,
+                      font=11 if row["id"] in inputs else 12)
+                 for row in visible]
+        graph = Graph(nodes, [root_id], parallels=[
+            Parallel(None, root_id, [Lane([key]) for key in inputs])] if inputs else [])
+        result = render_graph(graph, info, mount_id, "denoiser_component",
+                              "Declared denoiser inputs; external components require their own evidence")
+        others = [row for key, row in blocks.items() if key not in {*inputs, root_id}]
+        if others:
+            result += block_detail_svg(ir, info, mount_id, {
+                "id": "supplied_components", "view": "constructed_children", "children": others})
+        return result
 
     def label(bid: str, default: str):
         lab = (blocks.get(bid) or {}).get("label", default)
@@ -299,9 +350,6 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
         # Approved diffusion stages render solid; anything else renders pale to
         # flag that its place isn't decided yet (block_schema.DIFFUSION_STAGES).
         return _is_resolved_diffusion_block(True, info, bid, blocks.get(bid))
-
-    diffusion = (ir.get("extras") or {}).get("diffusion") or {}
-    scheduler = diffusion.get("scheduler")
 
     # ------------------------------------------------------------------
     # Layout: ONE latent spine (Noise -> junction -> Denoiser -> VAE ->
@@ -327,8 +375,7 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     # unambiguous; a junction is not.
     buf_w, buf_h = 116, 40
     buf_x, buf_y = cx - buf_w / 2, den_y + den_h + 24
-    buf_cy, buf_bottom = buf_y + buf_h / 2, buf_y + buf_h
-    rail_y = buf_cy                     # the z_{t-1} return rail meets the cell
+    buf_bottom = buf_y + buf_h
 
     # --- The loop frame: the SAME solid cell frame + white repeat pill the
     # engine draws for "× N layers" — one visual language for "this part runs
@@ -398,7 +445,7 @@ def _place_conditioning(parts, info, shadow_id, label, resolved, blocks, pos):
         entries += [("text_context", label("text_context", "Context assembly"))]
     if enc_ids:
         entries += [(bid, label(bid, "Encoder")) for bid in enc_ids]
-    else:
+    elif "text_encoder" in blocks:
         entries += [("text_encoder", label("text_encoder", ["Text prompt", "→ encoder"]))]
 
     den = pos["denoiser"]
@@ -605,7 +652,7 @@ def _latent_grid(parts: list[str], x0: float, y0: float, n: int = 5, cell: int =
 # Block diffusion fragment — DiffusionGemma generation loop
 #
 # Architecture: encoder (causal, one pass per canvas) → KV cache →
-#   denoising loop (bidirectional decoder × ≤48 steps, with entropy-bound
+#   denoising loop (bidirectional decoder repeated under a runtime step policy,
 #   accept/renoise and self-conditioning from prev step's logits).
 # ---------------------------------------------------------------------------
 
@@ -702,17 +749,17 @@ def _build_block_diffusion_loop_cards(ir: dict, info: dict, mount_id: str) -> st
         if bid in arch_embed_ids:
             svg = _build_architecture_view(ir, info, mount_id)
             cards.append(
-                _rich_card(bid, title, desc, svg, facts) if svg
-                else _simple_card(bid, title, desc, facts)
+                _rich_card(bid, title, desc, svg, facts, block=block) if svg
+                else _simple_card(bid, title, desc, facts, block=block)
             )
         elif block.get("view"):
             svg = block_detail_svg(ir, info, mount_id, block)
             cards.append(
-                _rich_card(bid, title, desc, svg, facts) if svg
-                else _simple_card(bid, title, desc, facts)
+                _rich_card(bid, title, desc, svg, facts, block=block) if svg
+                else _simple_card(bid, title, desc, facts, block=block)
             )
         else:
-            cards.append(_simple_card(bid, title, desc, facts))
+            cards.append(_simple_card(bid, title, desc, facts, block=block))
     return "".join(cards)
 
 
@@ -739,7 +786,7 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
 
     What the arrows explain — two processes sharing one store:
       * SETUP (once, outside the loop): Prompt → Encoder → writes the KV store.
-      * LOOP  (≤48 steps): Canvas → Self-cond → Decoder → LM head → Sampler,
+      * LOOP: Canvas → Self-cond → Decoder → LM head → Sampler,
         with the Decoder READING the KV store each step, and the Sampler feeding
         its result back to the Canvas (renoise) and Self-cond (prev logits).
 
@@ -751,7 +798,10 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
     """
     n_layers = len(ir.get("layers", []))
     bd = ((ir.get("extras") or {}).get("block_diffusion")) or {}
-    canvas_len = bd.get("canvas_length", 256)
+    canvas_len = bd.get("canvas_length")
+    canvas_label = (
+        f"Canvas · {canvas_len} tokens"
+        if canvas_len is not None else "Canvas length unresolved")
 
     w, h = 760, 620
     enc_cx = 152    # encoder column centre-x (left, outside the loop)
@@ -768,18 +818,23 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
         "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
         "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
     }))
-    _badge(parts, loop_x + loop_w, loop_y + 14, "↺ up to 48 steps")
+    _badge(parts, loop_x + loop_w, loop_y + 14, "↺ step bound unresolved")
 
     pos: dict[str, dict] = {}
+    loop_cards = info.get("blocks") or {}
+    lm_label = (loop_cards.get("bd_lm_head") or {}).get(
+        "title", "LM head · softcap unresolved")
+    sampler_label = (loop_cards.get("bd_sampler") or {}).get(
+        "title", "Accept / renoise · bound unresolved")
 
     # ── Denoising chain: stacked bottom→top with a uniform gap, so the five
     # flow arrows between them are all exactly `gap` long. ──
     chain = [
-        ("bd_canvas", 176, 52, [f"Canvas · {canvas_len} tokens", "init U(V)"], 13),
+        ("bd_canvas", 176, 52, [canvas_label, "init U(V)"], 13),
         ("bd_self_cond", 172, 46, "Self-conditioning", 14),
         ("bd_decoder", 228, 74, [f"Decoder  ×{n_layers}", "bidirectional layers"], 15),
-        ("bd_lm_head", 196, 50, "LM head · softcap", 14),
-        ("bd_sampler", 204, 58, ["Accept / renoise", "(entropy bound)"], 13),
+        ("bd_lm_head", 196, 50, lm_label, 14),
+        ("bd_sampler", 204, 58, sampler_label, 13),
     ]
     bottom = loop_y + loop_h - 20   # canvas bottom edge
     for bid, bw, bh, label, fs in chain:

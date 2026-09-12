@@ -1,0 +1,17 @@
+{
+  "decision": "ACCEPT_CORRECTED_RECORDER_SOURCE",
+  "reviewer": "independent_review",
+  "recorder_sha256": "f289b7d416694f8c3fd69dea4afd656df218326c37d17bf656b1c193f9ae31f1",
+  "checks": [
+    "Requires successful complete committed S7 and coverage lanes, same source commit, unchanged lane/artifact/tool fingerprints.",
+    "Rehashes current recorded tools before copying executed helper source.",
+    "Pins exact independent main audit verdict and referenced audit byte manifests.",
+    "Copies raw evidence losslessly; gzip only packaging with decoded equality check.",
+    "Retains literal nonzero raw path counts and role-qualified zero current S7 defects; no historical rewriting."
+  ],
+  "late_supplement_plan": "Review explicit install8 plus closing non-audit files, exact manifest-named self-copy exclusions, and source/finalcommit linkage without oldarchive rescan.",
+  "limits": [
+    "Source acceptance only; coverage still running at review time.",
+    "Final actual receipt and late supplemental results remain pending; no Linux verdict inferred."
+  ]
+}

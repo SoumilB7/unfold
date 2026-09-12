@@ -1,0 +1,19 @@
+{
+  "after_bytes": 175517,
+  "after_sha256": "960bb4792f698c0d8299907a36eebba6b4e2cb9e77f3ed2a237bc33596c16fb4",
+  "before_bytes": 175517,
+  "before_sha256": "029e1d66c58e46df0067cc3203ac48105ebbdbc2d268c5d67d4d887d4c350c4a",
+  "exact_new_mount_occurrences": 279,
+  "exact_old_mount_occurrences": 279,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-090322bbbf",
+  "mount_identity_before": "uf-34c6318dff",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 13,
+  "raw_ordered_svg_count_before": 13,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "ltx-video",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

@@ -1,0 +1,5 @@
+ERROR: not found: /Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyninth/tests/test_s6_physics.py::test_public_boundary
+(no match in any of [<Module test_s6_physics.py>])
+
+
+no tests ran in 0.75s

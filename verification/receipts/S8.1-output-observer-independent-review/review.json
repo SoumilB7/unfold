@@ -1,0 +1,43 @@
+{
+  "decision": "ACCEPT_BOUNDED_OBSERVER_TRIAL_AND_ARCHIVE",
+  "map_sha256": "639b9793cd7e5de943946b45ae4602a2daf2e1f5028f8a1cbb874a09dea42dda",
+  "archive": {
+    "streams": 107,
+    "directories": 14,
+    "raw_bytes": 4524409,
+    "stored_bytes": 724997,
+    "all_decoded_bytes_hashes_sizes_equal_originals": true,
+    "full_membership_and_injective_safe_paths": true
+  },
+  "actual_v2": {
+    "structural_controls_passed": 35,
+    "unchanged_preservation_tests_passed": 3,
+    "case": "llama-7b",
+    "all_seven_surface_hashes_equal_original_expected": true,
+    "views_equal_expected": true,
+    "four_returned_pages_and_packs_byte_equal_observed_eager": true,
+    "source_input_and_outer_pins_equal": true,
+    "packet_complete": false,
+    "whole_packet_semantic_parity": false,
+    "witness_coverage": "1/29",
+    "test_coverage": "3/52"
+  },
+  "registry_change": {
+    "before_sha256": "cfd0a69ede4da851491a65c13cf058d9a20265aba38e73acae050869e0f81851",
+    "after_sha256": "cbdd46e3063df27378ed16a0b870ddc528d350cdd1720b04a0c7a16ad71d4b31",
+    "exact_only_change": "renderer.raw_extras.4592b54801fb2c20 consumer function address render_fragment -> _render_canonical_fragment; all other bytes unchanged"
+  },
+  "measured_source_delta": [
+    "model_unfolder/evidence/structural_debt.py",
+    "model_unfolder/evidence/unet_call_binding.py",
+    "model_unfolder/evidence/unet_lookup_closure.py",
+    "model_unfolder/evidence/unet_selected_spatial.py"
+  ],
+  "limits": [
+    "V1 actual Sable failure remains RED; V2 is not a whole-tree one-line isolation experiment.",
+    "Four Llama pages remained eager and raw-equal; this trial alone does not exercise compact lazy materialization or prove browser behavior.",
+    "Original raw comparator and expected baseline remained unchanged. Full29/52 collection remains outstanding.",
+    "My authored three-reader changes are reported only as measured source deltas; semantic acceptance belongs to root.",
+    "No model/test/render/profile execution or pickle deserialization by reviewer."
+  ]
+}

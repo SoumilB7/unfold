@@ -1,0 +1,15 @@
+{
+  "blessed": false,
+  "condition": "ordinary",
+  "constructed": 1930,
+  "elapsed_seconds": 220.519,
+  "html_sha256": "46c26639e85e5ccb28fa42db976003c1b74543d372d1e139697fb9a7cdbb24da",
+  "nested_source_address": "models/attention.py",
+  "nested_source_package": "diffusers",
+  "nested_source_root": 0,
+  "parameters": 2567463684,
+  "runtime_source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "static_source_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+  "status": "review_required",
+  "wiring_problems": []
+}

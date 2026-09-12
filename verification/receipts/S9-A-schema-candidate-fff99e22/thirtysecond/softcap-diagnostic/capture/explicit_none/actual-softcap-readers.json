@@ -1,0 +1,1231 @@
+[
+  {
+    "failures": [],
+    "key": [
+      "decoder.attention.logit_softcap",
+      []
+    ],
+    "provenance": [
+      {
+        "config_paths": [],
+        "detail": "exact stage address plus exact repeated-container invocation proof",
+        "kind": "derived",
+        "spans": []
+      },
+      {
+        "config_paths": [
+          [
+            "attention_cap"
+          ]
+        ],
+        "detail": "exact score/cap -> tanh -> *cap path binds the same parameter to one exact config occurrence",
+        "kind": "code_and_config",
+        "spans": [
+          {
+            "col": 15,
+            "end_col": 61,
+            "end_line": 26,
+            "line": 26,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 14,
+            "end_col": 40,
+            "end_line": 12,
+            "line": 12,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 0,
+            "end_col": 36,
+            "end_line": 4,
+            "line": 4,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 14,
+            "end_col": 56,
+            "end_line": 7,
+            "line": 7,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 0,
+            "end_col": 12,
+            "end_line": 2,
+            "line": 2,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 11,
+            "end_col": 39,
+            "end_line": 13,
+            "line": 13,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 50,
+            "end_col": 60,
+            "end_line": 26,
+            "line": 26,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 8,
+            "end_col": 31,
+            "end_line": 9,
+            "line": 9,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 18,
+            "end_col": 37,
+            "end_line": 10,
+            "line": 10,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 8,
+            "end_col": 31,
+            "end_line": 11,
+            "line": 11,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          },
+          {
+            "col": 4,
+            "end_col": 31,
+            "end_line": 11,
+            "line": 8,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        ]
+      }
+    ],
+    "status": "resolved",
+    "value": {
+      "attention_occurrence": {
+        "root": {
+          "qualified_name": "Wrapper",
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "sites": [
+          {
+            "enclosing_callable": {
+              "qualified_name": "Wrapper.__init__",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Wrapper",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 20,
+              "end_col": 32,
+              "end_line": 46,
+              "line": 46,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Core.__init__",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Core",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 36,
+              "end_col": 48,
+              "end_line": 37,
+              "line": 37,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Cell.__init__",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Cell",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 21,
+              "end_col": 34,
+              "end_line": 31,
+              "line": 31,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ]
+      },
+      "block_occurrence": {
+        "root": {
+          "qualified_name": "Wrapper",
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "sites": [
+          {
+            "enclosing_callable": {
+              "qualified_name": "Wrapper.__init__",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Wrapper",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 20,
+              "end_col": 32,
+              "end_line": 46,
+              "line": 46,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "enclosing_callable": {
+              "qualified_name": "Core.__init__",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "ordinal": 0,
+            "owner": {
+              "qualified_name": "Core",
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "span": {
+              "col": 36,
+              "end_col": 48,
+              "end_line": 37,
+              "line": 37,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ]
+      },
+      "compute_callable": {
+        "qualified_name": "eager",
+        "source": {
+          "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+          "component_key": "root",
+          "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "config_path": [
+        "attention_cap"
+      ],
+      "divide_span": {
+        "col": 8,
+        "end_col": 31,
+        "end_line": 9,
+        "line": 9,
+        "source": {
+          "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+          "component_key": "root",
+          "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "guard_span": {
+        "col": 4,
+        "end_col": 31,
+        "end_line": 11,
+        "line": 8,
+        "source": {
+          "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+          "component_key": "root",
+          "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "multiply_span": {
+        "col": 8,
+        "end_col": 31,
+        "end_line": 11,
+        "line": 11,
+        "source": {
+          "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+          "component_key": "root",
+          "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+          "external": false,
+          "external_provenance": ""
+        }
+      },
+      "parameter": "cap",
+      "score_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "query",
+            "operator": "",
+            "source_segment": "query",
+            "span": {
+              "col": 27,
+              "end_col": 32,
+              "end_line": 7,
+              "line": 7,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "const_value": null,
+                    "keyword_children": [],
+                    "kind": "name",
+                    "name": "key",
+                    "operator": "",
+                    "source_segment": "key",
+                    "span": {
+                      "col": 34,
+                      "end_col": 37,
+                      "end_line": 7,
+                      "line": 7,
+                      "source": {
+                        "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                        "component_key": "root",
+                        "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                        "external": false,
+                        "external_provenance": ""
+                      }
+                    }
+                  }
+                ],
+                "const_value": null,
+                "keyword_children": [],
+                "kind": "attribute",
+                "name": "transpose",
+                "operator": "",
+                "source_segment": "key.transpose",
+                "span": {
+                  "col": 34,
+                  "end_col": 47,
+                  "end_line": 7,
+                  "line": 7,
+                  "source": {
+                    "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                    "component_key": "root",
+                    "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "const_value": 1,
+                    "keyword_children": [],
+                    "kind": "constant",
+                    "name": "",
+                    "operator": "",
+                    "source_segment": "1",
+                    "span": {
+                      "col": 49,
+                      "end_col": 50,
+                      "end_line": 7,
+                      "line": 7,
+                      "source": {
+                        "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                        "component_key": "root",
+                        "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                        "external": false,
+                        "external_provenance": ""
+                      }
+                    }
+                  }
+                ],
+                "const_value": null,
+                "keyword_children": [],
+                "kind": "unaryop",
+                "name": "",
+                "operator": "-",
+                "source_segment": "-1",
+                "span": {
+                  "col": 48,
+                  "end_col": 50,
+                  "end_line": 7,
+                  "line": 7,
+                  "source": {
+                    "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                    "component_key": "root",
+                    "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "const_value": 2,
+                    "keyword_children": [],
+                    "kind": "constant",
+                    "name": "",
+                    "operator": "",
+                    "source_segment": "2",
+                    "span": {
+                      "col": 53,
+                      "end_col": 54,
+                      "end_line": 7,
+                      "line": 7,
+                      "source": {
+                        "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                        "component_key": "root",
+                        "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                        "external": false,
+                        "external_provenance": ""
+                      }
+                    }
+                  }
+                ],
+                "const_value": null,
+                "keyword_children": [],
+                "kind": "unaryop",
+                "name": "",
+                "operator": "-",
+                "source_segment": "-2",
+                "span": {
+                  "col": 52,
+                  "end_col": 54,
+                  "end_line": 7,
+                  "line": 7,
+                  "source": {
+                    "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                    "component_key": "root",
+                    "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                    "external": false,
+                    "external_provenance": ""
+                  }
+                }
+              }
+            ],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "call",
+            "name": "",
+            "operator": "",
+            "source_segment": "key.transpose(-1, -2)",
+            "span": {
+              "col": 34,
+              "end_col": 55,
+              "end_line": 7,
+              "line": 7,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "torch",
+              "operator": "",
+              "source_segment": "torch",
+              "span": {
+                "col": 14,
+                "end_col": 19,
+                "end_line": 7,
+                "line": 7,
+                "source": {
+                  "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                  "component_key": "root",
+                  "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "matmul",
+          "operator": "",
+          "source_segment": "torch.matmul",
+          "span": {
+            "col": 14,
+            "end_col": 26,
+            "end_line": 7,
+            "line": 7,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager",
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [],
+        "kwargs": [],
+        "lexical_order": 1,
+        "owner": null,
+        "receiver": {
+          "children": [],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "name",
+          "name": "torch",
+          "operator": "",
+          "source_segment": "torch",
+          "span": {
+            "col": 14,
+            "end_col": 19,
+            "end_line": 7,
+            "line": 7,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 14,
+          "end_col": 56,
+          "end_line": 7,
+          "line": 7,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      },
+      "softmax_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "weights",
+            "operator": "",
+            "source_segment": "weights",
+            "span": {
+              "col": 24,
+              "end_col": 31,
+              "end_line": 12,
+              "line": 12,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "F",
+              "operator": "",
+              "source_segment": "F",
+              "span": {
+                "col": 14,
+                "end_col": 15,
+                "end_line": 12,
+                "line": 12,
+                "source": {
+                  "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                  "component_key": "root",
+                  "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "softmax",
+          "operator": "",
+          "source_segment": "F.softmax",
+          "span": {
+            "col": 14,
+            "end_col": 23,
+            "end_line": 12,
+            "line": 12,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager",
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [],
+        "kwargs": [
+          [
+            "dim",
+            {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": 1,
+                  "keyword_children": [],
+                  "kind": "constant",
+                  "name": "",
+                  "operator": "",
+                  "source_segment": "1",
+                  "span": {
+                    "col": 38,
+                    "end_col": 39,
+                    "end_line": 12,
+                    "line": 12,
+                    "source": {
+                      "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                      "component_key": "root",
+                      "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "unaryop",
+              "name": "",
+              "operator": "-",
+              "source_segment": "-1",
+              "span": {
+                "col": 37,
+                "end_col": 39,
+                "end_line": 12,
+                "line": 12,
+                "source": {
+                  "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                  "component_key": "root",
+                  "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ]
+        ],
+        "lexical_order": 4,
+        "owner": null,
+        "receiver": {
+          "children": [],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "name",
+          "name": "F",
+          "operator": "",
+          "source_segment": "F",
+          "span": {
+            "col": 14,
+            "end_col": 15,
+            "end_line": 12,
+            "line": 12,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 14,
+          "end_col": 40,
+          "end_line": 12,
+          "line": 12,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      },
+      "spans": [
+        {
+          "col": 15,
+          "end_col": 61,
+          "end_line": 26,
+          "line": 26,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 14,
+          "end_col": 40,
+          "end_line": 12,
+          "line": 12,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 0,
+          "end_col": 36,
+          "end_line": 4,
+          "line": 4,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 14,
+          "end_col": 56,
+          "end_line": 7,
+          "line": 7,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 0,
+          "end_col": 12,
+          "end_line": 2,
+          "line": 2,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 11,
+          "end_col": 39,
+          "end_line": 13,
+          "line": 13,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 50,
+          "end_col": 60,
+          "end_line": 26,
+          "line": 26,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 8,
+          "end_col": 31,
+          "end_line": 9,
+          "line": 9,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 18,
+          "end_col": 37,
+          "end_line": 10,
+          "line": 10,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 8,
+          "end_col": 31,
+          "end_line": 11,
+          "line": 11,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        {
+          "col": 4,
+          "end_col": 31,
+          "end_line": 11,
+          "line": 8,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      ],
+      "tanh_call": {
+        "args": [
+          {
+            "children": [],
+            "const_value": null,
+            "keyword_children": [],
+            "kind": "name",
+            "name": "weights",
+            "operator": "",
+            "source_segment": "weights",
+            "span": {
+              "col": 29,
+              "end_col": 36,
+              "end_line": 10,
+              "line": 10,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            }
+          }
+        ],
+        "callee": {
+          "children": [
+            {
+              "children": [],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "name",
+              "name": "torch",
+              "operator": "",
+              "source_segment": "torch",
+              "span": {
+                "col": 18,
+                "end_col": 23,
+                "end_line": 10,
+                "line": 10,
+                "source": {
+                  "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                  "component_key": "root",
+                  "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          ],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "attribute",
+          "name": "tanh",
+          "operator": "",
+          "source_segment": "torch.tanh",
+          "span": {
+            "col": 18,
+            "end_col": 28,
+            "end_line": 10,
+            "line": 10,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "enclosing_callable": {
+          "qualified_name": "eager",
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        },
+        "guard": [
+          {
+            "kind": "if",
+            "span": {
+              "col": 4,
+              "end_col": 31,
+              "end_line": 11,
+              "line": 8,
+              "source": {
+                "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                "component_key": "root",
+                "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                "external": false,
+                "external_provenance": ""
+              }
+            },
+            "test": {
+              "children": [
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "name",
+                  "name": "cap",
+                  "operator": "",
+                  "source_segment": "cap",
+                  "span": {
+                    "col": 7,
+                    "end_col": 10,
+                    "end_line": 8,
+                    "line": 8,
+                    "source": {
+                      "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                      "component_key": "root",
+                      "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                },
+                {
+                  "children": [],
+                  "const_value": null,
+                  "keyword_children": [],
+                  "kind": "constant",
+                  "name": "",
+                  "operator": "",
+                  "source_segment": "None",
+                  "span": {
+                    "col": 18,
+                    "end_col": 22,
+                    "end_line": 8,
+                    "line": 8,
+                    "source": {
+                      "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                      "component_key": "root",
+                      "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                      "external": false,
+                      "external_provenance": ""
+                    }
+                  }
+                }
+              ],
+              "const_value": null,
+              "keyword_children": [],
+              "kind": "compare",
+              "name": "",
+              "operator": "is not",
+              "source_segment": "cap is not None",
+              "span": {
+                "col": 7,
+                "end_col": 22,
+                "end_line": 8,
+                "line": 8,
+                "source": {
+                  "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+                  "component_key": "root",
+                  "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+                  "external": false,
+                  "external_provenance": ""
+                }
+              }
+            }
+          }
+        ],
+        "kwargs": [],
+        "lexical_order": 3,
+        "owner": null,
+        "receiver": {
+          "children": [],
+          "const_value": null,
+          "keyword_children": [],
+          "kind": "name",
+          "name": "torch",
+          "operator": "",
+          "source_segment": "torch",
+          "span": {
+            "col": 18,
+            "end_col": 23,
+            "end_line": 10,
+            "line": 10,
+            "source": {
+              "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+              "component_key": "root",
+              "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+              "external": false,
+              "external_provenance": ""
+            }
+          }
+        },
+        "span": {
+          "col": 18,
+          "end_col": 37,
+          "end_line": 10,
+          "line": 10,
+          "source": {
+            "canonical_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/capture/explicit_none/model.py",
+            "component_key": "root",
+            "content_fingerprint": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+            "external": false,
+            "external_provenance": ""
+          }
+        }
+      }
+    }
+  }
+]

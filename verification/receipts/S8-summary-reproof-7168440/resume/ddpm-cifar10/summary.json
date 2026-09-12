@@ -1,0 +1,9 @@
+{
+  "parameter_count": 35746307,
+  "parameterized_module_count": 164,
+  "population_fact_key": "root.denoiser.constructed_modules",
+  "scope": "denoiser",
+  "shape_fact_key": "root.denoiser.constructed_parameter_shapes",
+  "stage_count": 9,
+  "stage_relation_fact_key": "root.denoiser.constructed_stage_relations"
+}

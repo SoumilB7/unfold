@@ -1,0 +1,3137 @@
+{
+  "format": "lossless-appended-gzip-v1",
+  "entries": [
+    {
+      "logical_path": "focused-46/pytest.log",
+      "source_path": "/private/tmp/s81-card-payload-tests-v2.log",
+      "stored_path": "streams/focused-46/pytest.log.gzip",
+      "bytes": 99,
+      "sha256": "21b48b32d9d2f27afe503a7f30afab0dc147595cacc58b732f987caa948eb9bd",
+      "stored_bytes": 52,
+      "stored_sha256": "b98d10b5e4f32c5dd9f557c1ac53c43e168c20c2712e5a99f7e08c7773890b4d"
+    },
+    {
+      "logical_path": "focused-46/test_card_payload.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-independent-transport-observer-review-788abbd/mount-and-public-render-preuse/test_card_payload.py.txt",
+      "stored_path": "streams/focused-46/test_card_payload.py.gzip",
+      "bytes": 8780,
+      "sha256": "e5865f077372aff0f9d06664ec6d94a9c70dc9d2f4c24cdf7c9e76896c18409d",
+      "stored_bytes": 2590,
+      "stored_sha256": "c490bca5c7f1f550d0c63ab1d9a7abd1cd739366d551c519c852d8c24b679031"
+    },
+    {
+      "logical_path": "focused-47/pytest.log",
+      "source_path": "/private/tmp/s81-card-payload-tests-v3.log",
+      "stored_path": "streams/focused-47/pytest.log.gzip",
+      "bytes": 99,
+      "sha256": "6a99b176bb4863b4ce4516c13ee4f029370bbfaf6918761d9801512d39c95050",
+      "stored_bytes": 52,
+      "stored_sha256": "02ec50491f147425e93b99ec66128a868bb862e8535f549e8c94d1e8e5d138d5"
+    },
+    {
+      "logical_path": "focused-47/report_s8_demonstration.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/scripts/report_s8_demonstration.py",
+      "stored_path": "streams/focused-47/report_s8_demonstration.py.gzip",
+      "bytes": 37930,
+      "sha256": "79de515bcc93b5b3a3641bc8ab75fc480ccbd6fc44ac590846a34ee0b44bc120",
+      "stored_bytes": 10290,
+      "stored_sha256": "9c7e3f6c40e79893b4b2c8afcbb05f6a48e19c97b543972b1a348eb4b131df13"
+    },
+    {
+      "logical_path": "focused-47/test_card_payload.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/tests/test_card_payload.py",
+      "stored_path": "streams/focused-47/test_card_payload.py.gzip",
+      "bytes": 9730,
+      "sha256": "ac345d6b23e27fa51ea36377ac6b132f8baa2a5fafc4c669aa63e83f5fd1df0f",
+      "stored_bytes": 2842,
+      "stored_sha256": "b19c67f12c2d13e033fc41ff991f40c73bf681c5c084ba55fad29d1fd75d8434"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/measure_html.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/measure_html.py",
+      "stored_path": "streams/frozen-renderer-snapshot/measure_html.py.gzip",
+      "bytes": 6452,
+      "sha256": "9ea9cebab1cc120fa30f01b28b653da52b0ad975493f9b4058974aabeaa58821",
+      "stored_bytes": 2069,
+      "stored_sha256": "9d462c541b56873d06ca6bc25a33426afa91e066d4442ec224d0ccf79507f9de"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/__init__.py.gzip",
+      "bytes": 3040,
+      "sha256": "be8da971788e9832c119cd8adfeaaec8fced28c9eff29d8b5b5e0df71a8f9ef4",
+      "stored_bytes": 1280,
+      "stored_sha256": "042f40bdb2f07900a56b4d43ee99b906158c0c639fb2e76ca6958eb3be820658"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/__init__.py.gzip",
+      "bytes": 319,
+      "sha256": "85ab7fb1d6e3785418a2b2e2385cf35239f0704ffa7f4096a917e238bb22983b",
+      "stored_bytes": 203,
+      "stored_sha256": "ce032618360112eb4640e00f1cff1988b5ba9676e36990ae03cc665cce1307a4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/custom/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/custom/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/custom/__init__.py.gzip",
+      "bytes": 209,
+      "sha256": "6faecdb48ba682fd87e26728522eef9655c01093e86c52dc73235ac77b7ffa03",
+      "stored_bytes": 177,
+      "stored_sha256": "453100427961c62b21af013671e3ccc3b411bab4f8452cfdec4d90c8ea84ce67"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/__init__.py.gzip",
+      "bytes": 378,
+      "sha256": "cecadad55530e85ea0be0a534b23078f74c0bd3323f2f1f61cbfb52b42bc45a8",
+      "stored_bytes": 279,
+      "stored_sha256": "c9cf6ad2b5e0838340f433add14e6968ad5d48a70351cd8c10a16d913e04ceb9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/blocks.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/blocks.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/blocks.py.gzip",
+      "bytes": 69265,
+      "sha256": "1a5fc911410ae75749aa3e2734cd78d6a97d886c1de8a437d0a836dcf3ef61d8",
+      "stored_bytes": 19202,
+      "stored_sha256": "b75b896c9764851d121e94ec45058fecff024286475e911b8c7f78c65cab987c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/compound.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/compound.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/compound.py.gzip",
+      "bytes": 4253,
+      "sha256": "9400b89d451187ca0f6345d6e7c8cc8888f8e1e4684e882d9f80dac01da3b117",
+      "stored_bytes": 1340,
+      "stored_sha256": "b82ef52c2510d9ff911a1534bd6982abc489b853a2ea7233800bce5f5fb82ac0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/config_binding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/config_binding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/config_binding.py.gzip",
+      "bytes": 35606,
+      "sha256": "1a8402c197dc31741d0749e5c0a415b8df20bedd2f3a8868e16db95758a0a8cf",
+      "stored_bytes": 7685,
+      "stored_sha256": "72465406a37eca40a66bb41d9bb6bbd7dd25a9b33cd7753b85b545e042a25e76"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/loader.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/loader.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/loader.py.gzip",
+      "bytes": 7070,
+      "sha256": "2858735dd71cd8dbc18a167443ef3f2c37e5564a27e8f015a6a05dd24d228c54",
+      "stored_bytes": 2540,
+      "stored_sha256": "4f6d570b013d92d77390904c18cb27c881404898a5c284cc2553e94b161bdda1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/parser.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/parser.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/parser.py.gzip",
+      "bytes": 53094,
+      "sha256": "0b46066f535105f673268beae2798ec5e97576c74cae74a284e5ed28d94c460b",
+      "stored_bytes": 15963,
+      "stored_sha256": "dbca232c63f497f4cb79adc1b78d9dfd344806e1c3580f791cd00e28939f1d47"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/projection_ir.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/projection_ir.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/projection_ir.py.gzip",
+      "bytes": 67462,
+      "sha256": "8bc54e421a11a385a8c6d8032595606eba5ed2bc7ab9fb092caf16f698a60062",
+      "stored_bytes": 15285,
+      "stored_sha256": "7546bf7d7cd18dbd761c580075c389ca2b2fcd680fe3a78b17ca8d9944588aa5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/schema.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/schema.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/schema.py.gzip",
+      "bytes": 20339,
+      "sha256": "37e4d568b48eca66fc4bdd436929741b2cfda14a5320158bcc1bc7e0d9850a91",
+      "stored_bytes": 4286,
+      "stored_sha256": "a1da07bb86752e7906e39e0ae89c8b4e52ae19a21d5a4e8ad268fb0f253de825"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/unet.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet.py.gzip",
+      "bytes": 55138,
+      "sha256": "d0eab97ea6abc8301b49d1f90ee7e2d28145eb4a84abe667f72ad78f08ae4030",
+      "stored_bytes": 14740,
+      "stored_sha256": "32844f0f1103dd108b32596a6a044f726700c763c6eba9f32deb9e3ea4077dd3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_cutover.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/unet_cutover.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_cutover.py.gzip",
+      "bytes": 5078,
+      "sha256": "2f01b67d5152a10b07424eba398225b65b37171e00ed609e1f4d6aa629e3514b",
+      "stored_bytes": 1499,
+      "stored_sha256": "e14c64c4e8ed0365851645c396c55a6caf6b735fc2cb8a60e33541692d3f621d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_differential.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/unet_differential.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_differential.py.gzip",
+      "bytes": 540,
+      "sha256": "cae9dc7e1f20123924119f3c3b01f974ae933b069ddd7793a76ac69be02fe680",
+      "stored_bytes": 295,
+      "stored_sha256": "e354fe6fa80a3849e8aaf99a0429dbbec8beacbddd8c13a2815f3a60981752f8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_projection.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/diffusor/unet_projection.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/diffusor/unet_projection.py.gzip",
+      "bytes": 33489,
+      "sha256": "143b25fbf774aee62ffc1c004bbfb6db36895fc51609abc1ad6864acbd4c5be6",
+      "stored_bytes": 7971,
+      "stored_sha256": "ba9093dca38c403abfcffe5fc91fc37f85cb048c9b786930c804aadfbe906dd7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/__init__.py.gzip",
+      "bytes": 200,
+      "sha256": "3fad224e5c89937c03ca7666b12177450046dca4feb963f67270620d4707be18",
+      "stored_bytes": 177,
+      "stored_sha256": "1968bf4d299883b9cbc2b14d9b15a60f7515ab8b48003f644365877cc8a7a71f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/assembly.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/assembly.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/assembly.py.gzip",
+      "bytes": 5222,
+      "sha256": "cfd4062206d2649dc88ba0d81a0e6e69cab4f1bf1f6e1e6ab0ade64c7351b872",
+      "stored_bytes": 1475,
+      "stored_sha256": "c770e63780aa0d82e209dec1e770652ccec091589b42837bd6c7641951f645cc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/blocks/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/__init__.py.gzip",
+      "bytes": 2133,
+      "sha256": "80ef53d0eb5c76607535867de1ccbb52d451024d0ca4567964740152cce87dfd",
+      "stored_bytes": 947,
+      "stored_sha256": "5baf5e9c97a924431f7260cce4f70cb3404135360ff024b48ee04d9616cec873"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/attention.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/blocks/attention.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/attention.py.gzip",
+      "bytes": 48677,
+      "sha256": "9cc66206130627216a6dc3cd4e3e6e5f668904a58e1e079dffb3ad7657372643",
+      "stored_bytes": 10816,
+      "stored_sha256": "e1c77277e469aeb31c68daa6acd4329844f812d49c3433512a8cde3eee3898bc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/feed_forward.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/blocks/feed_forward.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/feed_forward.py.gzip",
+      "bytes": 28665,
+      "sha256": "bd596ffb43ea73400c64de8609e646eebb4940147538ca781701d657a09efc6a",
+      "stored_bytes": 7515,
+      "stored_sha256": "ca0f5c7632f7d39bebd44a68b31fea18d05cb6b76cd4e148d0455f201df7169b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/layers.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/blocks/layers.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/layers.py.gzip",
+      "bytes": 22999,
+      "sha256": "97c87c00b2e33b238243d2400a252b42585cdcc91f82f6587de682bb647c84db",
+      "stored_bytes": 6337,
+      "stored_sha256": "5575df49427a200db667e994273904c8e5481855ff5354b77d042c8a9dadf8d8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/model.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/blocks/model.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/blocks/model.py.gzip",
+      "bytes": 22310,
+      "sha256": "c7bc276fe8ad5a3d1b4eb8c9db89eef6ba84489e9714ae41475e08bcf02694c0",
+      "stored_bytes": 5911,
+      "stored_sha256": "c8b3df8082dc20f38c71e550fae72c59d4624c4d97809d82e61ae1f39be68973"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/common.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/common.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/common.py.gzip",
+      "bytes": 4245,
+      "sha256": "cd533ff7458d7ab7e45de7ce990398eb03fc1f6cedcc7743ef0298e9f4899570",
+      "stored_bytes": 1914,
+      "stored_sha256": "65b9c36776e43483536b33cd7ff05bfbe099a9ed553b4c626c7d7d956fe8eb02"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/debug.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/debug.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/debug.py.gzip",
+      "bytes": 15961,
+      "sha256": "874aff3c40f4ace051367a0e4760fce3ba733aa84a278649bc0ecd64ab0c0233",
+      "stored_bytes": 5784,
+      "stored_sha256": "7949d2225988fe54e9bed6dcb815321146281a43114c99af9d39796820ce20ea"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/parser.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/parser.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/parser.py.gzip",
+      "bytes": 247420,
+      "sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+      "stored_bytes": 53378,
+      "stored_sha256": "46dbbeaf3291cab008768f467cea4998baa3a3faaf5a05377e0d5a9dbc3ffdf8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/__init__.py.gzip",
+      "bytes": 41,
+      "sha256": "530b1f21c2e2a4996b5d1026ceb045ea686c54341368c92cbd667fd1b0be6c45",
+      "stored_bytes": 59,
+      "stored_sha256": "cffa5f412d92fb9110f149beb78049fb2029c5f3c648a43503307ee528b5c45d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/__init__.py.gzip",
+      "bytes": 156,
+      "sha256": "c91a7485204b8672a40894c4ca71e40ecd776e81b528fb22e93787ba85c426be",
+      "stored_bytes": 132,
+      "stored_sha256": "99d9655af3e1d6c3259bc111e9ac877b229a11927af82193b6c0300b3e990e9c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/accessors.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/accessors.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/accessors.py.gzip",
+      "bytes": 2026,
+      "sha256": "96f4e7a8b9e148915647a5a181c0fbf16fb3bfa7dfad53b08642da159d8ff166",
+      "stored_bytes": 918,
+      "stored_sha256": "97524fbd9eab6d11dbf2a6c44b94ef8dcbe7c65a827f67ef16f73beaf53fa603"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/audio.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/audio.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/audio.py.gzip",
+      "bytes": 1121,
+      "sha256": "1c96eb7cdee13d15d0ed9304a8b14d514ac877d4b911028c0a2bc134576f112e",
+      "stored_bytes": 500,
+      "stored_sha256": "0cfa2cc0a55e4b609fcfc9f5aee54af4925f2af0cf0c8bad8f1ab76969517bd1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/builder.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/builder.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/builder.py.gzip",
+      "bytes": 6310,
+      "sha256": "d28a5b399dfbc7be59b37964a2c4ff8ccaa0c97362b4e4bb605718440ebe36b2",
+      "stored_bytes": 2469,
+      "stored_sha256": "bfcf635fc82b878e138526d060e30d0da17551597c2ae33b245eb592f6e1f6e1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/conditioning.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/conditioning.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/conditioning.py.gzip",
+      "bytes": 1960,
+      "sha256": "38877db25dfa096b5e75165801a99e94f06f15e7d33c15a26e217fdc0dfaa580",
+      "stored_bytes": 814,
+      "stored_sha256": "c2b838df0a25b73228649245a4f16211327cba7387b64f83ca864a9ac64e2cda"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/detect.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/detect.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/detect.py.gzip",
+      "bytes": 2460,
+      "sha256": "5a1884736e9c82dd9a931e8b92117fe5a65a7faa4da74020f071158e8cebc582",
+      "stored_bytes": 729,
+      "stored_sha256": "f45b3f2fa31ab1df9e38b03454cd8958f4559a854138d382da4321e53faf813a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/evidence_projection.py.gzip",
+      "bytes": 23188,
+      "sha256": "f3e86b3ddcdcb65853ee739565dff1daea789b32dec0138594e8552774a53377",
+      "stored_bytes": 5894,
+      "stored_sha256": "c0ec9d3d19fdee5b48eb086ce9cb724019604809e60d8ec2f19cdc4a75f7a4e8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/fusion.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/fusion.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/fusion.py.gzip",
+      "bytes": 9134,
+      "sha256": "6accc82e4f336a36199d6849e2ce0da7fe2ab7d77da72a27f029c593a0aaeb85",
+      "stored_bytes": 2349,
+      "stored_sha256": "7cb33d4ff9be1911a2a46a751d6da0951f07017b02aec9be2025a81b17804d6e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/registry.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/registry.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/registry.py.gzip",
+      "bytes": 4351,
+      "sha256": "9a6cbeece7075f768cfb23704dc96b8a533e9857d4bf95dafbaeba98b5c4b87f",
+      "stored_bytes": 1756,
+      "stored_sha256": "d22eaa044d5fd6eb427ceddb629b6e2b458ae0e819dfeb9632fcd7fa385b2b49"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/schema.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/schema.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/schema.py.gzip",
+      "bytes": 9520,
+      "sha256": "f4ff0dd7a60ffc0b2d603e1f566538ed91aad379e85257ef02f1bfea899ecdb8",
+      "stored_bytes": 3250,
+      "stored_sha256": "4ecd6f97779144915bedd629683e9b03f8d430ce1b94ac0cbd12578964cc7c13"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/modalities/vision.py.gzip",
+      "bytes": 16375,
+      "sha256": "00b051cb90bef262fc95c011aa52d35b806eb667aaf5f8791ee5bdabf823a968",
+      "stored_bytes": 4732,
+      "stored_sha256": "277e89c2c8905eaa1e575a6beab7fe49ba98ed27b13f6ca5933698e9e97aa03a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/per_layer_embedding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/adapters/transformer/special_parts/per_layer_embedding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/adapters/transformer/special_parts/per_layer_embedding.py.gzip",
+      "bytes": 6977,
+      "sha256": "ada882a205392cb7060e3eaf470e66e497c4ba86c4d75263be2c1f20cdda07c1",
+      "stored_bytes": 1896,
+      "stored_sha256": "bcb7c7493ddc5e28b7aac574e5277d130f80f0ce55bf56c00a7d5d2836e6573e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/block_schema.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/block_schema.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/block_schema.py.gzip",
+      "bytes": 18861,
+      "sha256": "6b363c0f3ddb092775082f654b40d394bd14b6cb56daffd28f46308554144d57",
+      "stored_bytes": 6705,
+      "stored_sha256": "2e0209f3f52d861734589fe5ed61cf9bcdced6c00e55d8d4808bcc1cc783b264"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/diagram.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/diagram.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/diagram.py.gzip",
+      "bytes": 8885,
+      "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95",
+      "stored_bytes": 2907,
+      "stored_sha256": "dc5091b97ba6dc6eb234f420fc55ac68187cae44833f96c8114094fbc23b215f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/encoder_panel.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/encoder_panel.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/encoder_panel.py.gzip",
+      "bytes": 7161,
+      "sha256": "5b88b29de473938e7d9dbac58e36b0a8802ac93ae29cd4432f81c7622287435b",
+      "stored_bytes": 3045,
+      "stored_sha256": "700a6eb26c884679169efafb05683ae7fde245a618981fccf8738e49d80f4af0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/errors.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/errors.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/errors.py.gzip",
+      "bytes": 1944,
+      "sha256": "7b745706af9dce33120587d50e9e413d55b5f60ce8d0360c17bfcbb07a9190ce",
+      "stored_bytes": 941,
+      "stored_sha256": "5e315b08940985ae4c74ad3be8b57b8729e01c1133204bd1f7917c82aa2c159c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/__init__.py.gzip",
+      "bytes": 20649,
+      "sha256": "868b367ba2c8777d7b3004e3c3fb753b691676f10e7484ce64e32ea6a3783bd8",
+      "stored_bytes": 6455,
+      "stored_sha256": "1df80342ae127b71af7a227d04a87f368aea5c3a1bbb721e431fc4604ef03d06"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/abstractions.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/abstractions.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/abstractions.yaml.gzip",
+      "bytes": 3277,
+      "sha256": "c0b5293c43482f2a3eb3bf7cba271e4f14a1467349604e3426e47f1aac146b35",
+      "stored_bytes": 1722,
+      "stored_sha256": "905406d43d72df7a0becde72a60c038768be0635c2c7881562ad4ac9194e1e87"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/conformance_map.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/conformance_map.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/conformance_map.yaml.gzip",
+      "bytes": 998,
+      "sha256": "eb7b62b4f1c6ffa40cde557363328cdb37d6d81a4841aa9c77d1daa93268a0ec",
+      "stored_bytes": 611,
+      "stored_sha256": "8ca2cefedccbe82119b2570f2de78fcb9d328776c3d3bc0a5d1adf801fcabd10"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/fact_markers.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/fact_markers.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/fact_markers.yaml.gzip",
+      "bytes": 2507,
+      "sha256": "45a38f96e1ca64796d63d78911c951d51e7a9763c1e6b907597193d6b6b28470",
+      "stored_bytes": 1300,
+      "stored_sha256": "31695afbaf0e5e0162ff9dd9a0f3ddbeb5e57899113dacef8cc6e8bfc70b218d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/op_tokens.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/op_tokens.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/op_tokens.yaml.gzip",
+      "bytes": 4239,
+      "sha256": "02d9058f78c3a5febf1bd395ae5ae1e8126bab02305e9095ea825c225872b562",
+      "stored_bytes": 2228,
+      "stored_sha256": "b3c5dd1edbfb09221213b26bab52b041406f107036c533992469c33ecc75c9bd"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/transitive.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/transitive.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/transitive.yaml.gzip",
+      "bytes": 11427,
+      "sha256": "b0e82544acfa76c42abc54ccf1ea927ebef54e751e60dfca0928ca7945ec97ad",
+      "stored_bytes": 4991,
+      "stored_sha256": "e9dbf570f11d8fe4418bcc069bd112bf25aa752bd44b04a296dbaf5a4cc91f7f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/type_roles.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/type_roles.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/type_roles.yaml.gzip",
+      "bytes": 1871,
+      "sha256": "8f67539224a79d65af71106d3a8cd54f0d7551ecb41a09e32d9a24d29360aec3",
+      "stored_bytes": 1035,
+      "stored_sha256": "2058f8c4450b7e4288d19de8b149113f09f1f48c6134e8862a10ed285cb10b4a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/conformance/wiring_roles.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/conformance/wiring_roles.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/conformance/wiring_roles.yaml.gzip",
+      "bytes": 1121,
+      "sha256": "ae4025b5fa4b5307ebd6f1ae1303284bab32a0baea856887f537965566eb650f",
+      "stored_bytes": 608,
+      "stored_sha256": "81dfee625ed37f31fad3c92bc03fa85c530a65e66d880c71dd1630996b668e61"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/aliases.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/diffusor/aliases.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/aliases.yaml.gzip",
+      "bytes": 5665,
+      "sha256": "2b5f64a7ceb3bb66caf1a8536089c9ac5a6072f223a0261417bd4eaa4fa6ee56",
+      "stored_bytes": 2457,
+      "stored_sha256": "171597e62d929aa2ec88bded2da6de359f43793719f0ba8ba02d53536dcded8a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/conditioning.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/diffusor/conditioning.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/conditioning.yaml.gzip",
+      "bytes": 2861,
+      "sha256": "ebfaf9024ebfc77f05e73349c754a08948cd5dd377c5ea6f9794b5a27ca32fc0",
+      "stored_bytes": 1164,
+      "stored_sha256": "dfe677b213c783b3e8730a4ea9a009d4cec02ae7878bbf71bf3f34065836f77a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/text_encoders.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/diffusor/text_encoders.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/text_encoders.yaml.gzip",
+      "bytes": 514,
+      "sha256": "eed1b3b01a54ebdf7fac06561caf2a70d734c0678b101db3129e5bca9d292b43",
+      "stored_bytes": 299,
+      "stored_sha256": "82f4646f3f0e1801fa8a7dfc28f1f625ced723d735ae06533bfe656650742b78"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/typing.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/diffusor/typing.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/diffusor/typing.yaml.gzip",
+      "bytes": 6408,
+      "sha256": "25949aeb181a9d241694ae9541b61b7da5c44d1722a17a6e0f0d7d1d2b92d36d",
+      "stored_bytes": 2617,
+      "stored_sha256": "f120ec598d702aae505282c7ef5972cbfcbf76cb7d54bb625c547c4674500077"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/evidence/ledger_ignores.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/evidence/ledger_ignores.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/evidence/ledger_ignores.yaml.gzip",
+      "bytes": 5242,
+      "sha256": "7ab8bd6a6f490f53bd291608bbb2e1b04bf3bf5644f36d838318a66451d2f4a8",
+      "stored_bytes": 1829,
+      "stored_sha256": "d9d1ddfd4d76795520d2e1dbaac28312638aff50d06aad5df8952d066d1f2df1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/evidence/program_index_vocab.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/evidence/program_index_vocab.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/evidence/program_index_vocab.yaml.gzip",
+      "bytes": 1535,
+      "sha256": "aafd47211e62cfc7be331bc326c5571836035d0dc40d7261d33ba4a94ac300e0",
+      "stored_bytes": 807,
+      "stored_sha256": "167e142cf81bf58f19cc27b5d0305759192d52c08f049d1e980f1d6d054f3a32"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/transformer/aliases.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/transformer/aliases.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/transformer/aliases.yaml.gzip",
+      "bytes": 5733,
+      "sha256": "5eb1247fa16006470a9051af31c3ebfb6654a4f5e7276684427d377cd57bdb14",
+      "stored_bytes": 1998,
+      "stored_sha256": "4a1ac0f9cb0b501267f617e29669b5dad3472d6b08d4f48530462abd8c1ef542"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/transformer/composite_slots.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/transformer/composite_slots.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/transformer/composite_slots.yaml.gzip",
+      "bytes": 4921,
+      "sha256": "2b68e61c94f23fffda5c38b8a1cf849de5adf0571907ebd82252ee98c7fd728c",
+      "stored_bytes": 1621,
+      "stored_sha256": "242125370999838eaccf649634da4895a265bc64c8aa3ca123d43a1865c78da7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/transformer/decoderness.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/transformer/decoderness.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/transformer/decoderness.yaml.gzip",
+      "bytes": 1288,
+      "sha256": "7d3e7ffabdc23aa20156bb64e5ddcdf5bc6c5028fb75bdf16e65d489ecfd9819",
+      "stored_bytes": 742,
+      "stored_sha256": "cb285dc7c38752a2a459ca7cc918d3b10af6cab2e59e1ada96b0837f1c96b7e1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/transformer/ignored_fields.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/transformer/ignored_fields.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/transformer/ignored_fields.yaml.gzip",
+      "bytes": 8332,
+      "sha256": "7de29bd02238e33347582cfc399f8c0b5a6930945362f7b5d2383b450a8712d8",
+      "stored_bytes": 3619,
+      "stored_sha256": "10cf1f708edf1256b75e8aec89a3508193a7e52ed9ebe71a406a12c7462ba086"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/everchanging/transformer/typing.yaml",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/everchanging/transformer/typing.yaml",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/everchanging/transformer/typing.yaml.gzip",
+      "bytes": 4126,
+      "sha256": "893e467bb0404d0224b85491703312f610ccabb53ffe1c3f58116e1545b5e771",
+      "stored_bytes": 1451,
+      "stored_sha256": "1b2133c70323204d72c887278d41bffab4f0bf45272af98ef1a0d1dc26ad3076"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/__init__.py.gzip",
+      "bytes": 1321,
+      "sha256": "400c707089c6497d6f542f4e570be321ffdf304818f4bd0eb297026a07388378",
+      "stored_bytes": 438,
+      "stored_sha256": "2e18dc628db62fd28150ab26afbe542b96b8da798861391175bd087205952504"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/activation_semantics.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/activation_semantics.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/activation_semantics.py.gzip",
+      "bytes": 802,
+      "sha256": "f16de418337671f1a80b72a917af73237b70038c64a30fe9b786f06020602fd1",
+      "stored_bytes": 373,
+      "stored_sha256": "51cc99b951a27959195d96ad7d1352d149c3afa26768edde326b32222a127d7a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/affine.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/affine.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/affine.py.gzip",
+      "bytes": 7447,
+      "sha256": "65fac74157b0b230ad3474ab0ae2f0ec78f19c55204bc2102901778770d31bc9",
+      "stored_bytes": 2185,
+      "stored_sha256": "7795106cf11d4e24652de61a1d3037bb3eba2c251c867f581979cdfd734564b2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/arbitration.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/arbitration.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/arbitration.py.gzip",
+      "bytes": 12701,
+      "sha256": "945d6f86d5159cc527dc178f15a926089f44b52fa1af83806c3814e6f2457c18",
+      "stored_bytes": 4422,
+      "stored_sha256": "3c38b3d2dac34e85bd00713462ab71ff93e860a153c4be6537cc028e4870cc8e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ast_scanner.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ast_scanner.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ast_scanner.py.gzip",
+      "bytes": 4425,
+      "sha256": "8ebb12d7c48d69bdb20c484538cbc5cd9948c5dbdefe4068aaf518b64f62e4e2",
+      "stored_bytes": 1601,
+      "stored_sha256": "ed4fb4251262f3b79c5800545d7275386f71701e9178999ea09f545535d567e2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention.py.gzip",
+      "bytes": 233452,
+      "sha256": "a3d83889bc38f014d805706a1781d38cc58fa34b4a1039b81f463401fa4ff01d",
+      "stored_bytes": 41985,
+      "stored_sha256": "7ae037c63b7f9fbe27093c090176ebae309dd5fb597b66d773eaef8dc952bec1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_child.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_child.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_child.py.gzip",
+      "bytes": 48916,
+      "sha256": "0c2a221886f927f1e7ae1f7ef912cd23eb90654a148dbfed13dd90f963403b06",
+      "stored_bytes": 10421,
+      "stored_sha256": "fb30e2e4b98e6943a14e4761b80aef378aff20f34010d45d6aca275e216bbc31"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_container_interface.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_container_interface.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_container_interface.py.gzip",
+      "bytes": 20575,
+      "sha256": "481140b045a3f5ec77ab2ac5473ff724daa95f50e384b813f7f8234b417170bf",
+      "stored_bytes": 4633,
+      "stored_sha256": "0519cf23cfbc552154c30e5e0851eeffeed3c40f6cea0e2324ecd1a7ea00bf23"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_geometry.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_geometry.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_geometry.py.gzip",
+      "bytes": 38521,
+      "sha256": "7ba9d25242fb8feda32b5fb08de33bfb598aa0808f7749c98a7502f9db2e6c6c",
+      "stored_bytes": 8084,
+      "stored_sha256": "f5f88547b02371df05ce07df316da1a021607d157188cb8a4257fd65caa78d36"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_input_interface.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_input_interface.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_input_interface.py.gzip",
+      "bytes": 23122,
+      "sha256": "a9d6e902a95bb0e6f7c2f0bdf7902e57b56e4fb0f1866160d1207daf46ed74c0",
+      "stored_bytes": 5537,
+      "stored_sha256": "01adb0427233db19a946bd174d173b5a576985a49ac39cc43dd70118413b5666"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_invocation_role.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_invocation_role.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_invocation_role.py.gzip",
+      "bytes": 23208,
+      "sha256": "61b4da2da830c3643bd264244503dace3d9f3d4721cdb610532fc7e9ad1bf79a",
+      "stored_bytes": 5155,
+      "stored_sha256": "8e26903a374640e62c5e933e332abc9c8d98cb8dec746e9dad76a879b7820044"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_lane.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_lane.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_lane.py.gzip",
+      "bytes": 31799,
+      "sha256": "e7ce83fe931d424a23e1d39696028d7ca4bfb00ede2f7b83b1958f732ec7c9ca",
+      "stored_bytes": 6803,
+      "stored_sha256": "5c3a6383332066f3e575f21961b4da24cd0a41efbea51d336bc68b1891522958"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_mask.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_mask.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_mask.py.gzip",
+      "bytes": 88432,
+      "sha256": "e2e9358e2978474032cf5fcd6981c39c80e64f0e8981ed0ea26872fe10f18c02",
+      "stored_bytes": 16650,
+      "stored_sha256": "db7ef1684730a8d5aaf232e56845fa61172583e15851c6c86cf06435aa792738"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_operands.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_operands.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_operands.py.gzip",
+      "bytes": 12682,
+      "sha256": "da3109a0c589a9afd7bd03df212c834b7acf2d7cef8c03dfb91cbb16b96cbe8d",
+      "stored_bytes": 3536,
+      "stored_sha256": "67fd2923ac6f2ef3471a5b3d3688444f9de69c6103775949ec58ae03a1808006"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_output.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_output.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_output.py.gzip",
+      "bytes": 22999,
+      "sha256": "05f86ace6cadaf84e400c70a10d15054337fbfd82323efb481247a3e9c1d6acb",
+      "stored_bytes": 5091,
+      "stored_sha256": "b20bc6e4852fd0b1ad9e0d438690ec783d3cc9c85a7eea5d1915369b55245013"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_score_additives.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_score_additives.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_score_additives.py.gzip",
+      "bytes": 25680,
+      "sha256": "823d5e8c5abda499a6dec0d256986a96077e0a9e8ffa9b5ac36a00e2490fdeb5",
+      "stored_bytes": 5447,
+      "stored_sha256": "6399eda49521ee54e9784d2046ac845cadb878716b9eca4edefc1206bcb7f524"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_sinks.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_sinks.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_sinks.py.gzip",
+      "bytes": 15938,
+      "sha256": "87f1f431eeea1a224217cf65a11900e01d6257c8f4f657a1f9e6fce04398944c",
+      "stored_bytes": 4086,
+      "stored_sha256": "a3f4bbe7329958a68676bdd1fd16cc4a60b2b82c17757d639d9433be3c0c4e43"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/attention_storage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/attention_storage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/attention_storage.py.gzip",
+      "bytes": 49734,
+      "sha256": "b4284aa6936333bb80973e38fc2fdcd7c47282918424a6d147a8094febb4a501",
+      "stored_bytes": 10856,
+      "stored_sha256": "e936374d2249ce1b3481c64ea6671a7d5ad645cf4d767f643648954eb7322efc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/call_arguments.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/call_arguments.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/call_arguments.py.gzip",
+      "bytes": 12281,
+      "sha256": "fa012c3694a4f374b43d2e161150274a425a0a691d27d3ac75533e65a8db9ac4",
+      "stored_bytes": 3051,
+      "stored_sha256": "2e244d400ade658e21b4d935f5ab38cd74349eec0a51d815df19b13c1b1d356e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/cell_topology.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/cell_topology.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/cell_topology.py.gzip",
+      "bytes": 84178,
+      "sha256": "ca3bc222ce33753c06c285e3e83cf30450819aed73402a57fe378c295007cad9",
+      "stored_bytes": 17812,
+      "stored_sha256": "74db98b794b53853ca2674106e899216bc1014311917081b4d48b139c00161ab"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/claim_evidence.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/claim_evidence.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/claim_evidence.py.gzip",
+      "bytes": 18969,
+      "sha256": "ed4bc4ce0c70adc5b0bb63d8777d31763fb70aceba417d896e1747f1316e9cfe",
+      "stored_bytes": 4448,
+      "stored_sha256": "b301cf6a0690e93178ebdaf188cf45438b30e030aa958215e68c11bb35188d0b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/claims_audit.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/claims_audit.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/claims_audit.py.gzip",
+      "bytes": 8650,
+      "sha256": "b3b93d026a8d8dc818ce1494983a15566450e5dfe296b3e0c3e719bad1d3aa69",
+      "stored_bytes": 2487,
+      "stored_sha256": "f009e10adea9ad68f1aa96c427bcb245b07754dd92223124c7984d9c58e5d583"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/codebook_streams.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/codebook_streams.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/codebook_streams.py.gzip",
+      "bytes": 16347,
+      "sha256": "69db766ea3f37ca5c4d807dd9c897e3ac356b88c2bc7c1e9eaddc04838f3a5d0",
+      "stored_bytes": 4089,
+      "stored_sha256": "59df248bd47e58892d12aa52e46c881c7a58985fb2fb7e44827f1a46d4e23871"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_inventory.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_inventory.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_inventory.py.gzip",
+      "bytes": 9515,
+      "sha256": "ff0e754d00c739b3dba79f0ab57226d2f1285f021aa947f51ba4adf06a83f6b5",
+      "stored_bytes": 2568,
+      "stored_sha256": "c9a303889fa59cc09379c999ddedffd5dbbcbc85ef3703e7aec5972b2a89f1bd"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_operations.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_operations.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_operations.py.gzip",
+      "bytes": 27772,
+      "sha256": "08c9b969cf7f1ac200b37af09ebe95099a0bbf373c2af24319d47b4ec80d8d5b",
+      "stored_bytes": 6485,
+      "stored_sha256": "361df36c7ffaf0c501d44a90741e61712000c1f9a4449b8cb9791789149832f0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_owner.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_owner.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_owner.py.gzip",
+      "bytes": 103142,
+      "sha256": "1c6bc27735c9244e5220b19f79c55ae8bc02a44435448664deb59964dd0d39af",
+      "stored_bytes": 23733,
+      "stored_sha256": "df1ca2e724797d8afab59ada8e426cee243a963833f63f526fc0b6e84fbefd8e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_position.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_position.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_position.py.gzip",
+      "bytes": 16401,
+      "sha256": "14fd6c8075431791500f47e623f0f9d1eb6ee692f73b7480ec8d61c58a38bbec",
+      "stored_bytes": 4192,
+      "stored_sha256": "ed6d1f810a7c2f9c14ef7fc468bc4fa1ba0389029be5ef1e2eff6ccbff1dbf1d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_stages.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_stages.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_stages.py.gzip",
+      "bytes": 10432,
+      "sha256": "0af8c6ef6ab7d09de167b77046561fa3155a38483eb635065319df780184fd30",
+      "stored_bytes": 2723,
+      "stored_sha256": "f25bc362d9f4cbbba0ae6d7a9274c9b01074e5f28377589bcf31d5b4cb35ddd9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/component_tower.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/component_tower.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/component_tower.py.gzip",
+      "bytes": 39889,
+      "sha256": "221d5104ceaca5d2158025e9ed5eeab51cde08d3b90043378fbfc12c7ad51e60",
+      "stored_bytes": 7575,
+      "stored_sha256": "1c75515fce738faeea0f8452b879aedefd640651950a8951458a650f7fa405f0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/config_access.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/config_access.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/config_access.py.gzip",
+      "bytes": 86913,
+      "sha256": "5ce12076a9244e6554ed59c38a30f5a01a8a941e015dba10e453b355e8adc4eb",
+      "stored_bytes": 25719,
+      "stored_sha256": "4305138c81303b7733e3d30e8bb6afe5b24491db82d8104a45b0f957d686effa"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/config_guard.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/config_guard.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/config_guard.py.gzip",
+      "bytes": 20298,
+      "sha256": "74847562163ec3f5e5dc3963ec66c5e647761f482f119b02a27745fa7ae6b785",
+      "stored_bytes": 5014,
+      "stored_sha256": "74a698bc65943db7c0422e083242e0a26994dbc0b59348c85bc45b2b2cc682e0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/config_registration.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/config_registration.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/config_registration.py.gzip",
+      "bytes": 13377,
+      "sha256": "97288c4881016168751e11f72ac8a48401ed7cf0b26796277a9a2b0cd404bbbb",
+      "stored_bytes": 3467,
+      "stored_sha256": "1aec3c2316d24402ce01dbcc70d88c561340a26a06dfad5b44f2a11d74ad7a8d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/config_scoped_owner.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/config_scoped_owner.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/config_scoped_owner.py.gzip",
+      "bytes": 41956,
+      "sha256": "71ac669c3a5178df4e6dda511a3c73e40ef2d386efa7c52ddf4f99e10e3b47bc",
+      "stored_bytes": 9574,
+      "stored_sha256": "f1c5890509d014de048304c40644c7ae2846fdc09b9a72ee1bc14c5f6ee5eaa4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/conformance.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/conformance.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/conformance.py.gzip",
+      "bytes": 103100,
+      "sha256": "521c1831f5331f07315c2221b8fe54b40303783cc1441c75fe5b0e3091064770",
+      "stored_bytes": 27589,
+      "stored_sha256": "71f95545754f0d2d7b2c0b5f9b9803583fc44798118ce3254157071da293ab9e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/construction_arguments.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/construction_arguments.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/construction_arguments.py.gzip",
+      "bytes": 11983,
+      "sha256": "6bbc1e165089246ae2260b170ef2bcfc19b1af46d8ab4b7210692cd821a9b7c3",
+      "stored_bytes": 2776,
+      "stored_sha256": "c98bf6f06eec210d806e437178cbbf37c9a3ec90b6e57e21666586614c82f2a7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/construction_calls.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/construction_calls.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/construction_calls.py.gzip",
+      "bytes": 20348,
+      "sha256": "692fadfd39a8ddf47181b0c37649e72d66166253bb5289acc2266ac428ae097b",
+      "stored_bytes": 4654,
+      "stored_sha256": "ec1252ec26938a1683027b686721a7560d71791abf07f7ed853beee8d89edf4e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/construction_summary.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/construction_summary.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/construction_summary.py.gzip",
+      "bytes": 3732,
+      "sha256": "58a97eefd6079b239cb161cb85ae2a5d25d8c712008b6768ea6b03fbabfc7e1f",
+      "stored_bytes": 1361,
+      "stored_sha256": "fda992a58ff5ef24ff847e4c4455a3410a989a1ff9f20e7e1edefebf6fc8a9d0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/constructor_condition.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/constructor_condition.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/constructor_condition.py.gzip",
+      "bytes": 17600,
+      "sha256": "669a1e5f22dd078224cf1c7c3469cf0ca7c480e79573a0b4f21b05e7327130fe",
+      "stored_bytes": 3626,
+      "stored_sha256": "078f120a6a88963f54ab05ae0df03d819b182898ce756c82034fec712f6bb365"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/constructor_fields.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/constructor_fields.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/constructor_fields.py.gzip",
+      "bytes": 19110,
+      "sha256": "3461cb40c88deb388140858f869b2675c13953604f84188fe3ec9e001635afed",
+      "stored_bytes": 3501,
+      "stored_sha256": "a817c424e97a12b0639972138b28781eb00bf2d7eab7cd5e4a8cd02cd57e1c29"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/constructor_values.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/constructor_values.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/constructor_values.py.gzip",
+      "bytes": 22620,
+      "sha256": "18a0ced6e0bdf1d36d48ae93b35f416d5233d6ea4932eed8db837b03d59ea06a",
+      "stored_bytes": 5065,
+      "stored_sha256": "250b35b8cb3e087d89ed62e43936a121a09fe90020c64cae6407c690efc0c722"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/consumer_firewall.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/consumer_firewall.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/consumer_firewall.py.gzip",
+      "bytes": 36771,
+      "sha256": "785fb6ebc78f42f639b37e9aa8e7b548bd205304241d6e074515bd2aad6940dd",
+      "stored_bytes": 9007,
+      "stored_sha256": "208501270f575a7e9a5f04832c52c32c2291d5f244c0ef01773857b464e09c82"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/container_inventory.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/container_inventory.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/container_inventory.py.gzip",
+      "bytes": 19484,
+      "sha256": "c22349ca9ad0bbbae2b31235d6a096dcd439fc50e4511e9eee06054058f6458b",
+      "stored_bytes": 5443,
+      "stored_sha256": "2eb312c464c9931639fe3d8d065e0c828fc973fcde5551e815fe067f7750e896"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/context.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/context.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/context.py.gzip",
+      "bytes": 23961,
+      "sha256": "b8a788b63d34c29976e93dcf5cca9bcba86127963e841e7f2fb27840043fc574",
+      "stored_bytes": 8228,
+      "stored_sha256": "605f5840f1195d7a8df84e98bed984cd1972ddf63160d00415c5e4eb823623f6"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/coverage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/coverage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/coverage.py.gzip",
+      "bytes": 3322,
+      "sha256": "255fa4ccf1ac1ebeb9d3926fab4e7c875dc321dad6678f949b4b5fc01bb55854",
+      "stored_bytes": 1207,
+      "stored_sha256": "3c3c7b320d3d8e341cdded8837e4666a0ac280f50314bbe26fe12ac31a471694"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/cross_attention_replacement.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/cross_attention_replacement.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/cross_attention_replacement.py.gzip",
+      "bytes": 20830,
+      "sha256": "1de9d6c964b163112b75d61c021eb05e60e719b4b44940eb73fd9d3a40d4147b",
+      "stored_bytes": 5092,
+      "stored_sha256": "96b9d11aad107f7d6272ceed377e3978826f75b10f9569395909f7435a5d966c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/cross_attention_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/cross_attention_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/cross_attention_schedule.py.gzip",
+      "bytes": 13591,
+      "sha256": "92824ae9aadbe49e8b6823c497574ebc1d50617a4bdc23ef22c783f22fc96e30",
+      "stored_bytes": 3538,
+      "stored_sha256": "74a77a1018d13662d5051020b928ba056fbd12ad74431ef3bd93dba871bca3d7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/decoder_block.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/decoder_block.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/decoder_block.py.gzip",
+      "bytes": 26063,
+      "sha256": "8eca3033eab0666d6737e0357ee172e376a02850e2db559338d618dc9ff2f167",
+      "stored_bytes": 5307,
+      "stored_sha256": "2313f77c2187ea25564e44c657791c05596c5c72b3e8f5a0be0380ffe8770887"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/decoder_norm.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/decoder_norm.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/decoder_norm.py.gzip",
+      "bytes": 22252,
+      "sha256": "32bd2e808a0905840efdfa3ef597319d7d4eda5f3952ac32b53e62949dffafc2",
+      "stored_bytes": 5045,
+      "stored_sha256": "124bf997694b2acfff8157bf58279d3bd8de937728f0dbcf98e2b03912c74a70"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/decoder_stage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/decoder_stage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/decoder_stage.py.gzip",
+      "bytes": 5284,
+      "sha256": "b7deff454cb0d589687114a5afc6d099724aed2f130d4b4baaa416c72edc7a25",
+      "stored_bytes": 1592,
+      "stored_sha256": "3055eb8764284b7cce4b636a78f2230da35b432f1b64759f3f2f0eda02e36dc5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/decoderness.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/decoderness.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/decoderness.py.gzip",
+      "bytes": 2594,
+      "sha256": "0bfa381ba130abd3a9d6af606615f74a41236868539d372ad8aa1aecc8e66d20",
+      "stored_bytes": 1140,
+      "stored_sha256": "9b263a7e38c9dc35f625d6f6b38991960a602d5fd80ecce90fb85fbfb4a97f8b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/delegated_stage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/delegated_stage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/delegated_stage.py.gzip",
+      "bytes": 6845,
+      "sha256": "67b5995784f6ee1c4512eaef0abb6bb28c74ffd4a455b80d9b861fb914bc6fd4",
+      "stored_bytes": 1954,
+      "stored_sha256": "699df758f44022f26dbbd82a0c87605833b3f0d4a3309b6cccb6bfaf84f788bf"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/denoiser.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/denoiser.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/denoiser.py.gzip",
+      "bytes": 4550,
+      "sha256": "44f1d09c5da9846216a148ae6d7806d0a00f4a825699d3d047421a3c1de52217",
+      "stored_bytes": 1737,
+      "stored_sha256": "96e2cb1a01dd4cc36601e5575cb6fec80c09f4f9545b8229b1b24f34ec308c7f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_block.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_block.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_block.py.gzip",
+      "bytes": 21341,
+      "sha256": "7f82f14b15b15f1642c504e78c1378d341e7aa0a6a6a395bb1eb7f5cc76f8c74",
+      "stored_bytes": 4694,
+      "stored_sha256": "61437b66e95e56a4cd19df5a42d898e8a9d905fd33312674febb524d3bf6b47a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_bookends.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_bookends.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_bookends.py.gzip",
+      "bytes": 25862,
+      "sha256": "bb29d77f4cf8271015fdf7da86fef3f15820a29468c9ec7bdec6de63ba9c8470",
+      "stored_bytes": 6346,
+      "stored_sha256": "c107f3c8e7987d2577b1160ac7b028e945113a781242eff24aeb0172e7e8ca44"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_companion.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_companion.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_companion.py.gzip",
+      "bytes": 12257,
+      "sha256": "9b74ddc312f2889ebb34ef7410a2d29181ccf74d8286d48bca6f74304f52bfc5",
+      "stored_bytes": 3212,
+      "stored_sha256": "9624fa9238f7f2b75fff2b8ade6d4c3e0c503b225d23b193b5cb299bd4644076"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_conditioning.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_conditioning.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_conditioning.py.gzip",
+      "bytes": 24019,
+      "sha256": "fcd420cb26583ff6f85d3b3f20fc4f166ebec3b857b50ebf0a4bdc684eda331d",
+      "stored_bytes": 5580,
+      "stored_sha256": "1da6e0ee16caadb99fdfa4f75cb6adbe121c26925aa951559fe06e8fce27f596"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_root.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_root.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_root.py.gzip",
+      "bytes": 21540,
+      "sha256": "8cad47800434d6f071938a446458b11beef20423aa0956c1ec6b5038a6713a89",
+      "stored_bytes": 5440,
+      "stored_sha256": "4a2cebd29ca043d8f83f76b7399bceaf532e8dcb42f1be3349d7e882d4db6690"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_stack.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_stack.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_stack.py.gzip",
+      "bytes": 35946,
+      "sha256": "af57f3022c4fcb990c7635bb87e19c104736f8c411f02637a4611515415eb651",
+      "stored_bytes": 7839,
+      "stored_sha256": "3cfea83f8cef5145d3bd321b55acca8aae0b889870df28091657052f6c644b85"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/diffusion_stream.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/diffusion_stream.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/diffusion_stream.py.gzip",
+      "bytes": 68585,
+      "sha256": "e65ee6938c69da7a8c1a3c4a58b5973d30d3bcd01b61efa538be3472ed34f253",
+      "stored_bytes": 13449,
+      "stored_sha256": "078b1ce09e1cc2603cb597f17f3c34ed5496add92bea044bd9f7dd44ed08d515"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/dispatch_attention_mechanism.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/dispatch_attention_mechanism.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/dispatch_attention_mechanism.py.gzip",
+      "bytes": 28959,
+      "sha256": "8934d38f7d95e2046f30df8b01bc4efbd950f7a9ab86e94e901879ebeec849fd",
+      "stored_bytes": 6495,
+      "stored_sha256": "17c68170ec9d24b54a989c24098c2823bc7b4a0c9d71878e5072529f0e262a21"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/dispatch_attention_storage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/dispatch_attention_storage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/dispatch_attention_storage.py.gzip",
+      "bytes": 17965,
+      "sha256": "9d8d73e807e3d5bd147609d58252d488b4e46c440e959871a3e6f0604e181617",
+      "stored_bytes": 4205,
+      "stored_sha256": "d62b54646c61232b86754e2e33afc9e151be96029a7036e81c949f99d3b16931"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/dispatch_selection.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/dispatch_selection.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/dispatch_selection.py.gzip",
+      "bytes": 18533,
+      "sha256": "6a435d93cab7bc8aee2c675e470bac0604b79eeda761a74687b42e63c40ffbd6",
+      "stored_bytes": 3869,
+      "stored_sha256": "fd056bde2e92db76ae4081c801e68348c6ae0c983e2eb12e08b4f6671fca30ee"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/document.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/document.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/document.py.gzip",
+      "bytes": 18579,
+      "sha256": "b6b35520aa55519609da28e4ae116a3d9f48cfa05388ba2ead81d6a85b806dc7",
+      "stored_bytes": 6480,
+      "stored_sha256": "80c2fffdedd9aa1e3db0a2fdf47562e8fe3d617e6fd29236c173fd793c463ace"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/embedding_bookend.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/embedding_bookend.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/embedding_bookend.py.gzip",
+      "bytes": 9803,
+      "sha256": "f496b97af39bc51c418a19cb1ef6776808fe80dce01b09bce83260ca3ebdf131",
+      "stored_bytes": 2864,
+      "stored_sha256": "8a5e0279e37c163221abb92636eeff473f12bd831282c057d8a4b43d0d75ad96"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/execution_flow.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/execution_flow.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/execution_flow.py.gzip",
+      "bytes": 59084,
+      "sha256": "1acfb475787fb1809656f24b91e0ed2175972ba0d971afeacf6caaf0c2928c1e",
+      "stored_bytes": 12618,
+      "stored_sha256": "cd44ba2454630e98c9c204d2b6a3d19bb1c246caded24072d507a8db3640c40c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/execution_recipe.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/execution_recipe.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/execution_recipe.py.gzip",
+      "bytes": 38812,
+      "sha256": "d0c51866ac8aa8005dff89b51457dcde7a89284ff2b5bdcc3e74fc3c4edc8324",
+      "stored_bytes": 9386,
+      "stored_sha256": "bd7249925176b6aad829cfeb0ea6c3993a778aff103391360ce90ef799d24855"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/expert_storage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/expert_storage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/expert_storage.py.gzip",
+      "bytes": 64153,
+      "sha256": "f7c3f9eadcafd82e0198f66b02a9f1cbb983461f06f80cd7756d2a29a5813ded",
+      "stored_bytes": 13462,
+      "stored_sha256": "b6538275e0949d49cf833659c1840ffbe7b2105a199d07451326f31763dfd0f8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/expert_width.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/expert_width.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/expert_width.py.gzip",
+      "bytes": 26494,
+      "sha256": "99006d1f3551824e4d0520516c22e4ebc4db3bd1269a82420ed8d2d2537ffe25",
+      "stored_bytes": 5831,
+      "stored_sha256": "b1fb970a9892254a49435e7085677109e8bddd4d79c9fdf8b254d2cc6473a4c9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/expression_eval.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/expression_eval.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/expression_eval.py.gzip",
+      "bytes": 32004,
+      "sha256": "3bffb557693280dddc9f7db3abbdf6e04fb95f6a4bda12974ebb6d7e4e13d5b7",
+      "stored_bytes": 7800,
+      "stored_sha256": "fdbd97c723681ed647f4d32c2b478fb1e90261253545fcc17374c228871412d4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/expression_value.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/expression_value.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/expression_value.py.gzip",
+      "bytes": 9571,
+      "sha256": "1a3541000fb480b6c701a8c2ec026812694d4df46a87d55726eb183d33a577a6",
+      "stored_bytes": 2556,
+      "stored_sha256": "ec6f80c47db17c79c1219444f7e120a7395eb0447e22505abf0e8c5cb3c069d9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/facts.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/facts.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/facts.py.gzip",
+      "bytes": 18400,
+      "sha256": "89fa621fb9358107f3a54430f1f96a467ad22b9853e5584d64ec76e5e5f7b5b8",
+      "stored_bytes": 6169,
+      "stored_sha256": "e7c8192e2f3d8cf9555afd3aa6ef371d40e946f996238f28979dcab0c3f3b9ed"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ffn_input_transform.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ffn_input_transform.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ffn_input_transform.py.gzip",
+      "bytes": 20594,
+      "sha256": "464242873d07912436842fab4d3290e284790b459108f7ca91dae4d2d9c35774",
+      "stored_bytes": 4831,
+      "stored_sha256": "79ea1074c1fcd12837e596ba76fe6432f6403da19a0311f83e774a4bb69e3231"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ffn_mechanism.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ffn_mechanism.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ffn_mechanism.py.gzip",
+      "bytes": 68228,
+      "sha256": "1d0cf5280ab3c7ff46ef2388f1d4e75a79c059ca4656d6c7f776ded087fe1ee3",
+      "stored_bytes": 13998,
+      "stored_sha256": "f060669c0ba8a19f868afa1980eeb58db81846c84c72c744781cec921e22c61a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ffn_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ffn_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ffn_schedule.py.gzip",
+      "bytes": 34917,
+      "sha256": "29b92f3689d8cab9a55f18c95fd9714f1992e482c82d4e1ecfd7aff1d7ceef8d",
+      "stored_bytes": 7529,
+      "stored_sha256": "d378b1156fe3485ceb55ecdcfd220d6f521ce8a6f7a2b237c000aea1cacd2bd0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ffn_width.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ffn_width.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ffn_width.py.gzip",
+      "bytes": 10234,
+      "sha256": "ab139c5ab61270a88e4543de978b4bf8ab55eefb052e058b3dea6c97af623733",
+      "stored_bytes": 2930,
+      "stored_sha256": "4c209a0c54964cdfd3b21481268f514da9b08446b15c946f6e13eb016216dd9b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/final_bookend.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/final_bookend.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/final_bookend.py.gzip",
+      "bytes": 17088,
+      "sha256": "0cf14cc2985f058e41888808658c6c1deab9dee09368ba63670c2b9b2a2ed43b",
+      "stored_bytes": 4752,
+      "stored_sha256": "4273a4628f346fcef56093e629235bd8ac77b97a634696af24687aa9ba55b977"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/forward_ops.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/forward_ops.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/forward_ops.py.gzip",
+      "bytes": 29095,
+      "sha256": "1d9888e363ba3e5888897168358cece12275d46f103518a9fad1c31a3b4b8d43",
+      "stored_bytes": 8971,
+      "stored_sha256": "78fe053911ec10fbc83d599d409e9e831dbe24b3f655e2872294aa8a12e85c20"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/framework_config.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/framework_config.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/framework_config.py.gzip",
+      "bytes": 59923,
+      "sha256": "ef26900089e7d9be110a5c1b16eb331178f1e28475e5e6a46cdcd29ce1575061",
+      "stored_bytes": 11644,
+      "stored_sha256": "78ad154d3a7841313032cac3ad2b8eb01c961d00210dfdf862a9ae7bcf71715a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/framework_operations.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/framework_operations.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/framework_operations.py.gzip",
+      "bytes": 6178,
+      "sha256": "eb03cc3b21774349765e04872387c127d9358a9d4c5f909a932238a7c6c37621",
+      "stored_bytes": 1568,
+      "stored_sha256": "d7b3eb5fe00384140e6a086872d79335861218ae55cd0c44d0421532303b59d4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/fusion.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/fusion.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/fusion.py.gzip",
+      "bytes": 27126,
+      "sha256": "1801a3eabf7959413db87c90fb6926b8111a679c277df39a6cd53cc8badf3f75",
+      "stored_bytes": 6671,
+      "stored_sha256": "468eb389f6af26a97486af672acb99755316cbcabeb71ad0a87c001e9678c344"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/identity_guard.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/identity_guard.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/identity_guard.py.gzip",
+      "bytes": 47074,
+      "sha256": "57f7a0bd3e941d55c5ee164c0539528046c66d20f792d24f855950487d495b74",
+      "stored_bytes": 14433,
+      "stored_sha256": "e0c9c0be40df38059ab7bfe2f050e8c6c9c49fa50fa57bb16617e0d7879c87be"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/identity_roles.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/identity_roles.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/identity_roles.py.gzip",
+      "bytes": 2509,
+      "sha256": "f95567df79c3b34c4d7abd3c173a9540a0685067ed1be8a87704076d67446e7a",
+      "stored_bytes": 1190,
+      "stored_sha256": "386b5f790a3026a1e6a51f4f28de73015febbd2434678f09fc2be1c8bf5edf3b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/import_source.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/import_source.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/import_source.py.gzip",
+      "bytes": 22097,
+      "sha256": "22436d19645d08acdd0e4c082e07a54cf3f55b6bce14cbd9bf8a350f756c00e7",
+      "stored_bytes": 5214,
+      "stored_sha256": "31e77290d8fd37c1e0259e582b258be2134c931a3fe4a1c0f5297aa622457e68"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/inspector.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/inspector.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/inspector.py.gzip",
+      "bytes": 1172,
+      "sha256": "87130f4c9effbd275b4abe6cde1874860a5d0041f32d3703a4931b00d5033b7f",
+      "stored_bytes": 605,
+      "stored_sha256": "698cc0292d90e576f8468b3a2fa3d0f4a78c921fb0b61fbc1c9c9cf8ebd59065"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/instance_population_claim.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/instance_population_claim.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/instance_population_claim.py.gzip",
+      "bytes": 5652,
+      "sha256": "23d3fa2ad281172119d9221624fb509e5fb699414ff5932716c0254f780e8cd4",
+      "stored_bytes": 1528,
+      "stored_sha256": "ce73042c99f6355d10923e408aa46ab05ab3823dc0872462df21b62824628637"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/instance_shape_claim.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/instance_shape_claim.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/instance_shape_claim.py.gzip",
+      "bytes": 4176,
+      "sha256": "27b57c2b24444603f37ee5268742e008af74c49c442c5bb8b43faad154d3d94c",
+      "stored_bytes": 1389,
+      "stored_sha256": "0f39384a90fd88659fc8575c5afce6f603359fc18c598de9460f706f91e369f5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/invocation_source.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/invocation_source.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/invocation_source.py.gzip",
+      "bytes": 18640,
+      "sha256": "f5ba27bdb3ee5464157d43bc9380a95c97efa0c7ca9a180c92f1b1c35dcc830d",
+      "stored_bytes": 4743,
+      "stored_sha256": "793960b16cccde9b6c7a909baed3001a78b5f88acbc62e41e0f7ead13b70c6ad"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/kv_sharing_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/kv_sharing_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/kv_sharing_schedule.py.gzip",
+      "bytes": 18540,
+      "sha256": "b33e8a0cba359158b407151eaf46f4ed0f98cbf833729c64508c04a0a1707080",
+      "stored_bytes": 4708,
+      "stored_sha256": "acfaaa0b8b312b11b042d592306b28a65541647614c7b9536d889c1fe467084b"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/layer_selector.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/layer_selector.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/layer_selector.py.gzip",
+      "bytes": 50538,
+      "sha256": "787989fe4a7c8de7d34da24a89fa2390f059ddae117300c78131e098f091a1d8",
+      "stored_bytes": 10059,
+      "stored_sha256": "7406685ce039eac42ed9ef0f03a17f5ae7b95c536a2c040d3fe83385a4bcd630"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/legacy_reader_quarantine.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/legacy_reader_quarantine.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/legacy_reader_quarantine.py.gzip",
+      "bytes": 23346,
+      "sha256": "a1342282b81c997619157cde34a5e88bb14bbe24724b6bc252fc80ef42ad8e73",
+      "stored_bytes": 5171,
+      "stored_sha256": "89a9f542fc7f65715bfdcb0067b6276071843c22d7e621415d47151ec732603a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/local_port_routes.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/local_port_routes.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/local_port_routes.py.gzip",
+      "bytes": 21183,
+      "sha256": "2b756725a85791ea8f37a0b6d78b89fc38c5c187ef5bfde8a78268c776a50e10",
+      "stored_bytes": 5085,
+      "stored_sha256": "282ebfff7f3e784fe1189f2757c66d1acdfcbe1386350067903bf0ae7f10849f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/mixer_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/mixer_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/mixer_schedule.py.gzip",
+      "bytes": 27396,
+      "sha256": "f25337648085369110d12c924249bb2e1641b2a10525841340ea6e1bd51334e1",
+      "stored_bytes": 6343,
+      "stored_sha256": "02877eb018a861e8719053100de1e3136bfd10e2cfc026bfbebac883535e0d64"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/models.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/models.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/models.py.gzip",
+      "bytes": 16304,
+      "sha256": "25c6e91bbb6957c86bb4c1955f75e4075627560baea604d5ff45154cc0f38811",
+      "stored_bytes": 5028,
+      "stored_sha256": "06d26f62f898b56f3a521082ddaf72128d8be9621540126bf442a831ed34c388"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/mtp.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/mtp.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/mtp.py.gzip",
+      "bytes": 20042,
+      "sha256": "fd378227b02a4a31dafba42d32cc36901ab2c375cb1200669fbbe2fbe1ef4c27",
+      "stored_bytes": 4864,
+      "stored_sha256": "7706fb84ed3f4dc0896bed2b8357a4794446cbc4aaa5f5f8f0d6a913589842a2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/multiaxis_position.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/multiaxis_position.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/multiaxis_position.py.gzip",
+      "bytes": 13161,
+      "sha256": "aa2fae25bb60ae850b5de20512d0a796345708dac55028bf91514b828614ef27",
+      "stored_bytes": 3802,
+      "stored_sha256": "649cacce047b080d7239e9ebad009c9bf83c1096616bbeddb636df93f20d2c6d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/output_repeated_stage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/output_repeated_stage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/output_repeated_stage.py.gzip",
+      "bytes": 25184,
+      "sha256": "2c08283508b6ac1456c8fb8accae3cfee180c4bd3881078e17203df0efbf3c7e",
+      "stored_bytes": 6058,
+      "stored_sha256": "680306d605a50cbb5299599365ae18a2fddecb8ff1266575b1c39b04accf49cb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/parallel_norm.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/parallel_norm.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/parallel_norm.py.gzip",
+      "bytes": 18642,
+      "sha256": "78f4ea0e736c3b4065f279c0527946b10abc191643d1d6439cf4372b85d44f33",
+      "stored_bytes": 4349,
+      "stored_sha256": "774c2d471e6d90f2a71fa8c8d8e7d8401adc766ae9fb00e89a418dde9a47c84a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/patterns.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/patterns.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/patterns.py.gzip",
+      "bytes": 33348,
+      "sha256": "1b8ca4250fe9c00ebe3c8977571785072e36ab05c399d0be584d233a9f4d71ee",
+      "stored_bytes": 9265,
+      "stored_sha256": "e6ed65b1e27e3fd185fc1b96afa467afc8972aac93a71ab4e27e6e1ded8ba753"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/per_layer_side_input.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/per_layer_side_input.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/per_layer_side_input.py.gzip",
+      "bytes": 16457,
+      "sha256": "a72b16467a3db3d5f6f3b0b4d0983e2e1c6226dbfc58354f41c7626a9a034f36",
+      "stored_bytes": 4195,
+      "stored_sha256": "26a76bbbbfd17a4b123b1ddc8f90abba6732284ae9bf8f64be6c5a44b66d51d4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_absolute.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_absolute.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_absolute.py.gzip",
+      "bytes": 13992,
+      "sha256": "6d52ca67767ba70fce612094eabf2006ba62128a071e3713ede332f765d1f16a",
+      "stored_bytes": 3640,
+      "stored_sha256": "480723c010017b085c75c7443dc4bdbeadb7defe3919d20d04563b87e0615830"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_application.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_application.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_application.py.gzip",
+      "bytes": 57704,
+      "sha256": "ba52010c248c83c11495ee5c903c0d3d799e91a4fb77154c4e00c1a714772532",
+      "stored_bytes": 11630,
+      "stored_sha256": "29347d916cf6d4f4b69801a88c92e4645e73fcada81b677c744854b1df0bdea5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_coordinate.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_coordinate.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_coordinate.py.gzip",
+      "bytes": 15726,
+      "sha256": "6eecdd512791ea40307480cb780bdb3147bcbc8ce26d1da22981fe4e95eab69d",
+      "stored_bytes": 3650,
+      "stored_sha256": "3af446f2369afc7ec8772e6b2522b747186c335adb39c1d24cb4ae755802e777"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_factors.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_factors.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_factors.py.gzip",
+      "bytes": 36878,
+      "sha256": "48c50907c41eeabaca8b141afc492d4b757fef8c91daaedcf22ceb72cb0815bf",
+      "stored_bytes": 6628,
+      "stored_sha256": "cec7ebc69c34295356f136cddb25f6b7f3b7b80ee1160618a9bc0bae1261527c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_fixed.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_fixed.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_fixed.py.gzip",
+      "bytes": 23187,
+      "sha256": "5460e0ce451c5fafeb268139cb5ee4d873ae2261436d0de58bddaa45d3c9550a",
+      "stored_bytes": 4950,
+      "stored_sha256": "383ad2429c58e6e1de562739f7721ee4cf7523d2ab04fc54c5a549af34b131a7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_geometry.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_geometry.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_geometry.py.gzip",
+      "bytes": 31941,
+      "sha256": "a20fc84a9bc5f66a33b048ce2aaeaad1e6a12b2dc29f09aa5916a79804f58332",
+      "stored_bytes": 7432,
+      "stored_sha256": "6d478f9f17064aefeca0dcd0980ab9bef4fb212e49cee31aa62177e768705501"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_initialization.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_initialization.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_initialization.py.gzip",
+      "bytes": 44154,
+      "sha256": "607b2b627982196f63c462f25670e9089ebb0e95094e33006f4f85ee0819862a",
+      "stored_bytes": 9315,
+      "stored_sha256": "073a883a38a06e7e4b9ba1c869fd7be641097ffe415bf9b4998f410fdc44ae65"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_linear_bias.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_linear_bias.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_linear_bias.py.gzip",
+      "bytes": 30739,
+      "sha256": "711927b5d10a441552582282e153b84e03959cb3a6942505c5ed7361deea44b7",
+      "stored_bytes": 6160,
+      "stored_sha256": "e1eedb0ec5259401911c166808333d46008a327bc621a22e31b92f3942e0b80c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_relative_bias.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_relative_bias.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_relative_bias.py.gzip",
+      "bytes": 33621,
+      "sha256": "a2f9fc3352ed79f57ba33c515852ce14ab77833e5fd20444e8b3350dec9b006b",
+      "stored_bytes": 6964,
+      "stored_sha256": "d0b6d764faf07952dd65d9b5af8c0feee8921fb1feac5888bc2a0f317949a641"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_schedule.py.gzip",
+      "bytes": 23580,
+      "sha256": "f3dddd16587fcb4f685285c18dd7de7fd225ca683d7e8f652d637269cf1617d4",
+      "stored_bytes": 5275,
+      "stored_sha256": "f4cb5641259d40ed8fb7b4cd0b9d0599886beaa5b7a530c9f690b3e1b4490f80"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/position_table.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/position_table.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/position_table.py.gzip",
+      "bytes": 7789,
+      "sha256": "c761a6ed96cc43eca013f718582a468394bbbddd774ff9aac9a65f89af10bb4a",
+      "stored_bytes": 2395,
+      "stored_sha256": "06edb20ce8bec229090194ee568e786566ead2ca6d94c2febabda39ec13d8bf8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/primitive_semantics.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/primitive_semantics.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/primitive_semantics.py.gzip",
+      "bytes": 20826,
+      "sha256": "9766abde51d5255b16e2468c621b0274aad45413ef68269276cef23f74248d75",
+      "stored_bytes": 4938,
+      "stored_sha256": "210262e10e444a65b7855a8ef34d1f4a6143b9aae1db83907f62d30acb9548e8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/program_index.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/program_index.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/program_index.py.gzip",
+      "bytes": 146581,
+      "sha256": "e5703469624a092887b1b88ebd063266e202abf1296ba525c7f09610362207db",
+      "stored_bytes": 33449,
+      "stored_sha256": "b9c35d536ca868470fb2c29fcf710600bbd907d881c24346df433264cc623f61"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/projection_bias.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/projection_bias.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/projection_bias.py.gzip",
+      "bytes": 19797,
+      "sha256": "ee067a9e167629e3d32b5980e4a70d3b89c8f6006188597f4b67a668d34b4d29",
+      "stored_bytes": 4419,
+      "stored_sha256": "28de5c4de7da047a244f264a0936d3f3fc6d96f5864d1573a6849333a5ccc12a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/projector.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/projector.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/projector.py.gzip",
+      "bytes": 20828,
+      "sha256": "f15a1ab1faf125c045ea596d646d494da3766b74e886173fdfc46296dd720be4",
+      "stored_bytes": 5243,
+      "stored_sha256": "33fa5a94e71d1a04a4802819567df4d441e5dbc677eb46d1de2ff1b8ca4f51d5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/projector_chain.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/projector_chain.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/projector_chain.py.gzip",
+      "bytes": 32449,
+      "sha256": "3777d472e32d9f3562c0ea812a8754cfc4f5938bcf5439d7c36a7c7730685cf3",
+      "stored_bytes": 7392,
+      "stored_sha256": "6ca72d129ed90a09350b38f3a9d1e3a9bf6a76f34a534e1c53afa9ef6b81ae0d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/projector_lineage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/projector_lineage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/projector_lineage.py.gzip",
+      "bytes": 47208,
+      "sha256": "9a113de627cb1c1edd9718a903eeb15d786aaab0a8505444340f67bf613ba721",
+      "stored_bytes": 9662,
+      "stored_sha256": "729e97617539ec127922db290eb78c073049e7658b73335e2b1ff0b2f3e3494a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/projector_width.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/projector_width.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/projector_width.py.gzip",
+      "bytes": 17144,
+      "sha256": "93a6f315ed522f9ca2028ba2d76e79a948038ae039f66886d079f1b62cd6b1d3",
+      "stored_bytes": 4608,
+      "stored_sha256": "b388d04c4b44cef9bea802ab044a99a5f572cf72d7e97142ca4c62639f436acb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/qk_norm.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/qk_norm.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/qk_norm.py.gzip",
+      "bytes": 34363,
+      "sha256": "bdca681dad855c489c2a6aed20cf1806b91e25041f455ff32b2089fddf38e2d1",
+      "stored_bytes": 8261,
+      "stored_sha256": "1b88e3c3ad3b11017b409074950667ce42ff1e288b3e8163cc6a680fcf974df9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/qk_norm_schedule.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/qk_norm_schedule.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/qk_norm_schedule.py.gzip",
+      "bytes": 11257,
+      "sha256": "8cbf8f917ab92eed2ab15cc77a33b6399a466ef7cacb9671a23fbd3f49481e77",
+      "stored_bytes": 2782,
+      "stored_sha256": "8c2f7513b633ceee7079c49ba8074046a9117d648c5c219235bca3368691432c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/qualification.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/qualification.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/qualification.py.gzip",
+      "bytes": 17662,
+      "sha256": "9441909408e661b49cab399a7b625ea7a0288d8f081b0be9206bd8cff9b5d1ff",
+      "stored_bytes": 4036,
+      "stored_sha256": "02e6ffd8f4ef043de1236c21f7d870c15a8c7b434700c445ba813f84612f62f2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/reader_result.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/reader_result.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/reader_result.py.gzip",
+      "bytes": 11770,
+      "sha256": "e4c967f49680c023d9ffccc9fbfb3fbe19d50e582539db2bf8b68833c53bffb4",
+      "stored_bytes": 2802,
+      "stored_sha256": "bb134dda212aa3ebfe6de52054935f4aad3f4bcce59be6e011e1d09b5b21f5c3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/receipts.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/receipts.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/receipts.py.gzip",
+      "bytes": 21627,
+      "sha256": "df605eebae0ae2333891af7592b88b49755559e309d9be85ad7068301301b19a",
+      "stored_bytes": 6510,
+      "stored_sha256": "223787ddc4a63dd6d1b3b49ff5f59deed6e87316ef122e3367c039c444145aa7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/reconciliation.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/reconciliation.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/reconciliation.py.gzip",
+      "bytes": 99835,
+      "sha256": "e02796bb0121962a2b41d153a208977f900fb985b643d887622f6dbe48b5feb4",
+      "stored_bytes": 22209,
+      "stored_sha256": "64290a81aaad1730b0ca9ae802175dfa17f1dc42a52aa1b6d942d5d880f52e5e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/registry.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/registry.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/registry.py.gzip",
+      "bytes": 78548,
+      "sha256": "478b14edfe83e7d74a25b5da8871db5da539550c02117eb3183e4e880593e7cf",
+      "stored_bytes": 15276,
+      "stored_sha256": "bbe2040bf072ee02f65f17a6817431409580b9880dac77bd69c91fdfd803f636"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/relation_probe.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/relation_probe.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/relation_probe.py.gzip",
+      "bytes": 23266,
+      "sha256": "7854aebdd8168240736d213cb20be34ad4ce657e4373e6367a2302e76854165a",
+      "stored_bytes": 5800,
+      "stored_sha256": "ef90eeb285ed8fd6fb70b762a35b7f4729db6dc37eeefebf39c31e0b14ac8f26"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/relation_source.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/relation_source.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/relation_source.py.gzip",
+      "bytes": 7508,
+      "sha256": "8db5603b9bd6f1d9af471228d589a146ed8a362d40159e2de022d702f0419aa7",
+      "stored_bytes": 2241,
+      "stored_sha256": "9383b0e5040f8c2f9331aa17aa5f66738b13ee42000cd0692d9e054aea4c94d1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/repeated_child.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/repeated_child.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/repeated_child.py.gzip",
+      "bytes": 13106,
+      "sha256": "16ab327d082eb372356a82163c3a67183f545f101fd30fe63b3e0a9dab74d18f",
+      "stored_bytes": 3079,
+      "stored_sha256": "1d94b71b96b9c50194e4b61c876f6db702e28c254b209cb47dcab8e33b3dc095"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/repeated_projector.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/repeated_projector.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/repeated_projector.py.gzip",
+      "bytes": 30960,
+      "sha256": "9a3a810ae221e3bb767ef091409e85f0b9dff1e35f6e34327f8737d6e94d88c1",
+      "stored_bytes": 6717,
+      "stored_sha256": "469b97047d20413d510c6d4c006fbd5a230adb9df1f3b6909debcba5a852cc79"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/repeated_stage.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/repeated_stage.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/repeated_stage.py.gzip",
+      "bytes": 10036,
+      "sha256": "bf7c9db1e3ac3c36458edf0ed27ff1fce387189a4606597b084006f97e505c53",
+      "stored_bytes": 2711,
+      "stored_sha256": "e56e615908e3bde16746e6df27c6bf0fad129c3b2a1f7f99e8cb195fda6ba893"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/rope_config_normalization.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/rope_config_normalization.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/rope_config_normalization.py.gzip",
+      "bytes": 12284,
+      "sha256": "ca7237899adc9351cc0df3d7ed4f9ec7fed53080b71ce4a23f81e1df62bc1720",
+      "stored_bytes": 3014,
+      "stored_sha256": "1172ad7fb8e847873dbab10f134e3b6366e7602a184e0bf499616a7b05d7fec8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/router.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/router.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/router.py.gzip",
+      "bytes": 80609,
+      "sha256": "48bcd4b438e4a0b562cdb20690aeb003fb041bbad56e52b737a47c702eaaf8ce",
+      "stored_bytes": 16506,
+      "stored_sha256": "d22a33c8d52de67114a218972bbea3f56bdea44637117986d8b722f0290e806c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/runtime_inventory.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/runtime_inventory.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/runtime_inventory.py.gzip",
+      "bytes": 2964,
+      "sha256": "dd7ae44433dce60fb5de85998f59b72da30a4758898d7424e9b96c6b70ea680e",
+      "stored_bytes": 1094,
+      "stored_sha256": "c136cfb100d7e52656b3ed44b39fc037bcbcc0cf7addbdbc01bc054f93c9e346"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/runtime_source.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/runtime_source.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/runtime_source.py.gzip",
+      "bytes": 9687,
+      "sha256": "6109cdfb1a2b1aec4472a9117924a3ab3800dbf50e277a128332f46198ae4a01",
+      "stored_bytes": 2942,
+      "stored_sha256": "83a83b5de10389fa83bf67cf167c6fde0edc6ea2325eba45fd1812d240e14e64"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/selected_composite_ffn.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/selected_composite_ffn.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/selected_composite_ffn.py.gzip",
+      "bytes": 28549,
+      "sha256": "cb0cd40e4a30d7c9b52b89199774556546e758725c7e392c34ee1a45ef28ac17",
+      "stored_bytes": 6080,
+      "stored_sha256": "0225c16915b11a386e1b883e9db4faead1af4717e19c3c259ae30c9cb7774794"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/self_method_return.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/self_method_return.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/self_method_return.py.gzip",
+      "bytes": 13045,
+      "sha256": "592c5dc3ad4cc6db39554cf9629746a6f62348db9e8750706869b6e661404a8e",
+      "stored_bytes": 3423,
+      "stored_sha256": "09bdf0cd95ecd15d5ad63b6644fd24d08fd70123aec091192a6ac1452be13262"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/separate_rotary.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/separate_rotary.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/separate_rotary.py.gzip",
+      "bytes": 10331,
+      "sha256": "70d20949e9bd87cbf96bea4357a34843e6759735823774ca5a76ab0c79a51926",
+      "stored_bytes": 3025,
+      "stored_sha256": "789170ab4d9dbec9c5d13c70b705cb010bf1f750443c64d00bf11bc43eaabc1d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/ship_findings.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/ship_findings.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/ship_findings.py.gzip",
+      "bytes": 11446,
+      "sha256": "c99432c128861ebb94e0671192b513d2ca483a96e6e8ff5b040318a41103554e",
+      "stored_bytes": 3607,
+      "stored_sha256": "e9a51c2ed133e2e30cec5bf8682b6619fda35396436e029c8c1445148d255026"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/sources.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/sources.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/sources.py.gzip",
+      "bytes": 35536,
+      "sha256": "2a21ae885713325c8b32a1b1a634d880e6b3bc4100a7ecbeedbf756d2bd41675",
+      "stored_bytes": 9102,
+      "stored_sha256": "98a2d3a6ae02977518989779f19eb1a7cce8787807ff7c68be583b2f358d9302"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/stage_operations.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/stage_operations.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/stage_operations.py.gzip",
+      "bytes": 11352,
+      "sha256": "13f38aa338f4d60993a39ead0ba5b2b657117790ffcd299ebc07e66d2f780683",
+      "stored_bytes": 3016,
+      "stored_sha256": "8ec0f7584ab786832a77944bc52b2e4f6223140cadab9ef0caaa2eb6f2dca0be"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/structural_debt.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/structural_debt.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/structural_debt.py.gzip",
+      "bytes": 75054,
+      "sha256": "cfd0a69ede4da851491a65c13cf058d9a20265aba38e73acae050869e0f81851",
+      "stored_bytes": 18611,
+      "stored_sha256": "9914aafa281508d1cba7db0945d0e4dc6deffbbc64ee92e5d67cc07a940683bb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/structural_writes.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/structural_writes.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/structural_writes.py.gzip",
+      "bytes": 70881,
+      "sha256": "cd7c443fd88510e00463305b97e0d912252d44a8955aebf6badf22d793ebd745",
+      "stored_bytes": 14856,
+      "stored_sha256": "a1cc3efc57d7912f5397b6f922d81b957787fa9d9777c58f8ace48989e6cd7a3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/transitive.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/transitive.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/transitive.py.gzip",
+      "bytes": 28604,
+      "sha256": "0ea5e8417285fe3e5d5311cb5acedbe832d22de36e09131a763787e5eaf0a4be",
+      "stored_bytes": 8242,
+      "stored_sha256": "5ad4e1080973ff8ad25dd08f6f71cdd5dad0c35b107bfbb7116464c0d5a93bba"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_attention_source.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_attention_source.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_attention_source.py.gzip",
+      "bytes": 37198,
+      "sha256": "234d438b530ece02ddd2dc3378676b35f2b202b8e8e7d684142d7762b1e04117",
+      "stored_bytes": 8040,
+      "stored_sha256": "c604621234978e39c569ee075ac2b7ff396d703c7c92edf162af0636bd5b9102"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_call_binding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_call_binding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_call_binding.py.gzip",
+      "bytes": 13357,
+      "sha256": "552292e3c14b1f26730e44d780b57ff7e41158b2c7f31be35184363ae6b48d78",
+      "stored_bytes": 3800,
+      "stored_sha256": "3b1496ee835ac365b9583395e1642201fea4cd1695807d5402d60d871f959714"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_cell_connections.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_cell_connections.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_cell_connections.py.gzip",
+      "bytes": 17544,
+      "sha256": "2ac9cbe708cefb91091e509172d163dd65cd60a96b5cbc47c1765feefd544682",
+      "stored_bytes": 4925,
+      "stored_sha256": "148953ccd0f88961e2c32526b44ed003f2b8110fb41da090ecaabeac907b2d12"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_cell_mechanism.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_cell_mechanism.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_cell_mechanism.py.gzip",
+      "bytes": 40703,
+      "sha256": "c57f6b5aa3d034526c8a95d8a623cc66a5c7936b2636edc152ae85f579d88e01",
+      "stored_bytes": 9255,
+      "stored_sha256": "142368836a35ed4df3da54be2792abac02c63062fccf2f6a9fbb71a5cadbd398"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_claims.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_claims.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_claims.py.gzip",
+      "bytes": 30198,
+      "sha256": "70afe7bb3b77f33581dd508dc6a32b85fb36f9e9b42e1adeee155c00124c6395",
+      "stored_bytes": 5688,
+      "stored_sha256": "0c43c48c47b60a68b7bfeb3268bbd18ac897ae3816d72fabddc54d29a5af12d8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_iteration_binding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_iteration_binding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_iteration_binding.py.gzip",
+      "bytes": 10929,
+      "sha256": "f189e12531b06fc916703fb45882510e81aa1cba6406ee7428e36252e3266412",
+      "stored_bytes": 2849,
+      "stored_sha256": "c3743595c64525340f2728c2105acd31c1e9a009590584ee6edfb7e9418f5dc6"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_lookup_closure.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_lookup_closure.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_lookup_closure.py.gzip",
+      "bytes": 25388,
+      "sha256": "a43f6f5403c3f3701608a65d88c173006e00f20ea46ca1e78eebe977e308d39d",
+      "stored_bytes": 6000,
+      "stored_sha256": "4603acca539bd4544c5695987d7c4b5d32480d38bcc66c022ce6a365a40d072c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_nested_mechanism.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_nested_mechanism.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_nested_mechanism.py.gzip",
+      "bytes": 31031,
+      "sha256": "929c7438d424b6c28410b143627fcecd2589073aa45eab2c7e17ac2126d7d172",
+      "stored_bytes": 7279,
+      "stored_sha256": "bcf70c42eab2623bd6bdff8ba8c83dd5f343d921fda6d1a843f2adf72c5a2142"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_primary_ports.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_primary_ports.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_primary_ports.py.gzip",
+      "bytes": 10952,
+      "sha256": "b5d5c5ca183173290f807b09d70403b2f801fe457caff969f3055e8e5af59d54",
+      "stored_bytes": 3420,
+      "stored_sha256": "f97dbe57f58dc6409e7dfd338dbc1d5f1cfaabde98dcdd5cf38e2ba6fcedaf3c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_root_preprocess.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_root_preprocess.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_root_preprocess.py.gzip",
+      "bytes": 22230,
+      "sha256": "44b6a6bd1a3ac45a2801efdb5bc46f4ab2be77c365324edc23aab9ba15f7374c",
+      "stored_bytes": 5384,
+      "stored_sha256": "22d3641bf2237342fbaea17c53ede603cbb90a733427a1d7c52d1016321935dc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_runtime.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_runtime.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_runtime.py.gzip",
+      "bytes": 5389,
+      "sha256": "4f5037e152e834ac8529ef1eec3cbf90d1fb5be9a958d37622e9f6602361efe2",
+      "stored_bytes": 1453,
+      "stored_sha256": "6f0156b95364c50143a3e6f2fc6652faf7d6eebf0031f885b112357b2f9e4750"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_child_execution.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_selected_child_execution.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_child_execution.py.gzip",
+      "bytes": 22281,
+      "sha256": "d03afdaa195d612a24f63fb2ea175c93ea81a03369d0413861b0d3b41ff95335",
+      "stored_bytes": 5477,
+      "stored_sha256": "e4df11f14cb320882e781b09124311835123fccdd445131ab53e48008180a147"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_constructor.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_selected_constructor.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_constructor.py.gzip",
+      "bytes": 36987,
+      "sha256": "d642329861ab0746d4730efef5a2001e504a8159d306f8764e483285b3003996",
+      "stored_bytes": 6951,
+      "stored_sha256": "97ea6a02726fd74043e1d2190dea2db0b0b025ba8afa82e9eb9165cb20c539fb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_spatial.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_selected_spatial.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_spatial.py.gzip",
+      "bytes": 32982,
+      "sha256": "bfa42dae34002c755a7720698ab1b94f9322257f92fabb791c7e33aeee85d457",
+      "stored_bytes": 7172,
+      "stored_sha256": "89e828a115b8822a9d433d749c5e41ceab40c60c7669fd47c3245116e8ba11a5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_stage_children.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_selected_stage_children.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_selected_stage_children.py.gzip",
+      "bytes": 25680,
+      "sha256": "0581d9229f9b5b41b88ae0864ffded5c0959dcd503f617bbe2407289e91f07ac",
+      "stored_bytes": 5725,
+      "stored_sha256": "4465d9571713a9a45c67fab7289dc38232d7b1b50b3504dc78feef86047d95cf"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_cells.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_cells.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_cells.py.gzip",
+      "bytes": 32071,
+      "sha256": "4acf172366ab13936483e84e17f84381a1f7321bee8a3f099914a455fff91b40",
+      "stored_bytes": 6867,
+      "stored_sha256": "ef5ae3e3f9509930df2ec97e3bd1c974763e598a5f80ebe70205a34cfb29405c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_construction.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_construction.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_construction.py.gzip",
+      "bytes": 39677,
+      "sha256": "a3c1dbfdaa7991b2209335a11599430908d9b7b872f28788e985f697ce49f377",
+      "stored_bytes": 8130,
+      "stored_sha256": "ceeed980a31bc5f0b2a7433ea60789704471d0c5997f8fefad83f97e15d948ea"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_constructor_operands.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_constructor_operands.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_constructor_operands.py.gzip",
+      "bytes": 14297,
+      "sha256": "0ad3fded1468f747c39ab7616f974c5f16239c2ce098f43198e1b0a180c913f7",
+      "stored_bytes": 3416,
+      "stored_sha256": "cc6a9f9aeab099d9c29b656441759ef64dee490a1abf151496c0795ea58b97b4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_execution.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_execution.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_execution.py.gzip",
+      "bytes": 18353,
+      "sha256": "0214314a34611b601fe78bfc0bf5ba74b32c3d8a2bde727f963201d1b1217be8",
+      "stored_bytes": 4685,
+      "stored_sha256": "f6c8aa42a2d47ef3e020acf365f66b8ae641759ba5bcc111344f45d2f9d6b047"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_operands.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_operands.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_operands.py.gzip",
+      "bytes": 20612,
+      "sha256": "5ee53fdc4ab8de8bba283a067a6d324732bb91f33d97faa537fb3435be55aee0",
+      "stored_bytes": 5247,
+      "stored_sha256": "ffe00b59c24e55b3a51be4f5091e181415b8ffd0053e15b111733642b94beecf"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_selection.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_stage_selection.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_stage_selection.py.gzip",
+      "bytes": 27199,
+      "sha256": "520b16a96796518149d549364a5f3eef0d141e477aa96d4b22c7ac41a72a918b",
+      "stored_bytes": 6117,
+      "stored_sha256": "864bd78d488d247efca968d63b6788422a0284a11936d92b1d5394455df4b9bc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/unet_wrapper_binding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/unet_wrapper_binding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/unet_wrapper_binding.py.gzip",
+      "bytes": 7914,
+      "sha256": "4a0e43969738928db5ff1965616acb733a362fb195a3eb4e0b1a56b8fae482eb",
+      "stored_bytes": 2434,
+      "stored_sha256": "253876219c3db1f85c1dae3e81fcc10e0e4f95b917d4fbb40ebfa23b851048d0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/validate.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/validate.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/validate.py.gzip",
+      "bytes": 3127,
+      "sha256": "24cc0e42eb029de9ccb19ebda07d6fa870015bec5c51debdaa07ca4fc887d782",
+      "stored_bytes": 1223,
+      "stored_sha256": "b35caaba57f5fe8a181d48a72977a52eeac08ea3abda33f2b109fecb854d679d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/vision.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/vision.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/vision.py.gzip",
+      "bytes": 42985,
+      "sha256": "df9e2a11d275d09ad380c7a4e97602824376473cad0395e902710c83250fc930",
+      "stored_bytes": 11802,
+      "stored_sha256": "9eaa4660f26886816f17d9f36fe1f55ebf0c7bc33c6dd90891e70b9791d8b4dc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/weight_tying.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/weight_tying.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/weight_tying.py.gzip",
+      "bytes": 17323,
+      "sha256": "ed9da3efe92f4d600121fffa797530d54d9415a02a67a46b9db64aee6119b1d2",
+      "stored_bytes": 4182,
+      "stored_sha256": "d60ba5017549552ed7fac1e5b96543af03687deeb7dccc07946ef29b9597e0f2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/evidence/wrapper_features.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/evidence/wrapper_features.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/evidence/wrapper_features.py.gzip",
+      "bytes": 14074,
+      "sha256": "43badac8290b35d5dfc5641c6ca6ea4dfb95f71917a0a5f9e20fc53bef02f560",
+      "stored_bytes": 3668,
+      "stored_sha256": "4d498e3d095157fc073789aeac9fac017b067f59ad3aa2cd998f60511553cb5a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/__init__.py.gzip",
+      "bytes": 3340,
+      "sha256": "1328c4b463824befb432a2f42af2e4d565599aec118d67544307699c247346aa",
+      "stored_bytes": 1330,
+      "stored_sha256": "aa85b6d1c56d62bbff3e567ea20c52b9e1866ab707951527a8070c1ab120f409"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/attention.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/attention.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/attention.py.gzip",
+      "bytes": 8010,
+      "sha256": "809d6152a9198eef407ddfca5b79a08d9d93862481640acd440eb21ad4f8faf2",
+      "stored_bytes": 2617,
+      "stored_sha256": "2ce7e793793e9fe70e7ecb0f4acde9cae0487d3ecfc1b30ae609d881dbe4ba1e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/block_graph.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/block_graph.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/block_graph.py.gzip",
+      "bytes": 1287,
+      "sha256": "851ce33efe224ab297c9a26a6da3cab93a4e6348e769a667f5fbffe0991aa9d5",
+      "stored_bytes": 586,
+      "stored_sha256": "c50055f00f33526646b1e3dad5de524f02866f140a8afcfb963395104fe0a7e5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/code_evidence.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/code_evidence.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/code_evidence.py.gzip",
+      "bytes": 2383,
+      "sha256": "482226fb4a91875d3d9f32d5686a02dff8da80b48b1d730f08436684f97573ab",
+      "stored_bytes": 943,
+      "stored_sha256": "8029ff2205706bbd70ace14e09eb6869c0320358bd7d79a8b3d3d79afe2f672a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/ffn.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/ffn.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/ffn.py.gzip",
+      "bytes": 4248,
+      "sha256": "ca63808b90dec909676feb9a994cf29708d98be912ccff48e197b7855fb4aa59",
+      "stored_bytes": 1470,
+      "stored_sha256": "4c07396f2e630f2cb916358bc40f3d4fea73023b5f84b3770c8c843bb8f75d77"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/grouping.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/grouping.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/grouping.py.gzip",
+      "bytes": 2133,
+      "sha256": "c0e4bf0788d91948623fe2f577f8156e31ed60ece39423551ccd370323ff6612",
+      "stored_bytes": 871,
+      "stored_sha256": "3bdf837a98862e77657c0305ed41ee1bb65a3526a96f8827648e6d7205a66ca6"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/layer_group.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/layer_group.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/layer_group.py.gzip",
+      "bytes": 1673,
+      "sha256": "7ad9ff5c09860ff43c229e7f4008d0a2b224e7ff4017091fb05ca72948c4ebeb",
+      "stored_bytes": 592,
+      "stored_sha256": "5e7318f923d4372837e0043dbaa4a310b48b843e3efedc9a023db2884263cc94"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/loop.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/loop.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/loop.py.gzip",
+      "bytes": 3167,
+      "sha256": "42af502e34ca4292bf74ad0605c0e1b07d5090c8f09575f0e18fe2b18bb4b662",
+      "stored_bytes": 1294,
+      "stored_sha256": "28fe104ae875676637f2d76b1695b82a1574ce67d925e00ec8d9107fd0eaa901"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/modalities.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/modalities.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/modalities.py.gzip",
+      "bytes": 2365,
+      "sha256": "1d10102ff6b1a0d0a4ad6767ec5eb7dda0b7d7419a4eb886c854d5b9e7078406",
+      "stored_bytes": 845,
+      "stored_sha256": "5106097bb4a4cd310aa98ac0e73264aba40cda1d4fae3985b44538c60f8e5c34"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/norms.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/norms.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/norms.py.gzip",
+      "bytes": 474,
+      "sha256": "3eda62ddca8616b51216bb3f31e2c89fd5e5be293c087c7825c630c64f152a3f",
+      "stored_bytes": 265,
+      "stored_sha256": "267aff6c69ecccea466d2f7dd8a88b23b41835023d217ce41862a84635115f23"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/ops.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/ops.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/ops.py.gzip",
+      "bytes": 1536,
+      "sha256": "01df25be86a2b5587cc03ad98c0f312a6551b9d4769f8d71e6281e0e22712f3c",
+      "stored_bytes": 669,
+      "stored_sha256": "0e073daeab2c38a48369592d623a908110698a5de90c69e2459c4880d370742d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/pathways.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/pathways.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/pathways.py.gzip",
+      "bytes": 979,
+      "sha256": "20eb52fd4aad5736585c3a5fbdd1c6cc6c4d6ce53612b4e72ae55af5ceb2ea04",
+      "stored_bytes": 414,
+      "stored_sha256": "0c9de4db2141a7ef80f0e49ca830e9f6a0d713d2d2e1bd4e69bc1c2a862ad712"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/region.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/region.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/region.py.gzip",
+      "bytes": 2922,
+      "sha256": "74ab5a1ca68cba0d76a06e99c41d8d1674b129b8de09cb76439a20c1480089fe",
+      "stored_bytes": 1118,
+      "stored_sha256": "10d87ff1d7a04d977faa8f238e46c12d7c666e2fcae25542cf1be182d7d84c4e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/residual.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/residual.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/residual.py.gzip",
+      "bytes": 1214,
+      "sha256": "eab1f4ba74ccd7090207ba044ab1388fa6e40f88cf4086bbad31040a277320e3",
+      "stored_bytes": 533,
+      "stored_sha256": "673913b783f5c14dde3fa0eeb5a4a265d7b73acad625035542c52028af968c86"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/sections.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/sections.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/sections.py.gzip",
+      "bytes": 11194,
+      "sha256": "2d7603140a682d64cab425c80d61873c3d1f0b3c87c7e26505845f1cc1eb12c2",
+      "stored_bytes": 3213,
+      "stored_sha256": "4169c033173214f7eafead433a56539509b079f57762f952835ad20f96045b55"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/stack.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/stack.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/stack.py.gzip",
+      "bytes": 1929,
+      "sha256": "28085962dbe4fcc53b1f30d9c18488574835d0a327930572e74a31d835ef29b0",
+      "stored_bytes": 789,
+      "stored_sha256": "12016f7856416a35c90ba70609b3c372e4a6f8feb29b2109dbe6cabd0d754976"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/expanded/utils.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/expanded/utils.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/expanded/utils.py.gzip",
+      "bytes": 1461,
+      "sha256": "d5561b71bd0660a8580b650301773c9e238b08117be7ba6e7dca906f4f78eb1c",
+      "stored_bytes": 590,
+      "stored_sha256": "7e7e39b3bc7848f43f0e1028420dc2a398688a862f2abb4992d0dfb671c004a3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/html_renderer.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/html_renderer.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/html_renderer.py.gzip",
+      "bytes": 175,
+      "sha256": "040a4cc0c86293c0d746cdf407e43acb13ecf706ae09946ae7edf8908a36add5",
+      "stored_bytes": 142,
+      "stored_sha256": "b86606da259c5ce362a2d2785ae2389d5669cb797936488307b305aade325577"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/input_formats.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/input_formats.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/input_formats.py.gzip",
+      "bytes": 3906,
+      "sha256": "ddf4163e8c879859894684aaebe88683349f52e14ec49920c342d28faa82b832",
+      "stored_bytes": 1477,
+      "stored_sha256": "55217117e969f51b2cff24c953483800d40093f47544b458a73bc4eb94cee66a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/ir.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/ir.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/ir.py.gzip",
+      "bytes": 38083,
+      "sha256": "7f4bd0beddfb73691eb54e2823c1481ca4ad2b6daa9005fe97b1d3259ae8b320",
+      "stored_bytes": 10693,
+      "stored_sha256": "4fad84ec7abf797d2aafee4f051849836fa132bac99e3fbcd8e19fc3ea3a6d92"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/labels.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/labels.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/labels.py.gzip",
+      "bytes": 42238,
+      "sha256": "269eb422fee481f6cc03fe195a610050f9da8e43198ae9ceb35fcb9ee98f5847",
+      "stored_bytes": 10114,
+      "stored_sha256": "6b3c2e03e55e4215314be7040282ec51b71bd2466261db043c9c50f44fec634f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/lint.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/lint.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/lint.py.gzip",
+      "bytes": 8192,
+      "sha256": "6a835313f6979ecc7a5015a7f6c4d44614f293d17eb9884646e32079c8da60c8",
+      "stored_bytes": 3357,
+      "stored_sha256": "f31438cc60e69b769add75ad1c79463d1f2a1ea813d31651f53f2ffe0fc6bca0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/opgraph.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/opgraph.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/opgraph.py.gzip",
+      "bytes": 55729,
+      "sha256": "30c997e64b3da8203da9f099d86fb55d15daf06882509f6cd52bf0eb04ed8cd3",
+      "stored_bytes": 14742,
+      "stored_sha256": "42b09dfb175da339cb6089a4e337e691561ff19d42d72b9088c18191bc991d89"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/params.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/params.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/params.py.gzip",
+      "bytes": 13135,
+      "sha256": "d030e07e5142b9b0baf79e82a557e553e03b09d4417875f8d8fe64834295c121",
+      "stored_bytes": 4085,
+      "stored_sha256": "9206c9f249fa27e8638c24b831a981f5631c98e0e33cafba839facfcb55a6afb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/parser.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/parser.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/parser.py.gzip",
+      "bytes": 43848,
+      "sha256": "84348825d63709d912e591679fff6e3ce0f92e31914089d429a5d3e53c25c75f",
+      "stored_bytes": 14486,
+      "stored_sha256": "d9aa987c9c7a6415bb7474d7d20ec4659701cc471260cee81d6b1745ee590dc1"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/preview.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/preview.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/preview.py.gzip",
+      "bytes": 9916,
+      "sha256": "0a7fbc4f610b03576549cf52e548662c0116ee1b180ad3d3193b8819603a297e",
+      "stored_bytes": 4068,
+      "stored_sha256": "f0050bab807691e7aa9b76e32366bcba439fc475e47d08c9b92bf4cdb0026221"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/__init__.py.gzip",
+      "bytes": 54,
+      "sha256": "d7292fcee9f1be087622c6fcadf6b156e2fb714e33e6e7edd312fbcbe31b4b67",
+      "stored_bytes": 71,
+      "stored_sha256": "6dee77f6898a884afa49970e5d035f3e6790ef28c138ee0f020f633dea977084"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/__init__.py.gzip",
+      "bytes": 140,
+      "sha256": "9b8d1fe39075bf085c86ee9822814f285fe9bade9b55e10cc6f868417b0ac0c4",
+      "stored_bytes": 113,
+      "stored_sha256": "debd1a2c6697db839ad93fbb406eb5847789cc4b03eb373f78900d80e421abd8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/__init__.py.gzip",
+      "bytes": 1090,
+      "sha256": "c8f32bb68981b7c07a2b5b51c59f1d9e5a8352ebed075e5d7a4000433969c7d6",
+      "stored_bytes": 439,
+      "stored_sha256": "74165a0494c261faed58f449e75b23983f8b64a388e0742fb130958295b238c9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/attention.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/attention.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/attention.py.gzip",
+      "bytes": 20269,
+      "sha256": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "stored_bytes": 4716,
+      "stored_sha256": "f5c7ce953b39b7ea6363485252028d104283726b7a3ddfcf9f3c5085e8daeb06"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/block_facts.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/block_facts.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/block_facts.py.gzip",
+      "bytes": 1214,
+      "sha256": "576da9f63dadd93381889f14a1aa5ce3f2d17f58c37664197359573ac1c38789",
+      "stored_bytes": 505,
+      "stored_sha256": "199cf5be8849f1eecdb8b4a471392547721d0fac47d33af91342fe57b7383ddb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/declared_ops.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/declared_ops.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/declared_ops.py.gzip",
+      "bytes": 2807,
+      "sha256": "99b44503115c268173fcc909253dff0e39f310e6c9cb3dfd33290590dd6885db",
+      "stored_bytes": 1337,
+      "stored_sha256": "e2993d29eef55683b9aeda277239bea9760802f9c3510a84710eab42baacc34d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/dsa_indexer.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/dsa_indexer.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/dsa_indexer.py.gzip",
+      "bytes": 1760,
+      "sha256": "1c69e70abed8ffd3fa9764a6ecc1b6f58e021e8332845aefc506871be52c894f",
+      "stored_bytes": 900,
+      "stored_sha256": "9212679ce9973f759c1ee76aeb5a8daeebdca838f2ba7c9e6276a1c3962adfc6"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/feed_forward.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/feed_forward.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/feed_forward.py.gzip",
+      "bytes": 2280,
+      "sha256": "15e8a59f84386fe711a8302fb479ff4d6859c2d7b12bf4b7d4c5739fa6adc149",
+      "stored_bytes": 1151,
+      "stored_sha256": "71a36303434965b35eee42398538c512ca5e0c645f1c244b9df65f0b3a642dcc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/mixture_of_experts.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/mixture_of_experts.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/mixture_of_experts.py.gzip",
+      "bytes": 5952,
+      "sha256": "3e83672df08aaa8174e505a72f43ea081350888d7c8491932aad51042802a8a5",
+      "stored_bytes": 2319,
+      "stored_sha256": "19414aeb21e83e831729431be7c1bdbadc3cb3c4a85272adad14d38099e80dcc"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modalities.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modalities.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modalities.py.gzip",
+      "bytes": 387,
+      "sha256": "87debea100c99c1e0d5a45592f7768c7f4f4c8856aeb4f381b1a7e6ffcbebab5",
+      "stored_bytes": 195,
+      "stored_sha256": "f4753369bed35fe7eea7576074b505db88e95988a07e9a2202d21cda4b9f0894"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/__init__.py.gzip",
+      "bytes": 401,
+      "sha256": "75a79904ae02f27304155a6d4b35837cc0ba33e4bc69969eee69da2646e142f7",
+      "stored_bytes": 188,
+      "stored_sha256": "ce55bf6821845501b60f34f7b51ed7294827d75eb4aac81deef1b11bfa2f56d4"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/audio.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/audio.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/audio.py.gzip",
+      "bytes": 10043,
+      "sha256": "1704939ef639ccd939d43af8b3051f3a3ada66921d56c4b2eb5d9b11dbba7ce8",
+      "stored_bytes": 2832,
+      "stored_sha256": "24872abd87f3cf88d9b06f15ce5bf7f271f4aae5c9a6e47b1e4292217cb8b4e7"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/common.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/common.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/common.py.gzip",
+      "bytes": 2414,
+      "sha256": "6c79486cd538d2c18703464587fe6a95809b95e62884806bb7ba2b144fb05d0c",
+      "stored_bytes": 812,
+      "stored_sha256": "239e8bc456d9c18fda3bbf7225589e2ad79f96c4b6dedfa6ead7c659bc43bf83"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/conditioning.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/conditioning.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/conditioning.py.gzip",
+      "bytes": 1236,
+      "sha256": "d2c6ae2ef65d87e8c214cecae725e28a999509bbfb22061978f3ab253af8a51f",
+      "stored_bytes": 523,
+      "stored_sha256": "1727f56fa3ed6eff8b428aeb5690813fa428035addb167af0f4ac1a7ac54127a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py.gzip",
+      "bytes": 2315,
+      "sha256": "ee4d299c18d8d16b3a545d91991452c41382aaa8a7c98a0e6176571e31b2d3a0",
+      "stored_bytes": 1031,
+      "stored_sha256": "7522a9d001fc790734b24b3983efd175c6cb4314ff6ac625d7e61b85c0335739"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py.gzip",
+      "bytes": 7478,
+      "sha256": "a6e8142be9e19bcdd7b45f647ade407d428802b40f4923743752d25888a27ba8",
+      "stored_bytes": 1988,
+      "stored_sha256": "0b60250f8aaa84fe2d17b5dc0860344e6c58cbd11a8f3c591a84adee94f6b417"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_placeholder.py.gzip",
+      "bytes": 11394,
+      "sha256": "75e32339a8713da3e4e1967f114b613777e60602aa70bd9aae95dab084261dfb",
+      "stored_bytes": 2679,
+      "stored_sha256": "2e1fbb5cc97bc764789baadb8daa863447fb338db97a9aa5623f43ac5f33803a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_prefix.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/fusion_prefix.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/fusion_prefix.py.gzip",
+      "bytes": 864,
+      "sha256": "1328b6be371ac997e76e6d34f9c2e88875abe72e6047804cf4c56c62b0c9c7c4",
+      "stored_bytes": 407,
+      "stored_sha256": "a3db03dead1c04cf79841da8fb57d30507c6e084d7100e21f02b900650fc2c58"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/video.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/video.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/video.py.gzip",
+      "bytes": 1716,
+      "sha256": "681cf4b4bee5d661be8df54d0ad88243db8080c1f479c2f9b15ab4bfa39b29f4",
+      "stored_bytes": 703,
+      "stored_sha256": "6b36edca407da4800ad4b721b4eca8fc4733e357d4880fb77c44301d271fb861"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/vision.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/vision.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/vision.py.gzip",
+      "bytes": 2999,
+      "sha256": "ce9db61ebc0927e4f35c9e8509cd67f944976e42c4f3f9cf770edd12c49b2723",
+      "stored_bytes": 1023,
+      "stored_sha256": "36f45b8b967825823feb01b880beccec333ca9ae009622d71e4845b5f6522354"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/vision_details.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/modality_views/vision_details.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/modality_views/vision_details.py.gzip",
+      "bytes": 3746,
+      "sha256": "384bade099f3f97ded82fda1649272226d399ceaa691a913ba3a6608df14cf03",
+      "stored_bytes": 1546,
+      "stored_sha256": "17ad35a83fd14a5dc4dac2c0aab64e3d3cf7d2a39aa7974b0b283f61b77ec255"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/moe_router.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/moe_router.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/moe_router.py.gzip",
+      "bytes": 7813,
+      "sha256": "655d6392384cebf66bc0fba562ef59400a8493d77098e95a2e70532ba1a6e7cc",
+      "stored_bytes": 2849,
+      "stored_sha256": "d03830252cdb196af6d2b71ebc3326ef9eb0c46ea9dbea8ca64d2c2edd07c8f5"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/mtp_head.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/mtp_head.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/mtp_head.py.gzip",
+      "bytes": 6714,
+      "sha256": "a89c8747758d7000ebdd7a99d58c6948390807f6519bdf0f633d45806c1bbbe9",
+      "stored_bytes": 2472,
+      "stored_sha256": "d05d2c56f896dddb1485d691ee6472bb6a7b664bfb331892908ff70e0898930d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/per_layer_embedding.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/per_layer_embedding.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/per_layer_embedding.py.gzip",
+      "bytes": 6090,
+      "sha256": "35e814434a34c2c2819d657904557021c298b128df22de890b1ee0947d834359",
+      "stored_bytes": 1918,
+      "stored_sha256": "1910cdad57101c5cdc3b8517ac247a679d7dfc10786e750f308d3f680cfb7129"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/registry.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/registry.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/registry.py.gzip",
+      "bytes": 11772,
+      "sha256": "02f5726b5e6a0e39fca6369824b8c7ee4975efa68d288dad99b6a003b659731e",
+      "stored_bytes": 3914,
+      "stored_sha256": "4a136d5a6b5c6406c2779622985961f2f4d27b2df3d9f0c3f3fe61695c94957a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/scheduler_step.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/scheduler_step.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/scheduler_step.py.gzip",
+      "bytes": 2103,
+      "sha256": "465322e95d57f3ec40bce232940e9fc2f11992ce8afb50f1f406799f4d19d83b",
+      "stored_bytes": 983,
+      "stored_sha256": "e98656da4a1b0a63501df47c7d8cfafe0e1c072b80ac246d70f02a71db1417c8"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/self_conditioning.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/self_conditioning.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/self_conditioning.py.gzip",
+      "bytes": 2414,
+      "sha256": "667e196c21f82ec42e7b9563d1b443bc26c3ed06adc6c28c11b3b56493a203d3",
+      "stored_bytes": 1073,
+      "stored_sha256": "8da76c54e971a631a3022156d50c8407c97a60c7b169aa8faaff4ab282764a26"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/text_encoder.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/text_encoder.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/text_encoder.py.gzip",
+      "bytes": 8089,
+      "sha256": "334e85068ab3f08eefe2d2e14835f30726302136980c2804775de1bc4f66f0f8",
+      "stored_bytes": 3009,
+      "stored_sha256": "237d64962672aaecd55423093e2c1a172ee35a1fb66f0c77010780c3fd059fa0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/unet.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/unet.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/unet.py.gzip",
+      "bytes": 53743,
+      "sha256": "632a25c18fcd9b89eb7a69b3dbf4d537b7de3a62d16347545d2542d9b0296800",
+      "stored_bytes": 14790,
+      "stored_sha256": "5444c3bafda0c940781dd6ee546cec3b4b4136675c9cb159bec0920221c6f438"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/vae.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/block_views/vae.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/block_views/vae.py.gzip",
+      "bytes": 5615,
+      "sha256": "8adaa3cd2127d4f07bf8bf05b954bdc6b36c301cb740c3014e8126cc18098bf7",
+      "stored_bytes": 1897,
+      "stored_sha256": "0ab521eb3092ea9bc87e1a04b7aa19dc050e421b9927fa56ba26c6b01b303b03"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/card_payload.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/card_payload.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/card_payload.py.gzip",
+      "bytes": 16802,
+      "sha256": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e",
+      "stored_bytes": 5047,
+      "stored_sha256": "e4f51ba345dfcb21050b0777504dba0587518fa12cfd9a875914eef4a5b76c7d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/cards.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/cards.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/cards.py.gzip",
+      "bytes": 10971,
+      "sha256": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+      "stored_bytes": 2840,
+      "stored_sha256": "494092e74602784ef1a4b554a47692dec0c49bbbdf97dbff4d6961e8f2ddaf1c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/document.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/document.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/document.py.gzip",
+      "bytes": 10426,
+      "sha256": "9ea97941d1559be4771439bd792b193c95e37a1860b1309f1f3de3b326303562",
+      "stored_bytes": 3397,
+      "stored_sha256": "ef2a55a3f262b6c636e5137e5eb050dd56b24eb6b1080280209613d818920e57"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/evidence.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/evidence.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/evidence.py.gzip",
+      "bytes": 4273,
+      "sha256": "04395fde4f49e335fcbcd9c833d2b5b60664d44ca7fa0763060fa4fcc083b7af",
+      "stored_bytes": 1517,
+      "stored_sha256": "63b3ff6910bbd861655ddfcf3053edb56b92c9ae2407d1d71a0497354f20e82f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/fact_projection.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/fact_projection.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/fact_projection.py.gzip",
+      "bytes": 12126,
+      "sha256": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+      "stored_bytes": 3933,
+      "stored_sha256": "19220b2367901436fa737aa7e9852931121d34b01aba1be4eab819ffa6be9443"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/graph.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/graph.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/graph.py.gzip",
+      "bytes": 17106,
+      "sha256": "8b89d35ba2295a6cc8ce82ec3f09cc4018685cb90dbddc050d4dfa471a21d15f",
+      "stored_bytes": 6602,
+      "stored_sha256": "993ec6ea4c48effbf301fe51be9e353077bb50c3e4ef7edfcd2f433e1c051719"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/graph_engine.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/graph_engine.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/graph_engine.py.gzip",
+      "bytes": 37267,
+      "sha256": "7fd1f1d0894d8215ca5cfd9b01ef080ba0f9eee114458c93571b740afa412439",
+      "stored_bytes": 11085,
+      "stored_sha256": "a90a1ec3a6bb4b5529da227835332caf739e31331abfa1e04a9c8ead860191a3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/interactions.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/interactions.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/interactions.py.gzip",
+      "bytes": 12398,
+      "sha256": "2b025b1ead179d51f78aabc8a8f3403ac29abdc92a221fd91d1134d8b11ba730",
+      "stored_bytes": 3308,
+      "stored_sha256": "8b9f50919f9b1c2cef8612e453d5bc06292f5890b2a4cf165fd0e7ae4737235e"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/metadata.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/metadata.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/metadata.py.gzip",
+      "bytes": 10277,
+      "sha256": "7604fb18b3b72c17ec22d1d1142271c36179e160bd0af31fe61da8cc6ac998d4",
+      "stored_bytes": 3600,
+      "stored_sha256": "6550d7622f179074d9bf9608701b6bf29867182c68e0ac2a772bf89bb9427363"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/metadata_modalities.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/metadata_modalities.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/metadata_modalities.py.gzip",
+      "bytes": 63940,
+      "sha256": "1c5c10d51562151fbab464f2a30c517bb7074899d6818ab67376c0c3f54b9122",
+      "stored_bytes": 13533,
+      "stored_sha256": "8a0f1efa6cb27e18c830d444034af2188aaddd4f89efb95e820f066eec5ccebe"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/op_render.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/op_render.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/op_render.py.gzip",
+      "bytes": 13633,
+      "sha256": "6b85ef7800b9593ebb2eadc96a6d7d56a8e94151049a5e516cc8f1007cc91c1d",
+      "stored_bytes": 4811,
+      "stored_sha256": "3043a3f63ef3ef96027c1c8a72580645ebc52f50a66ac7070747b2de0e115a06"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/patch_grid.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/patch_grid.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/patch_grid.py.gzip",
+      "bytes": 3273,
+      "sha256": "57e454fcbb93f5d148dad87d169f4835828a051a65862bc5419df4bf78fa17fb",
+      "stored_bytes": 1082,
+      "stored_sha256": "72b296608a427a40a5921a642dc37d9a0876b4f21508245cd2778573faf33306"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/render_context.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/render_context.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/render_context.py.gzip",
+      "bytes": 6354,
+      "sha256": "75cea5d3a5cbf70fe0b8d044fe2583ff5a28d98e2514398100bfb31eda9f16f5",
+      "stored_bytes": 2304,
+      "stored_sha256": "8e763c92f5c7037e2e33d7c1ae0756c2035a10a7d270007bc90fe6cdc7eeebd9"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/sections.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/sections.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/sections.py.gzip",
+      "bytes": 7347,
+      "sha256": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+      "stored_bytes": 2592,
+      "stored_sha256": "7e8752af016e9b2c73f52430824180147dbb9c6cc01167b0dbe7d0712a47719d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/stack_view.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/stack_view.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/stack_view.py.gzip",
+      "bytes": 7781,
+      "sha256": "bd7c1f7eaad1e9b1724b9d0fc7b8ce00d16f1c61900beb743fda87511201230c",
+      "stored_bytes": 2895,
+      "stored_sha256": "d5875f7ba08491f26756ccb29f12f63fd255f2e66d5fadc5e8cee943a6d6c0d3"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/styles.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/styles.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/styles.py.gzip",
+      "bytes": 9481,
+      "sha256": "b7ab36421bc31be780dbc13166c34b802535f9d46163ad5f7cfa1981247fda99",
+      "stored_bytes": 2329,
+      "stored_sha256": "f378ab127f436b415be1cb8ba463be4aa586b81e82c3bc50150e91a3566d504a"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/svg.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/svg.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/svg.py.gzip",
+      "bytes": 21092,
+      "sha256": "89e76a6fc646086146a0d4eab14fea837f6010f013d7fdf93cbad3b2c8e6614b",
+      "stored_bytes": 5768,
+      "stored_sha256": "b217169275069c2a1dcd30cb7a2a01e56625ffc11906d303297843f844d49592"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/theme.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/theme.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/theme.py.gzip",
+      "bytes": 3730,
+      "sha256": "fdce4c065fabb5fd03a36fb754aeaac77b1e74c9dc60f39a2668dea2302bfeb7",
+      "stored_bytes": 1666,
+      "stored_sha256": "334246c764fb104514c8596e69e2c55547b583f1dd1e70d9599c354269b0b830"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/tower.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/tower.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/tower.py.gzip",
+      "bytes": 12258,
+      "sha256": "5e9c6cc325df8be1a3ab36fe96abb02f2e8e04ab99ed3a8fbf994709e5898c26",
+      "stored_bytes": 4544,
+      "stored_sha256": "d65e783ed510fee1838abb4fa547df82d58532445a72069472a20050ad44ac34"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/utils.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/utils.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/utils.py.gzip",
+      "bytes": 906,
+      "sha256": "0466fcf688efdab126fdfd9c4c8b95b56fa6556c11eb7280c490cce5f0ee64ac",
+      "stored_bytes": 430,
+      "stored_sha256": "ce24d946e12ffbf7f892b11bdd631114d86cbc41f52d462900b17e1277388809"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/views.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/views.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/views.py.gzip",
+      "bytes": 68312,
+      "sha256": "04232b0952d12e16111d13f29cf3e7e56894a626af2cb3cc74c9a54cc6e4db9d",
+      "stored_bytes": 18208,
+      "stored_sha256": "dd7e2f7d71c3b1355adf7643ed3a7db14ee7e724841529c41bc25a12a60c1644"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/views_diffusion.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/views_diffusion.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/views_diffusion.py.gzip",
+      "bytes": 43170,
+      "sha256": "a61e23ddb828f9a93af60a93fdffdf5f2126f87306bd0a4ba0c625df0be76a07",
+      "stored_bytes": 12119,
+      "stored_sha256": "909de3ab41623f73ca53a4047e033012205f8d9a4f7e3bdd72d7ed5ae9850f0d"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/renderers/html/views_modalities.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/renderers/html/views_modalities.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/renderers/html/views_modalities.py.gzip",
+      "bytes": 5058,
+      "sha256": "2ae9e379e57fbcd4dfe202d701af47db673e35decb378de2d8ee661ae138b2e0",
+      "stored_bytes": 1311,
+      "stored_sha256": "f113a8ad35a3a97d0b1d2aa92fa3dad51028e8e151488be5eb728795dc3d5848"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/sable.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/sable.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/sable.py.gzip",
+      "bytes": 50229,
+      "sha256": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+      "stored_bytes": 15759,
+      "stored_sha256": "c3b28c1949e7ded571a4d9d8ba62dc43d43870538aad1e8e84382bc37445c742"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/model_unfolder/submodel.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/model_unfolder/submodel.py",
+      "stored_path": "streams/frozen-renderer-snapshot/model_unfolder/submodel.py.gzip",
+      "bytes": 27662,
+      "sha256": "d0456bd359730bc465c98010f1818a7d2972fb48b1bd46eed332ce42e5739ed3",
+      "stored_bytes": 8082,
+      "stored_sha256": "f23b1624493b09e7ea62bcfbe06ac1d49dca27968c11b8d9faf5e3c1cd0b3b37"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/__init__.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/__init__.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/__init__.py.gzip",
+      "bytes": 221,
+      "sha256": "e391b5a0b56a34cc93135ca6a92f0eb69b83e4ab53d0021e1a627dbd12807845",
+      "stored_bytes": 180,
+      "stored_sha256": "b07357d452d3895ccb707da953c4ab4bc31a1ef6d68f76af8d176f64b8fc23b2"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/attribute_bindings.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/attribute_bindings.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/attribute_bindings.py.gzip",
+      "bytes": 33143,
+      "sha256": "58b8321ca39f9dbc3a34bd3c5e0dc1230072bca2ebce43e09ac5eaafaad8ab3e",
+      "stored_bytes": 7193,
+      "stored_sha256": "0d9ad94709ca6737ad7044e086bdc667ec3eeb7c6f56fd75dfdfc6ea8dcb062f"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/execution_observation.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/execution_observation.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/execution_observation.py.gzip",
+      "bytes": 23862,
+      "sha256": "a48f1f86a1e7c4bef29baf6baa9b6df0916a507a0cd4859601b9b5d5911a38ac",
+      "stored_bytes": 6382,
+      "stored_sha256": "1d9dbddea79ff7978c545dd2689a9fdba390abb61310f1fb1bad11c63b5774b0"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/framework_primitives.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/framework_primitives.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/framework_primitives.py.gzip",
+      "bytes": 1762,
+      "sha256": "76fb6aa2c643014084f85c01c8fb50695cad86002ebc3d4d50094c3b88574feb",
+      "stored_bytes": 750,
+      "stored_sha256": "166fc205abe29d7f8fdd2300d94f413d5c2b63502462b71d80d69c04e6249f65"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/instance_inventory.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/instance_inventory.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/instance_inventory.py.gzip",
+      "bytes": 44841,
+      "sha256": "8cabfff97d57d573dbb2c1fe6ec9205b064d37b780ff082f227599b530679e82",
+      "stored_bytes": 11872,
+      "stored_sha256": "bbf6677e232d8af6dae6eccaa19d142f7fc4dff10ecd1db6188c2c97d9e41866"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/relation_observation.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/relation_observation.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/relation_observation.py.gzip",
+      "bytes": 45196,
+      "sha256": "16e38f8c45da13f0b328b1c2abcf115f4b9ed32f2dffe512a35d253bb6d0752c",
+      "stored_bytes": 11395,
+      "stored_sha256": "e49f41a9740347ac23a1190580d72accf4fd7d380116c3d0f101383bd6e93b6c"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/physics/source_override.py",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/physics/source_override.py",
+      "stored_path": "streams/frozen-renderer-snapshot/physics/source_override.py.gzip",
+      "bytes": 3184,
+      "sha256": "2d52b13263f545a7a50cc519021baf5414d902d37d894c1db80094470e2cfddc",
+      "stored_bytes": 1184,
+      "stored_sha256": "8e7814c430824ea7136cc5c25a42cc3748cecf5bd5324be8eab1f9bb103ca7fb"
+    },
+    {
+      "logical_path": "frozen-renderer-snapshot/snapshot-pins.json",
+      "source_path": "/private/tmp/unfold-s81-render-snapshot-v1/snapshot-pins.json",
+      "stored_path": "streams/frozen-renderer-snapshot/snapshot-pins.json.gzip",
+      "bytes": 37841,
+      "sha256": "d553cc2b9fa4f6628ec2d137bff7fb250a94cc8425e9219e02ff2250b2b80a7d",
+      "stored_bytes": 15658,
+      "stored_sha256": "5451ed4aa684d7e6341ede2950a3dbbf404c54b74ec6112d16d6b13293178cee"
+    },
+    {
+      "logical_path": "public-v1-red/canonical.html",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/canonical.html",
+      "stored_path": "streams/public-v1-red/canonical.html.gzip",
+      "bytes": 23748293,
+      "sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "stored_bytes": 731101,
+      "stored_sha256": "735bbb1d0aa66b49249a975afaa54a424515f86362ab787b152936bc67521966"
+    },
+    {
+      "logical_path": "public-v1-red/input-pins.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/input-pins.json",
+      "stored_path": "streams/public-v1-red/input-pins.json.gzip",
+      "bytes": 245,
+      "sha256": "f8172af6b3471d8be4ff5fbc729d99197752b24d79d1b405b4b92106c3add9f3",
+      "stored_bytes": 191,
+      "stored_sha256": "700b34e6044dc3e6f74835415f753e32db25dba65cfb1267e832c79830ad1ff5"
+    },
+    {
+      "logical_path": "public-v1-red/outer.log",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1.log",
+      "stored_path": "streams/public-v1-red/outer.log.gzip",
+      "bytes": 1886,
+      "sha256": "1cc955822994bc5523f191c7ce49afe9e5854dc06058dc89d9d82fd0c06cfb01",
+      "stored_bytes": 626,
+      "stored_sha256": "cd4ca5aa3d70ace6cbe0752a29d1660691653b7a540946abc337684cc6654809"
+    },
+    {
+      "logical_path": "public-v1-red/page.html",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/page.html",
+      "stored_path": "streams/public-v1-red/page.html.gzip",
+      "bytes": 2171535,
+      "sha256": "51d318d35ea6ae6abc23af285b63cb7d556a5740d2e39d22849274607801c7d2",
+      "stored_bytes": 231987,
+      "stored_sha256": "dcfa4a5b7849f9e4e6ad586fcf80102f006640c2065ed0f9408ab3cf0020ffed"
+    },
+    {
+      "logical_path": "public-v1-red/parameters.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/parameters.json",
+      "stored_path": "streams/public-v1-red/parameters.json.gzip",
+      "bytes": 179,
+      "sha256": "a0669c0f3cba66470e28cf8ce34e0e6f89e5be8d212d3728ad3f1cba26c8e8cb",
+      "stored_bytes": 137,
+      "stored_sha256": "33d33b48c13f5375719148d4378a5c2f42b2e82bf8ba5381dfc9b083396b8655"
+    },
+    {
+      "logical_path": "public-v1-red/result.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/result.json",
+      "stored_path": "streams/public-v1-red/result.json.gzip",
+      "bytes": 241,
+      "sha256": "0a7bc4b29542273cd5671e50dad2c9df465d86cb04bbe987899b08a41242d926",
+      "stored_bytes": 185,
+      "stored_sha256": "41980cbdb81dfe422d864162d283c2e39edddffb644751962af4477a37f1a8b3"
+    },
+    {
+      "logical_path": "public-v1-red/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/source-after-finally.json",
+      "stored_path": "streams/public-v1-red/source-after-finally.json.gzip",
+      "bytes": 37752,
+      "sha256": "d926dd9092cec33635ea61bc04e54b4d5640a57cb0cc3fe73c321585627728c0",
+      "stored_bytes": 15606,
+      "stored_sha256": "52e540182ce5b577efa25bfb088fa489c5d9f873af48d387c0300f50571c1278"
+    },
+    {
+      "logical_path": "public-v1-red/source-before.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v1/source-before.json",
+      "stored_path": "streams/public-v1-red/source-before.json.gzip",
+      "bytes": 37752,
+      "sha256": "d926dd9092cec33635ea61bc04e54b4d5640a57cb0cc3fe73c321585627728c0",
+      "stored_bytes": 15606,
+      "stored_sha256": "52e540182ce5b577efa25bfb088fa489c5d9f873af48d387c0300f50571c1278"
+    },
+    {
+      "logical_path": "public-v2-pass/canonical.html",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/canonical.html",
+      "stored_path": "streams/public-v2-pass/canonical.html.gzip",
+      "bytes": 23748293,
+      "sha256": "d0ce8587ddf7aad17f4528ab314237e9d296315e59210462263023772237dc06",
+      "stored_bytes": 731101,
+      "stored_sha256": "735bbb1d0aa66b49249a975afaa54a424515f86362ab787b152936bc67521966"
+    },
+    {
+      "logical_path": "public-v2-pass/input-pins.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/input-pins.json",
+      "stored_path": "streams/public-v2-pass/input-pins.json.gzip",
+      "bytes": 245,
+      "sha256": "679783afe9682634ec25e4e57116b5c0284eb36b0fa5a095a90fa1bd942f4e53",
+      "stored_bytes": 190,
+      "stored_sha256": "ad3f75300a41c2117ff1d40884f600f9d5b4a91b83232f4a655e3a0d66a3a0a1"
+    },
+    {
+      "logical_path": "public-v2-pass/outer.log",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2.log",
+      "stored_path": "streams/public-v2-pass/outer.log.gzip",
+      "bytes": 738,
+      "sha256": "3d1b6977b6523639d1e125dc4dff7305979b18c76e81908e4adfc1ebcb00e167",
+      "stored_bytes": 436,
+      "stored_sha256": "9641f78128f51470a3cc86f92722e5532b6fd8facfa606b21492c85d3e32aabe"
+    },
+    {
+      "logical_path": "public-v2-pass/page.html",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/page.html",
+      "stored_path": "streams/public-v2-pass/page.html.gzip",
+      "bytes": 2171535,
+      "sha256": "51d318d35ea6ae6abc23af285b63cb7d556a5740d2e39d22849274607801c7d2",
+      "stored_bytes": 231987,
+      "stored_sha256": "dcfa4a5b7849f9e4e6ad586fcf80102f006640c2065ed0f9408ab3cf0020ffed"
+    },
+    {
+      "logical_path": "public-v2-pass/parameters.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/parameters.json",
+      "stored_path": "streams/public-v2-pass/parameters.json.gzip",
+      "bytes": 179,
+      "sha256": "a0669c0f3cba66470e28cf8ce34e0e6f89e5be8d212d3728ad3f1cba26c8e8cb",
+      "stored_bytes": 137,
+      "stored_sha256": "33d33b48c13f5375719148d4378a5c2f42b2e82bf8ba5381dfc9b083396b8655"
+    },
+    {
+      "logical_path": "public-v2-pass/render-events.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/render-events.json",
+      "stored_path": "streams/public-v2-pass/render-events.json.gzip",
+      "bytes": 4138287,
+      "sha256": "80997740403ff68f2786328f057da24a6a19bec645bcb2253990ae8af7eb1779",
+      "stored_bytes": 86135,
+      "stored_sha256": "8269c47a3ffbf98ce5dced4143e2f4f971162e824566dc8c09b7949f1e39dd6a"
+    },
+    {
+      "logical_path": "public-v2-pass/result.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/result.json",
+      "stored_path": "streams/public-v2-pass/result.json.gzip",
+      "bytes": 738,
+      "sha256": "3d1b6977b6523639d1e125dc4dff7305979b18c76e81908e4adfc1ebcb00e167",
+      "stored_bytes": 436,
+      "stored_sha256": "9641f78128f51470a3cc86f92722e5532b6fd8facfa606b21492c85d3e32aabe"
+    },
+    {
+      "logical_path": "public-v2-pass/source-after-finally.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/source-after-finally.json",
+      "stored_path": "streams/public-v2-pass/source-after-finally.json.gzip",
+      "bytes": 37752,
+      "sha256": "d926dd9092cec33635ea61bc04e54b4d5640a57cb0cc3fe73c321585627728c0",
+      "stored_bytes": 15606,
+      "stored_sha256": "52e540182ce5b577efa25bfb088fa489c5d9f873af48d387c0300f50571c1278"
+    },
+    {
+      "logical_path": "public-v2-pass/source-before.json",
+      "source_path": "/private/tmp/unfold-s81-html-generation-v2/source-before.json",
+      "stored_path": "streams/public-v2-pass/source-before.json.gzip",
+      "bytes": 37752,
+      "sha256": "d926dd9092cec33635ea61bc04e54b4d5640a57cb0cc3fe73c321585627728c0",
+      "stored_bytes": 15606,
+      "stored_sha256": "52e540182ce5b577efa25bfb088fa489c5d9f873af48d387c0300f50571c1278"
+    },
+    {
+      "logical_path": "render-input/ir.json",
+      "source_path": "/private/tmp/unfold-s81-profile-baseline-788abbd/ir.json",
+      "stored_path": "streams/render-input/ir.json.gzip",
+      "bytes": 38146206,
+      "sha256": "f650fc5ae65ba530f1de64b0b2fa8fbed979e2b5c6dfd632e8c2d26439d35b47",
+      "stored_bytes": 1415848,
+      "stored_sha256": "a5580b00b7ef9612bdfc4197bc5ca37a2306ab623d815ae2a9475d77b7463acc"
+    },
+    {
+      "logical_path": "synthetic-variants/compact.html",
+      "source_path": "/private/tmp/unfold-s81-variant-fixture-v1/compact.html",
+      "stored_path": "streams/synthetic-variants/compact.html.gzip",
+      "bytes": 239266,
+      "sha256": "499eafbc8b30e6a1d4e63287b0f6f5e4893f50dc419e47a3b242e416566e1a1a",
+      "stored_bytes": 6206,
+      "stored_sha256": "d146fc258e3bc7f0199be70fecb4ab36a28c368d21f117f64a44c507733b1e1c"
+    },
+    {
+      "logical_path": "synthetic-variants/eager.html",
+      "source_path": "/private/tmp/unfold-s81-variant-fixture-v1/eager.html",
+      "stored_path": "streams/synthetic-variants/eager.html.gzip",
+      "bytes": 617453,
+      "sha256": "925fedde7c5bb7fba0b5e2dc1ae498f270e9feebf0c013482008cd8e4eefcd69",
+      "stored_bytes": 4556,
+      "stored_sha256": "aa8607634e6c56d4391eabedb363a04be7a47d33832b56e0e8182ca7333c51bc"
+    },
+    {
+      "logical_path": "synthetic-variants/result.json",
+      "source_path": "/private/tmp/unfold-s81-variant-fixture-v1/result.json",
+      "stored_path": "streams/synthetic-variants/result.json.gzip",
+      "bytes": 625,
+      "sha256": "a38236fa8493ece882bef470d910a5137335e2eee57e31e4eb0ebf57f2c3f05d",
+      "stored_bytes": 380,
+      "stored_sha256": "a508207451278b04b69e082daec9ac6aba8b1f8a29c2ea36a2a71998db572b65"
+    },
+    {
+      "logical_path": "tools/executed-public-v2.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-card-payload/measure_html.py",
+      "stored_path": "streams/tools/executed-public-v2.py.gzip",
+      "bytes": 7236,
+      "sha256": "3402268ff52a38313a6fd9240f40087250ee80c7e93f4dc54ea8dc51692580cd",
+      "stored_bytes": 2270,
+      "stored_sha256": "8f8d492fe9505edc01f1ee04b559af5c6c352dd20904f250066e1412dac707c8"
+    },
+    {
+      "logical_path": "tools/executed-variant-fixture.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-card-payload/make_variant_fixture.py",
+      "stored_path": "streams/tools/executed-variant-fixture.py.gzip",
+      "bytes": 5245,
+      "sha256": "f125d1be787e7a408904ca6fb3de4a5ce6ae75e9283319fdc7426323ace5c5ed",
+      "stored_bytes": 1857,
+      "stored_sha256": "c9752be40c4c1a1f03244d33af1a36eb67941392e0cbaaa97041659503e78c70"
+    },
+    {
+      "logical_path": "tools/package_receipt.py",
+      "source_path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S8.1-card-payload/package_receipt.py",
+      "stored_path": "streams/tools/package_receipt.py.gzip",
+      "bytes": 6152,
+      "sha256": "18cf107d5327aade5b91237567cac6f4424ceff31fdb91dc71ef65060ff86471",
+      "stored_bytes": 2178,
+      "stored_sha256": "3353696b0b2c02c22ec4a50b80a99ed3c61904288b11c713085de01c24fd19e6"
+    }
+  ]
+}

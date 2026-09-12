@@ -1,0 +1,13 @@
+{
+  "status": "HELD_SOURCE_ONLY_RUNTIME_PENDING",
+  "files": {
+    "capture_contract.py": "6afc54811c39a154c7f7290d6ca4540c0a01f7141c6302709feb0099c761b23e",
+    "capture_preservation.py": "9ed997baf20f297e89e5e61ab285eaca144b52fcf8769e49822477f947a015ab",
+    "compare-recovered.py": "f43f0f324cc1dfbae0548f079d68ae530199a24ee5d3a3b8b677c5cfe18450f8",
+    "contract.json": "cff329d10b607d671cce59c294bd59afae5f768bda81a2c0149a962b2c202966",
+    "plan.json": "74466548abd7b9a9e61f989065e77b9386c6d7966824ccd93578dffb8598ea84",
+    "run-capture.py": "9eec39015b98665506eda3381d46b2e0bfa1d05de0899aa66b9849bee3db06dc",
+    "run-tests.py": "c98c65a3677eddc3b45fed1797abe32bdbc1dce2314bc400ef13028a7598246f",
+    "saved-baseline-inventory.json": "63394b2d904c3fed1aa13ca78bf8e50fabf17c6561d1311bc1aac5937ff385ee"
+  }
+}

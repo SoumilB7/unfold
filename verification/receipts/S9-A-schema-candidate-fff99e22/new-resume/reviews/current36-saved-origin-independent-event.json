@@ -1,0 +1,26 @@
+{
+  "verdict": "PASS_EXACT_EXECUTED34_COMPARISON_ORIGIN_VERIFIED",
+  "completed36_audit_manifest_sha256": "0118c640406da9396d9ad6d6949988908cd6be9002bf8dae6c92789f83759810",
+  "reference34_archive_map_sha256": "1bf95f4cbf0ac82e113b6fbeb108998742658ee19d6004d1cff4d487d68fa028",
+  "reference_files_archive_and_raw_independently_rehashed": 590,
+  "reference_successful_source_and_protected_brackets_equal": true,
+  "raw_payload_deltas": [
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "raw_payload_delta_leaves": 1
+    }
+  ],
+  "payload_cause": "Every retained raw payload delta is eliminated by the same exact Diagram page mount-ID substitution as the full HTML; no normalized output or proof is emitted.",
+  "audit_attempts": [
+    {
+      "directory": "current36-saved-independent-event-attempt1",
+      "reason": "Archive map schema adapter expected prior list but36 map wraps files; no data comparisons reached."
+    },
+    {
+      "directory": "current36-saved-independent-event-attempt2",
+      "reason": "Overstrict payload equality hit mount IDs embedded in deferred JSON; actual raw deltas retained, same finite identity substitution verified."
+    }
+  ],
+  "no_model_or_test_rerun": true,
+  "output_approval": false
+}
