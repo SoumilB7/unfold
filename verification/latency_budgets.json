@@ -122,47 +122,47 @@
       "sd-v1-4": "tests/unseen_model_configs/sd-v1-4.json"
     },
     "cold_empty_cache": {
-      "budget_seconds": 43.0,
+      "budget_seconds": 37.0,
       "samples_seconds": {
         "stable-diffusion-xl-base-1-0": [
-          32.681176166050136,
-          32.24899445800111,
-          37.415210667066276
+          33.80945962527767,
+          27.482870374806225,
+          28.366631291806698
         ],
         "sd-v1-4": [
-          30.219834292307496,
-          36.45807833317667,
-          31.40346366725862
+          26.483579707797617,
+          26.49351983424276,
+          26.721054583787918
         ]
       },
       "medians_seconds": {
-        "stable-diffusion-xl-base-1-0": 32.681176166050136,
-        "sd-v1-4": 31.40346366725862
+        "stable-diffusion-xl-base-1-0": 28.366631291806698,
+        "sd-v1-4": 26.49351983424276
       }
     },
     "warm_populated_cache": {
-      "budget_seconds": 13.0,
+      "budget_seconds": 11.0,
       "samples_seconds": {
         "stable-diffusion-xl-base-1-0": [
-          21.048966709058732,
-          9.044011458288878,
-          9.88753820816055
+          8.770339500159025,
+          7.808447666000575,
+          8.095881125424057
         ],
         "sd-v1-4": [
-          8.8164959163405,
-          8.942279499955475,
-          8.618206750135869
+          8.664209959097207,
+          7.986142709385604,
+          8.002395582851022
         ]
       },
       "medians_seconds": {
-        "stable-diffusion-xl-base-1-0": 9.88753820816055,
-        "sd-v1-4": 8.8164959163405
+        "stable-diffusion-xl-base-1-0": 8.095881125424057,
+        "sd-v1-4": 8.002395582851022
       }
     },
-    "budget_basis": "S2 method: 1.3 times the slowest measured median per mode, rounded up to whole seconds; approved owner verdict on c7ec5526.",
+    "budget_basis": "S2 method: 1.3 times the slowest measured median per mode, rounded up; S10-1 authorized downward ratchet from 43 / 13 to 37 / 11.",
     "measurement_status": "measured",
-    "measured_at": "2026-09-09",
-    "baseline_commit": "87cde8d8c0e983b315384db8d79c8c6bcee468f4",
+    "measured_at": "2026-09-10",
+    "baseline_commit": "fff99e2230064762598748463accd170e1e34e22",
     "budget_multiplier": 1.3,
     "baseline_host": {
       "platform": "macOS-26.5.1-arm64-arm-64bit",
@@ -170,17 +170,17 @@
       "before": {
         "cpu_count": 10,
         "load_average": [
-          5.30712890625,
-          6.4296875,
-          5.6650390625
+          3.41845703125,
+          7.197265625,
+          8.57666015625
         ]
       },
       "after": {
         "cpu_count": 10,
         "load_average": [
-          5.837890625,
-          6.7255859375,
-          6.13330078125
+          2.74951171875,
+          4.69287109375,
+          7.0732421875
         ]
       }
     },
@@ -190,32 +190,32 @@
         "pair": 0,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 32.681176166050136,
-          "html_seconds": 2.98867250001058,
-          "imports_seconds": 0.835334416013211,
-          "parent_cpu_seconds": 15.865829,
-          "unfold_seconds": 32.67745608417317
+          "budget_seconds": 33.80945962527767,
+          "html_seconds": 2.9002443747594953,
+          "imports_seconds": 0.32556316582486033,
+          "parent_cpu_seconds": 15.95167,
+          "unfold_seconds": 33.80705595808104
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            5.30712890625,
-            6.4296875,
-            5.6650390625
+            3.41845703125,
+            7.197265625,
+            8.57666015625
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            7.03076171875,
-            6.70458984375,
-            5.79345703125
+            4.56005859375,
+            7.06396484375,
+            8.47119140625
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
-          "sha256": "7088699014815b035835d7f5c2c8ede890783b67928ad712fdf5d713912a8f01",
-          "bytes": 51775
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/cold/result.json",
+          "sha256": "63c5d537fd5145451ba71d87e088f03c4eccf57ace4816a4268554388c523741",
+          "bytes": 51764
         }
       },
       {
@@ -223,32 +223,32 @@
         "pair": 0,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 21.048966709058732,
-          "html_seconds": 3.2726151668466628,
-          "imports_seconds": 0.8314359588548541,
-          "parent_cpu_seconds": 12.720797,
-          "unfold_seconds": 21.043829208239913
+          "budget_seconds": 8.770339500159025,
+          "html_seconds": 2.745702332817018,
+          "imports_seconds": 0.32240266585722566,
+          "parent_cpu_seconds": 8.438728,
+          "unfold_seconds": 8.768270832952112
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            7.03076171875,
-            6.70458984375,
-            5.79345703125
+            4.56005859375,
+            7.06396484375,
+            8.47119140625
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            10.265625,
-            7.552734375,
-            6.13330078125
+            4.28125,
+            6.88037109375,
+            8.38037109375
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
-          "sha256": "971ddeb6de66eea3e769200c5d4e4be4e65b0a9ade7e16f89fbdc76b69638d84",
-          "bytes": 4269
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/0/warm/result.json",
+          "sha256": "1bedee5cb271766ea77932065218fe3b1587e809ed340e8816ea48ca2272709d",
+          "bytes": 4264
         }
       },
       {
@@ -256,32 +256,32 @@
         "pair": 1,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 32.24899445800111,
-          "html_seconds": 2.947908249683678,
-          "imports_seconds": 0.9491394590586424,
-          "parent_cpu_seconds": 16.039080000000002,
-          "unfold_seconds": 32.24492824962363
+          "budget_seconds": 27.482870374806225,
+          "html_seconds": 2.751559667289257,
+          "imports_seconds": 0.3190784160979092,
+          "parent_cpu_seconds": 14.66721,
+          "unfold_seconds": 27.48091208282858
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            10.265625,
-            7.552734375,
-            6.13330078125
+            4.28125,
+            6.88037109375,
+            8.38037109375
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            8.1953125,
-            7.345703125,
-            6.1142578125
+            3.71875,
+            6.49365234375,
+            8.1865234375
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
-          "sha256": "6122d36d40146092b73ccfe9ca9c2668d9b9aebd58aaa28b86828bac399939ee",
-          "bytes": 51778
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/cold/result.json",
+          "sha256": "2fd06ad7b1e44f994c0558a56eb9d5aa1f010569a3dd93aad4f7041fba69a54f",
+          "bytes": 51756
         }
       },
       {
@@ -289,32 +289,32 @@
         "pair": 1,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 9.044011458288878,
-          "html_seconds": 2.941310833208263,
-          "imports_seconds": 0.8605146673507988,
-          "parent_cpu_seconds": 8.780883,
-          "unfold_seconds": 9.03763037500903
+          "budget_seconds": 7.808447666000575,
+          "html_seconds": 2.725670167244971,
+          "imports_seconds": 0.3152605830691755,
+          "parent_cpu_seconds": 7.78539,
+          "unfold_seconds": 7.8064337079413235
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            8.1953125,
-            7.345703125,
-            6.1142578125
+            3.71875,
+            6.49365234375,
+            8.1865234375
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            6.75439453125,
-            7.06689453125,
-            6.03564453125
+            3.26953125,
+            6.2568359375,
+            8.07177734375
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
-          "sha256": "5c5c9978b0379ce5ebcd89432adea5fb49553ff918dfa7a89b84d25d4b827db4",
-          "bytes": 4269
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/1/warm/result.json",
+          "sha256": "b34eab4507e06e23ceaf20fda946deb6f5d5b999e0dc0f34eb882710d00effbe",
+          "bytes": 4255
         }
       },
       {
@@ -322,32 +322,32 @@
         "pair": 2,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 37.415210667066276,
-          "html_seconds": 2.9745495840907097,
-          "imports_seconds": 0.8332185409963131,
-          "parent_cpu_seconds": 17.083581,
-          "unfold_seconds": 37.411253875121474
+          "budget_seconds": 28.366631291806698,
+          "html_seconds": 3.2061513331718743,
+          "imports_seconds": 0.31520141707733274,
+          "parent_cpu_seconds": 15.425998,
+          "unfold_seconds": 28.364535917062312
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            6.75439453125,
-            7.06689453125,
-            6.03564453125
+            3.26953125,
+            6.2568359375,
+            8.07177734375
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            6.9326171875,
-            7.05810546875,
-            6.0830078125
+            3.06982421875,
+            5.91455078125,
+            7.8828125
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
-          "sha256": "d70133ae49d2561ff3790102c029d59d0f9bbebad4c4474ce438835ca40607e8",
-          "bytes": 51783
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/cold/result.json",
+          "sha256": "d9d70ed9305e993d9b46372be1341cbb203325b63f2921c2a31633fb77842755",
+          "bytes": 51764
         }
       },
       {
@@ -355,32 +355,32 @@
         "pair": 2,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 9.88753820816055,
-          "html_seconds": 2.9700118750333786,
-          "imports_seconds": 0.8839146248064935,
-          "parent_cpu_seconds": 9.446810000000001,
-          "unfold_seconds": 9.88256729207933
+          "budget_seconds": 8.095881125424057,
+          "html_seconds": 2.838797540869564,
+          "imports_seconds": 0.32310883281752467,
+          "parent_cpu_seconds": 8.045641,
+          "unfold_seconds": 8.093739166855812
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            6.9326171875,
-            7.05810546875,
-            6.0830078125
+            3.06396484375,
+            5.86572265625,
+            7.85400390625
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            8.69873046875,
-            7.44580078125,
-            6.23828125
+            3.06005859375,
+            5.77099609375,
+            7.796875
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
-          "sha256": "1511800129e515552cda462c4f32fbf83454bd1ee30a0a6bbd8684eee83fb464",
-          "bytes": 4278
+          "logical_path": "latency-unet/samples/stable-diffusion-xl-base-1-0/2/warm/result.json",
+          "sha256": "35f65c97c1fc248093839482442262c13d38396d61cafbb70f18835dea121c36",
+          "bytes": 4266
         }
       },
       {
@@ -388,32 +388,32 @@
         "pair": 0,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 30.219834292307496,
-          "html_seconds": 2.8585359579883516,
-          "imports_seconds": 0.857680750079453,
-          "parent_cpu_seconds": 16.430798,
-          "unfold_seconds": 30.216070957947522
+          "budget_seconds": 26.483579707797617,
+          "html_seconds": 2.604732916690409,
+          "imports_seconds": 0.33427566569298506,
+          "parent_cpu_seconds": 14.803676,
+          "unfold_seconds": 26.48048287536949
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            8.69873046875,
-            7.44580078125,
-            6.23828125
+            3.06005859375,
+            5.77099609375,
+            7.796875
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            6.5556640625,
-            7.04638671875,
-            6.14111328125
+            3.2255859375,
+            5.53955078125,
+            7.64111328125
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/cold/result.json",
-          "sha256": "fbefdd344c0a50e680a3c237d2bc2a00f226186d7e349f2f8a4ca130a6a0e172",
-          "bytes": 51440
+          "logical_path": "latency-unet/samples/sd-v1-4/0/cold/result.json",
+          "sha256": "93d84b91660bbef98ce8d8b8b30eb2e65da0ba321b1920e02a02057ab94bcfd7",
+          "bytes": 51427
         }
       },
       {
@@ -421,32 +421,32 @@
         "pair": 0,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 8.8164959163405,
-          "html_seconds": 2.844835666939616,
-          "imports_seconds": 0.8663699580356479,
-          "parent_cpu_seconds": 8.702519,
-          "unfold_seconds": 8.812727333046496
+          "budget_seconds": 8.664209959097207,
+          "html_seconds": 2.714870125055313,
+          "imports_seconds": 0.32436137460172176,
+          "parent_cpu_seconds": 8.295324,
+          "unfold_seconds": 8.662174083292484
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            6.5556640625,
-            7.04638671875,
-            6.14111328125
+            3.2255859375,
+            5.53955078125,
+            7.64111328125
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            5.90283203125,
-            6.87939453125,
-            6.09716796875
+            2.88623046875,
+            5.349609375,
+            7.5361328125
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/0/warm/result.json",
-          "sha256": "30ca008efbd42481a5afb9db36a057e1466fa16cc80d951abdc01b9c2c9efcc8",
-          "bytes": 3936
+          "logical_path": "latency-unet/samples/sd-v1-4/0/warm/result.json",
+          "sha256": "33beae1e3c902a91efd3f77fade11f3c4e7baa9cd10f1f37f199921553f5c212",
+          "bytes": 3929
         }
       },
       {
@@ -454,32 +454,32 @@
         "pair": 1,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 36.45807833317667,
-          "html_seconds": 2.9667975422926247,
-          "imports_seconds": 0.8623255421407521,
-          "parent_cpu_seconds": 18.430412,
-          "unfold_seconds": 36.45313541730866
+          "budget_seconds": 26.49351983424276,
+          "html_seconds": 2.5856622918508947,
+          "imports_seconds": 0.31609908398240805,
+          "parent_cpu_seconds": 14.784388,
+          "unfold_seconds": 26.4915412501432
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            5.90283203125,
-            6.87939453125,
-            6.09716796875
+            2.88623046875,
+            5.349609375,
+            7.5361328125
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            6.7548828125,
-            6.92138671875,
-            6.14453125
+            2.50927734375,
+            5.02685546875,
+            7.3427734375
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/cold/result.json",
-          "sha256": "86cf10aa39503f2469af5fceeecd15f8814766ca74fddb07d96ac3cef25a82fd",
-          "bytes": 51443
+          "logical_path": "latency-unet/samples/sd-v1-4/1/cold/result.json",
+          "sha256": "7d7b4f54d97845399c0515afb1084716be597e2e235cc16e10f1859a932a7456",
+          "bytes": 51430
         }
       },
       {
@@ -487,31 +487,31 @@
         "pair": 1,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 8.942279499955475,
-          "html_seconds": 2.750000167172402,
-          "imports_seconds": 0.9140762090682983,
-          "parent_cpu_seconds": 8.728145,
-          "unfold_seconds": 8.938463583122939
+          "budget_seconds": 7.986142709385604,
+          "html_seconds": 2.708663792349398,
+          "imports_seconds": 0.32755387481302023,
+          "parent_cpu_seconds": 7.950807,
+          "unfold_seconds": 7.9835897497832775
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            6.7548828125,
-            6.92138671875,
-            6.14453125
+            2.50927734375,
+            5.02685546875,
+            7.3427734375
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            7.04296875,
-            6.97412109375,
-            6.1767578125
+            2.74462890625,
+            4.9931640625,
+            7.30322265625
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/1/warm/result.json",
-          "sha256": "7db9dc427e1adc4b46074a308fb8676f5802bee0429cf2a4eacdaf7d91098b39",
+          "logical_path": "latency-unet/samples/sd-v1-4/1/warm/result.json",
+          "sha256": "59038f2a2af50b81b31286463b8d892205c4d2e191187dd72ca3a4a151ecfb26",
           "bytes": 3932
         }
       },
@@ -520,32 +520,32 @@
         "pair": 2,
         "mode": "cold",
         "timings": {
-          "budget_seconds": 31.40346366725862,
-          "html_seconds": 2.774404250085354,
-          "imports_seconds": 1.3095779581926763,
-          "parent_cpu_seconds": 16.913391,
-          "unfold_seconds": 31.396250959020108
+          "budget_seconds": 26.721054583787918,
+          "html_seconds": 2.6688404171727598,
+          "imports_seconds": 0.33829599991440773,
+          "parent_cpu_seconds": 15.228071,
+          "unfold_seconds": 26.718679666053504
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            7.04296875,
-            6.97412109375,
-            6.1767578125
+            2.74462890625,
+            4.9931640625,
+            7.30322265625
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            6.8359375,
-            6.95263671875,
-            6.20166015625
+            2.96337890625,
+            4.83251953125,
+            7.1640625
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/cold/result.json",
-          "sha256": "f9736bbb14b87656447fd1bdccc3376811bc8155f0859263f852289af01b4579",
-          "bytes": 51437
+          "logical_path": "latency-unet/samples/sd-v1-4/2/cold/result.json",
+          "sha256": "378d86dd64617e8c4ca07030126355e4a0090fe6f27bea38044f804cc0f3273d",
+          "bytes": 51427
         }
       },
       {
@@ -553,51 +553,62 @@
         "pair": 2,
         "mode": "warm",
         "timings": {
-          "budget_seconds": 8.618206750135869,
-          "html_seconds": 2.709869584068656,
-          "imports_seconds": 0.8631775001995265,
-          "parent_cpu_seconds": 8.490139,
-          "unfold_seconds": 8.612819166854024
+          "budget_seconds": 8.002395582851022,
+          "html_seconds": 2.8546430421993136,
+          "imports_seconds": 0.3174576251767576,
+          "parent_cpu_seconds": 7.868612000000001,
+          "unfold_seconds": 8.000265333801508
         },
         "host_before": {
           "cpu_count": 10,
           "load_average": [
-            6.5283203125,
-            6.88671875,
-            6.1826171875
+            2.88623046875,
+            4.78515625,
+            7.1337890625
           ]
         },
         "host_after": {
           "cpu_count": 10,
           "load_average": [
-            5.837890625,
-            6.7255859375,
-            6.13330078125
+            2.74951171875,
+            4.69287109375,
+            7.0732421875
           ]
         },
         "receipt": {
-          "logical_path": "final-canonical/latency-unet/samples/sd-v1-4/2/warm/result.json",
-          "sha256": "4595375c6d84475010dbefc8399e4064a832e225de947c5d9c1df143c8a1fb9e",
-          "bytes": 3933
+          "logical_path": "latency-unet/samples/sd-v1-4/2/warm/result.json",
+          "sha256": "aa6f059d3a6c7590f520debdd3b271f13e48013406c4a679f9d2901f922fbb95",
+          "bytes": 3937
         }
       }
     ],
     "baseline_receipt": {
-      "artifact_map": "verification/receipts/S8.1-owner-resubmission-actual-results/artifact-map.json",
-      "artifact_map_sha256": "77a3d20ab5bc716525bfc8ec856e3dfe4693be0ade3ddc7e83c160760b874923",
+      "artifact_map": "verification/receipts/S10-1-unet-deletion-fff99e22/artifact-map.json",
+      "artifact_map_sha256": "269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c",
       "campaign": {
-        "logical_path": "final-canonical/latency-unet/campaign.json",
-        "sha256": "1ee71a3ebdc98996fda61c44290daa96e3fab67dd1ef0d4edfe14af21dd804ff",
-        "bytes": 17525
+        "logical_path": "latency-unet/campaign.json",
+        "sha256": "4c57fe6d3f29b6f2baef92bc0778a1ff00024f9212686a994726d97b904aba5a",
+        "bytes": 17013
       }
     },
     "performance_target": {
       "owner": "executor",
       "step": "S10",
-      "item": "static UNet reader cost, target 30 / 9",
+      "item": "static UNet reader cost, target 30 / 9; measured medians met at S10-1",
       "cold_seconds": 30.0,
       "warm_seconds": 9.0
     },
-    "ratchet": "Remeasure at S10 deletion; ratchet the gate down when costs fall. A rise above these measured medians requires a named cause; no automatic baseline renewal."
+    "ratchet": "Only downward renewal from the previously accepted gate; all twelve fresh-process samples retained. A higher cost needs a named cause; no automatic upward baseline renewal.",
+    "baseline_tree": {
+      "kind": "isolated_deletion_candidate",
+      "base_commit": "fff99e2230064762598748463accd170e1e34e22",
+      "patch_logical_path": "deletion/final-candidate.patch",
+      "patch_sha256": "0a7d3887a0202174a6f9fdea5f57cf237b61f27119f0199ebfa0fb9301c81654",
+      "production_sources_pin": {
+        "bytes": 37310,
+        "path": "pins-before.json",
+        "sha256": "d4007912909b1e9ec2a5dad64ea7ba7d9bf360b3d8762aa3e016569d43d834a1"
+      }
+    }
   }
 }

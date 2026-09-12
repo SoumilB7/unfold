@@ -1,0 +1,11 @@
+{
+  "reviewer": "root; did not implement S10 deletion",
+  "verdict": "ACCEPT source-stamp-only renewal candidate; installation awaits Soumil approval",
+  "candidate_sha256": "a08d366d018626ab87b69230db977c46a117634aa98bbd8392830bf586d1d490",
+  "old_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+  "source_entries_changed": 11,
+  "models_unchanged": 39,
+  "payloads_checked": 117,
+  "non_source_fields_identical": true,
+  "source_file_bytes_match_isolated_candidate": true
+}

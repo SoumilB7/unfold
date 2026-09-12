@@ -1,0 +1,10 @@
+{
+  "old_sha256": "043c17de865a749119781eef50949c5f6ebf9751308e79f68d7ad9cc76902060",
+  "new_sha256": "d2468dc7e1a9c471c341adb35d03c705afd679f25547e31e11b7ccf8cb31d547",
+  "budgets": {
+    "cold_empty_cache": 37.0,
+    "warm_populated_cache": 11.0
+  },
+  "artifact_map_sha256": "a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04",
+  "entries": 389
+}

@@ -1,0 +1,10 @@
+{
+  "decision": "ACCEPT_BOUNDED_SOURCE_FIX_AND_SOURCE_ONLY_PROPOSAL",
+  "candidate_sha256": "efe7d97e2504c38d3679e05521f556068284fe638ad9cb83c646cdd196dd8b2c",
+  "source_manifest_sha256": "082cd74f2707e1ca8cb064b4af948ec77587246c3c8777feb3b70df6a006304d",
+  "reviewer": "/root/independent_review",
+  "actual_review_sha256": "b99d7535d491230bb5435af14ca70ea0d5f359609eb2d0ae493614d626b85fb1",
+  "review_sha256": "4319e727d9717b67e255d2407763993e96644b6ece560e27b763994276d5c498",
+  "installation_approved": false,
+  "owner_approval": "PENDING"
+}
