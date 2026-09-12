@@ -1,0 +1,40 @@
+{
+  "status": "PREPARED ONLY; source36 exact identity guards retained, execution waits for completed root36 matrix. No34/35 matrix exists.",
+  "script_sha256": "5d408530b982f8ccb5f7fb56fd2ea2b300bdaf7ce6c166d7cd8d376c71661023",
+  "candidate_root": "/private/tmp/unfold-s9a-thirtysixth/matrix",
+  "comparison_roots": [
+    "verification/s7",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysecond/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/twentysixth/matrix",
+    "verification/receipts/S9-A-schema-candidate-fff99e22/thirtysecond/matrix"
+  ],
+  "checks": [
+    "Require completed successful root matrix lane with exact36 source and protected-artifact equal brackets.",
+    "Exact39 membership/order/denominator; every model, observation and relation artifact byte hash verified before and after.",
+    "Active/archived22/archived26 versus36 comparison, including all occurrence membership/order/runtime/static identity, construction and execution values, schedules and relation identities/order.",
+    "Exact leaves for every changed row including full provenance and projection, with absent/list order distinguished; full payload/table metadata and companion deltas enumerated.",
+    "Every union citation removed/gained/retained; original16324 findings classified retained-qualified, retained-unqualified or removed. Citation removal never counts as qualification.",
+    "Original274 interim placement outcomes retained using22; every new36 projection-kind delta shown against both active and26.",
+    "All remaining candidate fact findings enumerated by exact key; report real values rather than assert86/142/481 unchanged.",
+    "Independent relation-plan receipt hashes and source-index consistency.",
+    "Raw summary deltas retained; no normalization, source re-stamp, example or approved rows written.",
+    "Every exact36 delta versus actual32 is included, with source seals/proof/citation metadata and same membership/order/axes checks.",
+    "Count actual original16324 survival and142 qualification; do not infer any source-prepared claim closed. Preserve481 newer formula debt separately.",
+    "Exact candidate and completion paths reject pairing36 receipt with older32 output.",
+    "Every frozen36 source-manifest row/deletion and every exact generator source/input byte is pinned; candidate matrix.sources must equal the pinned36 map.",
+    "The original generator source-law is pinned and reproduced using stdlib only; complete source membership is rechecked.",
+    "Retain every actual32\u219236 schedule value/status/order and citation delta; do not infer original142 closed from475 focused passes."
+  ],
+  "limits": [
+    "No model imports/runtime/proofobject validation/output blessing by this stdlib harness.",
+    "Requires completed exact36 matrix lane and complete byte-verified active/22/26/32 model/observation/relation artifacts.",
+    "Old32 narrative owner-held label is corrected here: implementation preparation is authorized; output re-bless approval remains."
+  ],
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/matrix-thirtysixth/audit.py --candidate /private/tmp/unfold-s9a-thirtysixth/matrix --completion-result /private/tmp/unfold-s9a-thirtysixth/matrix-lane/result.json --output /private/tmp/unfold-s9a-thirtysixth/independent-matrix-audit.json.gz",
+  "expected_generation_sources_sha256": "178c1868c215ebcb0704c0ce27e2a92fae3d1c3f5a0bb01620dd813ee8a1435e",
+  "generation_sources_count": 394,
+  "generation_law_source_sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c",
+  "expected_source36": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+  "source36_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "approved_predecessor_manifest_sha256": "de8171c4bbaade943dabb0b6e885c1abd76c8209a9e95d6b7b7a98eafffa210e"
+}

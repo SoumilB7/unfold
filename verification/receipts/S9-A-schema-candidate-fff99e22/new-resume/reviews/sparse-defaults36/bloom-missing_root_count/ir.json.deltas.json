@@ -1,0 +1,2332 @@
+[
+  {
+    "path": [],
+    "before": null,
+    "after": {
+      "architecture": "BloomForCausalLM",
+      "cross_layer_edges": [],
+      "embedding_norm_kind": "layernorm",
+      "extras": {
+        "config_access": {
+          "absent_default": [
+            "root:attention_multiplier",
+            "root:attn_logit_softcapping",
+            "root:audio_channels",
+            "root:clip_qkv",
+            "root:embedding_multiplier",
+            "root:feed_forward_proj",
+            "root:final_logit_softcapping",
+            "root:hidden_act",
+            "root:hidden_size_per_layer_input",
+            "root:is_gated_act",
+            "root:layer_norm_eps",
+            "root:logits_scaling",
+            "root:max_position_embeddings",
+            "root:max_window_layers",
+            "root:mlp_bias",
+            "root:moe_intermediate_size",
+            "root:n_layer",
+            "root:norm_type",
+            "root:num_experts",
+            "root:num_experts_per_tok",
+            "root:num_hidden_layers",
+            "root:num_mtp_layers",
+            "root:num_nextn_predict_layers",
+            "root:num_shared_experts",
+            "root:query_pre_attn_scalar",
+            "root:rms_norm_eps",
+            "root:scale_embedding",
+            "root:sliding_window",
+            "root:sliding_window_pattern",
+            "root:swiglu_limit",
+            "root:use_bidirectional_attention",
+            "root:use_sliding_window",
+            "root:vocab_size_per_layer_input"
+          ],
+          "accessed": [
+            "root:_name_or_path",
+            "root:apply_residual_connection_post_layernorm",
+            "root:architectures",
+            "root:hidden_size",
+            "root:is_encoder_decoder",
+            "root:layer_norm_epsilon",
+            "root:model_type",
+            "root:n_head",
+            "root:tie_word_embeddings",
+            "root:vocab_size"
+          ],
+          "accessed_unconsumed": [],
+          "accessed_unconsumed_exact": [],
+          "consumed": [
+            "root:hidden_size",
+            "root:is_encoder_decoder",
+            "root:layer_norm_epsilon",
+            "root:n_head",
+            "root:tie_word_embeddings",
+            "root:vocab_size"
+          ],
+          "consumed_unprojected": [
+            "root:hidden_size",
+            "root:is_encoder_decoder",
+            "root:layer_norm_epsilon",
+            "root:n_head",
+            "root:tie_word_embeddings",
+            "root:vocab_size"
+          ],
+          "document_roots": {
+            "root": []
+          },
+          "migration_claims": [
+            {
+              "bindings": [
+                {
+                  "observed_events": 0,
+                  "path": "vision_config.hidden_size",
+                  "target_key": "projector_out_features",
+                  "target_kind": "fact",
+                  "target_matches": 0,
+                  "target_owner": "root.vision"
+                }
+              ],
+              "claimed_by": "COR-4",
+              "observed_events": 0,
+              "scope": "root.vision/projector_out_width",
+              "target_matches": 0,
+              "violations": []
+            },
+            {
+              "bindings": [
+                {
+                  "observed_events": 0,
+                  "path": "vision_config.hidden_size",
+                  "target_key": "projector_out_features",
+                  "target_kind": "fact",
+                  "target_matches": 0,
+                  "target_owner": "root.video"
+                }
+              ],
+              "claimed_by": "COR-4",
+              "observed_events": 0,
+              "scope": "root.video/projector_out_width",
+              "target_matches": 0,
+              "violations": []
+            },
+            {
+              "bindings": [
+                {
+                  "observed_events": 0,
+                  "path": "vision_config.vision_output_dim",
+                  "target_key": "projector_in_features",
+                  "target_kind": "fact",
+                  "target_matches": 0,
+                  "target_owner": "root.vision"
+                },
+                {
+                  "observed_events": 0,
+                  "path": "vision_config.hidden_size",
+                  "target_key": "projector_in_features",
+                  "target_kind": "fact",
+                  "target_matches": 0,
+                  "target_owner": "root.vision"
+                }
+              ],
+              "claimed_by": "U9-G",
+              "observed_events": 0,
+              "scope": "root.vision/projector_in_width",
+              "target_matches": 0,
+              "violations": []
+            }
+          ],
+          "projection_coverage": {
+            "receipted_scopes": [
+              [
+                "decoder",
+                "codebook_streams"
+              ],
+              [
+                "decoder",
+                "mtp_modules"
+              ],
+              [
+                "decoder",
+                "per_layer_embedding_pathway"
+              ],
+              [
+                "decoder.attention",
+                "attention_cache_update"
+              ],
+              [
+                "decoder.attention",
+                "attention_logit_softcap"
+              ],
+              [
+                "decoder.attention",
+                "attention_output_gate"
+              ],
+              [
+                "decoder.attention",
+                "attention_output_projection"
+              ],
+              [
+                "decoder.attention",
+                "attention_qkv_clip"
+              ],
+              [
+                "decoder.attention",
+                "cross_attention_schedule"
+              ],
+              [
+                "decoder.attention",
+                "gated_delta_geometry"
+              ],
+              [
+                "decoder.attention",
+                "kv_sharing_schedule"
+              ],
+              [
+                "decoder.attention",
+                "mask_schedule"
+              ],
+              [
+                "decoder.attention",
+                "mixer_schedule"
+              ],
+              [
+                "decoder.attention",
+                "position_frequency_initialization"
+              ],
+              [
+                "decoder.attention",
+                "position_schedule"
+              ],
+              [
+                "decoder.attention",
+                "qk_norm_gate"
+              ],
+              [
+                "decoder.attention",
+                "qk_norm_schedule"
+              ],
+              [
+                "decoder.ffn",
+                "ffn_schedule"
+              ],
+              [
+                "decoder.input",
+                "position_addition"
+              ],
+              [
+                "model",
+                "model_hidden_size_value"
+              ],
+              [
+                "root.denoiser",
+                "cell_arithmetic"
+              ],
+              [
+                "root.denoiser",
+                "cell_connections"
+              ],
+              [
+                "root.denoiser",
+                "constructed_modules"
+              ],
+              [
+                "root.denoiser",
+                "constructed_parameter_shapes"
+              ],
+              [
+                "root.denoiser",
+                "constructed_stage_relations"
+              ],
+              [
+                "root.denoiser",
+                "context_connections"
+              ],
+              [
+                "root.denoiser",
+                "declared_constructor_defaults"
+              ],
+              [
+                "root.denoiser",
+                "diffusion_bookend_geometry"
+              ],
+              [
+                "root.denoiser",
+                "diffusion_bookend_operations"
+              ],
+              [
+                "root.denoiser",
+                "diffusion_root_topology"
+              ],
+              [
+                "root.denoiser",
+                "ffn_mechanisms"
+              ],
+              [
+                "root.denoiser",
+                "primary_state_ports"
+              ],
+              [
+                "root.denoiser",
+                "runtime_primitives"
+              ],
+              [
+                "root.denoiser",
+                "spatial_mechanisms"
+              ],
+              [
+                "root.denoiser",
+                "stage_join_connections"
+              ],
+              [
+                "root.denoiser.stacks[i]",
+                "diffusion_nested_stack_depth"
+              ],
+              [
+                "root.denoiser.stacks[i]",
+                "diffusion_root_stack_depth"
+              ],
+              [
+                "root.denoiser.stacks[i]",
+                "diffusion_stack_variant"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_attention_head_geometry"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_attention_head_protocol"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_attention_position_application"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_attention_qk_norm"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_attention_score_scaling"
+              ],
+              [
+                "root.denoiser.stacks[i].attention[i]",
+                "diffusion_stream_relation"
+              ],
+              [
+                "root.denoiser.stacks[i].cell",
+                "diffusion_cell_topology"
+              ],
+              [
+                "root.denoiser.stacks[i].cell",
+                "diffusion_conditioning_applications"
+              ],
+              [
+                "root.denoiser.stacks[i].cell",
+                "diffusion_norm_mechanism"
+              ],
+              [
+                "root.denoiser.stacks[i].ffn",
+                "diffusion_ffn_activation"
+              ],
+              [
+                "root.denoiser.stacks[i].ffn",
+                "diffusion_ffn_mechanism"
+              ],
+              [
+                "root.denoiser.stacks[i].mixers[i]",
+                "diffusion_gated_delta_geometry"
+              ],
+              [
+                "root.video",
+                "projector_in_width"
+              ],
+              [
+                "root.video",
+                "projector_out_width"
+              ],
+              [
+                "root.vision",
+                "projector_in_width"
+              ],
+              [
+                "root.vision",
+                "projector_out_width"
+              ]
+            ]
+          },
+          "projection_obligations": [
+            {
+              "expected_value_status_hash": "2da68d653b2a3f52",
+              "mechanism": "model_hidden_size_value",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "hidden_size",
+                "component": "root",
+                "path": "hidden_size",
+                "spelling": "hidden_size"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "hidden_size",
+                "kind": "fact",
+                "owner": "model"
+              }
+            },
+            {
+              "expected_value_status_hash": "579bc5538232ed06",
+              "mechanism": "ffn_intermediate_width",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "hidden_size",
+                "component": "root",
+                "path": "hidden_size",
+                "spelling": "hidden_size"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "intermediate_size",
+                "kind": "fact",
+                "owner": "decoder.ffn"
+              }
+            },
+            {
+              "expected_value_status_hash": "",
+              "mechanism": "decoderness",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "is_encoder_decoder",
+                "component": "root",
+                "path": "is_encoder_decoder",
+                "spelling": "is_encoder_decoder"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "mask",
+                "kind": "fact",
+                "owner": "decoder.attention"
+              }
+            },
+            {
+              "expected_value_status_hash": "",
+              "mechanism": "norm_kind_eps",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "layer_norm_epsilon",
+                "component": "root",
+                "path": "layer_norm_epsilon",
+                "spelling": "layer_norm_epsilon"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "norm_kind_eps",
+                "kind": "fact",
+                "owner": "decoder.layer"
+              }
+            },
+            {
+              "expected_value_status_hash": "a615d6a9effdcd21",
+              "mechanism": "attention_mechanism",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "n_head",
+                "component": "root",
+                "path": "n_head",
+                "spelling": "n_head"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "mechanism",
+                "kind": "fact",
+                "owner": "decoder.attention"
+              }
+            },
+            {
+              "expected_value_status_hash": "6108b7a81a8f98e5",
+              "mechanism": "attention_head_geometry",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "n_head",
+                "component": "root",
+                "path": "n_head",
+                "spelling": "n_head"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "head_geometry",
+                "kind": "fact",
+                "owner": "decoder.attention"
+              }
+            },
+            {
+              "expected_value_status_hash": "6108b7a81a8f98e5",
+              "mechanism": "attention_head_geometry",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "hidden_size",
+                "component": "root",
+                "path": "hidden_size",
+                "spelling": "hidden_size"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "head_geometry",
+                "kind": "fact",
+                "owner": "decoder.attention"
+              }
+            },
+            {
+              "expected_value_status_hash": "",
+              "mechanism": "",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "vocab_size",
+                "component": "root",
+                "path": "vocab_size",
+                "spelling": "vocab_size"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "vocab_size",
+                "kind": "fact",
+                "owner": "model"
+              }
+            },
+            {
+              "expected_value_status_hash": "34b451cd19670900",
+              "mechanism": "",
+              "reason": "no projection receipt exists yet",
+              "source": {
+                "canonical": "tie_word_embeddings",
+                "component": "root",
+                "path": "tie_word_embeddings",
+                "spelling": "tie_word_embeddings"
+              },
+              "state": "unreceipted",
+              "target": {
+                "key": "tie_word_embeddings",
+                "kind": "fact",
+                "owner": "model"
+              }
+            }
+          ]
+        },
+        "config_audit": {
+          "accessed": [
+            "_name_or_path",
+            "apply_residual_connection_post_layernorm",
+            "architectures",
+            "hidden_size",
+            "is_encoder_decoder",
+            "layer_norm_epsilon",
+            "model_type",
+            "n_head",
+            "tie_word_embeddings",
+            "vocab_size"
+          ],
+          "unread": []
+        },
+        "config_consumed": [
+          "hidden_size",
+          "is_encoder_decoder",
+          "layer_norm_epsilon",
+          "n_head",
+          "tie_word_embeddings",
+          "vocab_size"
+        ],
+        "fact_provenance": {
+          "decoder.attention.bias": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "existence",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.bias:7f3e293636cd0a7c",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:194:21:194:66",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:304:28:304:53"
+                ],
+                "fact_id": "decoder.attention.bias",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.bias",
+              "owner": "decoder.attention",
+              "status": "code_proven",
+              "value_status_hash": "7f3e293636cd0a7c"
+            },
+            "source": "decoder_attention_bias_for_path",
+            "status": "code_proven",
+            "value": true
+          },
+          "decoder.attention.cached": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.cached:7f3e293636cd0a7c",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:258:8:259:94",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:259:12:259:94",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:259:37:259:94",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78"
+                ],
+                "fact_id": "decoder.attention.cached",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.cached",
+              "owner": "decoder.attention",
+              "status": "code_proven",
+              "value_status_hash": "7f3e293636cd0a7c"
+            },
+            "source": "decoder_attention_cache_for_path",
+            "status": "code_proven",
+            "value": true
+          },
+          "decoder.attention.head_geometry": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "relation",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.head_geometry:6108b7a81a8f98e5",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:170:27:170:45",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:25:171:38",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:8:171:38",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:24:172:58",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:8:172:58",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:59:193:79",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:211:20:211:92",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:256:8:256:70",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+                ],
+                "fact_id": "decoder.attention.head_geometry",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.head_geometry",
+              "owner": "decoder.attention",
+              "status": "code_and_config",
+              "value_status_hash": "6108b7a81a8f98e5"
+            },
+            "source": "decoder_attention_head_geometry_for_path",
+            "status": "code_and_config",
+            "value": {
+              "head_dim": 128,
+              "kind": "mha",
+              "kv_lora_rank": null,
+              "num_heads": 112,
+              "num_kv_heads": 112,
+              "q_lora_rank": null,
+              "qk_nope_head_dim": null,
+              "qk_rope_head_dim": null,
+              "v_head_dim": null
+            }
+          },
+          "decoder.attention.mask": {
+            "presentation_reference": {
+              "claim_proof": null,
+              "completeness": "uninspected",
+              "fact_key": "decoder.attention.mask",
+              "owner": "decoder.attention",
+              "status": "ambiguous",
+              "value_status_hash": "3b9b39e88d186966"
+            },
+            "status": "ambiguous",
+            "unknown_reason": {
+              "concrete_reason": "legacy_unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value": "unknown"
+          },
+          "decoder.attention.mechanism": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:8:171:38",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:8:172:58",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:59:193:79",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:211:20:211:92",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:256:8:256:70",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+                ],
+                "fact_id": "decoder.attention.mechanism",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "presence_only",
+              "fact_key": "decoder.attention.mechanism",
+              "owner": "decoder.attention",
+              "status": "code_and_config",
+              "value_status_hash": "a615d6a9effdcd21"
+            },
+            "source": "decoder_attention_mechanism_for_path",
+            "status": "code_and_config",
+            "value": "mha"
+          },
+          "decoder.attention.output_projection": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:194:21:194:66",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:304:28:304:53"
+                ],
+                "fact_id": "decoder.attention.output_projection",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.output_projection",
+              "owner": "decoder.attention",
+              "status": "code_proven",
+              "value_status_hash": "7f3e293636cd0a7c"
+            },
+            "source": "decoder_attention_output_projection_for_path",
+            "status": "code_proven",
+            "value": true
+          },
+          "decoder.attention.position_schedule": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "relation",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.position_schedule:84468bb7b893a8eb",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+                ],
+                "fact_id": "decoder.attention.position_schedule",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.position_schedule",
+              "owner": "decoder.attention",
+              "status": "class_default",
+              "value_status_hash": "84468bb7b893a8eb"
+            },
+            "source": "decoder_alibi_score_bias_for_path",
+            "status": "class_default",
+            "value": [
+              {
+                "position_application": "attention_bias",
+                "position_kind": "alibi",
+                "rope_dim": null
+              },
+              {
+                "position_application": "attention_bias",
+                "position_kind": "alibi",
+                "rope_dim": null
+              }
+            ]
+          },
+          "decoder.attention.projection_mode": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "relation",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.attention.projection_mode:8d7cfeba43eae77c",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+                ],
+                "fact_id": "decoder.attention.projection_mode",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.attention.projection_mode",
+              "owner": "decoder.attention",
+              "status": "code_proven",
+              "value_status_hash": "8d7cfeba43eae77c"
+            },
+            "source": "decoder_attention_projection_storage_for_path",
+            "status": "code_proven",
+            "value": "fused_qkv"
+          },
+          "decoder.attention.scores_scale": {
+            "presentation_reference": {
+              "claim_proof": null,
+              "completeness": "complete",
+              "fact_key": "decoder.attention.scores_scale",
+              "owner": "decoder.attention",
+              "status": "code_proven",
+              "value_status_hash": "20496603e5af0c6f"
+            },
+            "source": "decoder_attention_score_scaling_for_path",
+            "status": "code_proven",
+            "value": "sqrt(head_dim)"
+          },
+          "decoder.ffn.activation": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "applied_function",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.ffn.activation:6d7f500aac103a4f",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+                ],
+                "fact_id": "decoder.ffn.activation",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.ffn.activation",
+              "owner": "decoder.ffn",
+              "status": "code_proven",
+              "value_status_hash": "6d7f500aac103a4f"
+            },
+            "source": "decoder_ffn_mechanism_for_path",
+            "status": "code_proven",
+            "value": "gelu"
+          },
+          "decoder.ffn.gated": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.ffn.gated:973804cd719a4fb5",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+                ],
+                "fact_id": "decoder.ffn.gated",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.ffn.gated",
+              "owner": "decoder.ffn",
+              "status": "code_proven",
+              "value_status_hash": "973804cd719a4fb5"
+            },
+            "source": "decoder_ffn_mechanism_for_path",
+            "status": "code_proven",
+            "value": false
+          },
+          "decoder.ffn.intermediate_size": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "value",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.ffn.intermediate_size:083e0653e8b48ddf",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:313:22:313:40",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:52:317:53",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:52:317:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:39:319:40",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:39:319:54",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+                ],
+                "fact_id": "decoder.ffn.intermediate_size",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.ffn.intermediate_size",
+              "owner": "decoder.ffn",
+              "status": "code_and_config",
+              "value_status_hash": "083e0653e8b48ddf"
+            },
+            "source": "decoder_ffn_intermediate_width_for_path",
+            "status": "code_and_config",
+            "value": 57344
+          },
+          "decoder.ffn.projection_mode": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "relation",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.ffn.projection_mode:acb1f8105eb06c41",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+                ],
+                "fact_id": "decoder.ffn.projection_mode",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.ffn.projection_mode",
+              "owner": "decoder.ffn",
+              "status": "code_proven",
+              "value_status_hash": "acb1f8105eb06c41"
+            },
+            "source": "decoder_ffn_mechanism_for_path",
+            "status": "code_proven",
+            "value": "dense"
+          },
+          "decoder.layer.norm_kind": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "applied_function",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.layer.norm_kind:4dcb3749bc66e61e",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74"
+                ],
+                "fact_id": "decoder.layer.norm_kind",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "presence_only",
+              "fact_key": "decoder.layer.norm_kind",
+              "owner": "decoder.layer",
+              "status": "code_proven",
+              "value_status_hash": "4dcb3749bc66e61e"
+            },
+            "source": "decoder_norm_kind_for_path",
+            "status": "code_proven",
+            "value": "layernorm"
+          },
+          "decoder.layer.norm_placement": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:104:10:104:24",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:397:17:397:53",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:399:8:399:35"
+                ],
+                "fact_id": "decoder.layer.norm_placement",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.layer.norm_placement",
+              "owner": "decoder.layer",
+              "status": "code_proven",
+              "value_status_hash": "ab69c0b0326e77e9"
+            },
+            "source": "decoder_cell_topology_for_path",
+            "status": "code_proven",
+            "value": "pre"
+          },
+          "decoder.layer.parallel_norm_count": {
+            "presentation_reference": {
+              "claim_proof": null,
+              "completeness": "uninspected",
+              "fact_key": "decoder.layer.parallel_norm_count",
+              "owner": "decoder.layer",
+              "status": "ambiguous",
+              "value_status_hash": "3effe0a746ad1181"
+            },
+            "status": "ambiguous",
+            "unknown_reason": {
+              "concrete_reason": "legacy_unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value": null
+          },
+          "decoder.layer.residual_topology": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "connection",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:104:10:104:24",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:397:17:397:53",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:399:8:399:35"
+                ],
+                "fact_id": "decoder.layer.residual_topology",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "decoder.layer.residual_topology",
+              "owner": "decoder.layer",
+              "status": "code_proven",
+              "value_status_hash": "acdbd5fdb3a8c659"
+            },
+            "source": "decoder_cell_topology_for_path",
+            "status": "code_proven",
+            "value": "sequential"
+          },
+          "model.embedding_norm_kind": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "applied_function",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:model.embedding_norm_kind:4dcb3749bc66e61e",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:422:41:422:97",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:496:24:496:69",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:496:8:496:69",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:520:16:520:29"
+                ],
+                "fact_id": "model.embedding_norm_kind",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.embedding_bookend.embedding_stage_norm_evidence"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "model.embedding_norm_kind",
+              "owner": "model",
+              "status": "code_proven",
+              "value_status_hash": "4dcb3749bc66e61e"
+            },
+            "source": "embedding_stage_norm_evidence",
+            "status": "code_proven",
+            "value": "layernorm"
+          },
+          "model.final_norm_kind": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "applied_function",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "projection:model.final_norm_kind:4dcb3749bc66e61e",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:428:20:428:76",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:533:24:533:48",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:539:12:541:13",
+                  "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:543:8:548:9"
+                ],
+                "fact_id": "model.final_norm_kind",
+                "fact_status": "",
+                "index_fingerprints": [
+                  "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                ],
+                "proof_kind": "retained_reader_projection",
+                "reader_symbols": [
+                  "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "model.final_norm_kind",
+              "owner": "model",
+              "status": "code_proven",
+              "value_status_hash": "4dcb3749bc66e61e"
+            },
+            "source": "final_stage_norm_evidence",
+            "status": "code_proven",
+            "value": "layernorm"
+          },
+          "model.hidden_size": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "value",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|2da68d653b2a3f52|2da68d653b2a3f52"
+                ],
+                "fact_id": "model.hidden_size",
+                "fact_status": "config_declared",
+                "index_fingerprints": [],
+                "proof_kind": "config_resolution",
+                "reader_symbols": [
+                  "adapters.transformer.parser.parse"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "model.hidden_size",
+              "owner": "model",
+              "status": "config_declared",
+              "value_status_hash": "2da68d653b2a3f52"
+            },
+            "source": "adapters.transformer.parser.parse",
+            "status": "config_declared",
+            "value": 14336
+          },
+          "model.tie_word_embeddings": {
+            "presentation_reference": {
+              "claim_proof": {
+                "claim_kind": "value",
+                "document_fingerprints": [
+                  "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                ],
+                "evidence_refs": [
+                  "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|34b451cd19670900|34b451cd19670900"
+                ],
+                "fact_id": "model.tie_word_embeddings",
+                "fact_status": "config_declared",
+                "index_fingerprints": [],
+                "proof_kind": "config_resolution",
+                "reader_symbols": [
+                  "model_unfolder.adapters.transformer.parser.parse"
+                ],
+                "recipe_ids": []
+              },
+              "completeness": "complete",
+              "fact_key": "model.tie_word_embeddings",
+              "owner": "model",
+              "status": "config_declared",
+              "value_status_hash": "34b451cd19670900"
+            },
+            "source": "tie_word_embeddings",
+            "status": "config_declared",
+            "value": true
+          }
+        },
+        "presentation_unresolved_values": [
+          {
+            "path": [
+              "layers",
+              0,
+              "attention",
+              "mask"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "literal_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              0,
+              "attention",
+              "qk_norm"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              0,
+              "ffn",
+              "kind"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "attention",
+              "mask"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "literal_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "attention",
+              "qk_norm"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "ffn",
+              "kind"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              0,
+              "blocks",
+              1,
+              "detail",
+              "attention",
+              "mask"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "literal_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              0,
+              "blocks",
+              1,
+              "detail",
+              "attention",
+              "qk_norm"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              0,
+              "blocks",
+              4,
+              "detail",
+              "ffn",
+              "kind"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "blocks",
+              1,
+              "detail",
+              "attention",
+              "mask"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "literal_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "blocks",
+              1,
+              "detail",
+              "attention",
+              "qk_norm"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          },
+          {
+            "path": [
+              "layers",
+              1,
+              "blocks",
+              4,
+              "detail",
+              "ffn",
+              "kind"
+            ],
+            "unknown_reason": {
+              "concrete_reason": "unknown_reason_unrecorded",
+              "investigation": null,
+              "reason_class": "investigation_missing"
+            },
+            "value_state": "null_unknown"
+          }
+        ],
+        "render": {
+          "family": "transformer",
+          "layout": "decoder_only",
+          "model_blocks": [
+            {
+              "description": "Input token IDs.",
+              "facts": [
+                "shape [batch, seq_len]"
+              ],
+              "id": "tok_text",
+              "kind": "source",
+              "label": "Tokenized text",
+              "role": "input",
+              "title": "Tokenized text"
+            },
+            {
+              "description": "Maps each token id to its vector \u2014 weights tied with the output head.",
+              "facts": [
+                "250,880 vocab",
+                "14,336-d"
+              ],
+              "id": "embed",
+              "kind": "embedding",
+              "label": "Token Embedding layer",
+              "role": "embedding",
+              "source_fact_keys": [
+                "model.hidden_size"
+              ],
+              "title": "Token embedding"
+            },
+            {
+              "description": "LayerNorm applied to the token embeddings BEFORE the layer stack, proven from the exact model-stage dataflow.",
+              "id": "embed_norm",
+              "kind": "norm",
+              "label": "LayerNorm",
+              "role": "norm",
+              "title": "Embedding norm"
+            },
+            {
+              "description": "LayerNorm over the last hidden state before the output head.",
+              "facts": [
+                "dim 14,336"
+              ],
+              "id": "final_rms",
+              "kind": "norm",
+              "label": "Final LayerNorm",
+              "resolved": true,
+              "role": "norm",
+              "title": "Final norm"
+            },
+            {
+              "description": "Projects the final hidden state into vocabulary logits \u2014 weights tied with the embedding.",
+              "facts": [
+                "14,336 \u2192 250,880"
+              ],
+              "id": "lm_head",
+              "kind": "output",
+              "label": "Linear output layer",
+              "role": "output",
+              "title": "LM head"
+            }
+          ]
+        },
+        "ship_findings": [
+          {
+            "check": "qualified_projection_values",
+            "message": "decoder.attention.mixer_schedule projects a 2-layer schedule without an owner-qualified instance fact (required consumers: ['card', 'json', 'opgraph', 'params', 'spec'])",
+            "surface": "model"
+          }
+        ],
+        "source_provenance": {
+          "components": {
+            "root": {
+              "architecture": "BloomForCausalLM",
+              "files": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py"
+              ]
+            }
+          },
+          "source": "local"
+        }
+      },
+      "final_norm_kind": "layernorm",
+      "hidden_size": 14336,
+      "layers": [
+        {
+          "attention": {
+            "bias": true,
+            "cached": true,
+            "compress_ratio": null,
+            "conv_kernel_size": null,
+            "cross_attention": false,
+            "cross_kv_source": null,
+            "head_dim": 128,
+            "index_head_dim": null,
+            "index_n_heads": null,
+            "index_topk": null,
+            "kind": "mha",
+            "kv_lora_rank": null,
+            "kv_source_layer": null,
+            "mask": "unknown",
+            "mrope_section": null,
+            "no_rope": false,
+            "num_heads": 112,
+            "num_kv_heads": 112,
+            "output_gate": null,
+            "output_projection": true,
+            "position_application": "attention_bias",
+            "position_kind": "alibi",
+            "projection_mode": "fused_qkv",
+            "q_lora_rank": null,
+            "qk_nope_head_dim": null,
+            "qk_norm": null,
+            "qk_rope_head_dim": null,
+            "rope": false,
+            "rope_3d": false,
+            "rope_dim": null,
+            "scores_scaled": true,
+            "shared": false,
+            "v_head_dim": null,
+            "variant": null,
+            "window_size": null
+          },
+          "blocks": [
+            {
+              "description": "LayerNorm keeps activation scales stable before attention.",
+              "facts": [
+                "dim 14,336"
+              ],
+              "id": "rms1",
+              "kind": "norm",
+              "label": "LayerNorm",
+              "role": "norm",
+              "title": "Pre-attention norm"
+            },
+            {
+              "children": [
+                {
+                  "description": "ONE linear over the hidden state producing queries, keys and values together \u2014 this family stores Q/K/V as a single fused matrix, split after the projection.",
+                  "facts": [
+                    "112 Q heads",
+                    "112 KV heads"
+                  ],
+                  "id": "qkv_proj",
+                  "title": "Fused QKV projection"
+                },
+                {
+                  "description": "Slices the fused projection into the per-head queries.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "head dim 128"
+                  ],
+                  "id": "q_split",
+                  "title": "Split queries"
+                },
+                {
+                  "description": "Slices the fused projection into the keys.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "112 KV heads",
+                    "cache ports: \u2303 write \u00b7 \u22a5 read"
+                  ],
+                  "id": "k_split",
+                  "title": "Split keys"
+                },
+                {
+                  "description": "Slices the fused projection into the values.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "112 KV heads",
+                    "cache ports: \u2303 write \u00b7 \u22a5 read"
+                  ],
+                  "id": "v_split",
+                  "title": "Split values"
+                },
+                {
+                  "description": "Per head: QK^T / sqrt(dim) \u2014 dot-product scores scaled for numerical stability.",
+                  "facts": [
+                    "112 Q heads",
+                    "112 KV heads",
+                    "1 Q per KV head"
+                  ],
+                  "id": "scaled_scores",
+                  "title": "Scaled attention scores"
+                },
+                {
+                  "description": "Normalize each query row into attention weights over source tokens.",
+                  "id": "attn_softmax",
+                  "title": "Softmax weights"
+                },
+                {
+                  "description": "Matrix-multiplies the softmax attention weights by V (weights \u00b7 V) \u2014 one context vector per head.",
+                  "id": "attn_apply_v",
+                  "title": "Matrix multiplication"
+                },
+                {
+                  "description": "Stack the per-head context vectors back into one width.",
+                  "facts": [
+                    "112 \u00d7 128",
+                    "\u2192 14,336"
+                  ],
+                  "id": "concat_heads",
+                  "title": "Concatenate heads"
+                },
+                {
+                  "description": "Linear mixing information across heads, back to the residual width.",
+                  "facts": [
+                    "14,336 \u2192 14,336"
+                  ],
+                  "id": "o_proj",
+                  "title": "Output projection"
+                },
+                {
+                  "description": "Writes the newly projected key and value lanes into the caller's cache object and uses the returned accumulated K/V lanes for the selected attention computation. The node is shown only when this exact source path is proven.",
+                  "facts": [
+                    "stores key + value",
+                    "source-proven cache path"
+                  ],
+                  "id": "kv_cache",
+                  "title": "K/V cache update and read"
+                },
+                {
+                  "description": "Relative token offsets used to construct the head-specific ALiBi slopes.",
+                  "id": "alibi_offsets",
+                  "title": "Relative positions"
+                },
+                {
+                  "description": "Head-specific linear position bias added to attention scores.",
+                  "id": "alibi_bias",
+                  "title": "ALiBi positional bias"
+                },
+                {
+                  "description": "Adds the ALiBi bias to the QK attention scores before softmax.",
+                  "id": "score_bias_add",
+                  "title": "Add ALiBi to scores"
+                }
+              ],
+              "description": "Multi-head self-attention \u2014 every head attends over the sequence.",
+              "detail": {
+                "attention": {
+                  "bias": true,
+                  "cached": true,
+                  "compress_ratio": null,
+                  "conv_kernel_size": null,
+                  "cross_attention": false,
+                  "cross_kv_source": null,
+                  "head_dim": 128,
+                  "index_head_dim": null,
+                  "index_n_heads": null,
+                  "index_topk": null,
+                  "k_norm": null,
+                  "kind": "mha",
+                  "kv_lora_rank": null,
+                  "kv_source_layer": null,
+                  "mask": "unknown",
+                  "mrope_section": null,
+                  "no_rope": false,
+                  "num_heads": 112,
+                  "num_kv_heads": 112,
+                  "output_gate": null,
+                  "output_projection": true,
+                  "position_application": "attention_bias",
+                  "position_kind": "alibi",
+                  "projection_mode": "fused_qkv",
+                  "q_lora_rank": null,
+                  "q_norm": null,
+                  "qk_nope_head_dim": null,
+                  "qk_norm": null,
+                  "qk_rope_head_dim": null,
+                  "rope": false,
+                  "rope_3d": false,
+                  "rope_dim": null,
+                  "scores_scaled": true,
+                  "shared": false,
+                  "v_head_dim": null,
+                  "variant": null,
+                  "window_size": null
+                }
+              },
+              "facts": [
+                "112 heads",
+                "head dim 128",
+                "ALiBi",
+                "mask unresolved",
+                "+bias",
+                "QK norm unresolved"
+              ],
+              "id": "attn",
+              "kind": "attention",
+              "label": [
+                "Multi-Head",
+                "Attention"
+              ],
+              "presentation_aliases": [],
+              "presentation_chips": [
+                {
+                  "chip_kind": "class_default",
+                  "decision_ref": null,
+                  "owner": "decoder.attention",
+                  "parameters": [],
+                  "references": [
+                    {
+                      "claim_proof": {
+                        "claim_kind": "relation",
+                        "document_fingerprints": [
+                          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                        ],
+                        "evidence_refs": [
+                          "projection:decoder.attention.position_schedule:84468bb7b893a8eb",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+                        ],
+                        "fact_id": "decoder.attention.position_schedule",
+                        "fact_status": "",
+                        "index_fingerprints": [
+                          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                        ],
+                        "proof_kind": "retained_reader_projection",
+                        "reader_symbols": [
+                          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+                        ],
+                        "recipe_ids": []
+                      },
+                      "completeness": "complete",
+                      "fact_key": "decoder.attention.position_schedule",
+                      "owner": "decoder.attention",
+                      "status": "class_default",
+                      "value_status_hash": "84468bb7b893a8eb"
+                    }
+                  ],
+                  "text": "position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]",
+                  "unknown_reason": null
+                }
+              ],
+              "presentation_path": [
+                "layers",
+                0,
+                "blocks",
+                1
+              ],
+              "role": "attention",
+              "source_fact_keys": [
+                "decoder.attention.position_schedule"
+              ],
+              "title": "Attention",
+              "view": "attention"
+            },
+            {
+              "description": "block input + attention output",
+              "id": "add1",
+              "kind": "residual_add",
+              "label": "+",
+              "residual_from": "rms1",
+              "role": "residual",
+              "title": "Residual add"
+            },
+            {
+              "description": "LayerNorm keeps activation scales stable before the FFN.",
+              "facts": [
+                "dim 14,336"
+              ],
+              "id": "rms2",
+              "kind": "norm",
+              "label": "LayerNorm",
+              "role": "norm",
+              "title": "Pre-FFN norm"
+            },
+            {
+              "children": [
+                {
+                  "description": "Expands the residual width to an inner width and projects back. The available source evidence does not prove this FFN's mechanism or gate topology. Known widths are retained, but no projection layout or activation path is invented.",
+                  "facts": [
+                    "14,336 \u2192 57,344 \u2192 14,336"
+                  ],
+                  "id": "block",
+                  "label": "Feed-forward",
+                  "title": "Feed-forward (structure not declared)"
+                }
+              ],
+              "description": "Feed-forward mechanism unresolved \u2014 known geometry is retained, but no dense, gated, projection-storage, or activation path is invented.",
+              "detail": {
+                "ffn": {
+                  "activation": "gelu",
+                  "activation_from_class": false,
+                  "bias": true,
+                  "expert_activation_formula": null,
+                  "expert_intermediate_size": null,
+                  "expert_projection_mode": null,
+                  "gated": false,
+                  "intermediate_size": 57344,
+                  "kind": null,
+                  "num_experts": null,
+                  "num_experts_per_tok": null,
+                  "num_shared_experts": null,
+                  "projection_mode": "dense",
+                  "routing": null
+                }
+              },
+              "facts": [
+                "mechanism unresolved",
+                "hidden 57,344",
+                "GELU"
+              ],
+              "id": "ffn",
+              "kind": "ffn",
+              "label": [
+                "Feed-forward",
+                "mechanism unresolved"
+              ],
+              "role": "ffn",
+              "title": "Feed-forward mechanism unresolved",
+              "view": "dense_ffn"
+            },
+            {
+              "description": "post-attention + FFN output",
+              "id": "add2",
+              "kind": "residual_add",
+              "label": "+",
+              "residual_from": "rms2",
+              "role": "residual",
+              "title": "Residual add"
+            }
+          ],
+          "ffn": {
+            "activation": "gelu",
+            "activation_assumed": false,
+            "activation_from_class": false,
+            "bias": true,
+            "expert_activation_formula": null,
+            "expert_intermediate_size": null,
+            "expert_projection_mode": null,
+            "gated": false,
+            "intermediate_size": 57344,
+            "kind": null,
+            "num_experts": null,
+            "num_experts_per_tok": null,
+            "num_shared_experts": null,
+            "projection_mode": "dense",
+            "routing": null
+          },
+          "index": 0,
+          "norm_kind": "layernorm",
+          "norm_placement": "pre",
+          "parallel_norm_count": null,
+          "residual_topology": "sequential"
+        },
+        {
+          "attention": {
+            "bias": true,
+            "cached": true,
+            "compress_ratio": null,
+            "conv_kernel_size": null,
+            "cross_attention": false,
+            "cross_kv_source": null,
+            "head_dim": 128,
+            "index_head_dim": null,
+            "index_n_heads": null,
+            "index_topk": null,
+            "kind": "mha",
+            "kv_lora_rank": null,
+            "kv_source_layer": null,
+            "mask": "unknown",
+            "mrope_section": null,
+            "no_rope": false,
+            "num_heads": 112,
+            "num_kv_heads": 112,
+            "output_gate": null,
+            "output_projection": true,
+            "position_application": "attention_bias",
+            "position_kind": "alibi",
+            "projection_mode": "fused_qkv",
+            "q_lora_rank": null,
+            "qk_nope_head_dim": null,
+            "qk_norm": null,
+            "qk_rope_head_dim": null,
+            "rope": false,
+            "rope_3d": false,
+            "rope_dim": null,
+            "scores_scaled": true,
+            "shared": false,
+            "v_head_dim": null,
+            "variant": null,
+            "window_size": null
+          },
+          "blocks": [
+            {
+              "description": "LayerNorm keeps activation scales stable before attention.",
+              "facts": [
+                "dim 14,336"
+              ],
+              "id": "rms1",
+              "kind": "norm",
+              "label": "LayerNorm",
+              "role": "norm",
+              "title": "Pre-attention norm"
+            },
+            {
+              "children": [
+                {
+                  "description": "ONE linear over the hidden state producing queries, keys and values together \u2014 this family stores Q/K/V as a single fused matrix, split after the projection.",
+                  "facts": [
+                    "112 Q heads",
+                    "112 KV heads"
+                  ],
+                  "id": "qkv_proj",
+                  "title": "Fused QKV projection"
+                },
+                {
+                  "description": "Slices the fused projection into the per-head queries.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "head dim 128"
+                  ],
+                  "id": "q_split",
+                  "title": "Split queries"
+                },
+                {
+                  "description": "Slices the fused projection into the keys.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "112 KV heads",
+                    "cache ports: \u2303 write \u00b7 \u22a5 read"
+                  ],
+                  "id": "k_split",
+                  "title": "Split keys"
+                },
+                {
+                  "description": "Slices the fused projection into the values.",
+                  "facts": [
+                    "\u2192 14,336",
+                    "112 KV heads",
+                    "cache ports: \u2303 write \u00b7 \u22a5 read"
+                  ],
+                  "id": "v_split",
+                  "title": "Split values"
+                },
+                {
+                  "description": "Per head: QK^T / sqrt(dim) \u2014 dot-product scores scaled for numerical stability.",
+                  "facts": [
+                    "112 Q heads",
+                    "112 KV heads",
+                    "1 Q per KV head"
+                  ],
+                  "id": "scaled_scores",
+                  "title": "Scaled attention scores"
+                },
+                {
+                  "description": "Normalize each query row into attention weights over source tokens.",
+                  "id": "attn_softmax",
+                  "title": "Softmax weights"
+                },
+                {
+                  "description": "Matrix-multiplies the softmax attention weights by V (weights \u00b7 V) \u2014 one context vector per head.",
+                  "id": "attn_apply_v",
+                  "title": "Matrix multiplication"
+                },
+                {
+                  "description": "Stack the per-head context vectors back into one width.",
+                  "facts": [
+                    "112 \u00d7 128",
+                    "\u2192 14,336"
+                  ],
+                  "id": "concat_heads",
+                  "title": "Concatenate heads"
+                },
+                {
+                  "description": "Linear mixing information across heads, back to the residual width.",
+                  "facts": [
+                    "14,336 \u2192 14,336"
+                  ],
+                  "id": "o_proj",
+                  "title": "Output projection"
+                },
+                {
+                  "description": "Writes the newly projected key and value lanes into the caller's cache object and uses the returned accumulated K/V lanes for the selected attention computation. The node is shown only when this exact source path is proven.",
+                  "facts": [
+                    "stores key + value",
+                    "source-proven cache path"
+                  ],
+                  "id": "kv_cache",
+                  "title": "K/V cache update and read"
+                },
+                {
+                  "description": "Relative token offsets used to construct the head-specific ALiBi slopes.",
+                  "id": "alibi_offsets",
+                  "title": "Relative positions"
+                },
+                {
+                  "description": "Head-specific linear position bias added to attention scores.",
+                  "id": "alibi_bias",
+                  "title": "ALiBi positional bias"
+                },
+                {
+                  "description": "Adds the ALiBi bias to the QK attention scores before softmax.",
+                  "id": "score_bias_add",
+                  "title": "Add ALiBi to scores"
+                }
+              ],
+              "description": "Multi-head self-attention \u2014 every head attends over the sequence.",
+              "detail": {
+                "attention": {
+                  "bias": true,
+                  "cached": true,
+                  "compress_ratio": null,
+                  "conv_kernel_size": null,
+                  "cross_attention": false,
+                  "cross_kv_source": null,
+                  "head_dim": 128,
+                  "index_head_dim": null,
+                  "index_n_heads": null,
+                  "index_topk": null,
+                  "k_norm": null,
+                  "kind": "mha",
+                  "kv_lora_rank": null,
+                  "kv_source_layer": null,
+                  "mask": "unknown",
+                  "mrope_section": null,
+                  "no_rope": false,
+                  "num_heads": 112,
+                  "num_kv_heads": 112,
+                  "output_gate": null,
+                  "output_projection": true,
+                  "position_application": "attention_bias",
+                  "position_kind": "alibi",
+                  "projection_mode": "fused_qkv",
+                  "q_lora_rank": null,
+                  "q_norm": null,
+                  "qk_nope_head_dim": null,
+                  "qk_norm": null,
+                  "qk_rope_head_dim": null,
+                  "rope": false,
+                  "rope_3d": false,
+                  "rope_dim": null,
+                  "scores_scaled": true,
+                  "shared": false,
+                  "v_head_dim": null,
+                  "variant": null,
+                  "window_size": null
+                }
+              },
+              "facts": [
+                "112 heads",
+                "head dim 128",
+                "ALiBi",
+                "mask unresolved",
+                "+bias",
+                "QK norm unresolved"
+              ],
+              "id": "attn",
+              "kind": "attention",
+              "label": [
+                "Multi-Head",
+                "Attention"
+              ],
+              "presentation_aliases": [],
+              "presentation_chips": [
+                {
+                  "chip_kind": "class_default",
+                  "decision_ref": null,
+                  "owner": "decoder.attention",
+                  "parameters": [],
+                  "references": [
+                    {
+                      "claim_proof": {
+                        "claim_kind": "relation",
+                        "document_fingerprints": [
+                          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+                        ],
+                        "evidence_refs": [
+                          "projection:decoder.attention.position_schedule:84468bb7b893a8eb",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+                          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+                        ],
+                        "fact_id": "decoder.attention.position_schedule",
+                        "fact_status": "",
+                        "index_fingerprints": [
+                          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+                        ],
+                        "proof_kind": "retained_reader_projection",
+                        "reader_symbols": [
+                          "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+                        ],
+                        "recipe_ids": []
+                      },
+                      "completeness": "complete",
+                      "fact_key": "decoder.attention.position_schedule",
+                      "owner": "decoder.attention",
+                      "status": "class_default",
+                      "value_status_hash": "84468bb7b893a8eb"
+                    }
+                  ],
+                  "text": "position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]",
+                  "unknown_reason": null
+                }
+              ],
+              "presentation_path": [
+                "layers",
+                1,
+                "blocks",
+                1
+              ],
+              "role": "attention",
+              "source_fact_keys": [
+                "decoder.attention.position_schedule"
+              ],
+              "title": "Attention",
+              "view": "attention"
+            },
+            {
+              "description": "block input + attention output",
+              "id": "add1",
+              "kind": "residual_add",
+              "label": "+",
+              "residual_from": "rms1",
+              "role": "residual",
+              "title": "Residual add"
+            },
+            {
+              "description": "LayerNorm keeps activation scales stable before the FFN.",
+              "facts": [
+                "dim 14,336"
+              ],
+              "id": "rms2",
+              "kind": "norm",
+              "label": "LayerNorm",
+              "role": "norm",
+              "title": "Pre-FFN norm"
+            },
+            {
+              "children": [
+                {
+                  "description": "Expands the residual width to an inner width and projects back. The available source evidence does not prove this FFN's mechanism or gate topology. Known widths are retained, but no projection layout or activation path is invented.",
+                  "facts": [
+                    "14,336 \u2192 57,344 \u2192 14,336"
+                  ],
+                  "id": "block",
+                  "label": "Feed-forward",
+                  "title": "Feed-forward (structure not declared)"
+                }
+              ],
+              "description": "Feed-forward mechanism unresolved \u2014 known geometry is retained, but no dense, gated, projection-storage, or activation path is invented.",
+              "detail": {
+                "ffn": {
+                  "activation": "gelu",
+                  "activation_from_class": false,
+                  "bias": true,
+                  "expert_activation_formula": null,
+                  "expert_intermediate_size": null,
+                  "expert_projection_mode": null,
+                  "gated": false,
+                  "intermediate_size": 57344,
+                  "kind": null,
+                  "num_experts": null,
+                  "num_experts_per_tok": null,
+                  "num_shared_experts": null,
+                  "projection_mode": "dense",
+                  "routing": null
+                }
+              },
+              "facts": [
+                "mechanism unresolved",
+                "hidden 57,344",
+                "GELU"
+              ],
+              "id": "ffn",
+              "kind": "ffn",
+              "label": [
+                "Feed-forward",
+                "mechanism unresolved"
+              ],
+              "role": "ffn",
+              "title": "Feed-forward mechanism unresolved",
+              "view": "dense_ffn"
+            },
+            {
+              "description": "post-attention + FFN output",
+              "id": "add2",
+              "kind": "residual_add",
+              "label": "+",
+              "residual_from": "rms2",
+              "role": "residual",
+              "title": "Residual add"
+            }
+          ],
+          "ffn": {
+            "activation": "gelu",
+            "activation_assumed": false,
+            "activation_from_class": false,
+            "bias": true,
+            "expert_activation_formula": null,
+            "expert_intermediate_size": null,
+            "expert_projection_mode": null,
+            "gated": false,
+            "intermediate_size": 57344,
+            "kind": null,
+            "num_experts": null,
+            "num_experts_per_tok": null,
+            "num_shared_experts": null,
+            "projection_mode": "dense",
+            "routing": null
+          },
+          "index": 1,
+          "norm_kind": "layernorm",
+          "norm_placement": "pre",
+          "parallel_norm_count": null,
+          "residual_topology": "sequential"
+        }
+      ],
+      "max_position_embeddings": null,
+      "name": "bloom",
+      "notes": [],
+      "tie_word_embeddings": true,
+      "vocab_size": 250880,
+      "warnings": [
+        "Unresolved code-defined facts (drawn honestly, never asserted): mask, parallel norm count \u2014 modeling source is present but unresolved.",
+        {
+          "local_type": "EvidenceWarning"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "887e06bdbdf35d7ae3235719ebc2391ce1946f26907fde3318ea7f968d5d6f5f",
+  "expected_matrix_seal": "887e06bdbdf35d7ae3235719ebc2391ce1946f26907fde3318ea7f968d5d6f5f",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "after",
+  "reason_kind": null,
+  "recomputed_from_rows": "887e06bdbdf35d7ae3235719ebc2391ce1946f26907fde3318ea7f968d5d6f5f",
+  "seconds": 1.3794236670000828,
+  "slug": "wan2-2-t2v-a14b-diffusers",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "2540d7704e5bbd2f65002f32a26caf2a5215741075f3ba98c6527e58b1608c15",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_wan.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "0ccded96c3413486160b066044d8118c78d18a54cdb05e12a0ff2171e5d3a11b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_umt5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "9fd668395003d0fe6a2697e47ba41e616578ffd59b6d8ed4b4d5ac17b9f10e81",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_umt5.py"
+    }
+  ],
+  "source_node_count": 5,
+  "status": "REPRODUCED"
+}

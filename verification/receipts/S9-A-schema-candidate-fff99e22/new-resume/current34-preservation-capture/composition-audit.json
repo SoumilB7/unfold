@@ -1,0 +1,31 @@
+{
+  "status": "SOURCE_AND_SAVED_INPUT_INSPECTION_ONLY",
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "prior_manifest_sha256": "ab6077e3efba310b322e7257974e26b15bcdff5afa1d45d725953fe0149f4c06",
+  "source_manifest_rows": 196,
+  "exact_delta_paths": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890",
+      "after_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0"
+    },
+    {
+      "path": "tests/test_s9_layer_count_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "7526277f9910abfc101d8e8d30400884b8df3475abe25e0b608a0fbe4ddf8ced"
+    }
+  ],
+  "complete_preservation_import_source_changes": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890",
+      "after_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0"
+    }
+  ],
+  "baseline_lane_and_original31_recovery_origin_exactly_unchanged": true,
+  "historical_baseline_files": 203,
+  "historical_baseline_bytes_match_original33_32_31": true,
+  "historical_canonical_expectations_not_repaired": "Original inventory remains byte-identical;118 historical canonical expectation mismatches do not become authoritative.",
+  "preservation_test_and_expected_manifest_and_corpus_unchanged": true,
+  "authority": "Source/input composition only; root owns runtime. Original31 exact-fff baseline output is read-only and authenticated through original31 contract; current34 through new.33 never executed. No acceptance or blessing."
+}

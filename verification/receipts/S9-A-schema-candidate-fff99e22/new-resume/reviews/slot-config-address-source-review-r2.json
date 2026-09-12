@@ -1,0 +1,70 @@
+{
+  "verdict": "PASS_BOUNDED_SOURCE_REVIEW_RUNTIME_PENDING",
+  "reviewer": "placement_executor",
+  "reviewed_manifest_sha256": "9c499a6a07839e9c38e88b868bb5fb94f14219e3f960ba126cdd0db63432bef1",
+  "hash_checks": [
+    {
+      "path": "model_unfolder/evidence/document.py",
+      "expected": "23fcf4b1c0080a04c0e93ad61663a7854b9a22e2b6da5f3a446897e960a26c42",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "expected": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "expected": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "physics/result_cache.py",
+      "expected": "f8a1737fe6041868995f1944c5519390c1adb83cfa6ce05ad802466bbc6a2553",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "tests/test_s9_slot_config_class_address.py",
+      "expected": "e4ae1ea38ca5e8ad9f567fe9a085e6f8651c2bad0bf34deb858e42898d2e5391",
+      "held_matches": true,
+      "live_matches": true
+    },
+    {
+      "path": "tests/test_config_access.py",
+      "expected": "8ed838b6cf07fa0a2b700294ab0ed27381e1e7b876b2ff0072a77da172fb49d2",
+      "held_matches": true,
+      "live_matches": true
+    }
+  ],
+  "prior_review": "slot-config-address-source-review-r1.json",
+  "r1_closed": {
+    "id": "R1",
+    "finding": "Missing/unreadable addressed source is now a truthful source_unavailable/hydrate preparation failure with current checkpoint/provenance and no overlay. Historical replay invalidates via _ReplayMismatch; malformed/foreign descriptors still reject before availability handling.",
+    "tests_reviewed": "Six missing/unreadable-source cases across cache off/fresh/replay; current checkpoint and empty overlay, sanitized failure text, zero new hydration calls and foreign-descriptor rejection asserted."
+  },
+  "accepted_source_findings": [
+    "Preparation rehydrates the current raw checkpoint through the retained registry address; no original values or defaults are transplanted.",
+    "Current parent path binds the exact child object; original context path key agrees with exact source slot registry/model/source addresses.",
+    "Cache descriptor joins current raw/loader/merge data and exact current source hashes; absent/changed descriptors cannot reuse old preparation keys.",
+    "Replay requires current binding and recorded checkpoint agreement before returning prepared data; descriptor/replay introduce no heavy framework import.",
+    "New source-unavailable condition does not reuse no_mapping or class_rejected and existing default consumers reject every non-None preparation failure.",
+    "Slot context defaults derive only from current PreparedDocument; failed preparation remains limited."
+  ],
+  "blocking_findings": [],
+  "required_root_runtime": [
+    "New slot-address tests and existing config-access/cache tests.",
+    "Original/scrubbed FLUX actual-product comparison without comparison exclusions.",
+    "Full coherent candidate29 focused lane, including composition with child-width/exact-operand fixes."
+  ],
+  "scope_limits": [
+    "Source and exact hash inspection only; tests are reviewed, not reported passing.",
+    "No browser, model, test or project module executed by reviewer.",
+    "The address descriptor supplies class location only, never mechanism/connection proof.",
+    "Same-process third-party registry mutation without source/package version changes remains the declared cache blind spot."
+  ],
+  "output_approval": false
+}

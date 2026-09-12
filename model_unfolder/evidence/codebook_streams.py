@@ -46,6 +46,7 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderFactProjection, reader_operand, retained_claim_reader
 
 
 _EMBEDDING_PROTOCOLS = frozenset({
@@ -181,6 +182,36 @@ class CodebookStreamsEvidence:
         return left if left is not None and left == right else None
 
 
+@dataclass(frozen=True)
+class CodebookClaimWitness:
+    index: ProgramIndex
+    streams: CodebookStreamsEvidence
+    reader_symbol = "model_unfolder.evidence.codebook_streams.decoder_codebook_streams_for_path"
+
+    def validate_result(self, result):
+        if type(self.streams) is not CodebookStreamsEvidence:
+            raise TypeError("codebook relation requires exact input/output aggregation lanes")
+        self.streams.__post_init__()
+        if result.status != "resolved" or result.value is not self.streams \
+                or result.owner != self.streams.stage_occurrence \
+                or self.streams.embedding_sum is None or self.streams.head_stack is None:
+            raise ValueError("codebook relation requires both lanes in the exact result")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder", "codebook_streams") or self.streams.count_path is None:
+            raise ValueError("codebook relation lacks its shared exact repetition operand")
+        operand = reader_operand(document, self.streams.count_path)
+        if type(operand.value) is not int or operand.value <= 1:
+            raise ValueError("codebook relation requires a positive repeated bank")
+        value = {"num": operand.value, "embeddings_summed": True, "heads_stacked": True}
+        status = "class_default" if operand.source_kind == "class_default" else "code_and_config"
+        return ReaderFactProjection(owner, key, "relation", value, status,
+                                    (operand.checkpoint_path,) if operand.checkpoint_path else ())
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder', 'codebook_streams', 'relation'),
+))
 def decoder_codebook_streams_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -247,7 +278,8 @@ def decoder_codebook_streams_for_path(
         return ReaderResult.incomplete(
             stage_owner, value, failures=missing, provenance=provenance)
     return ReaderResult.resolved(
-        stage_owner, value, provenance=provenance)
+        stage_owner, value, provenance=provenance,
+        claim_witness=CodebookClaimWitness(index, value))
 
 
 def _lane(index, root, owner, kind, config_prefix):

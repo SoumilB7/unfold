@@ -1,0 +1,11 @@
+{
+  "chip_events_by_kind": {
+    "class_default": 0,
+    "pending_design": 0,
+    "symbolic": 0,
+    "unresolved": 0
+  },
+  "render_events": 11,
+  "scope": "Actual in-process events; not browser visibility or CSS proof.",
+  "unknown_value_events": 0
+}

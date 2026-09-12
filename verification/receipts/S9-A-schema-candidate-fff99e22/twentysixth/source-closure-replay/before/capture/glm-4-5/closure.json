@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+  "baseline_output": {
+    "ir_after_sha256": "4ea2e2a3cadd34327d6d9c929a1b64d10013ed0ef6590df10f5b69e72c5c0319",
+    "ir_before_sha256": "4ea2e2a3cadd34327d6d9c929a1b64d10013ed0ef6590df10f5b69e72c5c0319",
+    "page_bytes": 127438,
+    "page_sha256": "e15db00243fff4eedc1e7f16f789e95f5083bb1fe9c580c1d7d0f638b08a6e74",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+  "seconds": 0.787786541000969,
+  "slug": "glm-4-5",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "a72489447f87907a5797c699a333199c2b742bf60d43ddfeda180e667ba816ca",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_glm4_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "476514bb523f9939d56bbd538e488a395b047a190d8a027b04d5ba5190592db9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_glm4_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

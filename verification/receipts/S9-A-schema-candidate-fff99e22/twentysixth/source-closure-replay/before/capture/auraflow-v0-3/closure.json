@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "764102f963bc4bb1cf170407593c3678feef71190c09543c27edbf7ec4455809",
+  "baseline_output": {
+    "ir_after_sha256": "ca9361357d347b58370fdbbed9cbe92681d797e0732eb2bd3744adfcf6fbe439",
+    "ir_before_sha256": "ca9361357d347b58370fdbbed9cbe92681d797e0732eb2bd3744adfcf6fbe439",
+    "page_bytes": 126289,
+    "page_sha256": "b4564f67ab1d1a1c66885f119a8752eaac25e19c004efecb4e4927331a432b75",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "764102f963bc4bb1cf170407593c3678feef71190c09543c27edbf7ec4455809",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "764102f963bc4bb1cf170407593c3678feef71190c09543c27edbf7ec4455809",
+  "seconds": 5.338258041998415,
+  "slug": "auraflow-v0-3",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "6e33bc89023c8aa5f01e1bca3e4dbd28b084f38cb8eb31b315af82279a03c37b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "auraflow_transformer_2d.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "0ccded96c3413486160b066044d8118c78d18a54cdb05e12a0ff2171e5d3a11b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_umt5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "9fd668395003d0fe6a2697e47ba41e616578ffd59b6d8ed4b4d5ac17b9f10e81",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_umt5.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

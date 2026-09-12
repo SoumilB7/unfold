@@ -1,0 +1,5592 @@
+[
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "8d67b296c698d0035e191db693c395b116e9df4aeb2bad1fe1d6c657462f813b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f907ffcfd0a5928bf4597223afbba2554843c90595a4103d8f7cb309f4bfa625",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a55dcd6a0b9401c4"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 3,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "a55dcd6a0b9401c4",
+    "native_status": "config_declared",
+    "native_value": 2048,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "auraflow-v0-3",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "8d67b296c698d0035e191db693c395b116e9df4aeb2bad1fe1d6c657462f813b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f907ffcfd0a5928bf4597223afbba2554843c90595a4103d8f7cb309f4bfa625",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 6,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "auraflow-v0-3",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "8d67b296c698d0035e191db693c395b116e9df4aeb2bad1fe1d6c657462f813b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f907ffcfd0a5928bf4597223afbba2554843c90595a4103d8f7cb309f4bfa625",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 11,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "auraflow-v0-3",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 4,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 7,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 12,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 13,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_kv",
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "config_path": "d_kv",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 14,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "path": "d_kv",
+      "spelling": "d_kv"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "6b0c04fc3685da006ff52d777e2a01ecffad8e9c304879ef43c2fabe3509ace1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "43c85a4d924b0d718a8bcac27e7013431fdff2353837cf5d0bd9cb83a886d192",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 16,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "cogvideox-5b",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "text_config.hidden_size",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "70d5d3a3d9409f7c"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "70d5d3a3d9409f7c",
+    "native_status": "config_declared",
+    "native_value": 5120,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "text_config.hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "text_config.hidden_act",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b9c82d4207301835"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 7,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "b9c82d4207301835",
+    "native_status": "code_and_config",
+    "native_value": "silu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "text_config.hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_attention_heads",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 13,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_key_value_heads",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 14,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_attention_heads",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "44efd27a4bb6678d"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 15,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "44efd27a4bb6678d",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": null,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_key_value_heads",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "44efd27a4bb6678d"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 16,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "44efd27a4bb6678d",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": null,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "text_config.tie_word_embeddings",
+      "document_fingerprint": "8f68737c09ce8f3a3bbc60df692af6cf6aa73f25b7a4bc7486c7fe5544a843a3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "1431ae0e449f0694f33301395a7b3b2aa3d4695504dee530e0e11239575a8dce",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 18,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "flux-2-dev",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "text_config.tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "c2843f21e16af30fc6038b154060800e8f68497ad0af94dbd0c1fc0392b4325e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "50846aa768b2104e5245f5c336a669b78c7e939727516bec492f7d5147b451c2",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "63ed4117f4c89159"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "63ed4117f4c89159",
+    "native_status": "config_declared",
+    "native_value": 768,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "hidden_act",
+      "document_fingerprint": "c2843f21e16af30fc6038b154060800e8f68497ad0af94dbd0c1fc0392b4325e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "50846aa768b2104e5245f5c336a669b78c7e939727516bec492f7d5147b451c2",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "384a1a630b8298aa"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 7,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "384a1a630b8298aa",
+    "native_status": "code_and_config",
+    "native_value": "quick_gelu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "c2843f21e16af30fc6038b154060800e8f68497ad0af94dbd0c1fc0392b4325e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "50846aa768b2104e5245f5c336a669b78c7e939727516bec492f7d5147b451c2",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 10,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "c2843f21e16af30fc6038b154060800e8f68497ad0af94dbd0c1fc0392b4325e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "50846aa768b2104e5245f5c336a669b78c7e939727516bec492f7d5147b451c2",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 11,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "c2843f21e16af30fc6038b154060800e8f68497ad0af94dbd0c1fc0392b4325e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "50846aa768b2104e5245f5c336a669b78c7e939727516bec492f7d5147b451c2",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 12,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "config_path": "d_model",
+      "document_fingerprint": "a50995a8555ad7e377416aa0a746e45f82af84ed3f85a25b995d6fa9af931b1a",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "c2b3e6965e4a68844c530d737234bb22ddb5aefa300b7696c655bbb0609282c0",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder_2.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 16,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder_2",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "a50995a8555ad7e377416aa0a746e45f82af84ed3f85a25b995d6fa9af931b1a",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "c2b3e6965e4a68844c530d737234bb22ddb5aefa300b7696c655bbb0609282c0",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder_2.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 19,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder_2.decoder.ffn.activation",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder_2",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder_2",
+      "config_path": "num_heads",
+      "document_fingerprint": "a50995a8555ad7e377416aa0a746e45f82af84ed3f85a25b995d6fa9af931b1a",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "c2b3e6965e4a68844c530d737234bb22ddb5aefa300b7696c655bbb0609282c0",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder_2.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 22,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder_2.decoder.attention.mechanism",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder_2",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder_2",
+      "config_path": "num_heads",
+      "document_fingerprint": "a50995a8555ad7e377416aa0a746e45f82af84ed3f85a25b995d6fa9af931b1a",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "c2b3e6965e4a68844c530d737234bb22ddb5aefa300b7696c655bbb0609282c0",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder_2.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "926cf142ddc998df"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 23,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "926cf142ddc998df",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": null,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "fluxtransformer2dmodel",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder_2",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 10,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "hidden_act",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b9c82d4207301835"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 12,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "b9c82d4207301835",
+    "native_status": "code_and_config",
+    "native_value": "silu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 21,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 22,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a5118e63f46052c7"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 23,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "a5118e63f46052c7",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a5118e63f46052c7"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 24,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "a5118e63f46052c7",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "head_dim",
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "config_path": "head_dim",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a5118e63f46052c7"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 25,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "a5118e63f46052c7",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "path": "head_dim",
+      "spelling": "head_dim"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "86691262de0e0997010d2b9052c8ce7cc00d8f0f1e8cb52bb1f23991fd97d3f7",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "7327522f54a6adad4274bc9b96a74b679aac5b594a20d4e173722a6b9c79b3f4",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 29,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "config_path": "hidden_size",
+      "document_fingerprint": "48595518357a8e3ced20d4a0b32fefd2a216d9046ba028c64522b4f722419bbb",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "32081c26e09b940b0999d5b027102bd677b1f9250db73d448d86578040cf428c",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder_2.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "63ed4117f4c89159"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 32,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "63ed4117f4c89159",
+    "native_status": "config_declared",
+    "native_value": 768,
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder_2",
+      "config_path": "hidden_act",
+      "document_fingerprint": "48595518357a8e3ced20d4a0b32fefd2a216d9046ba028c64522b4f722419bbb",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "32081c26e09b940b0999d5b027102bd677b1f9250db73d448d86578040cf428c",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder_2.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "384a1a630b8298aa"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 34,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "384a1a630b8298aa",
+    "native_status": "code_and_config",
+    "native_value": "quick_gelu",
+    "qualified_key": "root.text_encoder_2.decoder.ffn.activation",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder_2",
+      "path": "hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder_2",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "48595518357a8e3ced20d4a0b32fefd2a216d9046ba028c64522b4f722419bbb",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "32081c26e09b940b0999d5b027102bd677b1f9250db73d448d86578040cf428c",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder_2.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 39,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder_2.decoder.attention.mechanism",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder_2",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder_2",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "48595518357a8e3ced20d4a0b32fefd2a216d9046ba028c64522b4f722419bbb",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "32081c26e09b940b0999d5b027102bd677b1f9250db73d448d86578040cf428c",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder_2.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 40,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder_2",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "config_path": "hidden_size",
+      "document_fingerprint": "48595518357a8e3ced20d4a0b32fefd2a216d9046ba028c64522b4f722419bbb",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "32081c26e09b940b0999d5b027102bd677b1f9250db73d448d86578040cf428c",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder_2.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 41,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder_2.decoder.attention.head_geometry",
+    "slug": "hunyuanvideo",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 8,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 14,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 15,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_kv",
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "config_path": "d_kv",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 16,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "path": "d_kv",
+      "spelling": "d_kv"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "f899a49694de16249b58c85730b19456b4e870cb60ae6afecaf5e49ca0766d1f",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "d402f5f6193b59a0f444b19ab6d4ad5fe9ff0ee7b1b40852823d6110d630d2bc",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 18,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "ltx-video",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "30e6f97e61542821"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "30e6f97e61542821",
+    "native_status": "config_declared",
+    "native_value": 2304,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_activation",
+      "canonical": "hidden_activation",
+      "component": "root.text_encoder",
+      "config_path": "hidden_activation",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "19636f04f1e0781b"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 7,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "19636f04f1e0781b",
+    "native_status": "code_and_config",
+    "native_value": "gelu_pytorch_tanh",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "hidden_activation",
+      "component": "root.text_encoder",
+      "path": "hidden_activation",
+      "spelling": "hidden_activation"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 18,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 19,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 20,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 21,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "head_dim",
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "config_path": "head_dim",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 22,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "path": "head_dim",
+      "spelling": "head_dim"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "3585e5a293f501d5da6e3fb657c76722e8a7962f86c6820ffa54682a4b0484d1",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "63b061782c65781d954892a4c2677da4d610b23396ac03807c9d39388976313f",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 27,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "lumina-image-2-0",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 2,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 10,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 11,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_kv",
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "config_path": "d_kv",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 12,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "path": "d_kv",
+      "spelling": "d_kv"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "00ec95042529fa93b4777b966b7cd7f053bac6b462ca43d242c6c1530afb3bbe",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "c99f359e9e4e3395040fd25ca2797dbdf30dcadf4f3bc4b8a5ce75795542f466",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 14,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "mochi-1-preview",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 1,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 4,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 10,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_heads",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 11,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_kv",
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "config_path": "d_kv",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 12,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "d_kv",
+      "component": "root.text_encoder",
+      "path": "d_kv",
+      "spelling": "d_kv"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "d89cd632d838c0bb112f146f2ea2c17a5813c2e2ebb0ab76afa776c13a28db0b",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "5c5573b361c3039b1940d9f0b0b1ddb44348d1ec9a9f8ab6db2424a0bd470b9e",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 14,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a55dcd6a0b9401c4"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 3,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "a55dcd6a0b9401c4",
+    "native_status": "config_declared",
+    "native_value": 2048,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "hidden_act",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b9c82d4207301835"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 5,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "b9c82d4207301835",
+    "native_status": "code_and_config",
+    "native_value": "silu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 10,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 11,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "4ad1c134ce1e710b"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 12,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "4ad1c134ce1e710b",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 16,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "4ad1c134ce1e710b"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 13,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "4ad1c134ce1e710b",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 16,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "head_dim",
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "config_path": "head_dim",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "4ad1c134ce1e710b"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 14,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "4ad1c134ce1e710b",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 16,
+      "num_kv_heads": 8,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "path": "head_dim",
+      "spelling": "head_dim"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "9ca8c3678ad2e89edbe1c3eeb79e6b5d00a4a855ac185e7af3fa5513d4cc3d65",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "acba6c7d211b6a7a2fa20ad3441de13c4b52f5633ca3e5500629a230c8408774",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 18,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "prxpixel-t2i",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "text_config.hidden_size",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "0317feefb5fa2fb2"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 6,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "0317feefb5fa2fb2",
+    "native_status": "config_declared",
+    "native_value": 3584,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "text_config.hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "text_config.hidden_act",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b9c82d4207301835"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 8,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "b9c82d4207301835",
+    "native_status": "code_and_config",
+    "native_value": "silu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "text_config.hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_attention_heads",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 13,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_key_value_heads",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 14,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_attention_heads",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "45c289d0a98fd93c"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 15,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "45c289d0a98fd93c",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 28,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "text_config.num_key_value_heads",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "45c289d0a98fd93c"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 16,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "45c289d0a98fd93c",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 28,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "text_config.num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "text_config.hidden_size",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "45c289d0a98fd93c"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 17,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "45c289d0a98fd93c",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 28,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "text_config.hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "a1a1bc5537ba7ee876dbb8fc4314decaac34e5846020a4d4fd799bf6cfc51010",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "fd3ff0356eaf00b15444984d084e5e72196c4f8ce10cc8f9f77d731588fc80a9",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 19,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "a9cd6a1ddefafc47",
+    "native_status": "config_declared",
+    "native_value": false,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "qwen-image",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "30e6f97e61542821"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 2,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "30e6f97e61542821",
+    "native_status": "config_declared",
+    "native_value": 2304,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_activation",
+      "canonical": "hidden_activation",
+      "component": "root.text_encoder",
+      "config_path": "hidden_activation",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "19636f04f1e0781b"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 4,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "19636f04f1e0781b",
+    "native_status": "code_and_config",
+    "native_value": "gelu_pytorch_tanh",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "hidden_activation",
+      "component": "root.text_encoder",
+      "path": "hidden_activation",
+      "spelling": "hidden_activation"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 15,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "5d420927d1e9f86a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 16,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "5d420927d1e9f86a",
+    "native_status": "code_and_config",
+    "native_value": "gqa",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 17,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_key_value_heads",
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_key_value_heads",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 18,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "num_key_value_heads",
+      "component": "root.text_encoder",
+      "path": "num_key_value_heads",
+      "spelling": "num_key_value_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "head_dim",
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "config_path": "head_dim",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "3c7ba0045c171f80"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 19,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "3c7ba0045c171f80",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 256,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 8,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "head_dim",
+      "component": "root.text_encoder",
+      "path": "head_dim",
+      "spelling": "head_dim"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "2a9dc766cb0d37f2007dd679cacd23b87e33e42776e81a3824f8860e83cd6c98",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "f3c0cb71b7423c77ac10766019a5293cfe37d7059983a0774669902b7a5125d7",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 24,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "sana-1600m-1024px-diffusers",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "903e37cd4a6d62b6ee8ab0e1c4a686c9a146ffcfe8f32b7bbf82c8559bb3d417",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "a54aed3ab8fcb1ad2ad9874c54defab1e1c36d36ab99f253f6eca1da7d7ea092",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "63ed4117f4c89159"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 1,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "63ed4117f4c89159",
+    "native_status": "config_declared",
+    "native_value": 768,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "config_path": "hidden_size",
+      "document_fingerprint": "7025d4e72977ea1d330ed1f5f8fd5457599bac8599deef6d83db36e23371021e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "a4a27362518b329548daf5135797e88afdc01b5fa905cff8109e5bd607207c2e",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder_2.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b259a70b49b9febe"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 8,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "b259a70b49b9febe",
+    "native_status": "config_declared",
+    "native_value": 1280,
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_3",
+      "config_path": "d_model",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder_3.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 15,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder_3.model.hidden_size",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_3",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder_3",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder_3.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 18,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder_3.decoder.ffn.activation",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder_3",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder_3",
+      "config_path": "num_heads",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder_3.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 24,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder_3.decoder.attention.mechanism",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder_3",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "num_heads",
+      "canonical": "num_heads",
+      "component": "root.text_encoder_3",
+      "config_path": "num_heads",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder_3.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 25,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder_3.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "num_heads",
+      "component": "root.text_encoder_3",
+      "path": "num_heads",
+      "spelling": "num_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "d_kv",
+      "canonical": "d_kv",
+      "component": "root.text_encoder_3",
+      "config_path": "d_kv",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder_3.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "9d9e06feeb3fc38a"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 26,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "9d9e06feeb3fc38a",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 64,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder_3.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "d_kv",
+      "component": "root.text_encoder_3",
+      "path": "d_kv",
+      "spelling": "d_kv"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_3"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder_3",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "9bb181b3fcca150e00a8c463cbf69dbdf881dc8f3295f028c716191bee6c2d99",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_3"
+      ],
+      "document_token": "271aa054f580f12b280bbee6c24fc13030e6c9e9a02c2a3a62a6ada16588fa15",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder_3.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 28,
+    "mechanism": "",
+    "namespace": "root.text_encoder_3",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder_3.model.tie_word_embeddings",
+    "slug": "stable-diffusion-3-5-large",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder_3",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder_3.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "1eeefed00607dcb08427c3c82a721217ca355faa0d8fdc082cd3c98df374bdf3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "26656980bdfb256f7e99563eaddd872e9bbcf441026737d5f0e4db81379a8f83",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "63ed4117f4c89159"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 1,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "63ed4117f4c89159",
+    "native_status": "config_declared",
+    "native_value": 768,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_act",
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "config_path": "hidden_act",
+      "document_fingerprint": "1eeefed00607dcb08427c3c82a721217ca355faa0d8fdc082cd3c98df374bdf3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "26656980bdfb256f7e99563eaddd872e9bbcf441026737d5f0e4db81379a8f83",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "384a1a630b8298aa"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 3,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "384a1a630b8298aa",
+    "native_status": "code_and_config",
+    "native_value": "quick_gelu",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "hidden_act",
+      "component": "root.text_encoder",
+      "path": "hidden_act",
+      "spelling": "hidden_act"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "connection",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "1eeefed00607dcb08427c3c82a721217ca355faa0d8fdc082cd3c98df374bdf3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "26656980bdfb256f7e99563eaddd872e9bbcf441026737d5f0e4db81379a8f83",
+      "fact_key": "mechanism",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_mechanism",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_mechanism_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 8,
+    "mechanism": "attention_mechanism",
+    "namespace": "root.text_encoder",
+    "native_hash": "a615d6a9effdcd21",
+    "native_status": "code_and_config",
+    "native_value": "mha",
+    "qualified_key": "root.text_encoder.decoder.attention.mechanism",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "mechanism",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "num_attention_heads",
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "config_path": "num_attention_heads",
+      "document_fingerprint": "1eeefed00607dcb08427c3c82a721217ca355faa0d8fdc082cd3c98df374bdf3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "26656980bdfb256f7e99563eaddd872e9bbcf441026737d5f0e4db81379a8f83",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 9,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "num_attention_heads",
+      "component": "root.text_encoder",
+      "path": "num_attention_heads",
+      "spelling": "num_attention_heads"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "relation",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "hidden_size",
+      "document_fingerprint": "1eeefed00607dcb08427c3c82a721217ca355faa0d8fdc082cd3c98df374bdf3",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "26656980bdfb256f7e99563eaddd872e9bbcf441026737d5f0e4db81379a8f83",
+      "fact_key": "head_geometry",
+      "fact_owner": "root.text_encoder.decoder.attention",
+      "intent": "consumed",
+      "mechanism": "attention_head_geometry",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "decoder_attention_head_geometry_for_path",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "605407ce9a6243a8"
+    },
+    "existing_proof_validation": "VALIDATED",
+    "index": 10,
+    "mechanism": "attention_head_geometry",
+    "namespace": "root.text_encoder",
+    "native_hash": "605407ce9a6243a8",
+    "native_status": "code_and_config",
+    "native_value": {
+      "head_dim": 64,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 12,
+      "num_kv_heads": 12,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "qualified_key": "root.text_encoder.decoder.attention.head_geometry",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "head_geometry",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.attention"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder_2"
+    ],
+    "event": {
+      "alias": "hidden_size",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "config_path": "hidden_size",
+      "document_fingerprint": "7025d4e72977ea1d330ed1f5f8fd5457599bac8599deef6d83db36e23371021e",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder_2"
+      ],
+      "document_token": "0fe31f119bc5fd8211d0b663713b2a1a8dbd3740e6ae2c7d26e6607595c06a12",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder_2.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "b259a70b49b9febe"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 14,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder_2",
+    "native_hash": "b259a70b49b9febe",
+    "native_status": "config_declared",
+    "native_value": 1280,
+    "qualified_key": "root.text_encoder_2.model.hidden_size",
+    "slug": "stable-diffusion-xl-base-1-0",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder_2",
+      "path": "hidden_size",
+      "spelling": "hidden_size"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder_2.model"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "d_model",
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "config_path": "d_model",
+      "document_fingerprint": "60c73810575c699cee742620bb072c6a23ca5da3584537e99663d13759dea424",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "dda68e1e6fa5e8fcf21d559bfd0899dd7d45589e879bfe9990f54f7a5539824d",
+      "fact_key": "hidden_size",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "model_hidden_size_value",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "67951bb3d9db1731"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 3,
+    "mechanism": "model_hidden_size_value",
+    "namespace": "root.text_encoder",
+    "native_hash": "67951bb3d9db1731",
+    "native_status": "config_declared",
+    "native_value": 4096,
+    "qualified_key": "root.text_encoder.model.hidden_size",
+    "slug": "wan2-2-t2v-a14b-diffusers",
+    "source": {
+      "canonical": "hidden_size",
+      "component": "root.text_encoder",
+      "path": "d_model",
+      "spelling": "d_model"
+    },
+    "target": {
+      "key": "hidden_size",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  },
+  {
+    "claim_kind": "applied_function",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "dense_act_fn",
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "config_path": "dense_act_fn",
+      "document_fingerprint": "60c73810575c699cee742620bb072c6a23ca5da3584537e99663d13759dea424",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "dda68e1e6fa5e8fcf21d559bfd0899dd7d45589e879bfe9990f54f7a5539824d",
+      "fact_key": "activation",
+      "fact_owner": "root.text_encoder.decoder.ffn",
+      "intent": "consumed",
+      "mechanism": "ffn_activation",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "23863c00c40b5f69"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 6,
+    "mechanism": "ffn_activation",
+    "namespace": "root.text_encoder",
+    "native_hash": "23863c00c40b5f69",
+    "native_status": "code_and_config",
+    "native_value": "gelu_new",
+    "qualified_key": "root.text_encoder.decoder.ffn.activation",
+    "slug": "wan2-2-t2v-a14b-diffusers",
+    "source": {
+      "canonical": "dense_act_fn",
+      "component": "root.text_encoder",
+      "path": "dense_act_fn",
+      "spelling": "dense_act_fn"
+    },
+    "target": {
+      "key": "activation",
+      "kind": "fact",
+      "owner": "root.text_encoder.decoder.ffn"
+    }
+  },
+  {
+    "claim_kind": "value",
+    "document_path": [
+      "_text_encoder_configs",
+      "text_encoder"
+    ],
+    "event": {
+      "alias": "tie_word_embeddings",
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "config_path": "tie_word_embeddings",
+      "document_fingerprint": "60c73810575c699cee742620bb072c6a23ca5da3584537e99663d13759dea424",
+      "document_path": [
+        "_text_encoder_configs",
+        "text_encoder"
+      ],
+      "document_token": "dda68e1e6fa5e8fcf21d559bfd0899dd7d45589e879bfe9990f54f7a5539824d",
+      "fact_key": "tie_word_embeddings",
+      "fact_owner": "root.text_encoder.model",
+      "intent": "consumed",
+      "mechanism": "",
+      "path_exact": true,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "reader": "model_unfolder.adapters.transformer.parser.parse",
+      "reason": "",
+      "value_state": "value",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "existing_proof_validation": "MISSING_UNCHANGED",
+    "index": 11,
+    "mechanism": "",
+    "namespace": "root.text_encoder",
+    "native_hash": "34b451cd19670900",
+    "native_status": "config_declared",
+    "native_value": true,
+    "qualified_key": "root.text_encoder.model.tie_word_embeddings",
+    "slug": "wan2-2-t2v-a14b-diffusers",
+    "source": {
+      "canonical": "tie_word_embeddings",
+      "component": "root.text_encoder",
+      "path": "tie_word_embeddings",
+      "spelling": "tie_word_embeddings"
+    },
+    "target": {
+      "key": "tie_word_embeddings",
+      "kind": "fact",
+      "owner": "root.text_encoder.model"
+    }
+  }
+]

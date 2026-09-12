@@ -1,0 +1,907 @@
+{
+  "scope": "All39 active S7 targets;36 portable seals changed,3 controls unchanged. Before capture additionally renders real baseline HTML/IR. No fake inventory objects, architecture comparisons, or output blessing.",
+  "before_commit": "fff99e2230064762598748463accd170e1e34e22",
+  "before_matrix_sha256": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+  "after_matrix_sha256": "277b00b119b966e11689c76b6123d0e756878bdfbf790c188ffb8b4a1ba98022",
+  "changed_count": 36,
+  "unchanged_count": 3,
+  "targets": [
+    {
+      "slug": "auraflow-v0-3",
+      "model": "AuraFlow-v0.3",
+      "input": "tests/sable_test_corpus/auraflow-v0-3.json",
+      "input_sha256": "105bbd65a8575c0f50e92f3090b7bf1089e7f3bd5c3802d76cd06844d4e5d73c",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "764102f963bc4bb1cf170407593c3678feef71190c09543c27edbf7ec4455809",
+        "payload_sha256": "8167e09a2d06030e9f03420abe39103b0688a8c097a01b3b62f6dddd07a90b19",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.auraflow_transformer_2d",
+          "qualname": "AuraFlowTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d",
+        "payload_sha256": "df7f93f585b92351eb68dd895de031c7b42992b1d33ea537ff2ad220f1acd076",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.auraflow_transformer_2d",
+          "qualname": "AuraFlowTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "bloom",
+      "model": "bloom",
+      "input": "tests/sable_test_corpus/bloom.json",
+      "input_sha256": "c310a2c48de05ac195b22b8bfa477d874f34fd3199f53487d1d9e4cb69933295",
+      "portable_seal_changed": false,
+      "before": {
+        "source_index_fingerprint": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+        "payload_sha256": "2084053b6452acd007ca98145c5a87e8e97260a9b8485aa5ce8288714ae6c11e",
+        "resolved_class": {
+          "module": "transformers.models.bloom.modeling_bloom",
+          "qualname": "BloomForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60",
+        "payload_sha256": "2086164aae9ee3706fa8fbb35c40a16711842a50f9a598048c6ac72d1e5aae03",
+        "resolved_class": {
+          "module": "transformers.models.bloom.modeling_bloom",
+          "qualname": "BloomForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "cogvideox-5b",
+      "model": "CogVideoX-5b",
+      "input": "tests/sable_test_corpus/cogvideox-5b.json",
+      "input_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "73ac79b933c58c1ed8ff50553e74f877befdacf0e3970cfc03d6e4e134af85b7",
+        "payload_sha256": "5cf8c2f80c884c625298898dce5115e25ea1feaa38744fdcb76ee61df0feb1c2",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.cogvideox_transformer_3d",
+          "qualname": "CogVideoXTransformer3DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "030ef1b30f980932f4fe0fda8856f492d5e3a82c6253b8f90f3134bba6494882",
+        "payload_sha256": "15203302d067cfae8c8dc193d2209059bf7a125fe81cb16149c6c2ad3fecdd40",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.cogvideox_transformer_3d",
+          "qualname": "CogVideoXTransformer3DModel"
+        }
+      }
+    },
+    {
+      "slug": "dbrx-base",
+      "model": "dbrx-base",
+      "input": "tests/sable_test_corpus/dbrx-base.json",
+      "input_sha256": "c9bb6bd55d1e7141d192386ea699371030d4d54583550e1d0cf5ac013741fa31",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "44ae812a0559855a09050eddff2004286f1856ecf59caa9f599935ea59a3a7a5",
+        "payload_sha256": "3f66c0d48aa93566dac93ac90edad53a11bbf06e4d3047e0311fcaebd0cc8e64",
+        "resolved_class": {
+          "module": "transformers.models.dbrx.modeling_dbrx",
+          "qualname": "DbrxForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "ca11367f22a7d0a438247885a1accf0b3458fa3a87bfd883d946135531038a3b",
+        "payload_sha256": "91fe7e5491353ee15e576776f705a5ad11603d479923e2b9b5562676c74a1971",
+        "resolved_class": {
+          "module": "transformers.models.dbrx.modeling_dbrx",
+          "qualname": "DbrxForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "deepseek-v3",
+      "model": "DeepSeek-V3",
+      "input": "tests/sable_test_corpus/deepseek-v3.json",
+      "input_sha256": "bccffdd0d542c963c1cf4246466067a1fa8ed49f1eef13f9ac775ce3deb3b577",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3",
+        "payload_sha256": "919e7fde0ba86a904020f9b063d52a60783c1d056454107badf73750f0856650",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+          "qualname": "DeepseekV3ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d",
+        "payload_sha256": "a6545a0ad111db6d2aa8e220ac1858329c7826e7a665d9135beaf4fc96868a29",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v3.modeling_deepseek_v3",
+          "qualname": "DeepseekV3ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "flux-2-dev",
+      "model": "FLUX.2-dev",
+      "input": "tests/sable_test_corpus/flux-2-dev.json",
+      "input_sha256": "5dfc629aae88697e284f022ba2bb4d3245248f8cbb57189ed1773d47420de8d0",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "0d3e85165e4edb8ad20a869ec4ce43bd2be33fcc1fee573b1c62675e654a115d",
+        "payload_sha256": "f177bc038678622fda7bdc0a1388e241ca667e487fb7b0dbc8aac35805724c93",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_flux2",
+          "qualname": "Flux2Transformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "589c6cdeeb1fbb151d288e15b10a583e0d6847de4e2e45d9ebf99f48eed0ccfe",
+        "payload_sha256": "a94344840822859e9965c0767fb4121c844e93efedfd8c0d2c299a802624d2c7",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_flux2",
+          "qualname": "Flux2Transformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "model": "FluxTransformer2DModel",
+      "input": "tests/sable_test_corpus/fluxtransformer2dmodel.json",
+      "input_sha256": "f2c817111b55fe7093e9e5b34307e606e6f3c3a4ae8d9eacfe65f9343fc12a30",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "ea9a8ba30cdbbb6fed1a9273d8c5baaa1e1374a31d5340ab6371727221d893b0",
+        "payload_sha256": "ed2cddcd8786c0b6ff7f67934f566b836e6de3cd9d25600d358599381b65a1d6",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_flux",
+          "qualname": "FluxTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "53d08479a0a65c6caf2679dfeabbacc371bb4ad9ef7a5b5ac7da37d4ac07a998",
+        "payload_sha256": "e3f0abf0d51a9ffae6d6c7ed3f0c1e701498e856a9726bee73952e8fb11dba07",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_flux",
+          "qualname": "FluxTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "model": "gemma-2-2b-it",
+      "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+      "input_sha256": "6f8f118edaf514fe2119765ebdd30767f8745d38195974ce17b606e208d1b62b",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+        "payload_sha256": "5b18a901ec6f8e8b11da08c7e576b0b93945511b8300ac8ae815ba6746e400e5",
+        "resolved_class": {
+          "module": "transformers.models.gemma2.modeling_gemma2",
+          "qualname": "Gemma2ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21",
+        "payload_sha256": "5f9d92321eaf7b006175d3d15a671171a66204864576ad77ff5a399d1d33e23e",
+        "resolved_class": {
+          "module": "transformers.models.gemma2.modeling_gemma2",
+          "qualname": "Gemma2ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "glm-4-5",
+      "model": "GLM-4.5",
+      "input": "tests/sable_test_corpus/glm-4-5.json",
+      "input_sha256": "f0400ba6b9ecc6b539aede81fc10092f3690729bafc2c67184e92b9811452dd0",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+        "payload_sha256": "bc9977ce587541649f0a6ee57637cb3e5b65313797ba2dc059b8d840d7fc2fe2",
+        "resolved_class": {
+          "module": "transformers.models.glm4_moe.modeling_glm4_moe",
+          "qualname": "Glm4MoeForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62",
+        "payload_sha256": "a84a0f679516fd80543d5f1d4b0a267733c63f055c2b72c1356cc66b83968877",
+        "resolved_class": {
+          "module": "transformers.models.glm4_moe.modeling_glm4_moe",
+          "qualname": "Glm4MoeForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "model": "gpt-oss-20b",
+      "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+      "input_sha256": "af6da44e46e4d84f1ea0e82b30af8922b90f59a11a7954ad383101090f974b52",
+      "portable_seal_changed": false,
+      "before": {
+        "source_index_fingerprint": "f5e43d69e1d0dd2a172c9749faea8b3b636776d2e4c1e9201f62d6d742733a47",
+        "payload_sha256": "e0a436dc338a43b9b5cab21100d2689494acb5b5684f0aa2a8ddd0b25c1ad843",
+        "resolved_class": {
+          "module": "transformers.models.gpt_oss.modeling_gpt_oss",
+          "qualname": "GptOssForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "f5e43d69e1d0dd2a172c9749faea8b3b636776d2e4c1e9201f62d6d742733a47",
+        "payload_sha256": "139ebd1348cabe7cc4cfd8690e4097b2a24f9cbc7456f0f62b7a2c0b66731794",
+        "resolved_class": {
+          "module": "transformers.models.gpt_oss.modeling_gpt_oss",
+          "qualname": "GptOssForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "model": "granite-3.0-8b-instruct",
+      "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+      "input_sha256": "c26ef8cb5dd27ff5eb915ebd092665f76ae6afbc4605fb5514b7a2c70ce62eb4",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+        "payload_sha256": "5b49c1c0067d8943724d814c4cf354145a5f5ddcc56bc6cd20aa34024aea886a",
+        "resolved_class": {
+          "module": "transformers.models.granite.modeling_granite",
+          "qualname": "GraniteForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879",
+        "payload_sha256": "e60fa43e5b937b603cc59e012e10b5f2996691e4bcee3ba495bd1e3db6972bd2",
+        "resolved_class": {
+          "module": "transformers.models.granite.modeling_granite",
+          "qualname": "GraniteForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "hunyuanvideo",
+      "model": "HunyuanVideo",
+      "input": "tests/sable_test_corpus/hunyuanvideo.json",
+      "input_sha256": "1f8762163235efb735db00344da4910c765d42becb5e404a2c7d2e5c9c84d020",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "d6360d3ce2a1c576ad5a33e605e92bd82a948513d141f4e4a556e151ce0495f1",
+        "payload_sha256": "9e8f62cbb34bcef863ec6bd71a9849625787a2b9e655ff546fd0d4a9e4e273e1",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_hunyuan_video",
+          "qualname": "HunyuanVideoTransformer3DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "daae216874233165cf292f646fed874500ecde025bb5b7078403fa92b0a83ee7",
+        "payload_sha256": "c63a20426d059764e9bdfc9b7c7ae606e60de2c6ccf50094cae87b62b4e7299e",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_hunyuan_video",
+          "qualname": "HunyuanVideoTransformer3DModel"
+        }
+      }
+    },
+    {
+      "slug": "llama-7b",
+      "model": "llama-7b",
+      "input": "tests/sable_test_corpus/llama-7b.json",
+      "input_sha256": "41a9bb408dce7c2227a9d9070cb74327df1bf4e1967fa331967000c963ab1931",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+        "payload_sha256": "67ccd19edd95d4aa9db20e037150f2b07211e547bc43f3465ea646cb98d9fe15",
+        "resolved_class": {
+          "module": "transformers.models.llama.modeling_llama",
+          "qualname": "LlamaForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b",
+        "payload_sha256": "e064b81cde0dbebb58f1fdfe795925e7175c4b441d990ffd2047f1b7a5fb4482",
+        "resolved_class": {
+          "module": "transformers.models.llama.modeling_llama",
+          "qualname": "LlamaForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "ltx-video",
+      "model": "LTX-Video",
+      "input": "tests/sable_test_corpus/ltx-video.json",
+      "input_sha256": "aeff48dd3e3f44c282b39789d0cc789958ed029f0e49b1610ce5eb2dcc392123",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "b8965771470e95ff43d8377c8f0b205f96da0c8fa887074e939aa796c1efe2c7",
+        "payload_sha256": "7ec5531d5f46ef7e8899350204cc38b098ab6cb04b8d0872216f08bf39f54077",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_ltx",
+          "qualname": "LTXVideoTransformer3DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "691650a754fb6a0da91ecc2a6f44ca9abd9a2cbb7b08564e5d1073bd32ba8b96",
+        "payload_sha256": "d2ab61e30bd5ba7469fa6f2d1923182df47408540fca4cf88d0caa65bcc86dc1",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_ltx",
+          "qualname": "LTXVideoTransformer3DModel"
+        }
+      }
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "model": "Lumina-Image-2.0",
+      "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+      "input_sha256": "22b4c7a048572e1e94a8b25ece9db25ab7fc36532c9d511264988e1588993ebd",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c",
+        "payload_sha256": "4a2c2a89265fa0901c85bdabdd746009197d9908765ea4bbebcca92bb542d60b",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_lumina2",
+          "qualname": "Lumina2Transformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "8777c33229605593520df6fafe5e468679a8729a7490443a0cd8648ba7865e71",
+        "payload_sha256": "886c11c266a381d3a098d256b38b1f68d1a0d7e32645798eb7eca1c8ed03c13e",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_lumina2",
+          "qualname": "Lumina2Transformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "mochi-1-preview",
+      "model": "mochi-1-preview",
+      "input": "tests/sable_test_corpus/mochi-1-preview.json",
+      "input_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "acd367e439a2e7fc418febe7089a5945c2322dfd922aa6e8ad60a1e85b415427",
+        "payload_sha256": "4cbafebf87810a3b34f41804bb52e68e1130b048f3973b5d9ecbae27494ac752",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_mochi",
+          "qualname": "MochiTransformer3DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "69cc793761b4051d09773450aee42ae0545c7be2295a270125dc3415f7f58190",
+        "payload_sha256": "9e02d9feaac00419cfa2c182a38c472c4f08e3930639b7834611172207be54ab",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_mochi",
+          "qualname": "MochiTransformer3DModel"
+        }
+      }
+    },
+    {
+      "slug": "musicgen-small",
+      "model": "musicgen-small",
+      "input": "tests/sable_test_corpus/musicgen-small.json",
+      "input_sha256": "8c0d45644d5f300517a962ccff7c2c1a1ba1c3876d56404e695f427870cd469a",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "2bd403cc4eb3241f43dd0768df064bf4cf3fc5fa6d79888fbb669eadec4f3041",
+        "payload_sha256": "25d06db6a19173e12e613727ffbad8338919aacdf30941abf6ec22cabc9b200c",
+        "resolved_class": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e",
+        "payload_sha256": "601709e620cfba1a323131e412f8aeaba9ec1b999f388d367c8729c01d2ad906",
+        "resolved_class": {
+          "module": "transformers.models.musicgen.modeling_musicgen",
+          "qualname": "MusicgenForConditionalGeneration"
+        }
+      }
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "model": "OLMo-2-1124-7B",
+      "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+      "input_sha256": "5c3c89e6a7dcce617337f309c48ce9db1ae361bc7c88d0735e2537ea50a44a85",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+        "payload_sha256": "0a156df173ae38a9edd3216071bbd7ece6142c64f0f2d25492d88e82570a9547",
+        "resolved_class": {
+          "module": "transformers.models.olmo2.modeling_olmo2",
+          "qualname": "Olmo2ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da",
+        "payload_sha256": "273e24b8f4caf46c0508057e10ab7924e6d89ae4adb82bb8226ccbf37540609a",
+        "resolved_class": {
+          "module": "transformers.models.olmo2.modeling_olmo2",
+          "qualname": "Olmo2ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "model": "PixArt-Sigma-XL-2-1024-MS",
+      "input": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+      "input_sha256": "796a016d13551709f35a50c4a59b4eff2c6527b99e58388feb589d64c8125d53",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "80dade997ec9a0d1c4a7a8b7bc5784eebcab23476be4891779b342aff92343d3",
+        "payload_sha256": "588dfc1c39435dda33c25f935aef1482290aa9624ee95845c4af2b41c0b9ab7b",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.pixart_transformer_2d",
+          "qualname": "PixArtTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "7a40e21bf10b8469a14a2ff4ee3e0aef5fedb4156993810e6d7971f100638a05",
+        "payload_sha256": "40349a88f3aaebab42d2096651f1808954e6c61a3f091e716482cf1557d79926",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.pixart_transformer_2d",
+          "qualname": "PixArtTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "model": "prxpixel-t2i",
+      "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+      "input_sha256": "699b7a782f55cdf47f18da55853eaba37a6c4b3a16a7ea02628786c6b48887ca",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+        "payload_sha256": "971083b330e246d0a833572310daefcdc146d1d682a8a8ee54edd093fafc192c",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_prx",
+          "qualname": "PRXTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324",
+        "payload_sha256": "dc0a280a1a10a6f8e4b28de76c13359145e7a130b5b7cb4af91717f6fc6ff254",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_prx",
+          "qualname": "PRXTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "qwen-image",
+      "model": "Qwen-Image",
+      "input": "tests/sable_test_corpus/qwen-image.json",
+      "input_sha256": "b0c6d7771090f955f86b264f4b4eaadab69bb0c1c81909648ac4dc21883f926b",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "42b527919b040a221da72bdf5171863b5f4b99cb85a0d06744a810c720e86c64",
+        "payload_sha256": "ecde4b82c11487a5b6a59c5c842bbc10f57ec64bc622771910392315b977739a",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_qwenimage",
+          "qualname": "QwenImageTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "bf15a4a45be2f33364628365199ab82d1fd513040f75b98722ece0153554546f",
+        "payload_sha256": "d1b7f502944ed8037f3ca7fbf9356bc3dd227c201fc2040366c2466292b6ae39",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_qwenimage",
+          "qualname": "QwenImageTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "model": "Qwen2-VL-7B-Instruct",
+      "input": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+      "input_sha256": "de4d44b320e32207da76709ec94495d8e384bea258be8ae266a679ba2abbf8f9",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+        "payload_sha256": "28eac3822fe1fb37b376ad0c6918f4382800e475390e4058d25c1355790b5fca",
+        "resolved_class": {
+          "module": "transformers.models.qwen2_vl.modeling_qwen2_vl",
+          "qualname": "Qwen2VLForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c",
+        "payload_sha256": "f6a0e27a1a14c2606a33f12e2902b173bb1e86970e286ec2068f454294555320",
+        "resolved_class": {
+          "module": "transformers.models.qwen2_vl.modeling_qwen2_vl",
+          "qualname": "Qwen2VLForConditionalGeneration"
+        }
+      }
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "model": "Qwen3.5-27B text component",
+      "input": "tests/sable_test_corpus/qwen3-5-27b-text.json",
+      "input_sha256": "6524299358f7eb28d00c1a163a219e7931083281d7a64b3990721bd392fe549c",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+        "payload_sha256": "9c7f1b9fe1e05467e653bf4e4cc4b560e109eb22eeb7a1f8ef09ef29e1e52d2b",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+          "qualname": "Qwen3_5ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "211dc8c6227c1317dc22e1feebe032f74d52b86f34c37d08dbd7f3677f42aaee",
+        "payload_sha256": "409fba1b8c3a1719101af1640eeee09769f425ded3d11df1d9209a3ea03dcd57",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+          "qualname": "Qwen3_5ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "qwen3-8b",
+      "model": "Qwen3-8B",
+      "input": "tests/sable_test_corpus/qwen3-8b.json",
+      "input_sha256": "363fb33f58115c1bb5ac1d754162e476e445cc96609f242d9e75ca00a7310289",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "ac2f750d749a2a69fde51196d0f3f72e5a235b35b77a93d9ef1c3675697758f8",
+        "payload_sha256": "cb5adee17843cabaf024ce42ee042c723164d9ae5ce888bd8f7850d849d239f2",
+        "resolved_class": {
+          "module": "transformers.models.qwen3.modeling_qwen3",
+          "qualname": "Qwen3ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06",
+        "payload_sha256": "4a29ecbf66396de40ed267af823bc641d99b3f8f41282d89d1a8875fb54a4488",
+        "resolved_class": {
+          "module": "transformers.models.qwen3.modeling_qwen3",
+          "qualname": "Qwen3ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "model": "Sana_1600M_1024px_diffusers",
+      "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+      "input_sha256": "112d3ed254272e488a005b70a7c00e8580cf43950093bcdbe9b8195eda094c4b",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "21bc6feb8bbb8c1cecd8586326c64c813fd4c209f3a790e9270209054e64cf5c",
+        "payload_sha256": "2f52fe21d1e6fcb3c2d5c28ad90fc361c30cafd11df4060d050cd46d025d83de",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.sana_transformer",
+          "qualname": "SanaTransformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "5a50434c45935ec0916b41e4496917f6d62957d32c215cbac2350d26e88c4016",
+        "payload_sha256": "efba4a8695370011dc360e11c6e7981e71913d68bf2960a49cef9af1ed7580a3",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.sana_transformer",
+          "qualname": "SanaTransformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "model": "stable-diffusion-3.5-large",
+      "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+      "input_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "80ea44c28a12e864711d8a8bda58d8844803988bfb4b26e255076e48a2a26fc2",
+        "payload_sha256": "49072e18c66da422b7fdf44c3fb1e1b41c541157fd204e4260de262817e32776",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_sd3",
+          "qualname": "SD3Transformer2DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "6ff63e947c9e51d1bcb92e8b3a078e393aa81e9c1bf74dc0148e072ce36970db",
+        "payload_sha256": "be0f216ffcadf98be279d9f34e44383a782f4da5773e191512660787bf04b6b5",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_sd3",
+          "qualname": "SD3Transformer2DModel"
+        }
+      }
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "model": "stable-diffusion-xl-base-1.0",
+      "input": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+      "input_sha256": "a18b1951b99f69f1ed80941ea9c91e3961e9a27283ad5a98abab67f870d55fdc",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382",
+        "payload_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+        "resolved_class": {
+          "module": "diffusers.models.unets.unet_2d_condition",
+          "qualname": "UNet2DConditionModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "9a05f66706f865fd95de5527a57b9e4b897c3532f83c91549967bafb39b07312",
+        "payload_sha256": "1dd2680d701f13ff05b4e4484ce6e99ea3245f01b59ff08c4a972fdad6ac9d39",
+        "resolved_class": {
+          "module": "diffusers.models.unets.unet_2d_condition",
+          "qualname": "UNet2DConditionModel"
+        }
+      }
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "model": "stablelm-2-1_6b",
+      "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+      "input_sha256": "cd029b8a1d65aa26423707d02832afbff9dffd380b7c55a94d459520eb496632",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+        "payload_sha256": "b4e7a3363a538c6b909ed84ee29b250c8e758fbb794f13c140d3bf99e1d82788",
+        "resolved_class": {
+          "module": "transformers.models.stablelm.modeling_stablelm",
+          "qualname": "StableLmForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a",
+        "payload_sha256": "db331fefb8d807df2abdb774c2f38aecd27af7d7652436ea12635342c371f021",
+        "resolved_class": {
+          "module": "transformers.models.stablelm.modeling_stablelm",
+          "qualname": "StableLmForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "model": "Wan2.2-T2V-A14B-Diffusers",
+      "input": "tests/sable_test_corpus/wan2-2-t2v-a14b-diffusers.json",
+      "input_sha256": "74d0deee82411a493a20e050ed3697a55e4c9230a44112e208f90b7ddc5ce417",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "6a3490835b50b315c80d99ad2ee04a259a37624cd5e59612f3b625ae96b30973",
+        "payload_sha256": "7cec883955f7e6619e41b75a9cbe515e191f53e8dc7abf437cbc41711837286a",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_wan",
+          "qualname": "WanTransformer3DModel"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "887e06bdbdf35d7ae3235719ebc2391ce1946f26907fde3318ea7f968d5d6f5f",
+        "payload_sha256": "a92f8309b276c2c27830da4abde00295f032bdf6c2b8046e78734ff6a2baf71e",
+        "resolved_class": {
+          "module": "diffusers.models.transformers.transformer_wan",
+          "qualname": "WanTransformer3DModel"
+        }
+      }
+    },
+    {
+      "slug": "command-a-03-2025",
+      "model": "CohereLabs/c4ai-command-a-03-2025",
+      "input": "tests/unseen_model_configs/command-a-03-2025.json",
+      "input_sha256": "6a56c1d2c171197959088403e1fe4113aae079b70eca57a43ed1e2ae3b0af300",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+        "payload_sha256": "8ab56ea4f4f256e8fd022d75ef715aed5ebca6913933270ef9464f45ed9c518d",
+        "resolved_class": {
+          "module": "transformers.models.cohere2.modeling_cohere2",
+          "qualname": "Cohere2ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3",
+        "payload_sha256": "ae5672a8b70395ebfdd5edfcbdddf11cf991e6119a86043590eb2ec1652afc7f",
+        "resolved_class": {
+          "module": "transformers.models.cohere2.modeling_cohere2",
+          "qualname": "Cohere2ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "model": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+      "input": "tests/unseen_model_configs/deepseek-coder-v2-lite.json",
+      "input_sha256": "a966dc1455a8328c32ada699174cf2d472cb414f811c62fc61f863f0b109c9d8",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+        "payload_sha256": "b6e7386ea4adcd37e81b2365b69effdaca8265e5ce74d0143c7ca329aa570080",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v2.modeling_deepseek_v2",
+          "qualname": "DeepseekV2ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "0887c472d4ce8790cb021b7501e4a715c13c5717a1a745d58a45be5de9c596d9",
+        "payload_sha256": "bafca5800bd84812936941a81dc4273a3d7fa690617442a3edc851f6b3c266ea",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v2.modeling_deepseek_v2",
+          "qualname": "DeepseekV2ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "model": "deepseek-ai/DeepSeek-V4-Flash",
+      "input": "verification/s7/inputs/deepseek-v4-flash.json",
+      "input_sha256": "9e160a195b4ca3ca2a077516a0fe47b11144379e29457d3ec70efc34b1aa4302",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+        "payload_sha256": "a37b47b71c6560ee89a4bb798a1bd45586c4b2b3af7ef8049a93270e1f199c8d",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v4.modeling_deepseek_v4",
+          "qualname": "DeepseekV4ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537",
+        "payload_sha256": "9c33880709290a285e3f9d418d182eabe0fbd6d3da9479c3f08bdec723353df6",
+        "resolved_class": {
+          "module": "transformers.models.deepseek_v4.modeling_deepseek_v4",
+          "qualname": "DeepseekV4ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "model": "google/gemma-3n-E2B",
+      "input": "verification/s7/inputs/gemma-3n-e2b.json",
+      "input_sha256": "53dbc746ab2a4d1496dca0fd4449be6880e3783bedca2d8be7e50f0a1fa9b21a",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+        "payload_sha256": "a6c5d11fcc4635053514fe5689c2a8ab8a25a9fa025a6a3b55c96befdb83c39d",
+        "resolved_class": {
+          "module": "transformers.models.gemma3n.modeling_gemma3n",
+          "qualname": "Gemma3nForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766",
+        "payload_sha256": "143a02673468988225c2037bfcc42bd43a9148ab47332d73d6c69ca3166502e6",
+        "resolved_class": {
+          "module": "transformers.models.gemma3n.modeling_gemma3n",
+          "qualname": "Gemma3nForConditionalGeneration"
+        }
+      }
+    },
+    {
+      "slug": "jamba-v0-1",
+      "model": "ai21labs/Jamba-v0.1",
+      "input": "tests/unseen_model_configs/jamba-v0-1.json",
+      "input_sha256": "0dd8df0799c1849d6caf7dad2cf23023b67cdc2e156ca5015faebf1eb38c98aa",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+        "payload_sha256": "64f748d3f0ff43eaf718addc5803b5be02dcc8d1d01ea872eacb9706388a0839",
+        "resolved_class": {
+          "module": "transformers.models.jamba.modeling_jamba",
+          "qualname": "JambaForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f",
+        "payload_sha256": "451a95082068ec674bc948b6e118d24d33ed73ffa8e355c9f8e07a81c5553341",
+        "resolved_class": {
+          "module": "transformers.models.jamba.modeling_jamba",
+          "qualname": "JambaForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "model": "LiquidAI/LFM2-1.2B",
+      "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+      "input_sha256": "aef76f29d8213deaaa121fd4ed5e06a7c498560e6ef28488d5bcd969c9043c08",
+      "portable_seal_changed": false,
+      "before": {
+        "source_index_fingerprint": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+        "payload_sha256": "f9b42e45f9b185f0b21ccf53136df98a48ad631d0adca4b8106a1c745c628a57",
+        "resolved_class": {
+          "module": "transformers.models.lfm2.modeling_lfm2",
+          "qualname": "Lfm2ForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+        "payload_sha256": "43129e6a883cf0be388833c3db95184bb6720c8de1878f5fabe1e3c537fa36ff",
+        "resolved_class": {
+          "module": "transformers.models.lfm2.modeling_lfm2",
+          "qualname": "Lfm2ForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "model": "nvidia/Nemotron-H-8B-Base-8K",
+      "input": "verification/s7/inputs/nemotron-h-8b.json",
+      "input_sha256": "81e822f85d6471312bcc0ccd34cc62789075376ecedca7fde0e451584943368b",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+        "payload_sha256": "34fe03766a7cde6f03456b2f863afaea667787aa883fbf2cf48c7af936b91ef6",
+        "resolved_class": {
+          "module": "transformers.models.nemotron_h.modeling_nemotron_h",
+          "qualname": "NemotronHForCausalLM"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "afef78eb46f5a761c05faaa94dc24e7eab45968d698e28a4385035619cf24911",
+        "payload_sha256": "6721447e5de6064ebae6295ed474722eab32471718b0712897c069392df59257",
+        "resolved_class": {
+          "module": "transformers.models.nemotron_h.modeling_nemotron_h",
+          "qualname": "NemotronHForCausalLM"
+        }
+      }
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "model": "Qwen/Qwen3.5-27B",
+      "input": "tests/unseen_model_configs/qwen3-5-27b-full.json",
+      "input_sha256": "3613cacae919e52e25d64ac34f63227357bda2cfde1ebda0bd35a47c1c237082",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+        "payload_sha256": "87e8ca83858be43474be729fd3aaf4ec315695466bbf8e3679460de40a84fc5b",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+          "qualname": "Qwen3_5ForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "e75536fca326449af9cf2a5c8f28a7ddb3315f23f78ef3293e80a89f3184a727",
+        "payload_sha256": "25cafae8ed7ae63a9c6143bf5e810c91c2f510d8ad1a3fd348b539ce6c6cf475",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_5.modeling_qwen3_5",
+          "qualname": "Qwen3_5ForConditionalGeneration"
+        }
+      }
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "model": "Qwen/Qwen3-Omni-30B-A3B-Instruct",
+      "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+      "input_sha256": "5b1dc2c869c5fecabc90722393633bd789598b28a830bafba92f366a52d85973",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "ffebeef60dc928d00d5ef327bd3f6f3ccf1f174da60efa639e33435d556cd5c2",
+        "payload_sha256": "c9e06559d6c43013f2a8f87a28d9c8bb1f423f1dc8f3c64d68373eb41e6cf8ff",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_omni_moe.modeling_qwen3_omni_moe",
+          "qualname": "Qwen3OmniMoeForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "73a2e86f45a802300624f8d684b2df96b86ab543ae6647346f212b749e6958c7",
+        "payload_sha256": "942b79a3755a990c2bc32f40d9c050c2f54a13811e2760dad296813b38a56bc9",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_omni_moe.modeling_qwen3_omni_moe",
+          "qualname": "Qwen3OmniMoeForConditionalGeneration"
+        }
+      }
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "input": "tests/unseen_model_configs/qwen3-vl-235b.json",
+      "input_sha256": "3fb6ef34f671f4f98d7d6c828d78be6e8a54f771bb09ebaffdc059088af13530",
+      "portable_seal_changed": true,
+      "before": {
+        "source_index_fingerprint": "12806e9d99f83c5a84b4e4f8448f47a7f08f23095017641bb45a5f682817f157",
+        "payload_sha256": "50f7bf923aa9812921984ac26027942943a7465d38aee8b2427bbffe4d03ad3b",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_vl_moe.modeling_qwen3_vl_moe",
+          "qualname": "Qwen3VLMoeForConditionalGeneration"
+        }
+      },
+      "after": {
+        "source_index_fingerprint": "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58",
+        "payload_sha256": "29f030c410c283a708bdd5492b1fcf7a9e728e0600bfc571fd506b22a31bddad",
+        "resolved_class": {
+          "module": "transformers.models.qwen3_vl_moe.modeling_qwen3_vl_moe",
+          "qualname": "Qwen3VLMoeForConditionalGeneration"
+        }
+      }
+    }
+  ]
+}

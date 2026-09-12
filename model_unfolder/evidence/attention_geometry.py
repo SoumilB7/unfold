@@ -61,6 +61,7 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import ReaderClaimUnavailable, ReaderFactProjection, retained_claim_reader
 
 
 @dataclass(frozen=True)
@@ -253,6 +254,37 @@ class DecoderAttentionGeometrySchedule:
             raise ValueError("geometry schedule provenance is closed")
 
 
+@dataclass(frozen=True)
+class AttentionGeometryScheduleClaimDeclaration:
+    """Producer-owned intended kind; the stronger projection remains unproved."""
+
+    index: ProgramIndex
+    value: DecoderAttentionGeometrySchedule
+    reader_symbol = "model_unfolder.evidence.attention_geometry.decoder_attention_geometry_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.value) is not DecoderAttentionGeometrySchedule:
+            raise TypeError("declaration requires the reader's actual typed aggregate")
+        self.value.__post_init__()
+        value = self.value
+        if result.status != "resolved" or result.value is not value \
+                or result.owner != value.mixer_schedule.block_occurrence:
+            raise ValueError("declaration belongs to another actual reader result or owner")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ('decoder.attention', 'head_geometry_schedule'):
+            raise ValueError("reader has no such intended projection")
+        return 'relation'
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "per-layer geometry aggregate and supplying operand qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'head_geometry_schedule', 'relation'),
+))
 def decoder_attention_geometry_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -377,6 +409,7 @@ def decoder_attention_geometry_schedule_for_path(
         tuple(sorted(dependencies.items())), spans)
     return ReaderResult.resolved(
         mixer.block_occurrence, value,
+        claim_witness=AttentionGeometryScheduleClaimDeclaration(index, value),
         provenance=(*mixer_result.provenance, ReaderProvenance(
             "code_and_config" if dependencies else "source",
             spans=spans,
@@ -722,6 +755,35 @@ def _span_before(left, right):
         (right.line, right.col, right.end_line, right.end_col)
 
 
+@dataclass(frozen=True)
+class AttentionGeometryClaimWitness:
+    index: ProgramIndex
+    geometry: AttentionHeadGeometry
+    mechanism: object
+    reader_symbol = "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+
+    def validate_result(self, result):
+        from .attention import AttentionHeadBinding
+        if type(self.geometry) is not AttentionHeadGeometry or type(self.mechanism) is not AttentionHeadBinding:
+            raise TypeError("head geometry retains both exact protocol and expression proofs")
+        self.geometry.__post_init__()
+        self.mechanism.__post_init__()
+        if result.status != "resolved" or result.value is not self.geometry \
+                or result.owner != self.mechanism.block_occurrence \
+                or self.geometry.owner_occurrence != self.mechanism.attention_occurrence:
+            raise ValueError("head geometry belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        from .attention import attention_geometry_projection
+        if (owner, key) != ("decoder.attention", "head_geometry"):
+            raise ValueError("head geometry cannot author this projection")
+        fields, status, paths = attention_geometry_projection(self.mechanism, document, self.geometry)
+        return ReaderFactProjection(owner, key, "relation", fields, status, paths)
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'head_geometry', 'relation'),
+))
 def decoder_attention_head_geometry_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -753,6 +815,7 @@ def decoder_attention_head_geometry_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionGeometryClaimWitness(index, result.value, mechanism.value),
         provenance=(*block.provenance, *mechanism.provenance,
                     *result.provenance))
 

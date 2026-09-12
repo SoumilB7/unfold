@@ -1,0 +1,19 @@
+{
+  "verdict": "PASS exact37 source composition/accounting only; runtime pending, no matrix or unit acceptance",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "source_archive_map_sha256": "4fc66bffcdc6a12935f9817b8166e97639767d7e70658d3e603013d83805baa0",
+  "manifest_paths": 199,
+  "archive_members": 196,
+  "changes_vs36": [
+    {
+      "path": "model_unfolder/renderers/html/styles.py",
+      "before_sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3",
+      "after_sha256": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+      "added": 9,
+      "deleted": 0
+    }
+  ],
+  "other_python_changes": 0,
+  "semantic_review_limit": "Typed-chip CSS R2 independent review: new-resume/reviews/typed-chip-wrap-r2-independent-event-verdict.json; exact source proposal independently accepted before application.. This author accounting review supplies no self-issued semantic approval.",
+  "runtime_record_separate": "Focused37 root lane in progress at preparation; actual34 pages do not imply35 results."
+}

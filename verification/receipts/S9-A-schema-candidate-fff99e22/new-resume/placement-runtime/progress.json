@@ -1,0 +1,59 @@
+{
+  "candidate": 26,
+  "status": "all four requested targets captured; no output approval or source-cause verdict implied",
+  "models": [
+    {
+      "slug": "deepseek-v4-flash",
+      "audit_sha256": "46ae1d4e4db0c34bc8475935a563ec8b7ec0de8241707c72eeceea1fdb7aff38",
+      "candidate26_sha256": "9c33880709290a285e3f9d418d182eabe0fbd6d3da9479c3f08bdec723353df6",
+      "original_returned_kind_deltas": 216,
+      "original_rows_restored_to_active_kind": 130,
+      "active_kind_deltas": 86,
+      "candidate22_kind_deltas": 216,
+      "potential_losses_from_active": 0,
+      "membership_equal": true,
+      "construction_unchanged": true,
+      "execution_unchanged": true
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "audit_sha256": "9c52baec686206632c59826bdbab2f031e4901cf39d8f5fdd8615fbc45e82f53",
+      "candidate26_sha256": "143a02673468988225c2037bfcc42bd43a9148ab47332d73d6c69ca3166502e6",
+      "original_returned_kind_deltas": 6,
+      "original_rows_restored_to_active_kind": 6,
+      "active_kind_deltas": 0,
+      "candidate22_kind_deltas": 6,
+      "potential_losses_from_active": 0,
+      "membership_equal": true,
+      "construction_unchanged": true,
+      "execution_unchanged": true
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "audit_sha256": "6bd01b69db4ce9762ae412bf02d484df636225fcce288c0727bca65804e1b0f7",
+      "candidate26_sha256": "6721447e5de6064ebae6295ed474722eab32471718b0712897c069392df59257",
+      "original_returned_kind_deltas": 52,
+      "original_rows_restored_to_active_kind": 52,
+      "active_kind_deltas": 0,
+      "candidate22_kind_deltas": 52,
+      "potential_losses_from_active": 0,
+      "membership_equal": true,
+      "construction_unchanged": true,
+      "execution_unchanged": true
+    },
+    {
+      "slug": "bloom",
+      "audit_sha256": "a4b5357ba3149b562dfc70a9fb8896a511977362525f5cebe7c81448ef2edcc8",
+      "candidate26_sha256": "2086164aae9ee3706fa8fbb35c40a16711842a50f9a598048c6ac72d1e5aae03",
+      "original_returned_kind_deltas": 0,
+      "original_rows_restored_to_active_kind": 0,
+      "active_kind_deltas": 0,
+      "candidate22_kind_deltas": 0,
+      "potential_losses_from_active": 0,
+      "membership_equal": true,
+      "construction_unchanged": true,
+      "execution_unchanged": true
+    }
+  ],
+  "not_ready": []
+}

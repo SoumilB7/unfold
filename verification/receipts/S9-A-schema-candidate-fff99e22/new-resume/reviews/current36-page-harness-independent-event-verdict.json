@@ -1,0 +1,20 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT_SERIAL_EXECUTION",
+  "manifest_sha256": {
+    "current36-capture-template": "c2f173622ccfb3ebeeb5e5c15b1a9b8a904c417fd013d69172f7c9eb4cb10d56",
+    "reviews/current36-saved-audit": "73b2f6836989de7f5c9535a51d545de635db79cf105c5ef3f5b313874f70789a"
+  },
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "root_reported_source_fingerprint": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+  "source_rows_rehashed": 199,
+  "negative_pins_verified": [
+    "model_unfolder/adapters/diffusor/unet.py",
+    "model_unfolder/adapters/diffusor/unet_differential.py",
+    "model_unfolder/everchanging/diffusor/conditioning.yaml"
+  ],
+  "target_inputs_inventories_and_exact_class_addresses_verified": 39,
+  "executable_comparison": "Four page files and saved-data audit.py are byte-identical to accepted35 after enumerated generation35-to36 coordinate/doc-label changes. No functional changes. Initial local comparison omitted two descriptive replacements (a35 matrix/exact35 capture), inspected exact remaining diff and added those replacements; no held file changed.",
+  "controls": "Explicit required source pin; exact source membership/deletions; source/input/script/protected artifact brackets; active prepared binding and original native proof validation; full LOCAL_ONLY RenderContext; actual HTML immediate publication; finite presentation census all retained.",
+  "references": "Executed34 fleet remains immediate comparison; matrix32 is separate historical evidence, not relabeled36. Generation35 fleet never ran.",
+  "limits": "No model/test/browser execution or product imports by reviewer; runtime and output acceptance remain pending. Unknown/proof gaps remain exposed; page census is not matrix or browser exit."
+}

@@ -1,0 +1,22 @@
+{
+  "status": "HELD source only",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/ffn_mechanism.py",
+      "before_sha256": "2834b3059cce9f553283906f227e01b57ee4f64bda49bb0c076a4fbc729be3a9",
+      "sha256": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509"
+    },
+    {
+      "path": "tests/test_s9_ffn_unbound.py",
+      "before_sha256": null,
+      "sha256": "6924767218456a210165cd0a853a1137b5bdc4c46ce3d326384418533e5d9f4b"
+    }
+  ],
+  "artifacts": {
+    "changes.patch": "16a32722bfcfe281cbbee168f6b4fb3434c966a086f48fcede2ae3f8f86b0978",
+    "handoff.json": "f28adae8fc8c86e8eb58396f034e5bac877be3b568ae904bc8f190e63435f3b8",
+    "operand-project-sites.json": "f6cb39fb71ab3a47095cee6a1e90262923d73ec2ca3751c05292d7fdf088c0e3",
+    "source/model_unfolder/evidence/ffn_mechanism.py": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509",
+    "source/tests/test_s9_ffn_unbound.py": "6924767218456a210165cd0a853a1137b5bdc4c46ce3d326384418533e5d9f4b"
+  }
+}

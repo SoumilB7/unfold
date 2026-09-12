@@ -1,0 +1,452 @@
+{
+  "status": "PASS_SAVED_SIX_CASE_SCOPE",
+  "cases": {
+    "explicit_17": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 74,
+        "context-defaults-before.json": 0,
+        "events.json": 5,
+        "input.json": 0,
+        "ir-after.json": 1,
+        "ir-before.json": 1,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 7,
+        "result.json": 1
+      },
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": true,
+        "status": "code_and_config",
+        "unknown_reason": null,
+        "value": 17.0
+      },
+      "layers": 32,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 2,
+          "softcap_receipts": [
+            {
+              "context_token": "e7a0ec6939204a53904ff13260194c62",
+              "fact_id": "decoder.attention.logit_softcap",
+              "fact_key": "logit_softcap",
+              "fact_value_status_hash": "0a43e6f78db3cb40",
+              "mechanism": "attention_logit_softcap",
+              "node_ids": [
+                "attn_softcap"
+              ],
+              "output_hash": null,
+              "owner": "decoder.attention",
+              "projection_kind": "op",
+              "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+              "structural_target": "attn_softcap",
+              "surface": "opgraph"
+            }
+          ],
+          "softcap_graph_fact_events": 1,
+          "invalid_opgraph_receipt_nodes": [
+            {
+              "view": "attn",
+              "receipt": {
+                "context_token": "e7a0ec6939204a53904ff13260194c62",
+                "fact_id": "decoder.attention.logit_softcap",
+                "fact_key": "logit_softcap",
+                "fact_value_status_hash": "0a43e6f78db3cb40",
+                "mechanism": "attention_logit_softcap",
+                "node_ids": [
+                  "attn_softcap"
+                ],
+                "output_hash": null,
+                "owner": "decoder.attention",
+                "projection_kind": "op",
+                "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+                "structural_target": "attn_softcap",
+                "surface": "opgraph"
+              },
+              "event_node_ids": [
+                "block",
+                "region_out"
+              ]
+            }
+          ]
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "2cea1af04e9352332325c3aada985385e6fb2a36bff90945e15cf1ffa9feea06",
+          "2ea9ef0c771628584ddff00ac08bdb536f90a2c0759caf1d1e5de6da1dd2ddf9"
+        ],
+        "bytes": [
+          69944,
+          69944
+        ],
+        "operand_reason_counts": [
+          0,
+          0
+        ],
+        "softcap_node_text_counts": [
+          0,
+          0
+        ]
+      }
+    },
+    "explicit_none": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 74,
+        "context-defaults-before.json": 0,
+        "events.json": 3,
+        "input.json": 0,
+        "ir-after.json": 1,
+        "ir-before.json": 1,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 1,
+        "result.json": 1
+      },
+      "native_softcap": null,
+      "layers": 32,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "f30b12e223ea1b641a3a4e63d46b2243502ddea82552c3c8074e238079e1b461",
+          "1d06abc99be0adad35d3dcddd043b1ef3d85dc84e008f49977dc60b2118c80bd"
+        ],
+        "bytes": [
+          70908,
+          70908
+        ],
+        "operand_reason_counts": [
+          0,
+          0
+        ],
+        "softcap_node_text_counts": [
+          0,
+          0
+        ]
+      }
+    },
+    "gemma_default": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 0,
+        "context-defaults-before.json": 0,
+        "events.json": 6,
+        "input.json": 0,
+        "ir-after.json": 0,
+        "ir-before.json": 0,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 15,
+        "result.json": 1
+      },
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": true,
+        "status": "class_default",
+        "unknown_reason": null,
+        "value": 50.0
+      },
+      "layers": 26,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 15,
+          "softcap_receipts": [
+            {
+              "context_token": "b81decaa87df45cb8d47573ce20115b8",
+              "fact_id": "decoder.attention.logit_softcap",
+              "fact_key": "logit_softcap",
+              "fact_value_status_hash": "50e85094ee77b765",
+              "mechanism": "attention_logit_softcap",
+              "node_ids": [
+                "attn_softcap"
+              ],
+              "output_hash": null,
+              "owner": "decoder.attention",
+              "projection_kind": "op",
+              "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+              "structural_target": "attn_softcap",
+              "surface": "opgraph"
+            },
+            {
+              "context_token": "b81decaa87df45cb8d47573ce20115b8",
+              "fact_id": "decoder.attention.logit_softcap",
+              "fact_key": "logit_softcap",
+              "fact_value_status_hash": "50e85094ee77b765",
+              "mechanism": "attention_logit_softcap",
+              "node_ids": [
+                "attn_softcap"
+              ],
+              "output_hash": null,
+              "owner": "decoder.attention",
+              "projection_kind": "op",
+              "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+              "structural_target": "attn_softcap",
+              "surface": "opgraph"
+            }
+          ],
+          "softcap_graph_fact_events": 2,
+          "invalid_opgraph_receipt_nodes": []
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 15,
+          "softcap_receipts": [
+            {
+              "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+              "fact_id": "decoder.attention.logit_softcap",
+              "fact_key": "logit_softcap",
+              "fact_value_status_hash": "50e85094ee77b765",
+              "mechanism": "attention_logit_softcap",
+              "node_ids": [
+                "attn_softcap"
+              ],
+              "output_hash": null,
+              "owner": "decoder.attention",
+              "projection_kind": "op",
+              "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+              "structural_target": "attn_softcap",
+              "surface": "opgraph"
+            },
+            {
+              "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+              "fact_id": "decoder.attention.logit_softcap",
+              "fact_key": "logit_softcap",
+              "fact_value_status_hash": "50e85094ee77b765",
+              "mechanism": "attention_logit_softcap",
+              "node_ids": [
+                "attn_softcap"
+              ],
+              "output_hash": null,
+              "owner": "decoder.attention",
+              "projection_kind": "op",
+              "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+              "structural_target": "attn_softcap",
+              "surface": "opgraph"
+            }
+          ],
+          "softcap_graph_fact_events": 2,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "f5f09c6802fd0565d14386f1b4742f7dd401985bbe9dc735c70794fdf07772d5",
+          "d73cef460b659f3b3007cdb4f12113282201406acb396d4bdd23fe547ad04026"
+        ],
+        "bytes": [
+          108210,
+          108210
+        ],
+        "operand_reason_counts": [
+          0,
+          0
+        ],
+        "softcap_node_text_counts": [
+          4,
+          4
+        ]
+      }
+    },
+    "injected_missing": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 74,
+        "context-defaults-before.json": 0,
+        "events.json": 3,
+        "input.json": 0,
+        "ir-after.json": 1,
+        "ir-before.json": 1,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 1,
+        "result.json": 1
+      },
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": false,
+        "status": "unknown",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        },
+        "value": null
+      },
+      "layers": 32,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "56395c22c3746499aef56c3cebf74a69e4206652378b4323d994776bad94fd59",
+          "a2bdae5d8ae8d1f8b0e82ff0072d376f3c43bccb0514e53c60428c3d65f6a7b8"
+        ],
+        "bytes": [
+          70227,
+          70227
+        ],
+        "operand_reason_counts": [
+          1,
+          1
+        ],
+        "softcap_node_text_counts": [
+          0,
+          0
+        ]
+      }
+    },
+    "no_mechanism": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 7,
+        "context-defaults-before.json": 0,
+        "events.json": 3,
+        "input.json": 0,
+        "ir-after.json": 1,
+        "ir-before.json": 1,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 1,
+        "result.json": 1
+      },
+      "native_softcap": null,
+      "layers": 32,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "96e50884b912a75e3fdc3e12802e20ac22a118da48dd2b0a2314b89c519b66f4",
+          "88dbab12fee0ade193152c3c6ca48477d64a87bea77d65397953496e604f85d1"
+        ],
+        "bytes": [
+          69944,
+          69944
+        ],
+        "operand_reason_counts": [
+          0,
+          0
+        ],
+        "softcap_node_text_counts": [
+          0,
+          0
+        ]
+      }
+    },
+    "plain_missing": {
+      "json_delta_counts": {
+        "actual-softcap-readers.json": 74,
+        "context-defaults-before.json": 0,
+        "events.json": 3,
+        "input.json": 0,
+        "ir-after.json": 1,
+        "ir-before.json": 1,
+        "native-facts.json": 0,
+        "prepared-document.json": 0,
+        "render-contexts.json": 1,
+        "result.json": 1
+      },
+      "native_softcap": {
+        "claim_kind": "applied_function",
+        "has_proof": false,
+        "status": "unknown",
+        "unknown_reason": {
+          "concrete_reason": "softcap_operand_unavailable",
+          "investigation": null,
+          "reason_class": "investigation_missing"
+        },
+        "value": null
+      },
+      "layers": 32,
+      "caps_and_consumption_unchanged": true,
+      "receipts": [
+        {
+          "generation": "thirtyfirst",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        },
+        {
+          "generation": "thirtysecond",
+          "total_receipts": 1,
+          "softcap_receipts": [],
+          "softcap_graph_fact_events": 0,
+          "invalid_opgraph_receipt_nodes": []
+        }
+      ],
+      "html": {
+        "sha256": [
+          "164b5f21f0ddbbf87218a635f6926a514cd65f0ffabd0e037557035c4059769d",
+          "8102408573750a8b21d05cb6e6eb9c682e04620dfc9989215ad84570cfa7cb96"
+        ],
+        "bytes": [
+          70227,
+          70227
+        ],
+        "operand_reason_counts": [
+          1,
+          1
+        ],
+        "softcap_node_text_counts": [
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "authority": "Actual saved native facts, caps, layers and consumption unchanged in all six cases. Explicit17 undrawn op receipt and graph fact claim removed; Gemma two actual softcap receipts preserved. Both missing cases display one real HTML reason and remain unqualified class1 None. No model/test/product import executed; no output normalization, blessing or occurrence proof inferred.",
+  "input_pins_sha256": "17e9fafba092f0074e3ae2759b571766de71a311876b18de6d3980dadbcf8678"
+}

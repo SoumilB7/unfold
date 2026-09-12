@@ -22,10 +22,13 @@ from .mixer_schedule import (
     block_layer_index_transport,
     decoder_mixer_schedule_for_path,
 )
+from .layer_selector import _freeze
 from .models import SourceBundle
 from .program_index import ProgramIndex, SourceSpan
 from .qk_norm import QKNormCodeEvidence, decoder_qk_norm_evidence_for_path
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 
 
 @dataclass(frozen=True)
@@ -86,6 +89,49 @@ class DecoderQKNormSchedule:
             raise ValueError("QK-norm schedule provenance is closed")
 
 
+@dataclass(frozen=True)
+class QKNormScheduleClaimWitness:
+    index: ProgramIndex
+    schedule: DecoderQKNormSchedule
+    gate_values: tuple[tuple[tuple[str, ...], str, object], ...]
+    reader_symbol = "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.schedule) is not DecoderQKNormSchedule:
+            raise TypeError("QK norm claim requires exact mechanism, guard and layer transport")
+        self.schedule.__post_init__()
+        if result.status != "resolved" or result.value is not self.schedule \
+                or result.owner != self.schedule.block_occurrence:
+            raise ValueError("QK norm claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.attention" or key not in {"qk_norm", "qk_norm_schedule"}:
+            raise ValueError("QK norm schedule cannot author this projection")
+        value = self.schedule
+        from .mixer_schedule import MixerScheduleClaimWitness
+        MixerScheduleClaimWitness(self.index, value.mixer_schedule).validate_document(document)
+        validate_reader_operands(document, self.gate_values)
+        if key == "qk_norm_schedule":
+            projected, kind = tuple(value.decisions), "relation"
+            paths = tuple(path for path, _kind in value.config_dependencies)
+            status = "class_default" if any(kind == "class_default" for _path, kind in value.config_dependencies) else "code_and_config"
+        else:
+            applicable = tuple(item for item in value.decisions if isinstance(item, bool))
+            if not applicable or len(set(applicable)) != 1:
+                raise ValueError("QK norm summary requires every applicable layer to agree")
+            projected, kind = applicable[0], "applied_function"
+            paths = tuple(atom.config_path for atom in value.mechanism.gate)
+            source_kinds = dict(value.config_dependencies)
+            status = ("code_proven" if value.mechanism.present is True else
+                      "class_default" if any(source_kinds.get(path) == "class_default" for path in paths)
+                      else "code_and_config")
+        return ReaderFactProjection(owner, key, kind, projected, status, paths)
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'qk_norm', 'applied_function'),
+    ('decoder.attention', 'qk_norm_schedule', 'relation'),
+))
 def decoder_qk_norm_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -210,6 +256,9 @@ def decoder_qk_norm_schedule_for_path(
         tuple(dependencies.items()), spans)
     return ReaderResult.resolved(
         block_occurrence, value,
+        claim_witness=QKNormScheduleClaimWitness(index, value, tuple(
+            (atom.config_path, dependencies[atom.config_path], _freeze(selected_values[atom]))
+            for atom in mechanism_result.value.gate)),
         provenance=(*blocks_result.provenance, *mechanism_result.provenance,
                     ReaderProvenance(
                         "code_and_config", spans=spans,

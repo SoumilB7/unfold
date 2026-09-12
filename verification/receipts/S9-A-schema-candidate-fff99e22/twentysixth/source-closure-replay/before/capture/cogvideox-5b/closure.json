@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "73ac79b933c58c1ed8ff50553e74f877befdacf0e3970cfc03d6e4e134af85b7",
+  "baseline_output": {
+    "ir_after_sha256": "39afb5632c55daf2e6cd5c96e3aa2512fd83995b52fa2ad11c6a9f54ba129d6e",
+    "ir_before_sha256": "39afb5632c55daf2e6cd5c96e3aa2512fd83995b52fa2ad11c6a9f54ba129d6e",
+    "page_bytes": 136964,
+    "page_sha256": "c11a85a38501f7228287c2ddee327bb7a5d252c6cae673a2f4ec97226b32aa79",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "73ac79b933c58c1ed8ff50553e74f877befdacf0e3970cfc03d6e4e134af85b7",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "73ac79b933c58c1ed8ff50553e74f877befdacf0e3970cfc03d6e4e134af85b7",
+  "seconds": 0.6011928749994695,
+  "slug": "cogvideox-5b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "ff2b135e17543c7830a85d3d9b618f54060e1ee2522876b9e18f5025aa1977af",
+      "external": false,
+      "external_provenance": "",
+      "locator": "cogvideox_transformer_3d.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

@@ -52,6 +52,7 @@ def generate() -> dict:
                 "rendered_name": report.model,
                 "silent": coverage["silent"],
                 "silent_findings": coverage.get("silent_findings") or [],
+                "presentation": coverage.get("presentation") or {},
             }
         except Exception as exc:
             # A crash is part of the denominator and is silent by definition;

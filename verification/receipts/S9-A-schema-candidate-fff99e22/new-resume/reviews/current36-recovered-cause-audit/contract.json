@@ -1,0 +1,26 @@
+{
+  "status": "PREPARED SOURCE ONLY; actual36 preservation not yet run",
+  "source36": "88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe",
+  "manifest36": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "current": "/private/tmp/unfold-s9a-thirtysixth/preservation-current36",
+  "baseline": "/private/tmp/unfold-s9a-thirtyfirst/preservation-baseline",
+  "baseline_archive_map": "be2e560d5135d82679de6cebe135ca522e95dc2e1b30175095658a42dc2f8486",
+  "current_observer_manifest": "eec499944e9ffc1cf73b98f422933e7ff5ab3afe31f2b988792729f4a9157087",
+  "command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current36-recovered-cause-audit/audit.py --output /private/tmp/unfold-s9a-thirtysixth/preservation-cause-audit",
+  "precedence": "Root runs original36 preservation observer then its approved compare-recovered.py; only then this stdlib cause inventory. Never author baseline or reclassify original test result.",
+  "checks": [
+    "Read-only rehash exact recovered baseline archive and every original scratch member. All203 recovered surface hashes must equal original committed expectations.",
+    "Exact current36 source rows/deletions, source/protected brackets, original31 versus current36 harness origins, same expected bytes,52 original test reports,29 unique one-call witnesses.",
+    "Recompute all full ordered JSON leaf/subtree deltas and compare byte-pinned approved comparator outputs. No set rekeying can hide order/value/proof removal.",
+    "Enumerate every native fact change/removal and every actual current consumption obligation versus available canonical native value/status hash. Missing child facts remain explicit, not assumed to be proven by32.",
+    "Retain raw HTML diff plus exact first-mount-law hunks and full deferred payload leaf deltas, with unclassified hunks flagged. Browser/click/design verification remains separate.",
+    "Classify finite known cause paths with exact current36 source anchors, retaining every unknown cause or evidence inconsistency as a finding. Do not assume all facts/tier/status unchanged or all IR deltas additions.",
+    "Read every used artifact/source again at completion; writes only fresh audit output."
+  ],
+  "new_child_observer": "Root requested an exact36 successor of accepted32 R2 to close unavailable child native joins; this audit does not relabel32 evidence. Child evidence will be independently joined in an addendum after its actual current36 packet is complete.",
+  "limits": [
+    "Classification is bounded source routing, not proof replay or blessing. Some HTML/payload and unmatched child details are intentionally returned for actual evidence-level review.",
+    "No expected number of36 output changes is hardcoded. New schedule proof/tier and existing-card citation deltas are enumerated.",
+    "No product/model/test import or runtime, source edits, guarded writer, active artifact update or approval."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "fact-census",
+  "returncode": 0,
+  "duration": 72.97767895786092,
+  "before": "e2b4a90f5e632d512839fac4a63b10af9ce439f8482741c2d2411a62c75c8be3",
+  "after": "e2b4a90f5e632d512839fac4a63b10af9ce439f8482741c2d2411a62c75c8be3",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-twentyfirst/census-lane/fact-census.log",
+  "passed": true
+}

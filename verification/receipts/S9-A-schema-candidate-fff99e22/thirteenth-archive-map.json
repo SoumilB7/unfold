@@ -1,0 +1,116 @@
+{
+  "directories": [
+    {
+      "archived": "thirteenth/qualification",
+      "original": "/private/tmp/unfold-s9a-thirteenth/qualification"
+    },
+    {
+      "archived": "thirteenth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/model_unfolder"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "thirteenth/qualification/result.json",
+      "bytes": 540,
+      "original": "/private/tmp/unfold-s9a-thirteenth/qualification/result.json",
+      "sha256": "35b0edd8ba746c6672cf681fa1d8cbcfe27ff7e2f1f0443aecbdc64a2395cd96"
+    },
+    {
+      "archived": "thirteenth/qualification/schema-proof-metadata.log",
+      "bytes": 9356,
+      "original": "/private/tmp/unfold-s9a-thirteenth/qualification/schema-proof-metadata.log",
+      "sha256": "3ae59b8085f6ca3cc3ded51b064dd592d1cb5120688fae23bce230412e4f9bf2"
+    },
+    {
+      "archived": "thirteenth/run.py",
+      "bytes": 1121,
+      "original": "/private/tmp/unfold-s9a-thirteenth/run.py",
+      "sha256": "bf0c75a19dab9a4520e6c7c2ddc8fdd99a2041b71168e14d896f83a5429c02b9"
+    },
+    {
+      "archived": "thirteenth/source-manifest.json",
+      "bytes": 14678,
+      "original": "/private/tmp/unfold-s9a-thirteenth/source-manifest.json",
+      "sha256": "2acaaad227f467c085326de997792455cfca5a4c4c9c20061d764388848b274c"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/model_unfolder/evidence/activation_registry.py",
+      "bytes": 33415,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/model_unfolder/evidence/activation_registry.py",
+      "sha256": "910b5959b4580021b6b44590a2cff937d7ac1cb1971af97376b1315ed5f2f53f"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/model_unfolder/evidence/config_access.py",
+      "bytes": 88854,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/model_unfolder/evidence/config_access.py",
+      "sha256": "3f3251d6b301ddc5aa235829b8cb500d7bd841e85d931ce96b34ee07bd6caaba"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/tests/test_config_access.py",
+      "bytes": 39092,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/tests/test_config_access.py",
+      "sha256": "9bfc08a00d4b6a15436228f4b3867eae7fd2962590eaa54257835933fc99748a"
+    },
+    {
+      "archived": "thirteenth-independent-review/source/tests/test_reader_claims.py",
+      "bytes": 52480,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source/tests/test_reader_claims.py",
+      "sha256": "9d0501e9d652cd0c85a0aea265a02fcb7a02c38ea1b4cfac70748fd5f48a1d13"
+    },
+    {
+      "archived": "thirteenth-independent-review/source-pins.json",
+      "bytes": 671,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/source-pins.json",
+      "sha256": "d58581a928b99f9ff79ab702dd83902f2bec7cf9c043c878835f15e33ae2fc96"
+    },
+    {
+      "archived": "thirteenth-independent-review/verdict.json",
+      "bytes": 2152,
+      "original": "/private/tmp/unfold-s9a-independent-thirteenth-review/verdict.json",
+      "sha256": "bf4ab010bd3d24867e53f1e97ed36aeff01f1f4deff03ca8836a8cfd1f1202a5"
+    }
+  ],
+  "scope": "Released thirteenth candidate and thirteenth independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "thirteenth/changed-sources.tar.gz",
+      "archive_sha256": "a181e15702e36e9912751f1af6b0b19e74f3296e0cd9f45ae95030db0df1e189",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 100,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirteenth",
+      "manifest_sha256": "2acaaad227f467c085326de997792455cfca5a4c4c9c20061d764388848b274c",
+      "phase": "thirteenth",
+      "uncompressed_bytes": 3564340
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 242359,
+    "copied_files": 10,
+    "source_files": 100
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

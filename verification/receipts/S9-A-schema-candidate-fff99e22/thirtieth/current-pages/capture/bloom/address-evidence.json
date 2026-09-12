@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "2084053b6452acd007ca98145c5a87e8e97260a9b8485aa5ce8288714ae6c11e",
+  "input": "tests/sable_test_corpus/bloom.json",
+  "input_sha256": "c310a2c48de05ac195b22b8bfa477d874f34fd3199f53487d1d9e4cb69933295",
+  "resolved_class": {
+    "module": "transformers.models.bloom.modeling_bloom",
+    "qualname": "BloomForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

@@ -1,0 +1,87 @@
+{
+  "status": "HELD_SOURCE_ONLY_RUNTIME_AND_INDEPENDENT_REVIEW_PENDING",
+  "base": "frozen28 product; single existing test compared with immediately reread shared file after root fixture migration",
+  "scope": "Retain original exact config registry/source address for a current child. Reprepare current values through the existing AutoConfig path; no identity-name exception and no original checkpoint/default overlay copied.",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/document.py",
+      "held_path": "held/model_unfolder/evidence/document.py",
+      "before_sha256": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7",
+      "sha256": "9867e79e886297beabc89c35e8cbef65f2116b10c37c2c1d5ade0905ab0b5be2",
+      "bytes": 22166,
+      "lines_added": 62,
+      "lines_deleted": 1
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "held_path": "held/model_unfolder/evidence/context.py",
+      "before_sha256": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c",
+      "sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "bytes": 26982,
+      "lines_added": 40,
+      "lines_deleted": 16
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "held_path": "held/model_unfolder/adapters/diffusor/parser.py",
+      "before_sha256": "e92a41d4aa8092e1816fe2258257175a7c97a2752e3cf761b9c707ad5f504783",
+      "sha256": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af",
+      "bytes": 40111,
+      "lines_added": 4,
+      "lines_deleted": 1
+    },
+    {
+      "path": "physics/result_cache.py",
+      "held_path": "held/physics/result_cache.py",
+      "before_sha256": "e7f56fdecc99410f71fba078929f2a875620936025c85bc8dcc30646df7f3cca",
+      "sha256": "f1fcfc928803de2fc7985014f813a7a1688cb417c2fcb392f332ecd29baf2111",
+      "bytes": 30915,
+      "lines_added": 19,
+      "lines_deleted": 7
+    },
+    {
+      "path": "tests/test_s9_slot_config_class_address.py",
+      "held_path": "held/tests/test_s9_slot_config_class_address.py",
+      "before_sha256": null,
+      "sha256": "7cf4edb3d28e6c45344546ac63f1e92cb0aa087cdb642145ee0f8bbdd43d9d50",
+      "bytes": 7977,
+      "lines_added": 146,
+      "lines_deleted": 0
+    },
+    {
+      "path": "tests/test_config_access.py",
+      "held_path": "held/tests/test_config_access.py",
+      "before_sha256": "39b1c71822e52defb71db8d4a9e2180f34cc294e7a11048d44851a1fd66ce294",
+      "sha256": "8ed838b6cf07fa0a2b700294ab0ed27381e1e7b876b2ff0072a77da172fb49d2",
+      "bytes": 39192,
+      "lines_added": 5,
+      "lines_deleted": 4
+    }
+  ],
+  "diff_sha256": "0a8719870d170c46f471a8a048a1ee8bc4bd3f1677602f40c2dad065395a41be",
+  "growth": {
+    "added": 276,
+    "deleted": 29
+  },
+  "capability_checks": [
+    "Current parent path must reach the exact current child object.",
+    "Original context document-path registry key must agree with the source bundle component model type, architecture, modeling sources and supporting sources.",
+    "Class address is data only; no old checkpoint/value/proof travels on it.",
+    "Cache validates descriptor before lookup; exact descriptor and current source file hashes join current raw input in the preparation key. No heavy imports are needed to validate/replay.",
+    "Current PreparedDocument supplies current overlay to slot context; failed preparation cannot borrow historical defaults.",
+    "Existing decorator calls and cache keys are unchanged when no address override is provided."
+  ],
+  "proposed_root_checks": [
+    "tests/test_s9_slot_config_class_address.py",
+    "tests/test_config_access.py",
+    "tests/test_s81_result_cache.py",
+    "tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference",
+    "Original/scrubbed FLUX child diagnostics and per-field output comparison; no comparison exclusions added."
+  ],
+  "remaining_limits": [
+    "Source diagnosis predicts rejected current child preparation as cause; actual root runtime must confirm FLUX recovery and no new structural delta.",
+    "The supported config-class address is the original AutoConfig registry key tied to exact resolved component sources; it does not prove mechanism or execution.",
+    "Same-process mutation of a third-party registry without changing its source/package versions is outside the existing persisted cache contract."
+  ],
+  "runtime": "None executed by event_executor; AST syntax inspection only."
+}

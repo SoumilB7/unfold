@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "971083b330e246d0a833572310daefcdc146d1d682a8a8ee54edd093fafc192c",
+  "input": "tests/sable_test_corpus/prxpixel-t2i.json",
+  "input_sha256": "699b7a782f55cdf47f18da55853eaba37a6c4b3a16a7ea02628786c6b48887ca",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_prx",
+    "qualname": "PRXTransformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

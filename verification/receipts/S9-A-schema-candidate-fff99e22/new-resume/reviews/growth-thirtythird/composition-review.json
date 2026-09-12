@@ -1,0 +1,89 @@
+{
+  "verdict": "PASS exact saved-source composition/accounting only; authored schedule proposal independently reviewed by placement; runtime and142 closure pending",
+  "source_manifest_sha256": "ab6077e3efba310b322e7257974e26b15bcdff5afa1d45d725953fe0149f4c06",
+  "archive_map_sha256": "d9956a22be72123653b992b3a158f054d95cffb78027f0db26b34d69aeb00774",
+  "composition_sha256": "328277bcdc3681fe919efd6ee5c78ce3520e339336359330bcd3338b9d3e45e9",
+  "source_fingerprint_root_stdlib": "f2d1b4e07c631f5a30f5f7d6d508d716c4304ed3fee11e3ed3e62e9538830d77",
+  "manifest_paths": 195,
+  "archive_members": 192,
+  "all_manifest_and_archive_hashes_verified": true,
+  "changed_python_files_vs32": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d",
+      "after_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890",
+      "added": 56,
+      "deleted": 1,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    },
+    {
+      "path": "model_unfolder/evidence/cross_attention_schedule.py",
+      "before_sha256": "a9d5b7d8322034bd6b96fe21df67792a1721a294fcb91f211f451b12e288926d",
+      "after_sha256": "e9588904fccdafdfe73415edae5262cfaf30fcd0d73cc9d6d6a137e59856400b",
+      "added": 15,
+      "deleted": 5,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    },
+    {
+      "path": "model_unfolder/evidence/position_linear_bias.py",
+      "before_sha256": "e56f69808c0e6b1c11a6640bd789f2535aa529abd30da634e1980b2dae034bb6",
+      "after_sha256": "7ed45313345eb6d89485b4db357b79f30ec15f48968aa70b8b5fbe3bc38c25ec",
+      "added": 22,
+      "deleted": 6,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+      "after_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "added": 8,
+      "deleted": 3,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    },
+    {
+      "path": "tests/test_reader_claims.py",
+      "before_sha256": "b959371b1d112e6c65489d1cc916db2a38065aad3bc6b5a6523551b2fcd3165f",
+      "after_sha256": "7927b3412fa6334b5cfbf1536caa12ae0c7b4eedcab0c472416ad1907151abb3",
+      "added": 2,
+      "deleted": 2,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_qualification.py",
+      "before_sha256": null,
+      "after_sha256": "3fdf4c8937470c88244102f2bcc0b969544ff074272bf6da2fe9aaf539a3024d",
+      "added": 163,
+      "deleted": 0,
+      "handoff": [
+        "repeated-schedule-qualification-proposal"
+      ]
+    }
+  ],
+  "outside_these_six_full_python_inventory_changes": 0,
+  "new_retained_reader_declarations": [
+    [
+      "model_unfolder/evidence/cross_attention_schedule.py",
+      "decoder_cross_attention_all_layers_for_path"
+    ],
+    [
+      "model_unfolder/evidence/position_linear_bias.py",
+      "decoder_alibi_score_bias_for_path"
+    ]
+  ],
+  "independent_semantic_review_sha256": "3c86e5e69c8c49cae21dc2471569f2777757585113665e3937ab933a2eb3bb0a",
+  "limits": [
+    "No matrix facts claimed qualified by this source audit. Expected142\u2192qualified must be proved by actual runtime with citation survival.",
+    "No S10 deletion or new measurement credit; no module removal and unchanged101 structural debt.",
+    "Source-count differences use exact lines, not testpass or authoritystrength counts."
+  ]
+}

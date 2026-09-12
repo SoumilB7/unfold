@@ -1,0 +1,83 @@
+.................................................FFF.................... [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 92%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+_________ test_f3_never_converts_dispatch_or_missing_kv_operand_to_mha _________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5885/test_f3_never_converts_dispatc0')
+
+    def test_f3_never_converts_dispatch_or_missing_kv_operand_to_mha(tmp_path):
+        dispatch = REGISTERED_SOURCE.replace(
+            "from torch.nn import functional as F",
+            "from torch.nn import functional as F\n"
+            "from diffusers.models.attention_dispatch import dispatch_attention_fn",
+        ).replace(
+            "return F.scaled_dot_product_attention(\n"
+            "            self.q(state), self.k(context), self.v(context))",
+            "return dispatch_attention_fn(\n"
+            "            self.q(state), self.k(context), self.v(context))",
+        )
+        result, _ledger = _bind(tmp_path / "dispatch", source=dispatch)
+        with config_access.capture_events(config_access.ConfigAccessLedger()), \
+                config_access.owner_scope("root.denoiser"):
+            projected = project_diffusion_ir(result.require_value())
+        assert projected.layers[0].attention.kind is None
+    
+        missing = {key: value for key, value in CONFIG.items()
+                   if key != "kv_heads"}
+        result, _ledger = _bind(
+            tmp_path / "missing", source=REGISTERED_SOURCE, config=missing)
+        with config_access.capture_events(config_access.ConfigAccessLedger()), \
+                config_access.owner_scope("root.denoiser"):
+            projected = project_diffusion_ir(result.require_value())
+>       assert projected.layers[0].attention.kind is None
+E       AssertionError: assert 'gqa' is None
+E        +  where 'gqa' = AttentionSpec(kind='gqa', num_heads=8, mixer_state=None, num_kv_heads=2, head_dim=8, kv_lora_rank=None, q_lora_rank=No...attention call occurrence, but the current evidence does not close its returned-state/context relation.'}, asserted=()).kind
+E        +    where AttentionSpec(kind='gqa', num_heads=8, mixer_state=None, num_kv_heads=2, head_dim=8, kv_lora_rank=None, q_lora_rank=No...attention call occurrence, but the current evidence does not close its returned-state/context relation.'}, asserted=()) = LayerSpec(index=0, attention=AttentionSpec(kind='gqa', num_heads=8, mixer_state=None, num_kv_heads=2, head_dim=8, kv_l...': 'rms2', 'label': '+', 'title': 'Residual add', 'description': 'post-attention + FFN output'}], cross_attention=None).attention
+
+tests/test_diffusion_config_binding.py:673: AssertionError
+____ test_f3_partial_gated_delta_geometry_keeps_mechanism_and_unknown_dims _____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5885/test_f3_partial_gated_delta_ge0')
+
+    def test_f3_partial_gated_delta_geometry_keeps_mechanism_and_unknown_dims(
+            tmp_path):
+        config = {
+            "layers": 2, "key_heads": 2, "value_heads": 4,
+            "key_dim": 8, "value_dim": 4,
+            # ``kernel`` is intentionally absent: source still proves the mixer,
+            # while its five-part geometry is incomplete.
+        }
+        result, _ledger = _bind(
+            tmp_path, source=GATED_DELTA_SOURCE, config=config)
+        bound = result.require_value()
+>       assert any(item.fact_key == "conv_kernel"
+                   for item in bound.unresolved_operands)
+E       assert False
+E        +  where False = any(<generator object test_f3_partial_gated_delta_geometry_keeps_mechanism_and_unknown_dims.<locals>.<genexpr> at 0x152ddd490>)
+
+tests/test_diffusion_config_binding.py:688: AssertionError
+_____ test_f3_missing_exact_stack_count_keeps_symbolic_template_unexpanded _____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5885/test_f3_missing_exact_stack_co0')
+
+    def test_f3_missing_exact_stack_count_keeps_symbolic_template_unexpanded(
+            tmp_path):
+        missing = {key: value for key, value in CONFIG.items() if key != "layers"}
+        result, _ledger = _bind(
+            tmp_path, source=REGISTERED_SOURCE, config=missing)
+        with config_access.capture_events(config_access.ConfigAccessLedger()), \
+                config_access.owner_scope("root.denoiser"):
+            projected = project_diffusion_ir(result.require_value())
+        assert len(projected.templates) == 1
+>       assert projected.templates[0].count is None
+E       assert 4 is None
+E        +  where 4 = DiffusionLayerTemplate(source=DiffusionBlockProjection(evidence=DiffusionBlockFacts(stack=DiffusionStackOccurrence(com...on_conditioning=(), cross_attention_conditioning=(), ffn_conditioning=(), materialization_blocked=False, unresolved=()).count
+
+tests/test_diffusion_config_binding.py:712: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_diffusion_config_binding.py::test_f3_never_converts_dispatch_or_missing_kv_operand_to_mha
+FAILED tests/test_diffusion_config_binding.py::test_f3_partial_gated_delta_geometry_keeps_mechanism_and_unknown_dims
+FAILED tests/test_diffusion_config_binding.py::test_f3_missing_exact_stack_count_keeps_symbolic_template_unexpanded
+3 failed, 231 passed in 25.26s

@@ -235,6 +235,9 @@ def _finding_summary(check: str, count: int) -> str:
     """One human sentence per audit check, authored by the producer."""
     noun = "item" if count == 1 else "items"
     templates = {
+        "construction_conflict": "constructed dimensions conflict with checkpoint tensors",
+        "checkpoint_consistency": "checkpoint shape consistency is not yet established",
+        "presentation_qualification": "some annotations lack complete supporting evidence",
         "config_field_audit": "configuration fields are not yet interpreted",
         "op_conformance": "source operations do not yet match the drawing",
         "wiring_conformance": "source wiring is not yet represented",

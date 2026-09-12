@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "4a2c2a89265fa0901c85bdabdd746009197d9908765ea4bbebcca92bb542d60b",
+  "input": "tests/sable_test_corpus/lumina-image-2-0.json",
+  "input_sha256": "22b4c7a048572e1e94a8b25ece9db25ab7fc36532c9d511264988e1588993ebd",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_lumina2",
+    "qualname": "Lumina2Transformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

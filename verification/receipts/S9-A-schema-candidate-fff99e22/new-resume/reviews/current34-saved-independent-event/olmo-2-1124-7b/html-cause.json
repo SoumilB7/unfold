@@ -1,0 +1,19 @@
+{
+  "after_bytes": 59318,
+  "after_sha256": "8e48bef92f6dd79688a73c38d3e03e25cd8922b21fa52aa031e23bced2da2a1b",
+  "before_bytes": 59318,
+  "before_sha256": "bdf8fa535e6d16335fbdb05ecce080c8b4d7b337637ec95f6bdfcc533acac257",
+  "exact_new_mount_occurrences": 185,
+  "exact_old_mount_occurrences": 185,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-4245cbf120",
+  "mount_identity_before": "uf-47fe3503a1",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "olmo-2-1124-7b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

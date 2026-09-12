@@ -1,0 +1,32 @@
+{
+  "status": "HELD_TEST_ONLY_RUNTIME_PENDING",
+  "files": [
+    {
+      "path": "tests/test_submodel_parity.py",
+      "sha256": "1f4aea881d5b35b9a3aae638421a4142a666fc4172ab61c976385601b241d1a1",
+      "held_path": "held/tests/test_submodel_parity.py"
+    }
+  ],
+  "growth": {
+    "incremental_lines_added": 2,
+    "incremental_lines_deleted": 0,
+    "net_vs30_lines_added": 42,
+    "net_vs30_lines_deleted": 2,
+    "production_lines_changed": 0,
+    "new_authority_paths": 0
+  },
+  "existing_assertion_ASTs_identical": true,
+  "existing_test_functions_preserved": 6,
+  "new_control": "Context-only installed defaults remain insufficient without actual prepared boundary; public root retains exact default under its own checkpoint/document. Llama computed head128/biasFalse and T5 own d_kv64 asserted.",
+  "proposed_tests": [
+    "tests/test_submodel_parity.py",
+    "tests/test_s9_child_class_default.py",
+    "tests/test_s9_limited_document.py",
+    "tests/test_s9_slot_config_class_address.py"
+  ],
+  "runtime": "Root only; no project imports or runtime by placement_executor",
+  "output_blessing": false,
+  "existing_total_functions_preserved": 9,
+  "r1_manifest_sha256": "573dca0689d176fa951d8a76b1125ccc9e9905615f2272061d967213e2436d17",
+  "reviewer_correction": "Both actual parse outcomes must retain exactly24 layers before universal per-layer checks; correct prior receipt nine total functions to six tests plus three helpers."
+}

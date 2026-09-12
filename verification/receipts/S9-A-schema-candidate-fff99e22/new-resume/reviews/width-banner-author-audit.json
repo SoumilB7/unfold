@@ -1,0 +1,48 @@
+{
+  "verdict": "AUTHOR SOURCE AUDIT PASSES; NOT INDEPENDENT APPROVAL",
+  "independence": "This reviewer authored the banner repair. Root or a different reviewer must provide the independent verdict.",
+  "manifest_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+  "pins": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "held_sha256": "ec4dd8dcd9a04bf8e244155f96f90bf79684f17ec82129cf75bf106cffb57e84",
+      "live_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+      "composed_tie_status_only": true
+    },
+    {
+      "path": "model_unfolder/renderers/html/sections.py",
+      "held_sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f",
+      "live_sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f",
+      "composed_tie_status_only": false
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "held_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "live_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "composed_tie_status_only": false
+    },
+    {
+      "path": "tests/test_projection_obligations.py",
+      "held_sha256": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390",
+      "live_sha256": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390",
+      "composed_tie_status_only": false
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "held_sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61",
+      "live_sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61",
+      "composed_tie_status_only": false
+    }
+  ],
+  "source_conclusions": [
+    "One model.hidden_size VALUE route names the existing exact HIDDEN numeric cell, with a real data-uf-receipt-node marker. No embedding connection or new graph fact is introduced.",
+    "Receipt executes only after that cell append and exact final numeric text check. Display value comes from IR, tier from retained fact row; wrong displayed value remains detectable by obligation hash comparison. Missing cell, approximate text, missing fact and foreign route/context cannot satisfy the obligation.",
+    "stats_banner conditional capability is restricted to model.hidden_size. architecture_view promise for that leaf is removed, actual graph leaf vocabulary unchanged.",
+    "Held poison tests cover omitted cell, changed formatting/final text, displayed-value mismatch, wrong tier/context/owner/surface/node/projector/kind and absent emission. Tests are not executed by this review."
+  ],
+  "metadata_delta": "Nonvisual exact-cell marker in existing HIDDEN cells; saved26 predicts 38 of 39 pages, SDXL has no such cell. Current actual enumeration/owner approval still required.",
+  "limits": [
+    "No runtime, source blessing, output baseline change or independent verdict.",
+    "Root final-bracket-boundaries registry tie-status change is explicitly composed; held width manifest stays historical."
+  ]
+}

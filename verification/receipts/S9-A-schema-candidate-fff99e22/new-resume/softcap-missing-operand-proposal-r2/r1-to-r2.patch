@@ -1,0 +1,73 @@
+--- r1/model_unfolder/adapters/transformer/parser.py
++++ r2/model_unfolder/adapters/transformer/parser.py
+@@ -1048,6 +1048,18 @@
+             # An explicit unresolved question retains the actual reader
+             # declaration. It cannot acquire a positive numeric claim proof.
+             if unknown_reason is not None:
++                if not (
++                        (fact.owner, fact.key, fact.status, fact.completeness)
++                        == ("decoder.attention", "logit_softcap", "unknown", "partial")
++                        and fact.value is None and fact.config_paths == ()
++                        and fact.unknown_reason.reason_class == "investigation_missing"
++                        and fact.unknown_reason.concrete_reason == "softcap_operand_unavailable"
++                        and fact.unknown_reason.investigation is None
++                        and reader_result.status == "resolved"
++                        and reader_result.claim_reader_symbol == (
++                            "model_unfolder.evidence.attention."
++                            "decoder_attention_logit_softcap_for_path")):
++                    raise ValueError("declaration-only write is limited to the exact unresolved softcap operand")
+                 qualified = declare_reader_fact(
+                     fact, reader_result, context.program_index(),
+                     current_prepared_document.get())
+@@ -3512,9 +3524,12 @@
+                     "and multiplies by this exact config-bound operand"),
+             )
+         elif not (_softcap_resolution is not None
++                  and not _softcap_resolution.ambiguous
+                   and _softcap_resolution.value is None
+-                  and (_softcap_resolution.present
+-                       or _softcap_resolution.source_kind == "class_default")):
++                  and ((_softcap_resolution.present
++                        and _softcap_resolution.selected_path == ".".join(_bound_path))
++                       or (_softcap_resolution.source_kind == "class_default"
++                           and _softcap_resolution.default_premise is not None))):
+             # This reader proves only the exact `parameter is not None`
+             # guarded protocol. An established None disables that branch;
+             # no resolved operand is a different, unanswered question.
+--- r1/tests/test_attention_softcap.py
++++ r2/tests/test_attention_softcap.py
+@@ -279,6 +279,34 @@
+                    for event in diagram.render_events() for receipt in event.receipts)
+ 
+ 
++@pytest.mark.parametrize(("reason_class", "reason"), [
++    ("structure_unaccounted", "softcap_operand_unavailable"),
++    ("investigation_missing", "foreign_question"),
++])
++def test_softcap_declaration_only_writer_rejects_a_foreign_unknown_question(
++        tmp_path, monkeypatch, reason_class, reason):
++    from model_unfolder import config_to_ir, uncertainty
++    _index, bundle, _root, _block = _pipeline(tmp_path)
++    config = json.loads((_CORPUS / "llama-7b.json").read_text())["config"]
++    config.update({"hidden": 128, "layers": 2})
++    config.pop("attention_cap", None)
++    context = ParseContext(source_bundle=bundle,
++        declared_decoderness="decoder_only_wrapper", class_defaults={"attention_cap": 17.0})
++    original = uncertainty.UnknownReason
++
++    def foreign_question(actual_class, actual_reason, investigation=None):
++        if actual_reason == "softcap_operand_unavailable":
++            return original(reason_class, reason, investigation)
++        return original(actual_class, actual_reason, investigation)
++
++    monkeypatch.setattr(uncertainty, "UnknownReason", foreign_question)
++    with pytest.raises(ValueError, match="declaration-only write is limited"):
++        config_to_ir(config, parse_context=context)
++    assert "decoder.attention.logit_softcap" not in context.facts.typed
++    assert not any(event.intent == "consumed" and event.fact_key == "logit_softcap"
++                   for event in context.config_access.events)
++
++
+ @pytest.mark.parametrize(("status", "value"), [
+     ("code_and_config", None), ("class_default", None), ("unknown", 17.0),
+ ])

@@ -1,0 +1,25 @@
+{
+  "scope": "Three named full-bracket boundary corrections: restore registry status for existing source-derived tie VALUE without proof promotion; add only InstanceInventory result DTO to S9 consistency public import vocabulary (S11 N2 remains open); instrument actual storage cache fills without replacing authenticated reader.",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "before_sha256": "ec4dd8dcd9a04bf8e244155f96f90bf79684f17ec82129cf75bf106cffb57e84",
+      "sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69"
+    },
+    {
+      "path": "tests/test_s6_physics.py",
+      "before_sha256": "ff0363b5b690dc9b84a47751db315137acf91f3393199246362aa86d306d36e2",
+      "sha256": "691760f3cb26dd575085835f09109be8594857fb0cb0c489600ba7df1681b281"
+    },
+    {
+      "path": "tests/test_attention_storage.py",
+      "before_sha256": "a7ed58bb47b2a83c67b1b9e0965c2e5eeb5a65a46ee0a836a7379891e3726881",
+      "sha256": "e97df1452da61d67d52cb963ba1592562203237bfaa565762d1a07ed4bb72ace"
+    }
+  ],
+  "runtime": "pending; frozen28 failures retained",
+  "limits": [
+    "Registry status support does not stamp manual tie proof; it remains declared/unqualified.",
+    "InstanceInventory allowance is typed returned-data consumption, no worker construction/observation API admitted."
+  ]
+}

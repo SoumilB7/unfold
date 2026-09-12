@@ -1,0 +1,18 @@
+[
+  {
+    "path": [
+      0,
+      "document_token"
+    ],
+    "before": "ceff1cda2c699841290199b003565411282746cbfdcd2edd8bbb3843b4b75d26",
+    "after": "51a53d899c3c087ae7d3601d4365db297f8fce1f34eea3016d1987c017968b0b"
+  },
+  {
+    "path": [
+      1,
+      "document_token"
+    ],
+    "before": "ceff1cda2c699841290199b003565411282746cbfdcd2edd8bbb3843b4b75d26",
+    "after": "51a53d899c3c087ae7d3601d4365db297f8fce1f34eea3016d1987c017968b0b"
+  }
+]

@@ -1,0 +1,1 @@
+R2 of test-only submodel parity boundary correction. R1 unchanged. Independent source review required nonvacuous24-layer checks on both new absence/default controls, now added. Existing six test functions plus three helper functions retain identical assertion ASTs compared with frozen30. No production change or runtime.

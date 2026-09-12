@@ -1,0 +1,31 @@
+..............................................................s.ss..ssss [ 41%]
+.s...ss...sss...s....................................................... [ 83%]
+............F................                                            [100%]
+=================================== FAILURES ===================================
+___________ test_metamorphic_harness_holds_on_a_diffusion_reference ____________
+
+    def test_metamorphic_harness_holds_on_a_diffusion_reference():
+        """H9-core contract on diffusion: rename-invariance, provenance integrity, and
+        owner-separated siblings all hold on FLUX — so every diffusion family
+        migration has a ready harness to satisfy."""
+>       metamorphic.assert_rename_invariant(FLUX)
+
+tests/test_h7_diffusion.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cfg = {'_class_name': 'FluxTransformer2DModel', '_diffusers_version': '0.30.0', '_scheduler_config': {'num_train_timesteps':..._2': {'_class_name': 'T5EncoderModel', 'architectures': ['T5EncoderModel'], 'd_ff': 10240, 'd_model': 4096, ...}}, ...}
+
+    def assert_rename_invariant(cfg: Any) -> None:
+        """RENAME: scrubbing semantic identity must not change the parsed structure."""
+        from model_unfolder.evidence.identity_guard import name_blind_diff
+        result = name_blind_diff(cfg)
+>       assert result.structural_equal, (
+               ^^^^^^^^^^^^^^^^^^^^^^^
+            f"RENAME violated — scrubbing identity changed structure at "
+            f"{result.changed_paths[:6]}")
+E       AssertionError: RENAME violated — scrubbing identity changed structure at ('$.extras.render.loop_blocks[4].children[0].facts', '$.extras.render.loop_blocks[4].children[1].children', '$.extras.render.loop_blocks[4].children[1].detail', '$.extras.render.loop_blocks[4].children[1].facts', '$.extras.render.loop_blocks[4].children[1].id', '$.extras.render.loop_blocks[4].children[1].kind')
+
+test_support/metamorphic.py:46: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference
+1 failed, 158 passed, 14 skipped in 157.67s (0:02:37)

@@ -1,0 +1,32 @@
+{
+  "status": "HELD SOURCE ONLY; independent review/root runtime required",
+  "base_source_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "proposed_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "proposed_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    {
+      "path": "tests/test_s9_shared_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "6635e585ee23d1758eafa6949c13a4880c756a8994a51a80552703374c46a01d"
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "sha256": "4a65d4f5a04020dee7963159d272b14c904423835a1ddc2cad42074212e224c4"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "ff3fdd9994fb666b609c0fd7c649e187493c71ea564b2f8ce89991221e7ea221"
+    }
+  ],
+  "supersedes_manifest_sha256": "f6cacb32000a0ce1ad4468d7a68c53eaaabad34c0e160e3ce2dbcf3d896036c1"
+}

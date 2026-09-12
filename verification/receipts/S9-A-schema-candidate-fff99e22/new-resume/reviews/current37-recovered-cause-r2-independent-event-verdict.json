@@ -1,0 +1,17 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_SAVED_PACKET_RUNTIME_PENDING",
+  "manifest_sha256": "b618a304170f81ec25d9f53afbc9f49a7d7d9c9f95761f5a7c9b4e0f5464b24a",
+  "source_cause_files_rehashed": 25,
+  "checks": [
+    "Exact37 source/guarded current observer and original31 recovered baseline origins retained; baseline203 canonical surfaces must match committed expectations, with52 original test reports/29 unique one-call witnesses.",
+    "Full ordered recursive canonical deltas must equal byte-pinned approved comparator outputs; every native fact change/removal and actual consumption hash association retained.",
+    "Missing child native ledgers remain explicitly unavailable; source categories are bounded cause routing and never live semantic proof validation.",
+    "Full raw HTML diff retained with existing first-mount comparison; deferred payload zero-or-one boundary explicitly rejects extras, records presence/full JSON deltas and rolls presence findings into summary.",
+    "Fresh output only; all read bytes checked again at end. No guarded writer, approved baseline mutation or output acceptance."
+  ],
+  "review_correction": "Earlier concern about missing payload-finding rollup was based on preserved36 main code. Exact37 R2 already contains the rollup at lines361-362; no revision required.",
+  "limits": [
+    "No saved cause-audit execution or model/test runtime by reviewer. Requires completed37 preservation capture and approved compare-recovered output first.",
+    "Unclassified HTML/value/proof/child causes remain findings requiring independent review. No assumption of additions-only IR or unchanged tiers."
+  ]
+}

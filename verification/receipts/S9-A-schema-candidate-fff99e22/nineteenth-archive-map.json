@@ -1,0 +1,264 @@
+{
+  "directories": [
+    {
+      "archived": "nineteenth/qualification",
+      "original": "/private/tmp/unfold-s9a-nineteenth/qualification"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle/source",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle/source"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle/source/tests"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source/model_unfolder"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source/tests"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder/adapters",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/adapters"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder/adapters/transformer",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/adapters/transformer"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/evidence"
+    }
+  ],
+  "files": [
+    {
+      "archived": "nineteenth/census.py",
+      "bytes": 5067,
+      "original": "/private/tmp/unfold-s9a-nineteenth/census.py",
+      "sha256": "02bae6805e9cf74e62ad9b84d29615f393f6e8af00193be16ffbbf5eb95ff05a"
+    },
+    {
+      "archived": "nineteenth/generate-matrix.py",
+      "bytes": 545,
+      "original": "/private/tmp/unfold-s9a-nineteenth/generate-matrix.py",
+      "sha256": "b609645e927db4fc25baca5631855b7701cc9a874a408ef70e55e93ee834da49"
+    },
+    {
+      "archived": "nineteenth/handoff-1.json",
+      "bytes": 480,
+      "original": "/private/tmp/unfold-s9a-nineteenth/handoff-1.json",
+      "sha256": "17ebc43181eb13e378615bf760a991b9b435e02a196c4800bef7edf12b6b0e9d"
+    },
+    {
+      "archived": "nineteenth/handoff-2.json",
+      "bytes": 5555,
+      "original": "/private/tmp/unfold-s9a-nineteenth/handoff-2.json",
+      "sha256": "e6c24664f88a0354449340e490c3d4a3bff3c382fd825f55c9487241e7c98ea2"
+    },
+    {
+      "archived": "nineteenth/handoff-3.json",
+      "bytes": 804,
+      "original": "/private/tmp/unfold-s9a-nineteenth/handoff-3.json",
+      "sha256": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905"
+    },
+    {
+      "archived": "nineteenth/handoff-4.json",
+      "bytes": 471,
+      "original": "/private/tmp/unfold-s9a-nineteenth/handoff-4.json",
+      "sha256": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+    },
+    {
+      "archived": "nineteenth/handoff-5.json",
+      "bytes": 1055,
+      "original": "/private/tmp/unfold-s9a-nineteenth/handoff-5.json",
+      "sha256": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089"
+    },
+    {
+      "archived": "nineteenth/qualification/result.json",
+      "bytes": 540,
+      "original": "/private/tmp/unfold-s9a-nineteenth/qualification/result.json",
+      "sha256": "e9d1f164657e4df147d665c8c6d59a987cb0b56c1575e5a93b0c7c82d7e885d6"
+    },
+    {
+      "archived": "nineteenth/qualification/schema-proof-metadata.log",
+      "bytes": 30131,
+      "original": "/private/tmp/unfold-s9a-nineteenth/qualification/schema-proof-metadata.log",
+      "sha256": "466202d3b6448e201919136dfa378baf1b7d350909c047aee5f4c1c9545e9dab"
+    },
+    {
+      "archived": "nineteenth/run-broader.py",
+      "bytes": 2667,
+      "original": "/private/tmp/unfold-s9a-nineteenth/run-broader.py",
+      "sha256": "6ee19dd227849f8e7e8eabe413ea6e9cd10f369a1bb4f8ae7bd735e1b56311f4"
+    },
+    {
+      "archived": "nineteenth/run-census.py",
+      "bytes": 991,
+      "original": "/private/tmp/unfold-s9a-nineteenth/run-census.py",
+      "sha256": "203e0879f2f6bcf6696623046fdcb9dd4377e54aa6a016da7f73d33da217ee2c"
+    },
+    {
+      "archived": "nineteenth/run-matrix.py",
+      "bytes": 1008,
+      "original": "/private/tmp/unfold-s9a-nineteenth/run-matrix.py",
+      "sha256": "74bc51864381dc9c6bb19619a8f567c3527077f312b4886648d87f8892114d41"
+    },
+    {
+      "archived": "nineteenth/run-sparse.py",
+      "bytes": 1615,
+      "original": "/private/tmp/unfold-s9a-nineteenth/run-sparse.py",
+      "sha256": "26831a5c3f70810d7d1f2669d6c65a7e822927b938c3fcc62bc2df16d6e7a524"
+    },
+    {
+      "archived": "nineteenth/run.py",
+      "bytes": 1338,
+      "original": "/private/tmp/unfold-s9a-nineteenth/run.py",
+      "sha256": "feae3cc5abbc2431b6558479d8f4ed048080ece2573f174b96342712a6b9a82b"
+    },
+    {
+      "archived": "nineteenth/scope.json",
+      "bytes": 1096,
+      "original": "/private/tmp/unfold-s9a-nineteenth/scope.json",
+      "sha256": "d221bb632825e52adf64e081ec25ac1b9e30ce7979855e6ab8fb6b9063061c39"
+    },
+    {
+      "archived": "nineteenth/source-manifest.json",
+      "bytes": 16749,
+      "original": "/private/tmp/unfold-s9a-nineteenth/source-manifest.json",
+      "sha256": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338"
+    },
+    {
+      "archived": "nineteenth/sparse-plan.json",
+      "bytes": 822,
+      "original": "/private/tmp/unfold-s9a-nineteenth/sparse-plan.json",
+      "sha256": "49838a39e6560b7eba44b2e313e9a3c457f448dace68e6d444b00c08936c5661"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle/manifest.json",
+      "bytes": 471,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle/manifest.json",
+      "sha256": "c3cb4842daaef2ef5b75914fe4652b70c2688929a03d8ef76c1066278afe79cf"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle/source/tests/test_s9_operand_channels.py",
+      "bytes": 11467,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle/source/tests/test_s9_operand_channels.py",
+      "sha256": "dddfee14299b1d35a1e2d9534807fca6834854d8ff8a793b8babd1194f812bbf"
+    },
+    {
+      "archived": "nineteenth-independent-review/lifecycle/source/tests/test_s9_reader_declarations.py",
+      "bytes": 16426,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/lifecycle/source/tests/test_s9_reader_declarations.py",
+      "sha256": "c43ab4296d78fd253e446cc3cfb0df0509c9c0c0e03a559359006b40e64791d4"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/manifest.json",
+      "bytes": 1055,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/manifest.json",
+      "sha256": "a61c46030a4deef72ed34580599ede8e166f28e68c865c3f24ce764f857fa089"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source/model_unfolder/evidence/framework_config.py",
+      "bytes": 62121,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source/model_unfolder/evidence/framework_config.py",
+      "sha256": "85cc28fc698953ca1be24de664ec7eb0a5664d6b35541a63ad0b69f8c0494014"
+    },
+    {
+      "archived": "nineteenth-independent-review/mro/source/tests/test_s9_config_annotation_mro.py",
+      "bytes": 5335,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/mro/source/tests/test_s9_config_annotation_mro.py",
+      "sha256": "1a0ab52e74abb75ddfacc5e9a4bd10b8917c8ab94708ba88f84c1b2cf33f6f06"
+    },
+    {
+      "archived": "nineteenth-independent-review/nineteenth-source-manifest.json",
+      "bytes": 16749,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/nineteenth-source-manifest.json",
+      "sha256": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/manifest.json",
+      "bytes": 804,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/manifest.json",
+      "sha256": "eeffc37039e979d8ad7291caf347ad895acc2e0274d4a0c2df345f7fe4777905"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 265236,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/adapters/transformer/parser.py",
+      "sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d"
+    },
+    {
+      "archived": "nineteenth-independent-review/supplement/source/model_unfolder/evidence/registry.py",
+      "bytes": 80188,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/supplement/source/model_unfolder/evidence/registry.py",
+      "sha256": "9b946e37e2c2f2a4d302bffeec9a0766dd3cdd292d1fa4457ee76f0a8caf445e"
+    },
+    {
+      "archived": "nineteenth-independent-review/verdict.json",
+      "bytes": 4040,
+      "original": "/private/tmp/unfold-s9a-independent-mro-supplement-review/verdict.json",
+      "sha256": "2651266a0c4b9a2b6d7da4bbb8071560c59690ab84bd26c2a9971ef4c87372e1"
+    }
+  ],
+  "scope": "Released nineteenth candidate and nineteenth D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "nineteenth/changed-sources.tar.gz",
+      "archive_sha256": "565bcddb5f43c305afecd66d61021debb27ab1acd0168d623a6e5ff60cf89255",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 114,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-nineteenth",
+      "manifest_sha256": "18d685ec60d846b09726781701fc4253d9edf8d393e7d33256daef06fbc12338",
+      "phase": "nineteenth",
+      "uncompressed_bytes": 3951539
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 534826,
+    "copied_files": 28,
+    "source_files": 114
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

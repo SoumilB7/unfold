@@ -1,0 +1,11 @@
+{
+  "model_type_address": "llama",
+  "module": "transformers.models.llama.configuration_llama",
+  "qualname": "LlamaConfig",
+  "source": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+    "bytes": 3896,
+    "sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda"
+  },
+  "note": "Address only; admitted values come from the actual sparse ParseContext overlay."
+}

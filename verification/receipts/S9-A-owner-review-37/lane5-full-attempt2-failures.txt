@@ -1,0 +1,2 @@
+FAILED tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer
+FAILED tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current

@@ -1,0 +1,14 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_COORDINATE_SUCCESSOR",
+  "manifest_sha256": "5e52d3a7e0ca711227a41665c9bc43253392de50d2b37db9c6e1a978cf1fb811",
+  "script_sha256": "f0f8c9fe801905b296591ac73f8899be37832e1c62fce38e0584610a5f49dd34",
+  "base_manifest_sha256": "58eb1690950aa7a904fbe29030359c1a2e1e7529aae527e050fd14d85dd55a0f",
+  "checks": [
+    "Reviewed exact diff against accepted hardened36: only generation paths/source hashes/map pins/report labels. Non-string AST identical; every changed string separately inspected in exact diff.",
+    "All199 frozen source rows and deletions,394 exact generation-source hashes and complete membership recomputed using generator source law. Only styles.py differs36.",
+    "Exact completed37 lane success/source/protected artifact guards preserved. Current matrix sources must equal full pinned generation map; no self-consistent stale map allowed.",
+    "All39 exact membership/order/denominator and every payload/observation/relation hash retained; full original16324 classification and occurrence/citation deltas remain evidence to measure.",
+    "Comparators active/22/26/completed32 only; aborted36 absent. No mechanism truth or zero delta assumed from CSS-only source change."
+  ],
+  "limits": "Source-only acceptance, no matrix audit runtime or output approval. Root owns fresh37 generator; actual saved audit must wait for complete37 lane and archived source manifest."
+}

@@ -1,0 +1,143 @@
+{
+  "archived_files": [
+    {
+      "bytes": 11814,
+      "path": "cause-audit.json",
+      "sha256": "3077e7b4da86f9529fcffe0b8602b7276ffd2b4a720a34cdd0465f62cc004193"
+    },
+    {
+      "bytes": 3425,
+      "path": "existing-normalized-ir-deltas.json.gz",
+      "sha256": "66dca15c9c1c64f58d7b45acc3e8f98b60353ca17cd7f1fcdff07547e13080e1"
+    },
+    {
+      "bytes": 23219,
+      "path": "raw/capture/children.json.gz",
+      "sha256": "aac5168c03a897e5256a1a0ac7f7a8e231ede3201f95721835a285582c35573b"
+    },
+    {
+      "bytes": 350,
+      "path": "raw/capture/default-premise-attempts.json.gz",
+      "sha256": "b96bd650116b41c659cdef1ee54b84a75e27deaaeceed17b60a99140758bd46a"
+    },
+    {
+      "bytes": 1691,
+      "path": "raw/capture/input.json",
+      "sha256": "a5fde6e6a2dbb0e15d8237008f95bc484d2d818ba66a744e53ea01cef742fc87"
+    },
+    {
+      "bytes": 12145,
+      "path": "raw/capture/original-existing-normalization.json.gz",
+      "sha256": "8af9e94e519ede58ef774cac08f8ee051328fda08f67d9785c22caa8e1a0e7ec"
+    },
+    {
+      "bytes": 12346,
+      "path": "raw/capture/original-ir.json.gz",
+      "sha256": "3835ce0a419b47b9c7f21a3bf5ece5344e44b860063ad3bb43f4dfae0b0bca93"
+    },
+    {
+      "bytes": 3987,
+      "path": "raw/capture/result.json",
+      "sha256": "40c1876e75d129c79d841808879d9b253b8408340414b2df6121f459fcbd13a9"
+    },
+    {
+      "bytes": 3734,
+      "path": "raw/capture/root-address.json",
+      "sha256": "fe68260ac169a5e4ffd6d3bfd9ab479a3849ac476c9e2e25aace008f506ebc7e"
+    },
+    {
+      "bytes": 11083,
+      "path": "raw/capture/scrubbed-existing-normalization.json.gz",
+      "sha256": "0e9a76f6f761317d481d38b81e335af4f96c81a40b3b72b81d9a9f1ef988f6c1"
+    },
+    {
+      "bytes": 11266,
+      "path": "raw/capture/scrubbed-ir.json.gz",
+      "sha256": "f467f7b6ae35d3453d71fa958d27cebcaf84e849821dc612b1cb51e355a57a45"
+    },
+    {
+      "bytes": 0,
+      "path": "raw/flux-rename-diagnostic.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 545,
+      "path": "raw/result.json",
+      "sha256": "1a000b0f29e132a9faa2809b18f93caaac343bbbae7601d829ea5d9cb878d7e9"
+    },
+    {
+      "bytes": 3519,
+      "path": "raw-ir-deltas.json.gz",
+      "sha256": "8a3c8c13233e1aa6811648eba91a673d499a4ca29689fa77f962c22c9624eaaf"
+    }
+  ],
+  "input_members": [
+    {
+      "bytes": 23219,
+      "path": "raw/capture/children.json.gz",
+      "sha256": "aac5168c03a897e5256a1a0ac7f7a8e231ede3201f95721835a285582c35573b",
+      "source_relative": "capture/children.json.gz"
+    },
+    {
+      "bytes": 350,
+      "path": "raw/capture/default-premise-attempts.json.gz",
+      "sha256": "b96bd650116b41c659cdef1ee54b84a75e27deaaeceed17b60a99140758bd46a",
+      "source_relative": "capture/default-premise-attempts.json.gz"
+    },
+    {
+      "bytes": 1691,
+      "path": "raw/capture/input.json",
+      "sha256": "a5fde6e6a2dbb0e15d8237008f95bc484d2d818ba66a744e53ea01cef742fc87",
+      "source_relative": "capture/input.json"
+    },
+    {
+      "bytes": 12145,
+      "path": "raw/capture/original-existing-normalization.json.gz",
+      "sha256": "8af9e94e519ede58ef774cac08f8ee051328fda08f67d9785c22caa8e1a0e7ec",
+      "source_relative": "capture/original-existing-normalization.json.gz"
+    },
+    {
+      "bytes": 12346,
+      "path": "raw/capture/original-ir.json.gz",
+      "sha256": "3835ce0a419b47b9c7f21a3bf5ece5344e44b860063ad3bb43f4dfae0b0bca93",
+      "source_relative": "capture/original-ir.json.gz"
+    },
+    {
+      "bytes": 3987,
+      "path": "raw/capture/result.json",
+      "sha256": "40c1876e75d129c79d841808879d9b253b8408340414b2df6121f459fcbd13a9",
+      "source_relative": "capture/result.json"
+    },
+    {
+      "bytes": 3734,
+      "path": "raw/capture/root-address.json",
+      "sha256": "fe68260ac169a5e4ffd6d3bfd9ab479a3849ac476c9e2e25aace008f506ebc7e",
+      "source_relative": "capture/root-address.json"
+    },
+    {
+      "bytes": 11083,
+      "path": "raw/capture/scrubbed-existing-normalization.json.gz",
+      "sha256": "0e9a76f6f761317d481d38b81e335af4f96c81a40b3b72b81d9a9f1ef988f6c1",
+      "source_relative": "capture/scrubbed-existing-normalization.json.gz"
+    },
+    {
+      "bytes": 11266,
+      "path": "raw/capture/scrubbed-ir.json.gz",
+      "sha256": "f467f7b6ae35d3453d71fa958d27cebcaf84e849821dc612b1cb51e355a57a45",
+      "source_relative": "capture/scrubbed-ir.json.gz"
+    },
+    {
+      "bytes": 0,
+      "path": "raw/flux-rename-diagnostic.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_relative": "flux-rename-diagnostic.log"
+    },
+    {
+      "bytes": 545,
+      "path": "raw/result.json",
+      "sha256": "1a000b0f29e132a9faa2809b18f93caaac343bbbae7601d829ea5d9cb878d7e9",
+      "source_relative": "result.json"
+    }
+  ],
+  "source_input_rechecked_unchanged": true
+}

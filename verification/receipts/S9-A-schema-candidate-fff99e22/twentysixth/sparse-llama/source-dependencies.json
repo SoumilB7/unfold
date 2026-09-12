@@ -1,0 +1,27 @@
+{
+  "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+    "bytes": 3896,
+    "sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda"
+  },
+  "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+    "bytes": 21153,
+    "sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5"
+  },
+  "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+    "bytes": 58066,
+    "sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5"
+  },
+  "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+    "bytes": 13491,
+    "sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612"
+  },
+  "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+    "bytes": 64249,
+    "sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f"
+  }
+}

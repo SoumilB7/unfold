@@ -1,0 +1,64 @@
+{
+  "actual_portable_seal": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+  "baseline_output": {
+    "ir_after_sha256": "711049ebd69798d39c13c50959b36c695077642d2bd01a5aca3925c3ce9d562f",
+    "ir_before_sha256": "711049ebd69798d39c13c50959b36c695077642d2bd01a5aca3925c3ce9d562f",
+    "page_bytes": 91664,
+    "page_sha256": "67701dbae0513a969ff4107fa1f43ec4273a2b495e522167bceee97b8e2872b0",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+  "seconds": 3.045842999999877,
+  "slug": "prxpixel-t2i",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "9ea6e302aedca8af2d8c7e85e4c2a7dae4adc1b460fac63c59a796c24d70378f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_prx.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4e51b2a74cde244cb11040504c30ea78b7c933cc0b42b1a394a85d80dd9e5c3c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_vl.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f39b3621fea3f757a01d2e00ebd3a2be3516b7df3048d862a365988aba9fa994",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_vl.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 6,
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,57 @@
+{
+  "actual_portable_seal": "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c",
+  "baseline_output": {
+    "ir_after_sha256": "86969ddbd75dc966fa9a97aa1d27eeda02009d6adf36461113e49d7880af10ea",
+    "ir_before_sha256": "5e8b120ad2689702ac5cc46a9a3358ebd6a522154259effeebf088adb9badbf7",
+    "page_bytes": 166818,
+    "page_sha256": "61c946172871a2184506ef6003ebb63ffebfa16c5215dcd86878924ef15b75fb",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c",
+  "seconds": 2.9967725839997,
+  "slug": "lumina-image-2-0",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_lumina2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "d81e5abd688436da573ae299a65598d01ea871a8874d0cabeb5149967855ca07",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5,
+  "status": "REPRODUCED"
+}

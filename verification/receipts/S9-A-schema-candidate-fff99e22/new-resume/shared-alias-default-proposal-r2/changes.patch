@@ -1,0 +1,165 @@
+--- a/model_unfolder/evidence/reader_claims.py
++++ b/model_unfolder/evidence/reader_claims.py
+@@ -115,6 +115,26 @@
+     else:
+         resolution = _resolve_for_claim_proof(container, path[-1], aliases,
+                                             path=path[:-1], class_defaults=defaults)
++    if resolution.state == "absent" and aliases and document is not None \
++            and document.failure is None:
++        # Checkpoint aliases and default aliases use the same finite vocabulary.
++        # A source expression keeps its requested path in ReaderOperand; the
++        # supplying default premise keeps its actual prepared alias address.
++        default_spellings = [spelling for spelling in dict.fromkeys((path[-1], *aliases))
++                             if ".".join((*path[:-1], spelling)) in document.class_overlay]
++        if default_spellings:
++            hashes = {value_status_hash(
++                document.class_overlay[".".join((*path[:-1], spelling))], "operand")
++                for spelling in default_spellings}
++            if len(hashes) != 1:
++                raise ValueError("conflicting prepared class defaults for supported aliases")
++            selected = default_spellings[0]
++            if selected != path[-1]:
++                supplied = _source_operand_resolution(
++                    cfg, (*path[:-1], selected), document, allow_aliases=False,
++                    component=component, record_events=record_events)
++                if supplied is not None and supplied.default_premise is not None:
++                    return supplied
+     if document is not None and document.failure is not None and (
+             resolution.source_kind == "class_default" or resolution.provenance == "class_default"):
+         return None
+--- a/model_unfolder/adapters/transformer/parser.py
++++ b/model_unfolder/adapters/transformer/parser.py
+@@ -1226,23 +1226,12 @@
+         # activate broad hydration or let a context-local candidate author it.
+         if field == "num_hidden_layers" and resolution.state == "absent":
+             from ...evidence.reader_claims import resolve_reader_operand
+-            from ...evidence.receipts import value_status_hash
+-            prepared_defaults = []
+-            # Syntax aliases name distinct exact constructor-default addresses.
+-            # Keep the supplying premise on that address; never move its value
+-            # onto the canonical spelling or select between conflicting defaults.
+-            for spelling in names:
+-                prepared_default = resolve_reader_operand(
+-                    cfg, (*_text_path, spelling), allow_aliases=True)
+-                if prepared_default is not None and not prepared_default.ambiguous \
+-                        and prepared_default.source_kind == "class_default" \
+-                        and prepared_default.default_premise is not None:
+-                    prepared_defaults.append(prepared_default)
+-            if prepared_defaults:
+-                if len({value_status_hash(item.value, "operand")
+-                        for item in prepared_defaults}) != 1:
+-                    raise ValueError("conflicting prepared class defaults for layer-count aliases")
+-                return prepared_defaults[0]
++            prepared_default = resolve_reader_operand(
++                cfg, (*_text_path, field), allow_aliases=True)
++            if prepared_default is not None and not prepared_default.ambiguous \
++                    and prepared_default.source_kind == "class_default" \
++                    and prepared_default.default_premise is not None:
++                return prepared_default
+         return resolution
+ 
+     def _ignore_unselected_alias_spellings(canonical, exact_paths, reason):
+--- a/tests/test_s9_shared_alias_defaults.py
++++ b/tests/test_s9_shared_alias_defaults.py
+@@ -0,0 +1,101 @@
++"""Parser operands and proof operands share exact prepared alias defaults."""
++import copy
++
++import pytest
++
++from model_unfolder.evidence.config_access import bound_document, capture_events
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument, PreparationFailure
++from model_unfolder.evidence.reader_claims import reader_operand, resolve_reader_operand
++
++
++@pytest.mark.parametrize("canonical,alias,value", [
++    ("num_hidden_layers", "n_layer", 2), ("hidden_size", "n_embd", 64),
++])
++@pytest.mark.parametrize("nested", [False, True])
++def test_shared_alias_default_retains_source_path_and_actual_supplying_premise(canonical, alias, value, nested):
++    cfg = {"decoder": {}} if nested else {}
++    prefix = ("decoder",) if nested else ()
++    path = (*prefix, canonical)
++    alias_path = (*prefix, alias)
++    doc = PreparedDocument(cfg, copy.deepcopy(cfg), class_overlay={".".join(alias_path): value})
++    with bound_document(DocumentBinding("root", (), doc)), capture_events() as ledger:
++        resolution = resolve_reader_operand(cfg, path, allow_aliases=True)
++        assert resolution.source_kind == "class_default" and resolution.value == value
++        assert resolution.default_premise.path == alias_path
++        resolution.default_premise.validate_value(value)
++        decision = resolution.consume_decision(reader="test.shared_default", fact_owner="model",
++            fact_key=canonical, mechanism="scalar_value", status="class_default", expected_value=value)
++        assert decision.default_path == alias_path and decision.selected_path is None
++        events = [e for e in ledger.events if e.fact_key == canonical and e.mechanism == "scalar_value"]
++        assert len(events) == 1 and events[0].config_path == ".".join(alias_path)
++        assert decision.provenance == "class_default" and decision.value == value
++        event_count = len(ledger.events)
++        operand = reader_operand(doc, path, allow_aliases=True)
++        assert len(ledger.events) == event_count  # proof revalidation is dry
++        assert operand.source_path == path and operand.value == value
++        assert operand.source_kind == "class_default" and operand.checkpoint_path is None
++        # Disabling alias vocabulary cannot accidentally admit the supplying key.
++        strict = resolve_reader_operand(cfg, path, allow_aliases=False)
++        assert strict.source_kind != "class_default" and strict.value is None
++
++
++@pytest.mark.parametrize("canonical,alias", [("num_hidden_layers", "n_layer"), ("hidden_size", "n_embd")])
++def test_shared_default_conflicts_reject_both_production_and_proof_reads(canonical, alias):
++    cfg = {};doc = PreparedDocument(cfg, {}, class_overlay={canonical: 2, alias: 3})
++    with bound_document(DocumentBinding("root", (), doc)), capture_events() as ledger:
++        for call in (lambda: resolve_reader_operand(cfg, (canonical,), allow_aliases=True),
++                     lambda: reader_operand(doc, (canonical,), allow_aliases=True)):
++            with pytest.raises(ValueError, match="conflicting prepared class defaults"):
++                call()
++        assert not any(e.intent == "consumed" for e in ledger.events)
++
++
++@pytest.mark.parametrize("value", [None, 0])
++def test_present_checkpoint_alias_has_priority_over_default_aliases(value):
++    cfg = {"n_embd": value}
++    doc = PreparedDocument(cfg, copy.deepcopy(cfg), class_overlay={"hidden_size": 64, "n_embd": 128})
++    with bound_document(DocumentBinding("root", (), doc)):
++        resolution = resolve_reader_operand(cfg, ("hidden_size",), allow_aliases=True)
++        assert resolution.present and resolution.value is value
++        assert resolution.selected_path == "n_embd" and resolution.default_premise is None
++        operand = reader_operand(doc, ("hidden_size",))
++        assert operand.source_kind == "config_declared" and operand.checkpoint_path == ("n_embd",)
++        assert operand.value is value
++
++
++def test_checkpoint_alias_ambiguity_cannot_fall_through_to_defaults():
++    cfg = {"hidden_size": 64, "n_embd": 128}
++    doc = PreparedDocument(cfg, copy.deepcopy(cfg), class_overlay={"n_embd": 256})
++    with bound_document(DocumentBinding("root", (), doc)):
++        resolution = resolve_reader_operand(cfg, ("hidden_size",), allow_aliases=True)
++        assert resolution.ambiguous and resolution.value is None
++        with pytest.raises(ValueError, match="conflicting checkpoint"):
++            reader_operand(doc, ("hidden_size",))
++
++
++@pytest.mark.parametrize("case", ["foreign_cfg", "changed_doc", "failed", "unsupported", "unbound"])
++def test_alias_defaults_do_not_create_a_new_document_or_vocabulary_escape(case):
++    cfg = {};doc = PreparedDocument(cfg, {}, class_overlay={"n_embd": 64})
++    if case == "failed":
++        doc = PreparedDocument(cfg, {}, class_overlay={"n_embd": 64},
++            failure=PreparationFailure("class_rejected", "hydrate", "intentional refused class"))
++    if case == "unsupported":
++        doc = PreparedDocument(cfg, {}, class_overlay={"invented_width": 64})
++    if case == "unbound":
++        resolution = resolve_reader_operand(cfg, ("hidden_size",), allow_aliases=True)
++        assert resolution.source_kind != "class_default" and resolution.value is None
++        return
++    with bound_document(DocumentBinding("root", (), doc)):
++        if case == "foreign_cfg":
++            with pytest.raises(ValueError, match="prepared document"):
++                resolve_reader_operand({"hidden_size": 99}, ("hidden_size",), allow_aliases=True)
++        elif case == "changed_doc":
++            resolution = resolve_reader_operand(cfg, ("hidden_size",), allow_aliases=True)
++            doc.class_overlay["n_embd"] = 65
++            with pytest.raises(ValueError, match="changed prepared document|channels changed"):
++                resolution.default_premise.validate_value(64)
++        else:
++            resolution = resolve_reader_operand(cfg, ("hidden_size",), allow_aliases=True)
++            assert resolution.source_kind != "class_default" and resolution.value is None
++            with pytest.raises(ValueError, match="no exact checkpoint or class-default"):
++                reader_operand(doc, ("hidden_size",))

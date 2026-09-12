@@ -1,0 +1,17 @@
+[
+  {
+    "path": "qualification.log",
+    "sha256": "7d2e8ec2361f922cf1cf098c7b5f5c2fd492fe427f97944b6a278b6724e32cfa",
+    "bytes": 511
+  },
+  {
+    "path": "result.json",
+    "sha256": "a3aa5846e45c4ec20b5fc48dcd38a16ce4323a3944c13d2eef7c53c2d14b67bf",
+    "bytes": 523
+  },
+  {
+    "path": "run-focus.py",
+    "sha256": "7a006c0726423d7492281fdbb1502dfe3c0f401cbf131d2f666a799613cf6329",
+    "bytes": 1323
+  }
+]

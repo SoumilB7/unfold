@@ -1,0 +1,41 @@
+{
+  "status": "SOURCE_AND_SAVED_INPUT_INSPECTION_ONLY",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "prior_manifest_sha256": "7905d40c08b4c0fee7611a21874a6e61f385d33f29dd1602628e6695fec801e9",
+  "source_manifest_rows": 199,
+  "exact_delta_paths": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "after_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "after_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    },
+    {
+      "path": "tests/test_s9_shared_alias_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "6635e585ee23d1758eafa6949c13a4880c756a8994a51a80552703374c46a01d"
+    }
+  ],
+  "complete_preservation_import_source_changes": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a",
+      "after_sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68",
+      "after_sha256": "488f90cc97a45de7b856bed674288f296954f4b13e70a1b92c78a3d3d53806be"
+    }
+  ],
+  "baseline_lane_and_original31_recovery_origin_exactly_unchanged": true,
+  "historical_baseline_files": 203,
+  "historical_baseline_bytes_unchanged": true,
+  "historical_canonical_expectations_not_repaired": "Original inventory unchanged; 118 stale historical expectations do not become authoritative. Exact recovered31 baseline must independently match committed expectation.",
+  "preservation_test_and_expected_manifest_and_corpus_unchanged": true,
+  "authority": "Source/input composition only; root owns runtime. Original31 exact-fff baseline output read-only through original31 contract; current36 through new. Latest executed fleet34 and matrix32 retain separate origins. No acceptance/blessing."
+}

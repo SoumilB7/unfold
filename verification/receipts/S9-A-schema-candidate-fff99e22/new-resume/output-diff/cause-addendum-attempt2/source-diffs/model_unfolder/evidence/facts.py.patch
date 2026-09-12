@@ -1,0 +1,80 @@
+--- fff99e22/model_unfolder/evidence/facts.py
++++ frozen26/model_unfolder/evidence/facts.py
+@@ -25,6 +25,7 @@
+ from typing import Any
+ 
+ from .context import FACT_STATUSES, FactRecord
++from ..uncertainty import UnknownReason
+ 
+ # The typed enum is a superset of the serialized one: ``legacy_asserted`` is
+ # the migration-only tier H2 assigns to unconverted raw writes (plan §3.2).
+@@ -166,6 +167,14 @@
+     # stable proof summary: object identity is a validation seal, not portable
+     # provenance.
+     claim_document_token: str = field(default="", repr=False, compare=False)
++    # Exact addressed product targets are separate from semantic dependency
++    # spans and from whether this fact's meaning has a qualified proof. The
++    # live reader receipt is omitted by ordinary fact/presentation transport.
++    occurrence_citation: Any = field(default=None, repr=False, compare=False)
++    # Producer authority, distinct from explanation prose and display transport.
++    # Omission on an unresolved fact records class-1 metadata debt, not an
++    # invented completed investigation.
++    unknown_reason: UnknownReason | None = None
+     # migrated_legacy is INTERNAL provenance, NOT a constructor parameter
+     # (``init=False``): a native caller therefore CANNOT pass
+     # ``migrated_legacy=True`` to opt out of the negative-proof law (§16.3).
+@@ -183,6 +192,21 @@
+             raise ValueError(f"unknown fact status {self.status!r}")
+         if self.completeness not in COMPLETENESS_LEVELS:
+             raise ValueError(f"unknown completeness {self.completeness!r}")
++        if self.status in _FAILURE_STATUSES:
++            if self.unknown_reason is None:
++                object.__setattr__(self, "unknown_reason", UnknownReason(
++                    "investigation_missing", "unknown_reason_unrecorded"))
++            if not isinstance(self.unknown_reason, UnknownReason):
++                raise TypeError("unresolved fact requires authoritative UnknownReason")
++            investigation = self.unknown_reason.investigation
++            if investigation is not None and (
++                    investigation.claim_key != self.ledger_key() or
++                    investigation.declared_reader_ids != self.claim_readers):
++                raise ValueError("unknown investigation belongs to another fact or reader declaration")
++            if investigation is not None:
++                investigation.validate(self)
++        elif self.unknown_reason is not None:
++            raise ValueError("only unresolved facts may carry an unknown reason")
+         if isinstance(self.value, (RawObservation, BoundObservation)):
+             raise TypeError(
+                 "a raw/bound observation is not an architectural fact; run it "
+@@ -198,6 +222,11 @@
+                 f"{self.key}: a {self.status} negative ({self.value!r}) requires "
+                 f"complete inspection; got completeness={self.completeness!r} — "
+                 "record ambiguous/unknown instead (I-3)")
++        if self.occurrence_citation is not None:
++            from .reader_placement import ReaderOccurrenceCitation
++            if type(self.occurrence_citation) is not ReaderOccurrenceCitation:
++                raise TypeError("fact placement needs an exact typed reader occurrence citation")
++            self.occurrence_citation.validate_fact(self)
+         # §16.3: a DERIVED negative is sound only if the derivation's effective
+         # completeness (its weakest premise) is complete — an absent/NoPE
+         # conclusion derived from a presence-only premise cannot prove absence.
+@@ -293,6 +322,8 @@
+         object.__setattr__(obj, "claim_readers", ())
+         object.__setattr__(obj, "claim_evidence", None)
+         object.__setattr__(obj, "claim_document_token", "")
++        object.__setattr__(obj, "occurrence_citation", None)
++        object.__setattr__(obj, "unknown_reason", None)
+         object.__setattr__(obj, "migrated_legacy", True)
+         obj._validate(migrated=True)
+         return obj
+@@ -320,7 +351,10 @@
+                              legacy_source=record.source or "")
+         return cls(key=fact, owner=owner, value=record.value,
+                    status=record.status, completeness="uninspected",
+-                   premises=premises, legacy_source=record.source or "")
++                   premises=premises, legacy_source=record.source or "",
++                   unknown_reason=(UnknownReason(
++                       "investigation_missing", "legacy_unknown_reason_unrecorded")
++                       if record.status in _FAILURE_STATUSES else None))
+ 
+     def to_record(self) -> FactRecord:
+         """Serialize back to the stable legacy triple — exact round-trip.  The

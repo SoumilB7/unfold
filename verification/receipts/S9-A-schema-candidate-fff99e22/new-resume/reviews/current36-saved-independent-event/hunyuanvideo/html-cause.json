@@ -1,0 +1,20 @@
+{
+  "after_bytes": 241036,
+  "after_sha256": "713677a1ec2c045eca1d03173c42309c2c1ec03cf4404ab22f5486c55cf4e081",
+  "before_bytes": 241036,
+  "before_sha256": "fac458f270536d53a11481af3ea22c18823913eab577ee718905b821ae84b0a0",
+  "exact_new_mount_occurrences": 418,
+  "exact_old_mount_occurrences": 418,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-e4bf8a6768",
+  "mount_identity_before": "uf-a250a1762d",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 21,
+  "raw_ordered_svg_count_before": 21,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "hunyuanvideo",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

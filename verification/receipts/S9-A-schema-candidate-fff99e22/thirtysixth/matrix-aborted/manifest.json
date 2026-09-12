@@ -1,0 +1,29 @@
+{
+  "scope": "Exact intentionally aborted36 matrix and root supersession receipt",
+  "files": [
+    {
+      "path": "artifact-map.json",
+      "sha256": "64b4e9da0292a08a392189d7a4a49a69c05b057531108c615e523671bdbcfae6"
+    },
+    {
+      "path": "exact-partial-capture.tar.gz",
+      "sha256": "55697f9d3f2d7185c6cd205a4661ba45c39b629a8c1c345ac9c21a0caf7c64ce"
+    },
+    {
+      "path": "result.json",
+      "sha256": "5400fe75241e62da1adaad5ab3fa96f2dd9593c3b4a3981ad82f5c39b81add41"
+    },
+    {
+      "path": "s7-matrix-candidate.log",
+      "sha256": "ba66d28f0571cb07f0ffbe83d12de5a8848494c847e4a825e5fab2fe33ecdfcd"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "5249a891c80191945dd2b184d5719f4db8fb6310d3c4c1ffea8d918e6382013f"
+    },
+    {
+      "path": "supersession.json",
+      "sha256": "3c09517cd877e41120d8f7d0bfffae3cc4b122b9b1fce4fc9bd4e3e5cb3357ff"
+    }
+  ]
+}

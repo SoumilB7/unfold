@@ -1,0 +1,753 @@
+{
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "scope": "Completed source review snapshots plus actual eighteenth sparse failure; no green relabel",
+  "files": [
+    {
+      "member": "unfold-s9a-class-default-value-preparation/class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/class_default_value.py.diff",
+      "bytes": 6297,
+      "sha256": "83e738136b030129ad35ac32d1d28d949f2bc5445fdf1e5cb985fde3eb675be8"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/manifest.json",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/manifest.json",
+      "bytes": 2314,
+      "sha256": "7e28085a34bea56e0e4e320bd67d9b07b20509589eae25738ad7a651370945a6"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/parser.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/parser.py.diff",
+      "bytes": 6895,
+      "sha256": "7c31ac76cbaa8dde5d6703ee313c70f1cc731adc1c51eeda2ad151c053f86faf"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/registry.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/registry.py.diff",
+      "bytes": 2068,
+      "sha256": "86b92250bb4f5ddbdab1a19b46c33c7f3d6ab5fc82da8e20d85be5801522d86e"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 259594,
+      "sha256": "6674beb64370376a4f52fed3b29bb409462b1ee564420fa76b788e22819e9e62"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 6036,
+      "sha256": "7cf8df55573131f47240fd0a4b9c856302da91d4ffd05be26327b5c12ec04d0b"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/source/model_unfolder/evidence/registry.py",
+      "bytes": 80083,
+      "sha256": "80a6c081a23d14db8566a1e616cae6d77c1f1881567a655d677bf6fd199f0a15"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/source/tests/test_s9_class_default_value.py",
+      "bytes": 10994,
+      "sha256": "1588733610b55c995e6dc285354282de000ad5de5556121df3c184911a170ff0"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation/test_s9_class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation/test_s9_class_default_value.py.diff",
+      "bytes": 11323,
+      "sha256": "929d98d30e67b3dcd1b0ac150f5b68bd5eb8002e8bb8c53dfe5e816bbad6b156"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/class_default_value.py.diff",
+      "bytes": 3518,
+      "sha256": "4ecb49d06fa5114e5a7494d8b97a8eac265ff0f60f729d8897191044177e257c"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/manifest.json",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/manifest.json",
+      "bytes": 1606,
+      "sha256": "44a6a668fa2ee2a27e48574786a3355d43f047934c23de2ba77acacf46d93e72"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/parser.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/parser.py.diff",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/registry.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/registry.py.diff",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 259594,
+      "sha256": "6674beb64370376a4f52fed3b29bb409462b1ee564420fa76b788e22819e9e62"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 8779,
+      "sha256": "75c569b7517c9a48d4d79db0e1617ac96c7241a2430112a8f1656cfe58e9e2f3"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/source/model_unfolder/evidence/registry.py",
+      "bytes": 80083,
+      "sha256": "80a6c081a23d14db8566a1e616cae6d77c1f1881567a655d677bf6fd199f0a15"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/source/tests/test_s9_class_default_value.py",
+      "bytes": 12489,
+      "sha256": "848721d36b652ce30969a123c7680d2abfd88be50e29f4797d26be5564a030c9"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v2/test_s9_class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v2/test_s9_class_default_value.py.diff",
+      "bytes": 2604,
+      "sha256": "984327f56b04a94f7a928ec5c1f76097fd53d2f29bd52b97008243f006cbe34a"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/class_default_value.py.diff",
+      "bytes": 6489,
+      "sha256": "be199029c493d2d51df00fa3b51b0f97c21b938404cbdb8f8d4fd87ef1aa83d9"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/manifest.json",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/manifest.json",
+      "bytes": 1547,
+      "sha256": "4100fecff0135f689d18a279df359a13312b51c9f4bba0a27168d0e83e3946cf"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/parser.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/parser.py.diff",
+      "bytes": 717,
+      "sha256": "c371da507d2dc1ba4d0df0acf75e5cfa75aaf007c44663c37221199f35a0437d"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/registry.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/registry.py.diff",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 259746,
+      "sha256": "62bd22de37ddd25185b819c765bbecf6d9894b0fec90b87fba49a486145fc168"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 11683,
+      "sha256": "9f6f2020ff121564de0028162010ae6b1a184b3412cfde7cb42f5765fa02b4d0"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/source/model_unfolder/evidence/registry.py",
+      "bytes": 80083,
+      "sha256": "80a6c081a23d14db8566a1e616cae6d77c1f1881567a655d677bf6fd199f0a15"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/source/tests/test_s9_class_default_value.py",
+      "bytes": 15008,
+      "sha256": "8dadda798a338d7a79db3effdef0dfee792d2c204735bd584f11337c257b3702"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v3/test_s9_class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v3/test_s9_class_default_value.py.diff",
+      "bytes": 5172,
+      "sha256": "bbaf3802308fca267e42d4692d4796179a50ce2446bb2c460bd477ddc406b5cb"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/class_default_value.py.diff",
+      "bytes": 7910,
+      "sha256": "efc07a203301de231996ef0a2bcf602651803243709eace258aa6addebdc6495"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/manifest.json",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/manifest.json",
+      "bytes": 1806,
+      "sha256": "5b7b3fd7364fd7f7fcd7fdf297abfc6b857bdbe77d1e2894ac924555b0303061"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/parser-hidden-size.txt",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/parser-hidden-size.txt",
+      "bytes": 3861,
+      "sha256": "34df725983352b101c354c6fba5ad03517fc4ff13f66303cdaa6bdba8f325256"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/registry.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/registry.py.diff",
+      "bytes": 1412,
+      "sha256": "7d94370019826ef285a613a92a91291a453d47614f905f5f05bf9a18f1443191"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 13078,
+      "sha256": "185da84a994915ae3cafbbe4bbba0c8d38bb970a5c2efc42442181139ecf2764"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/source/model_unfolder/evidence/registry.py",
+      "bytes": 80134,
+      "sha256": "9be7ee9a59aa8ec2222da7117b360c0877567e72796fb97e8caefb8d8ae3099c"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/source/tests/test_s9_class_default_value.py",
+      "bytes": 15949,
+      "sha256": "32b1d8c817aba12c1cae4f22ca228c03d2742bce7a597616a7c4c1cd7ea181ec"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v4/test_s9_class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v4/test_s9_class_default_value.py.diff",
+      "bytes": 6136,
+      "sha256": "0655c0887e01e46750e98edb7346d33db9ba1d5dcae0423f6861e3440f417b4e"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v5/class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v5/class_default_value.py.diff",
+      "bytes": 1346,
+      "sha256": "a1c4c5f4aeccdd45943c6dd5d1afc1b358a4b01ead03574f14d3e811de8044c3"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v5/manifest.json",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v5/manifest.json",
+      "bytes": 1030,
+      "sha256": "dc5c7d070f6d12c7f4055c7c117da970139de316f6186069109b360565eaabf4"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v5/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v5/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 13631,
+      "sha256": "09eb3b634d30f50e0aecfca154b5b6fd8541c28c3a78bfdc71b82a00a80c7e51"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v5/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v5/source/tests/test_s9_class_default_value.py",
+      "bytes": 16021,
+      "sha256": "862e144aa656e682fcb95457c9c2b7d3a650878433c43f68c37edc682dd51d25"
+    },
+    {
+      "member": "unfold-s9a-class-default-value-preparation-v5/test_s9_class_default_value.py.diff",
+      "original": "/private/tmp/unfold-s9a-class-default-value-preparation-v5/test_s9_class_default_value.py.diff",
+      "bytes": 423,
+      "sha256": "f019ab80512cb3de3cee4ad7cef7db94654b92d23fc59f23dbd62ad3fb72cadb"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 259594,
+      "sha256": "6674beb64370376a4f52fed3b29bb409462b1ee564420fa76b788e22819e9e62"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 8779,
+      "sha256": "75c569b7517c9a48d4d79db0e1617ac96c7241a2430112a8f1656cfe58e9e2f3"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v2-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80083,
+      "sha256": "80a6c081a23d14db8566a1e616cae6d77c1f1881567a655d677bf6fd199f0a15"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v2-review/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v2-review/source/tests/test_s9_class_default_value.py",
+      "bytes": 12489,
+      "sha256": "848721d36b652ce30969a123c7680d2abfd88be50e29f4797d26be5564a030c9"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v2-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v2-review/verdict.json",
+      "bytes": 2536,
+      "sha256": "a31ae7f9e8c62edf810ced50977d768fa9ea3a9b354de7bac28d6f36032e9363"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 259746,
+      "sha256": "62bd22de37ddd25185b819c765bbecf6d9894b0fec90b87fba49a486145fc168"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 11683,
+      "sha256": "9f6f2020ff121564de0028162010ae6b1a184b3412cfde7cb42f5765fa02b4d0"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v3-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80083,
+      "sha256": "80a6c081a23d14db8566a1e616cae6d77c1f1881567a655d677bf6fd199f0a15"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v3-review/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v3-review/source/tests/test_s9_class_default_value.py",
+      "bytes": 15008,
+      "sha256": "8dadda798a338d7a79db3effdef0dfee792d2c204735bd584f11337c257b3702"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v3-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v3-review/verdict.json",
+      "bytes": 1817,
+      "sha256": "60e2dbf7d17248a32a40e316ff632de2997c91c9bd80782c897a32bc193f29fb"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v4-review/parser-hidden-size.txt",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/parser-hidden-size.txt",
+      "bytes": 3861,
+      "sha256": "34df725983352b101c354c6fba5ad03517fc4ff13f66303cdaa6bdba8f325256"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v4-review/source/model_unfolder/evidence/class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/source/model_unfolder/evidence/class_default_value.py",
+      "bytes": 13078,
+      "sha256": "185da84a994915ae3cafbbe4bbba0c8d38bb970a5c2efc42442181139ecf2764"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v4-review/source/model_unfolder/evidence/registry.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80134,
+      "sha256": "9be7ee9a59aa8ec2222da7117b360c0877567e72796fb97e8caefb8d8ae3099c"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v4-review/source/tests/test_s9_class_default_value.py",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/source/tests/test_s9_class_default_value.py",
+      "bytes": 15949,
+      "sha256": "32b1d8c817aba12c1cae4f22ca228c03d2742bce7a597616a7c4c1cd7ea181ec"
+    },
+    {
+      "member": "unfold-s9a-independent-default-d1-v4-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/verdict.json",
+      "bytes": 1916,
+      "sha256": "f9ce5ee7ce9cec30d33ef380a0c2a273ab3b46bba70fefbafac8ee9ceda0fe8d"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/attention_geometry.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/attention_geometry.py",
+      "bytes": 41503,
+      "sha256": "c648c39c851671d82e225d5b9fabc08d22619100e5f7534df797df1bc707ec47"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/cross_attention_replacement.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/cross_attention_replacement.py",
+      "bytes": 22313,
+      "sha256": "3e4552fedb536057efc20dbdf46211aee81b762bbfa7a1b0456fbd00d3cf5167"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/mtp.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/mtp.py",
+      "bytes": 21385,
+      "sha256": "12159063539e7eac85649f457fe0b3a319de328b8b83cafc0435e68def60a6ee"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/position_absolute.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/position_absolute.py",
+      "bytes": 15492,
+      "sha256": "0beb87644f12d29918929b6f1db4b9691f19453650a8865302a4d80a9bd8c18a"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/position_relative_bias.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/position_relative_bias.py",
+      "bytes": 35040,
+      "sha256": "ba62a182ce195541fd0d006f3f16c5b529c84e15ef745282f51bee5812cafb3b"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/reader_claims.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 30988,
+      "sha256": "d96959b1f3c09e0ac72769fbd41647def8376ce5434c2efc68db64d96119c11a"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/source/tests/test_s9_reader_declarations.py",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 10511,
+      "sha256": "0dfb9909dc0d5859912fc208635874d35f328428b0145dc731c56eb0df9d8b76"
+    },
+    {
+      "member": "unfold-s9a-independent-five-declarations-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-five-declarations-review/verdict.json",
+      "bytes": 2672,
+      "sha256": "25a0309ff46076089490ecfc8c81731e175f3895e651e999b29245c0114129cf"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-correction-review/manifest.json",
+      "original": "/private/tmp/unfold-s9a-independent-operand-correction-review/manifest.json",
+      "bytes": 504,
+      "sha256": "5bb673a3379c6786a084538dd7aaa07d421d0361c470b8d56568b0b096f08b6a"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-correction-review/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-correction-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 263277,
+      "sha256": "55a596a69ddc6aad736facf1cb6a8f6cc44a92b7313909874583c37a2117a5c8"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-correction-review/source/model_unfolder/evidence/reader_claims.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-correction-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 33542,
+      "sha256": "b550f0676f4c9207684af304ccecc9e6f12e96d6cb5b37bada1f715941f7288e"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-correction-review/source/tests/test_s9_operand_channels.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-correction-review/source/tests/test_s9_operand_channels.py",
+      "bytes": 10938,
+      "sha256": "8a6f0b212379b4f59e22f5259e7218d3578ad93b9a7a8f12425d4193a6b3460b"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-correction-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-operand-correction-review/verdict.json",
+      "bytes": 2196,
+      "sha256": "1d89a74bc31df82d16a82e53ddc549fbbae0f3e0eefeafbd72589145565dc39b"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-root-review/manifest.json",
+      "original": "/private/tmp/unfold-s9a-independent-operand-root-review/manifest.json",
+      "bytes": 480,
+      "sha256": "17ebc43181eb13e378615bf760a991b9b435e02a196c4800bef7edf12b6b0e9d"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-root-review/source/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-root-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 263277,
+      "sha256": "55a596a69ddc6aad736facf1cb6a8f6cc44a92b7313909874583c37a2117a5c8"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-root-review/source/model_unfolder/evidence/reader_claims.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-root-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 33646,
+      "sha256": "5f28eb326e6676561ceec115d9420da606e28036bf5ab02eebb350117414f77a"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-root-review/source/tests/test_s9_operand_channels.py",
+      "original": "/private/tmp/unfold-s9a-independent-operand-root-review/source/tests/test_s9_operand_channels.py",
+      "bytes": 11364,
+      "sha256": "4ea2f571f2eb49c1ef13346041741970c7a07cc6be4a5d08896118fc5f318016"
+    },
+    {
+      "member": "unfold-s9a-independent-operand-root-review/verdict.json",
+      "original": "/private/tmp/unfold-s9a-independent-operand-root-review/verdict.json",
+      "bytes": 1190,
+      "sha256": "cc6da016ac36e0e96495f862aa9d664fb3cba325e9d57e11760cebcb7cb1b9bd"
+    },
+    {
+      "member": "unfold-s9a-operand-root-snapshot/manifest.json",
+      "original": "/private/tmp/unfold-s9a-operand-root-snapshot/manifest.json",
+      "bytes": 480,
+      "sha256": "17ebc43181eb13e378615bf760a991b9b435e02a196c4800bef7edf12b6b0e9d"
+    },
+    {
+      "member": "unfold-s9a-operand-root-snapshot/model_unfolder/adapters/transformer/parser.py",
+      "original": "/private/tmp/unfold-s9a-operand-root-snapshot/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 263277,
+      "sha256": "55a596a69ddc6aad736facf1cb6a8f6cc44a92b7313909874583c37a2117a5c8"
+    },
+    {
+      "member": "unfold-s9a-operand-root-snapshot/model_unfolder/evidence/reader_claims.py",
+      "original": "/private/tmp/unfold-s9a-operand-root-snapshot/model_unfolder/evidence/reader_claims.py",
+      "bytes": 33646,
+      "sha256": "5f28eb326e6676561ceec115d9420da606e28036bf5ab02eebb350117414f77a"
+    },
+    {
+      "member": "unfold-s9a-operand-root-snapshot/tests/test_s9_operand_channels.py",
+      "original": "/private/tmp/unfold-s9a-operand-root-snapshot/tests/test_s9_operand_channels.py",
+      "bytes": 11364,
+      "sha256": "4ea2f571f2eb49c1ef13346041741970c7a07cc6be4a5d08896118fc5f318016"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/executed-plan.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/executed-plan.json",
+      "bytes": 822,
+      "sha256": "6f5387f3fcc7af0b6453a912d5fe60155a626b0d8569a717895a2cdf19592d1a"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/executed-runner.py",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/executed-runner.py",
+      "bytes": 35011,
+      "sha256": "076d0640dc56ed4ec4cea955dc2a1028240101d62137d9a5607379827b40c2b9"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/inputs-after.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/inputs-after.json",
+      "bytes": 870,
+      "sha256": "2f70e56e2dae2bc286815670a1c4945d73e803f05f6cee92a17501b316176301"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/inputs-before.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/inputs-before.json",
+      "bytes": 870,
+      "sha256": "2f70e56e2dae2bc286815670a1c4945d73e803f05f6cee92a17501b316176301"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/actual-class-defaults.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/actual-class-defaults.json",
+      "bytes": 139,
+      "sha256": "a7c21e0c1e56f2ce6735f42d2cc9b3e72134fe9426c4d07e0f3754b32cca93fc"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/actual-omitted-default-premises.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/actual-omitted-default-premises.json",
+      "bytes": 73,
+      "sha256": "a74c1ef7ac3aa65c2caff45ebc3aa43daa0a5b9813497c69fde3a361c61088a2"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/all-fact-deltas.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/all-fact-deltas.json",
+      "bytes": 12352,
+      "sha256": "f0212a05ca4f08a5fb3deb23ea5b5fba38bb0dcc54ac64c2ab9e0d28ae733588"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/all-ir-deltas.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/all-ir-deltas.json",
+      "bytes": 162075,
+      "sha256": "c64ddc8a5df70e9125833ed326f4c6df5b7bb9cd97481be23f6df40c30108f42"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/failure.txt",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/failure.txt",
+      "bytes": 609,
+      "sha256": "059886329cc59dad33e247eebf46ac8af5ee6a9417bb9472a42fc8373275d492"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/omissions.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/omissions.json",
+      "bytes": 502,
+      "sha256": "a7f3b2fd8971f89461f2ce0f3a4bff89a238f59bc9b8a92631183ee4834d6279"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/actual-condition-defaults.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/actual-condition-defaults.json",
+      "bytes": 63,
+      "sha256": "e1b07b5ad9b84f56d2cf8859859fbf952af3219190e8852f6a6626b68516c6de"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/config-access-events.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/config-access-events.json",
+      "bytes": 48089,
+      "sha256": "1b328b4f4d094f45eaeb6b2fb5e177bd34dfa0122db5085d38609671d1cdae54"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/facts.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/facts.json",
+      "bytes": 64946,
+      "sha256": "e2124f7c65b9945cefaf879721e0646752888e61ec942290cbef04570007f88e"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/input.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/input.json",
+      "bytes": 1087,
+      "sha256": "196fd6ae5c096016b8413b69705434c2cbd31539e7f436585d1e79c6adf85662"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/ir-after-render.json.gz",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/ir-after-render.json.gz",
+      "bytes": 10158,
+      "sha256": "e672ecb200ab084fb1ac12990d0fe01bd18b16865a311b23406066a275613cd8"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/ir-before-render.json.gz",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/ir-before-render.json.gz",
+      "bytes": 10159,
+      "sha256": "41b809c8e2f6b246e3ae5bdd76d76091d8aeee029047dd4411c6d20337b344a0"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/native-facts.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/native-facts.json",
+      "bytes": 130534,
+      "sha256": "c9e8a9c1619105198674af8bb1901f27cf3804ee38df2bdf4e9e1553753d7f1d"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/original-proof-operands.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/original-proof-operands.json",
+      "bytes": 4169,
+      "sha256": "a50b7eb3563506f03aefe9efedd79928a389ac193b01ac652d0cdffb64a6b7a9"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/page.html",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/page.html",
+      "bytes": 60169,
+      "sha256": "c2d329e9fff92b5947c86b6bf03fe93d9448684078026723d3de6c39da070721"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/params.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/params.json",
+      "bytes": 215,
+      "sha256": "3caf6ed07e21bab46d49a303947a824e99e169f03e5a8c362cf2e163c71b6c3b"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/prepared-documents.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/prepared-documents.json",
+      "bytes": 4746,
+      "sha256": "6874f00453577caf95381a82fb230c53b2d17e872c1a0c3c00c77aa280e3fc3d"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/render-ir-deltas.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/render-ir-deltas.json",
+      "bytes": 133,
+      "sha256": "3adad2c20188bad018ca030a6833f73cc46d7e4ea230bbb706961383b9eb07b9"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/svg-hashes.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/ordinary/svg-hashes.json",
+      "bytes": 283,
+      "sha256": "f6ce0acd5d629f04682006be985bbff1bc514c47870e82839a131b234f1ffa80"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/post-render-ir-deltas.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/post-render-ir-deltas.json",
+      "bytes": 162075,
+      "sha256": "c64ddc8a5df70e9125833ed326f4c6df5b7bb9cd97481be23f6df40c30108f42"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/provenance-transition-bindings.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/provenance-transition-bindings.json",
+      "bytes": 910,
+      "sha256": "5b848d002934f6054463b190b515d97494a8a947be448897a770af1859c3e343"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/resolved-config-class.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/resolved-config-class.json",
+      "bytes": 482,
+      "sha256": "314afdb20a96fae482ece43282caa08834473fd5d183c2ce5bd0d9b9529c9ef1"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/source-bundles.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/source-bundles.json",
+      "bytes": 2897,
+      "sha256": "116b9f1af70c6436df6f3f6c12c7c3f5406c521af496dab758a9a5053082abe7"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/actual-condition-defaults.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/actual-condition-defaults.json",
+      "bytes": 139,
+      "sha256": "a7c21e0c1e56f2ce6735f42d2cc9b3e72134fe9426c4d07e0f3754b32cca93fc"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/config-access-events.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/config-access-events.json",
+      "bytes": 49372,
+      "sha256": "466a70780c8635416a7ecdc0d9976fc285e7a2d713972ac2c1e738a06a6a8839"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/facts.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/facts.json",
+      "bytes": 63920,
+      "sha256": "8cf5076f0b7031636bfce3418e98548950024b9c7b9773c05480f7913f913c5a"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/input.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/input.json",
+      "bytes": 1011,
+      "sha256": "71950ab553a035aad73ce4aabda65ba80cae9068f7e88cc4176ff196a9178fef"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/ir-after-render.json.gz",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/ir-after-render.json.gz",
+      "bytes": 9977,
+      "sha256": "32cad1536b2b3ab1a213209fd80fe2f6d1542b9ddac15e03ff0e7578a2b1176c"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/ir-before-render.json.gz",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/ir-before-render.json.gz",
+      "bytes": 9978,
+      "sha256": "2af1e9d9597977f44e843f2690d6adfefc75fce024b2b4cb356831eb692d02ca"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/native-facts.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/native-facts.json",
+      "bytes": 129478,
+      "sha256": "ea11afdf696cc30dffba0a3e979693f82b3cc8c81b2c165830accbb2adcdd4e7"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/original-proof-operands.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/original-proof-operands.json",
+      "bytes": 3557,
+      "sha256": "4ff7131cdf3869a9a173454e821de4aaf6e1b4ec45be3c4cbb3bd0c01b6cf25b"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/page.html",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/page.html",
+      "bytes": 60211,
+      "sha256": "98cef79ac49f29162c6e1495003f45886e034af7f6421aa54e07cff0e139ee68"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/params.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/params.json",
+      "bytes": 97,
+      "sha256": "501850f99bb4f3bcb33b4102e1ac10226b3dd4525383819b2f0312ad8b99de5b"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/prepared-documents.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/prepared-documents.json",
+      "bytes": 4519,
+      "sha256": "8844cf04d54775f947a1c8c1507c709aa96b318b009d5c178dcde28f180ca3d0"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/render-ir-deltas.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/render-ir-deltas.json",
+      "bytes": 133,
+      "sha256": "3adad2c20188bad018ca030a6833f73cc46d7e4ea230bbb706961383b9eb07b9"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/svg-hashes.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/llama-7b/sparse-valid/svg-hashes.json",
+      "bytes": 283,
+      "sha256": "920bc7171294b6918351b1aa69d4006d7026183cbe0edf58cb2b43ce883ce75a"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/result.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/result.json",
+      "bytes": 70190,
+      "sha256": "d0889ad24edbb0dc5a43f04be2b7f01cddb73b74083f75dbd6c56374c8cc6a86"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/source-after.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/source-after.json",
+      "bytes": 105345,
+      "sha256": "f6540e4b80e24be880b4f87808427ade4223b69e02d6c62502024983070ae2f0"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/source-before.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/source-before.json",
+      "bytes": 105345,
+      "sha256": "f6540e4b80e24be880b4f87808427ade4223b69e02d6c62502024983070ae2f0"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/source-dependencies-after.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/source-dependencies-after.json",
+      "bytes": 1828,
+      "sha256": "83f4e7dc97dc460988b46d3232701206e11c1d4e7837b55ef3988bbcd59d7ebb"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama/source-dependencies.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama/source-dependencies.json",
+      "bytes": 1828,
+      "sha256": "83f4e7dc97dc460988b46d3232701206e11c1d4e7837b55ef3988bbcd59d7ebb"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama-lane/actual-sparse-config-html.log",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama-lane/actual-sparse-config-html.log",
+      "bytes": 197,
+      "sha256": "5d09618ea892c783424e73230920827ded165518bb43dadb49eba9391262480a"
+    },
+    {
+      "member": "unfold-s9a-sparse-eighteenth-llama-lane/result.json",
+      "original": "/private/tmp/unfold-s9a-sparse-eighteenth-llama-lane/result.json",
+      "bytes": 550,
+      "sha256": "51376815882eea54c8e849189dc22dce6d800be7df00932e8e33d5d87ad8f09a"
+    }
+  ],
+  "archive_sha256": "99866766fdc0577d402e3e13ca4df6d37b04b6e75f0df0a0b081691115043c3f",
+  "every_member_restored_and_compared": true,
+  "product_imports_or_tests_run": false
+}

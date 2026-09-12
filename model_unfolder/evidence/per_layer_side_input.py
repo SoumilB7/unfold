@@ -22,6 +22,7 @@ from .program_index import (
     SourceSpan,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import ReaderFactProjection, reader_operand, retained_claim_reader
 
 
 _LINEAR_PROTOCOLS = frozenset({
@@ -68,6 +69,38 @@ class PerLayerSideInputEvidence:
             raise TypeError("per-layer provenance is typed")
 
 
+@dataclass(frozen=True)
+class PerLayerInputClaimWitness:
+    index: ProgramIndex
+    pathway: PerLayerSideInputEvidence
+    reader_symbol = "model_unfolder.evidence.per_layer_side_input.decoder_per_layer_side_input_for_path"
+
+    def validate_result(self, result):
+        if type(self.pathway) is not PerLayerSideInputEvidence:
+            raise TypeError("per-layer input requires its complete side-input computation")
+        self.pathway.__post_init__()
+        if result.status != "resolved" or result.value is not self.pathway \
+                or result.owner != self.pathway.path.block_occurrence:
+            raise ValueError("per-layer input belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder", "per_layer_embedding_pathway"):
+            raise ValueError("per-layer input cannot author this projection")
+        width = reader_operand(document, self.pathway.width_path)
+        vocab = reader_operand(document, self.pathway.vocabulary_path) if self.pathway.vocabulary_path else None
+        if type(width.value) is not int or width.value <= 0:
+            raise ValueError("per-layer input width is not its exact positive operand")
+        value = {"hidden": width.value, "vocab": vocab.value if vocab is not None
+                 and type(vocab.value) is int and vocab.value > 0 else None}
+        operands = (width, vocab) if vocab is not None else (width,)
+        status = "class_default" if any(item.source_kind == "class_default" for item in operands) else "code_and_config"
+        return ReaderFactProjection(owner, key, "relation", value, status,
+                                    tuple(item.checkpoint_path for item in operands if item.checkpoint_path))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder', 'per_layer_embedding_pathway', 'relation'),
+))
 def decoder_per_layer_side_input_for_path(
     index: ProgramIndex,
     bundle,
@@ -139,6 +172,7 @@ def decoder_per_layer_side_input_for_path(
         template.call, gate, multiply, projection, norm, spans)
     return ReaderResult.resolved(
         path.block_occurrence, value,
+        claim_witness=PerLayerInputClaimWitness(index, value),
         provenance=(ReaderProvenance(
             "source", spans=spans,
             detail=("exact stage tensor -> loop-indexed repeated-call operand -> "

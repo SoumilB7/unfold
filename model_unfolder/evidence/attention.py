@@ -68,6 +68,8 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderClaimUnavailable, ReaderFactProjection, reader_operand, retained_claim_reader
+from .receipts import value_status_hash
 
 
 _LINEAR_PROTOCOLS = frozenset({
@@ -943,6 +945,66 @@ def decoder_attention_head_binding_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+@dataclass(frozen=True)
+class AttentionScoreClaimWitness:
+    index: ProgramIndex
+    binding: AttentionScoreScalingBinding | EquivalentAttentionScoreScalingBinding
+    reader_symbol = "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+
+    def validate_result(self, result):
+        if type(self.binding) not in (AttentionScoreScalingBinding, EquivalentAttentionScoreScalingBinding):
+            raise TypeError("score claim requires the exact live score/softmax path")
+        self.binding.__post_init__()
+        owner = (self.binding.owner_occurrence if isinstance(self.binding, EquivalentAttentionScoreScalingBinding)
+                 else self.binding.block_occurrence)
+        if result.status != "resolved" or result.value is not self.binding or result.owner != owner:
+            raise ValueError("score claim belongs to another actual attention occurrence")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ("decoder.attention", "scores_scale"):
+            raise ValueError("score reader has no such intended projection")
+        return "applied_function"
+
+    def project(self, owner, key, document):
+        kind = self.declared_kind(owner, key)
+        variants = (self.binding.variants if isinstance(self.binding, EquivalentAttentionScoreScalingBinding)
+                    else (self.binding,))
+        values = []
+        for variant in variants:
+            if variant.protocol == "explicit_product" and variant.scaled is False:
+                values.append("unscaled (raw QK^T)")
+                continue
+            if variant.protocol != "sdpa_terminal":
+                raise ReaderClaimUnavailable("scaled score path has no exact multiplier formula proof")
+            call = variant.score_call
+            if not _call_has_external_protocol(self.index, call,
+                    frozenset({"torch.nn.functional.scaled_dot_product_attention"})):
+                raise ValueError("SDPA scale claim lost its exact imported terminal")
+            from .activation_registry import _selected_activation_use_closure
+            _selected_activation_use_closure(self.index, call.enclosing_callable.source,
+                                             call.callee, terminal_call=True)
+            names = tuple(name for name, _value in call.kwargs)
+            if not 3 <= len(call.args) <= 6 or any(arg.kind == "starred" for arg in call.args) \
+                    or len(set(names)) != len(names) or any(name not in {
+                        "attn_mask", "dropout_p", "is_causal", "scale", "enable_gqa"} for name in names):
+                raise ReaderClaimUnavailable("SDPA call has unresolved argument packing or keywords")
+            positional_optional = ("attn_mask", "dropout_p", "is_causal")[:len(call.args) - 3]
+            if any(name in positional_optional for name in names):
+                raise ReaderClaimUnavailable("SDPA optional argument is bound both positionally and by keyword")
+            scale = tuple(value for name, value in call.kwargs if name == "scale")
+            if scale and (scale[0].kind != "constant" or scale[0].const_value is not None):
+                raise ReaderClaimUnavailable("SDPA explicit scale operand has no exact formula proof")
+            # This existing product label is the DENOMINATOR. The supported
+            # SDPA protocol multiplies QK by 1/sqrt(query_width), not sqrt.
+            values.append("sqrt(head_dim)")
+        if len(set(values)) != 1:
+            raise ReaderClaimUnavailable("attention lanes do not prove one common score formula")
+        return ReaderFactProjection(owner, key, kind, values[0], "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'scores_scale', 'applied_function'),
+))
 def decoder_attention_score_scaling_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -972,6 +1034,7 @@ def decoder_attention_score_scaling_for_path(
     if len(variants) == 1:
         return ReaderResult.resolved(
             variants[0].block_occurrence, variants[0],
+            claim_witness=AttentionScoreClaimWitness(index, variants[0]),
             provenance=tuple(provenance))
     if len({item.scaled for item in variants}) != 1:
         return ReaderResult.ambiguous(
@@ -984,9 +1047,38 @@ def decoder_attention_score_scaling_for_path(
         candidates.value.stage_occurrence, tuple(variants))
     return ReaderResult.resolved(
         candidates.value.stage_occurrence, value,
+        claim_witness=AttentionScoreClaimWitness(index, value),
         provenance=tuple(dict.fromkeys(provenance)))
 
 
+@dataclass(frozen=True)
+class AttentionSoftcapClaimWitness:
+    index: ProgramIndex
+    binding: AttentionLogitSoftcapBinding
+    reader_symbol = "model_unfolder.evidence.attention.decoder_attention_logit_softcap_for_path"
+
+    def validate_result(self, result):
+        if type(self.binding) is not AttentionLogitSoftcapBinding:
+            raise TypeError("softcap claim needs exact divide/tanh/multiply wiring")
+        self.binding.__post_init__()
+        if result.status != "resolved" or result.value is not self.binding \
+                or result.owner != self.binding.block_occurrence:
+            raise ValueError("softcap claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "logit_softcap"):
+            raise ValueError("softcap computation cannot author this projection")
+        operand = reader_operand(document, self.binding.config_path, allow_aliases=False)
+        if not isinstance(operand.value, (int, float)) or isinstance(operand.value, bool):
+            raise ValueError("softcap requires its exact numeric operand")
+        status = "class_default" if operand.source_kind == "class_default" else "code_and_config"
+        return ReaderFactProjection(owner, key, "applied_function", operand.value, status,
+                                    (operand.checkpoint_path,) if operand.checkpoint_path else ())
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'logit_softcap', 'applied_function'),
+))
 def decoder_attention_logit_softcap_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1013,9 +1105,38 @@ def decoder_attention_logit_softcap_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionSoftcapClaimWitness(index, result.value),
         provenance=(*block.provenance, *result.provenance))
 
 
+@dataclass(frozen=True)
+class AttentionClipClaimWitness:
+    index: ProgramIndex
+    clip: AttentionQKVClipBinding
+    reader_symbol = "model_unfolder.evidence.attention.decoder_attention_qkv_clip_for_path"
+
+    def validate_result(self, result):
+        if type(self.clip) is not AttentionQKVClipBinding:
+            raise TypeError("clip claim needs exact projection-clamp-compute lineage")
+        self.clip.__post_init__()
+        if result.status != "resolved" or result.value is not self.clip \
+                or result.owner != self.clip.block_occurrence:
+            raise ValueError("clip claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "qkv_clip"):
+            raise ValueError("clip reader cannot author this projection")
+        operand = reader_operand(document, self.clip.config_path)
+        if isinstance(operand.value, bool) or not isinstance(operand.value, (int, float)):
+            raise ValueError("clamp application has no exact numeric operand")
+        return ReaderFactProjection(owner, key, "applied_function", operand.value,
+            "class_default" if operand.source_kind == "class_default" else "code_and_config",
+            (operand.checkpoint_path,) if operand.checkpoint_path else ())
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'qkv_clip', 'applied_function'),
+))
 def decoder_attention_qkv_clip_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1042,9 +1163,33 @@ def decoder_attention_qkv_clip_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionClipClaimWitness(index, result.value),
         provenance=(*block.provenance, *result.provenance))
 
 
+@dataclass(frozen=True)
+class AttentionCacheClaimWitness:
+    index: ProgramIndex
+    cache: AttentionCacheBinding
+    reader_symbol = "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+
+    def validate_result(self, result):
+        if type(self.cache) is not AttentionCacheBinding:
+            raise TypeError("cache claim needs exact replacement-lane dataflow")
+        self.cache.__post_init__()
+        if result.status != "resolved" or result.value is not self.cache \
+                or result.owner != self.cache.block_occurrence:
+            raise ValueError("cache claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "cached"):
+            raise ValueError("cache connection cannot author this projection")
+        return ReaderFactProjection(owner, key, "connection", True, "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'cached', 'connection'),
+))
 def decoder_attention_cache_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1071,6 +1216,7 @@ def decoder_attention_cache_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionCacheClaimWitness(index, result.value),
         provenance=(*block.provenance, *result.provenance))
 
 
@@ -1779,6 +1925,97 @@ def _dot_softmax_cache_path(
     return len(set(matches)) == 1
 
 
+def attention_claim_operands(binding, document, geometry=None):
+    """Bind the exact existing protocol and every geometry operand it uses."""
+    if isinstance(binding, AttentionHeadBinding):
+        paths = (binding.query_heads_path, binding.key_value_heads_path,
+                 *(path for path, _value in binding.selection_premises))
+    elif isinstance(binding, LatentAttentionBinding):
+        paths = (binding.num_heads_path, binding.kv_lora_rank_path,
+                 binding.qk_rope_head_dim_path, binding.qk_nope_head_dim_path,
+                 binding.value_head_dim_path,
+                 *((binding.q_lora_rank_path,) if binding.q_lora_rank_path else ()))
+    elif isinstance(binding, (MultiQueryAttentionBinding, EquivalentDispatchMultiQueryBinding)):
+        paths = (binding.num_heads_path, binding.selector_path,
+                 *((binding.alternate_architecture_path,)
+                   if isinstance(binding, EquivalentDispatchMultiQueryBinding) else ()))
+    else:
+        raise TypeError("attention projection requires a closed protocol binding")
+    paths = tuple(dict.fromkeys((*paths, *(
+        tuple(path for path, _value in geometry.premises) if geometry is not None else ()))))
+    operands = tuple(reader_operand(document, path) for path in paths)
+    values = {operand.source_path: operand.value for operand in operands}
+    bound = bind_attention_mechanism(binding, values)
+    if bound is None:
+        raise ValueError("attention's exact document operands do not satisfy its protocol")
+    if geometry is not None and any(
+            value_status_hash(values[path], "value") != value_status_hash(expected, "value")
+            for path, expected in geometry.premises):
+        raise ValueError("head geometry operands differ from their exact reader derivation")
+    return bound, operands
+
+
+def attention_geometry_projection(binding, document, geometry=None):
+    bound, operands = attention_claim_operands(binding, document, geometry)
+    fields = dict(kind=bound.kind, num_heads=bound.num_heads,
+                  num_kv_heads=bound.num_kv_heads,
+                  head_dim=geometry.head_dim if geometry is not None else None,
+                  q_lora_rank=None, kv_lora_rank=None, qk_nope_head_dim=None,
+                  qk_rope_head_dim=None, v_head_dim=None)
+    if isinstance(binding, LatentAttentionBinding):
+        values = dict(bound.premises)
+        fields.update(q_lora_rank=values[binding.q_lora_rank_path] if binding.q_lora_rank_path else None,
+                      kv_lora_rank=values[binding.kv_lora_rank_path],
+                      qk_nope_head_dim=values[binding.qk_nope_head_dim_path],
+                      qk_rope_head_dim=values[binding.qk_rope_head_dim_path],
+                      v_head_dim=values[binding.value_head_dim_path],
+                      head_dim=values[binding.qk_nope_head_dim_path] + values[binding.qk_rope_head_dim_path])
+    status = ("class_default" if any(item.source_kind == "class_default" for item in operands)
+              else "code_and_config" if operands else "code_proven")
+    return fields, status, tuple(item.checkpoint_path for item in operands if item.checkpoint_path)
+
+
+@dataclass(frozen=True)
+class AttentionMechanismClaimWitness:
+    index: ProgramIndex
+    binding: object
+    reader_symbol = "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+
+    def validate_result(self, result):
+        if type(self.binding) not in (AttentionHeadBinding, LatentAttentionBinding,
+                                      MultiQueryAttentionBinding, EquivalentDispatchMultiQueryBinding):
+            raise TypeError("attention claim requires the exact typed source protocol")
+        self.binding.__post_init__()
+        if result.status != "resolved" or result.value is not self.binding \
+                or result.owner != self.binding.block_occurrence:
+            raise ValueError("attention claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.attention":
+            raise ValueError("attention protocol cannot author another owner")
+        if key == "output_gate":
+            gate = getattr(self.binding, "output_gate", None)
+            if gate is None:
+                raise ValueError("attention protocol did not prove an output gate")
+            gate.__post_init__()
+            return ReaderFactProjection(owner, key, "applied_function", gate.activation, "code_proven")
+        if key == "mechanism":
+            bound, operands = attention_claim_operands(self.binding, document)
+            status = "class_default" if any(item.source_kind == "class_default" for item in operands) else "code_and_config"
+            return ReaderFactProjection(owner, key, "connection", bound.kind, status,
+                                        tuple(item.checkpoint_path for item in operands if item.checkpoint_path),
+                                        completeness="presence_only")
+        if key == "head_geometry":
+            fields, status, paths = attention_geometry_projection(self.binding, document)
+            return ReaderFactProjection(owner, key, "relation", fields, status, paths)
+        raise ValueError("attention protocol has no such finite projection")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'mechanism', 'connection'),
+    ('decoder.attention', 'head_geometry', 'relation'),
+    ('decoder.attention', 'output_gate', 'applied_function'),
+))
 def decoder_attention_mechanism_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1858,10 +2095,51 @@ def decoder_attention_mechanism_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionMechanismClaimWitness(index, result.value),
         provenance=(
             *block.provenance, *dual_provenance, *result.provenance))
 
 
+@dataclass(frozen=True)
+class GatedDeltaGeometryClaimDeclaration:
+    index: ProgramIndex
+    binding: GatedDeltaGeometryBinding
+    graph: object
+    reader_symbol = "model_unfolder.evidence.attention.decoder_gated_delta_geometry_for_path"
+
+    def validate_result(self, result):
+        if type(self.binding) is not GatedDeltaGeometryBinding:
+            raise TypeError("gated-delta geometry requires its exact dimension-role lineage")
+        self.binding.__post_init__()
+        node = self.graph.node_for(self.binding.mixer_occurrence)
+        block = self.graph.node_for(self.binding.block_occurrence)
+        if result.status != "resolved" or result.value is not self.binding \
+                or result.owner != self.binding.block_occurrence or node is None or block is None \
+                or node not in block.children or node.symbol != self.binding.conv_site.site.owner:
+            raise ValueError("gated-delta geometry belongs to another exact mixer/constructor")
+        calls = self.index.calls_in(self.binding.split_call.enclosing_callable)
+        if any(call not in calls for call in (self.binding.split_call, *self.binding.reshape_calls,
+                                              *self.binding.repeat_calls, *self.binding.recurrence_calls)):
+            raise ValueError("gated-delta role lineage contains a foreign call")
+        if not any(site.site_id == self.binding.conv_site.site
+                   for site in self.index.construction_sites_of(node.symbol)):
+            raise ValueError("gated-delta geometry lost its exact convolution constructor")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ("decoder.attention", "gated_delta_geometry"):
+            raise ValueError("gated-delta geometry has no such intended projection")
+        return "relation"
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "gated-delta geometry awaits exact split/reshape/repeat-to-terminal "
+            "role lineage and operand qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'gated_delta_geometry', 'relation'),
+))
 def decoder_gated_delta_geometry_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1913,6 +2191,7 @@ def decoder_gated_delta_geometry_for_path(
     value = candidates[0]
     return ReaderResult.resolved(
         block.owner, value,
+        claim_witness=GatedDeltaGeometryClaimDeclaration(index, value, root.graph),
         provenance=(*block.provenance, ReaderProvenance(
             "code_and_config", spans=value.spans,
             config_paths=(

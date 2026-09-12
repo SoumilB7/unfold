@@ -1,0 +1,4 @@
+{
+  "status": "FAILED_SAVED_AUDIT_ADAPTER_BEFORE_DATA_COMPARISON",
+  "reason": "Expected prior34 bare archive-map list, actual36 archive-map is an object containing files and authority. Exact archive manifest hash passed; wrong schema len asserted2 versus590. No raw files or model outputs altered."
+}

@@ -1,0 +1,118 @@
+{
+  "input": "S9-schema/defaults-thirtysixth/musicgen/sparse.html",
+  "sha256": "eb8f59d70d9ec8738de7c0e08dd5908d4503acb8eef32970d3a89f9880a33aa3",
+  "bytes": 109674,
+  "load_ms": 41.3768330035964,
+  "initial_dom": {
+    "elements": 620,
+    "cards": 36,
+    "op_nodes": 37,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [
+      "class_default"
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1170
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "cross_attn",
+      "click_to_card_ms": 75.39549999637529,
+      "card": {
+        "id": "cross_attn",
+        "text": "Multi-head cross-attention\nCross-attention \u2014 decoder hidden states produce the queries; the projected image states produce K and V.\n16 Q heads\n16 KV heads\nhead dim 64\nposition scheme unresolved\nbias unresolved\nQK norm unresolved\ncache unresolved\nQKV storage unresolved\nscore scaling unresolved\nposition application unresolved\nsource modeling_musicgen.py:1440\nin/out 1,024\nclass_default \u00b7 cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]\nin (1,024)\nQ/K/V projections (storage unresolved)\nAttention scores (scaling unresolved)\nSoftmax\nConcat heads\nAttention output path unresolved\nEncoded text",
+        "rect": {
+          "x": 348,
+          "y": 231.0625,
+          "width": 644,
+          "height": 767,
+          "top": 231.0625,
+          "right": 992,
+          "bottom": 998.0625,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": [
+          {
+            "kind": "class_default",
+            "text": "class_default \u00b7 cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+            "rect": {
+              "x": 348,
+              "y": 385.75,
+              "width": 644,
+              "height": 86,
+              "top": 385.75,
+              "right": 992,
+              "bottom": 471.75,
+              "left": 348
+            },
+            "style": {
+              "background": "rgb(239, 246, 255)",
+              "color": "rgb(30, 58, 138)",
+              "border": "1px solid rgb(96, 165, 250)",
+              "whiteSpace": "normal",
+              "overflowWrap": "anywhere"
+            }
+          }
+        ]
+      },
+      "dom": {
+        "elements": 620,
+        "cards": 36,
+        "op_nodes": 37,
+        "visible_cards": [
+          "cross_attn"
+        ],
+        "chip_kinds": [
+          "class_default"
+        ],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 1887
+        }
+      }
+    }
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 620,
+    "cards": 36,
+    "op_nodes": 37,
+    "visible_cards": [
+      "cross_attn"
+    ],
+    "chip_kinds": [
+      "class_default"
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1887
+    }
+  }
+}

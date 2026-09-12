@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "bc9977ce587541649f0a6ee57637cb3e5b65313797ba2dc059b8d840d7fc2fe2",
+  "input": "tests/sable_test_corpus/glm-4-5.json",
+  "input_sha256": "f0400ba6b9ecc6b539aede81fc10092f3690729bafc2c67184e92b9811452dd0",
+  "resolved_class": {
+    "module": "transformers.models.glm4_moe.modeling_glm4_moe",
+    "qualname": "Glm4MoeForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

@@ -20,6 +20,7 @@ list.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from .reader_claims import ReaderClaimUnavailable, retained_claim_reader
 
 from .attention_child import (
     AttentionChildEvidence,
@@ -133,6 +134,37 @@ class ReplacementCrossAttentionSchedule:
             raise ValueError("the schedule retains exact source provenance")
 
 
+@dataclass(frozen=True)
+class ReplacementCrossClaimDeclaration:
+    """Producer-owned intended kind; the stronger projection remains unproved."""
+
+    index: ProgramIndex
+    value: ReplacementCrossAttentionSchedule
+    reader_symbol = "model_unfolder.evidence.cross_attention_replacement.decoder_replacement_cross_attention_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.value) is not ReplacementCrossAttentionSchedule:
+            raise TypeError("declaration requires the reader's actual typed aggregate")
+        self.value.__post_init__()
+        value = self.value
+        if result.status != "resolved" or result.value is not value \
+                or result.owner != value.stage.stage_occurrence:
+            raise ValueError("declaration belongs to another actual reader result or owner")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ('decoder.attention', 'cross_attention_schedule'):
+            raise ValueError("reader has no such intended projection")
+        return 'relation'
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "replacement-cross schedule and exact selector/count qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'cross_attention_schedule', 'relation'),
+))
 def decoder_replacement_cross_attention_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -248,7 +280,8 @@ def decoder_replacement_cross_attention_schedule_for_path(
         provenance.append(ReaderProvenance(
             "code_and_config", spans=spans, config_paths=config_paths,
             detail="exact selector operands choose the per-layer block occurrences"))
-    return ReaderResult.resolved(owner, evidence, provenance=tuple(provenance))
+    return ReaderResult.resolved(owner, evidence, provenance=tuple(provenance),
+                                 claim_witness=ReplacementCrossClaimDeclaration(index, evidence))
 
 
 def _selector_index_name(index: ProgramIndex, container: ContainerAddress) -> str:

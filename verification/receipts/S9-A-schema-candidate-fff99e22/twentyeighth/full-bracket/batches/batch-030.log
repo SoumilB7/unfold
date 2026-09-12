@@ -1,0 +1,55 @@
+...........................................F............................ [ 43%]
+........................................................................ [ 86%]
+.............F........                                                   [100%]
+=================================== FAILURES ===================================
+___________ test_shadow_denominator_and_artifact_hashes_are_current ____________
+
+    def test_shadow_denominator_and_artifact_hashes_are_current():
+>       check()
+
+tests/test_s7_artifacts.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = PosixPath('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyeighth/verification/s7')
+
+    def check(output: Path = OUTPUT) -> None:
+        matrix_path = output / "matrix.json"
+        matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+        _require_schema_version(matrix, 1, "S7 matrix")
+        if matrix["denominator"] != {"corpus": 29, "to_serve": 10}:
+            raise ValueError("S7 matrix denominator is not 29 + 10")
+        target_rows = _targets()
+        expected_targets = {row["slug"] for row in target_rows}
+        expected_by_slug = {row["slug"]: dict(row) for row in target_rows}
+        targets_payload = json.loads(
+            (output / "targets.json").read_text(encoding="utf-8"))
+        _validate_target_metadata(matrix, targets_payload, target_rows)
+        if (len(matrix["models"]) != len(expected_targets)
+                or {row["slug"] for row in matrix["models"]} != expected_targets):
+            raise ValueError("S7 matrix target set drifted")
+        if matrix.get("sources") != _source_hashes(target_rows):
+>           raise ValueError("S7 matrix dependency surface is stale")
+E           ValueError: S7 matrix dependency surface is stale
+
+scripts/generate_s7_shadow.py:1007: ValueError
+_____________ test_every_registry_drawable_fact_is_actually_drawn ______________
+
+    def test_every_registry_drawable_fact_is_actually_drawn():
+        """Projection obligation: a registered fact that DECLARES a drawable surface
+        must be drawn on it — the registry's obligation is real, not decorative."""
+        unmet = []
+        for name, definition in REGISTRY.items():
+            for surface in definition.projections:
+                drawn = _SURFACE_DRAWN.get(surface)
+                if drawn is not None and name not in drawn:
+                    unmet.append(f"{name}: registry promises {surface} but it is not drawn there")
+>       assert not unmet, "unmet projection obligations:\n" + "\n".join(unmet)
+E       AssertionError: unmet projection obligations:
+E         hidden_size: registry promises architecture_view but it is not drawn there
+E       assert not ['hidden_size: registry promises architecture_view but it is not drawn there']
+
+tests/test_projection_obligations.py:153: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current
+FAILED tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn
+2 failed, 164 passed in 27.71s

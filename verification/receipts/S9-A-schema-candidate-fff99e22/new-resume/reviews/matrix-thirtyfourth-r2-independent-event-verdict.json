@@ -1,0 +1,12 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_R1_CANDIDATE_IDENTITY_GAP_CLOSED",
+  "manifest_sha256": "de8171c4bbaade943dabb0b6e885c1abd76c8209a9e95d6b7b7a98eafffa210e",
+  "script_sha256": "58c86ee7b6dfb4d3f2225724b026e4c1a1674dd74326db43b33498f01816c8a1",
+  "generation_source_map_sha256": "fdc201d50c0aec9096869f485eac6f45228666eb4a066384c1a7139733391541",
+  "generation_source_files_rehashed": 394,
+  "exact_frozen_rows_verified": 196,
+  "checks": "Exact candidate/completion paths and successful34 source/artifact bracket required. Archived34 manifest hash and all rows/deletions verified. Candidate matrix.sources must equal the pinned394-file generation map; map membership independently matches exact frozen generator law. Existing full metadata/occurrence/order/citation/companion comparisons unchanged.",
+  "limits": "Saved comparator validates existing bytes and reported completed lane; it does not re-run models or replay live proofs. Positive input files are rehashed at exit; frozen membership and negative rows are validated at entry. Root retains immutable worktree and generation lane brackets. No142 closure or output approval inferred.",
+  "source_only_no_runtime": true,
+  "output_approval": false
+}

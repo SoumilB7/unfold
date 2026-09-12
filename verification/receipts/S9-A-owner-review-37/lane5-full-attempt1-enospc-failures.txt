@@ -1,0 +1,31 @@
+ERROR tests/test_cell_topology.py::test_child_add_requires_one_residual_and_one_computed_term[return out + residual + signal]
+ERROR tests/test_cell_topology.py::test_child_add_requires_one_residual_and_one_computed_term[return residual + residual]
+ERROR tests/test_cell_topology.py::test_constructor_normalization_cannot_execute_after_selected_return
+ERROR tests/test_cell_topology.py::test_constructor_normalization_executes_after_proven_inactive_return
+ERROR tests/test_cell_topology.py::test_constructor_normalization_inside_unsupported_region_is_unknown
+ERROR tests/test_cell_topology.py::test_dead_child_integrated_ffn_cannot_certify_the_block_return
+ERROR tests/test_cell_topology.py::test_dead_helper_add_cannot_certify_a_child_residual
+ERROR tests/test_cell_topology.py::test_dead_parallel_looking_equation_cannot_certify_the_return
+ERROR tests/test_cell_topology.py::test_dynamic_constructor_config_mutation_cannot_select_a_cell
+ERROR tests/test_cell_topology.py::test_guard_dependencies_retain_class_default_origin_in_reader_result
+ERROR tests/test_cell_topology.py::test_guarded_only_norm_definition_cannot_become_unconditional
+ERROR tests/test_cell_topology.py::test_guarded_rival_ffn_paths_remain_unresolved
+ERROR tests/test_cell_topology.py::test_keyword_residual_cannot_shift_into_an_omitted_optional_formal
+ERROR tests/test_cell_topology.py::test_nested_attention_norm_wrapper_requires_its_live_residual_equation[False]
+ERROR tests/test_cell_topology.py::test_nested_attention_norm_wrapper_requires_its_live_residual_equation[True]
+ERROR tests/test_cell_topology.py::test_non_add_augmented_assignment_cannot_prove_residual_merge
+ERROR tests/test_cell_topology.py::test_opaque_transform_on_branch_boundary_is_not_negative_norm_proof
+ERROR tests/test_cell_topology.py::test_parallel_norm_count_cannot_disagree_with_exact_branch_sites
+ERROR tests/test_cell_topology.py::test_parallel_requires_shared_input_and_one_three_term_merge
+ERROR tests/test_cell_topology.py::test_result_types_reject_forged_topology_and_provenance
+ERROR tests/test_cell_topology.py::test_sequential_placement_is_two_positive_residual_equations[\n    residual = signal\n    signal = self.compute(signal)\n    signal = self.first(signal)\n    signal = residual + signal\n    residual = signal\n    signal = self.transform(signal)\n    signal = self.second(signal)\n    signal = residual + signal\n    return signal\n    -post]
+ERROR tests/test_cell_topology.py::test_sequential_placement_is_two_positive_residual_equations[\n    residual = signal\n    signal = self.first(signal)\n    signal = self.compute(signal)\n    signal = residual + signal\n    residual = signal\n    signal = self.second(signal)\n    signal = self.transform(signal)\n    signal = residual + signal\n    return signal\n    -pre]
+ERROR tests/test_cell_topology.py::test_sequential_placement_is_two_positive_residual_equations[\n    residual = signal\n    signal = self.first(signal)\n    signal = self.compute(signal)\n    signal = self.second(signal)\n    signal = residual + signal\n    residual = signal\n    signal = self.first(signal)\n    signal = self.transform(signal)\n    signal = self.second(signal)\n    signal = residual + signal\n    return signal\n    -double]
+ERROR tests/test_cell_topology.py::test_two_calls_in_one_lexical_segment_are_not_parallel_without_common_merge
+ERROR tests/test_cell_topology.py::test_two_calls_to_one_residual_helper_remain_distinct_occurrences
+ERROR tests/test_cell_topology.py::test_unrelated_sibling_residual_equations_cannot_vote
+FAILED tests/test_cell_topology.py::test_child_integrated_add_is_proved_from_exact_child_and_helper
+FAILED tests/test_diffusion.py::test_encoder_bridge_own_linear_shape_and_conditional_call_ports
+FAILED tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer
+FAILED tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current
+FAILED tests/test_smoke.py::test_deepseek_v3_phase_change

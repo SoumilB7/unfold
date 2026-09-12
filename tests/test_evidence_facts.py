@@ -278,7 +278,14 @@ def test_record_typed_single_author_and_stable_serialization():
                              status="code_proven", completeness="presence_only",
                              legacy_source="reader"))
 
-    assert typed.to_dict() == legacy.to_dict()
+    native_rows, legacy_rows = typed.to_dict(), legacy.to_dict()
+    # S9 adds truthful metadata; the original public triple is still exact.
+    original = lambda rows: {key: {name: row[name] for name in ("value", "status", "source")}
+                             for key, row in rows.items()}
+    assert original(native_rows) == original(legacy_rows) == {
+        "decoder.ffn.gated": {"value": True, "status": "code_proven", "source": "reader"}}
+    assert native_rows["decoder.ffn.gated"]["presentation_reference"]["completeness"] == "presence_only"
+    assert legacy_rows["decoder.ffn.gated"]["presentation_reference"]["completeness"] == "uninspected"
     assert typed.records["decoder.ffn.gated"] == \
         typed.typed["decoder.ffn.gated"].to_record()
 

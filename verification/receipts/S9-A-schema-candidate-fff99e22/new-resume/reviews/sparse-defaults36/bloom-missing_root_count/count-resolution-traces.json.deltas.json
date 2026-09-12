@@ -1,0 +1,46 @@
+[
+  {
+    "path": [
+      0,
+      "has_default_premise"
+    ],
+    "before": false,
+    "after": true
+  },
+  {
+    "path": [
+      0,
+      "resolution",
+      "canonical"
+    ],
+    "before": "num_hidden_layers",
+    "after": "n_layer"
+  },
+  {
+    "path": [
+      0,
+      "resolution",
+      "provenance"
+    ],
+    "before": "",
+    "after": "class_default"
+  },
+  {
+    "path": [
+      0,
+      "resolution",
+      "source_kind"
+    ],
+    "before": "checkpoint",
+    "after": "class_default"
+  },
+  {
+    "path": [
+      0,
+      "resolution",
+      "value"
+    ],
+    "before": null,
+    "after": 2
+  }
+]

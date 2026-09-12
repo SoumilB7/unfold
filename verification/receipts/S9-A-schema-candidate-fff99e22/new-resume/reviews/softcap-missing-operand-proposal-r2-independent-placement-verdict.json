@@ -1,0 +1,108 @@
+{
+  "verdict": "PASS_BOUNDED_SOURCE_REVIEW_RUNTIME_PENDING",
+  "reviewer": "placement_executor",
+  "proposal_manifest_sha256": "712afa6c247d9bc3ee05d236b4ecea81b36060aa34b2b2d19e28adb25ea1083f",
+  "status": "Proposal only; reviewed copies are not applied. Every proposed artifact hash and four live before hashes verified.",
+  "source_files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+      "proposed_sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d",
+      "r1_proposed_sha256": "bd3debdf8ecdeee7c4393a5279bf10b635c69c2a95984f9a03541876e74e76d0"
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "before_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+      "proposed_sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b",
+      "r1_proposed_sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "before_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "proposed_sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b",
+      "r1_proposed_sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b"
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+      "proposed_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "r1_proposed_sha256": "1722dae4605808fd3f3a3252fcf1fe5c0aff19aaa6f95e20b60b9b462a2820e9"
+    }
+  ],
+  "checks": [
+    {
+      "boundary": "Finite declaration, no numeric proof",
+      "finding": "The new writer branch admits only decoder.attention.logit_softcap, unknown/None/partial, empty config paths, exact class1 softcap_operand_unavailable reason with no investigation, and the actual resolved softcap reader symbol. declare_reader_fact authenticates the retained invocation/index/document and cannot erase an existing positive proof. EvidenceFact rejects unknown reasons on known statuses. Numeric calls retain the original qualification path."
+    },
+    {
+      "boundary": "Exact inactive None",
+      "finding": "Nonambiguous None requires exact selected checkpoint path or a real default premise. The upstream shared resolver independently compares actual prepared-document selection/value/channel; _resolve_exact_config_path already refuses ambiguity. Source reader proves literal parameter-is-not-None guard. Missing/foreign/defaultless state is unresolved, never inactive."
+    },
+    {
+      "boundary": "Schema pairing",
+      "finding": "The native typed-write gate restricts unknown to None and known tiers to numbers; bool remains outside registered numeric types. The test rejects unknown17, knownNone and class-defaultNone. Legacy aggregate validate_rows still checks its pre-existing separate status/type sets; this change is a native typed writer and does not give legacy rows positive proof."
+    },
+    {
+      "boundary": "Chip cannot author occurrence placement",
+      "finding": "The parser adds only source_fact_keys to an existing id=attn/kind=attention/view=attention card, never a source_instance_path or operation. Exact unknown softcap is removed from attention_facts; chip events are separate from RenderEvents. Reconciliation uses event.facts_projected or explicit canonical source_instance_path, so no new source-span placement route is created. Existing independent R4 explicit block positives remain unchanged."
+    },
+    {
+      "boundary": "Original poison strengthened",
+      "finding": "Injected context-only cap17 still fails strict reader_operand for the actual prepared document. Extended parser/HTML control requires typed class1 None with real reader declaration, no claim proof/token/checkpoint path, no consumed cap, no softcap op or graph fact/receipt, and the exact unresolved chip. Foreign reason/class tests fail before publication; explicit checkpointNone remains inactive. Existing positive/absence controls unchanged."
+    }
+  ],
+  "structural_writer_census": {
+    "source_prediction": "No new counted structural sink; the same _facts.record_typed in _note_typed_fact remains one. Helper calls are not ledger writes.",
+    "blind_spot": "source_fact_keys metadata mutation is outside current scanner key/receiver vocabulary. Do not claim the scanner proves this citation. Finite producer card/chip/HTML/no-event controls cover it; root must still run existing full census.",
+    "runtime_executed": false,
+    "registry_baseline_growth_expected": 0
+  },
+  "root_runtime_required": [
+    "tests/test_attention_softcap.py",
+    "tests/test_reader_claims.py",
+    "tests/test_s9_presentation_chips.py",
+    "tests/test_projection_obligations.py",
+    "tests/test_s9_reader_placement.py",
+    "tests/test_s7_reconciliation.py",
+    "tests/test_structural_writes.py"
+  ],
+  "limits": [
+    "No project imports, model/test/browser runtime, source edits or output blessing by reviewer.",
+    "Actual root diagnostic must confirm the observed limited-operand path; next immutable candidate must run all listed controls and measure output deltas.",
+    "This is not architecture completion or proof for an unavailable numeric operand."
+  ],
+  "source_reads": [
+    {
+      "path": "model_unfolder/evidence/facts.py",
+      "sha256": "63c8d617efe3b2306fb2b5d749e2007eed78726b3ba82b0d5638e426c153b928"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744"
+    },
+    {
+      "path": "model_unfolder/evidence/config_access.py",
+      "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db"
+    },
+    {
+      "path": "model_unfolder/evidence/structural_writes.py",
+      "sha256": "d3e89d6e1bc3752e9f3b0fcc0208f55b3ab27ff8fcb39ffc59d6eaeef81ace2b"
+    },
+    {
+      "path": "model_unfolder/renderers/html/render_context.py",
+      "sha256": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+    },
+    {
+      "path": "model_unfolder/renderers/html/cards.py",
+      "sha256": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80"
+    },
+    {
+      "path": "model_unfolder/evidence/attention.py",
+      "sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2"
+    }
+  ]
+}

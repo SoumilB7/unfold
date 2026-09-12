@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "case": "ordinary",
+      "count_traces": 1,
+      "error": null,
+      "layers": 24
+    },
+    {
+      "case": "missing_decoder_count",
+      "count_traces": 1,
+      "error": null,
+      "layers": 24
+    },
+    {
+      "case": "explicit_null",
+      "count_traces": 1,
+      "error": {
+        "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+        "type": "ConfigParseError"
+      },
+      "layers": null
+    },
+    {
+      "case": "explicit_zero",
+      "count_traces": 1,
+      "error": {
+        "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+        "type": "ConfigParseError"
+      },
+      "layers": null
+    }
+  ],
+  "scope": "LOCAL_ONLY actual original source/default-resolution diagnostic; no bypass or approval"
+}

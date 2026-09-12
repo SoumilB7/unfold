@@ -1,0 +1,26 @@
+[
+  {
+    "path": [
+      "hidden_act"
+    ],
+    "checkpoint_value": "silu",
+    "default_value": "silu",
+    "channel": "ParseContext.class_defaults_by_path[()]"
+  },
+  {
+    "path": [
+      "hidden_size"
+    ],
+    "checkpoint_value": 4096,
+    "default_value": 4096,
+    "channel": "ParseContext.class_defaults_by_path[()]"
+  },
+  {
+    "path": [
+      "num_attention_heads"
+    ],
+    "checkpoint_value": 32,
+    "default_value": 32,
+    "channel": "ParseContext.class_defaults_by_path[()]"
+  }
+]

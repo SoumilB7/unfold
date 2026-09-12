@@ -1,0 +1,256 @@
+{
+  "actual_portable_seal": "73a2e86f45a802300624f8d684b2df96b86ab543ae6647346f212b749e6958c7",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "73a2e86f45a802300624f8d684b2df96b86ab543ae6647346f212b749e6958c7",
+  "reference26_seal": "73a2e86f45a802300624f8d684b2df96b86ab543ae6647346f212b749e6958c7",
+  "scope": "Actual32 source index;26 is a comparison reference, not a32 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 35
+}

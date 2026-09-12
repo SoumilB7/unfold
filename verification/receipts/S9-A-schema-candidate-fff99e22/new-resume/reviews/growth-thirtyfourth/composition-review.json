@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS exact34 source composition/accounting only; no final gate, matrix or unit acceptance",
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "source_archive_map_sha256": "72ff4a3cd874a698a4e718f67651c5bc2139cbe34056494e070ff9059b21b156",
+  "source_fingerprint": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "manifest_paths": 196,
+  "archive_members": 193,
+  "changes_vs33": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890",
+      "after_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "added": 14,
+      "deleted": 1
+    },
+    {
+      "path": "tests/test_s9_layer_count_defaults.py",
+      "before_sha256": null,
+      "after_sha256": "7526277f9910abfc101d8e8d30400884b8df3475abe25e0b608a0fbe4ddf8ced",
+      "added": 63,
+      "deleted": 0
+    }
+  ],
+  "other_python_changes": 0,
+  "semantic_review_limit": "Authored layer-count proposal independently reviewed by placement:7443ee8c2c66ce666f0daabcaec183347bc4b33cd25b3bda1bf17c5a98ccf91e. This audit verifies composition and accounting, not self-issued independent semantic approval.",
+  "runtime_record_separate": "Root34 focused447pass/189.30s pytest/197.402789s supervised archived qualification; preserves failed33 result. No full gate or matrix qualification counts inferred."
+}

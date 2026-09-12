@@ -1,0 +1,20 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_ROOT_RUNTIME_PENDING",
+  "manifest_sha256": "2f8c85d96458ffdc1773fab78169fb168295f0e83644d7f8e299dab73c8dc79d",
+  "saved_input_hashes_rechecked": 83,
+  "actual37_semantic_addresses_rechecked": 105,
+  "native_targets": 80,
+  "models": 15,
+  "source_review": [
+    "Original encoder projector called exactly once; original exception rethrows and exact returned object is returned. Observation exceptions invalidate packet without sending product into fallback.",
+    "Observer executes post-projector inside actual child DocumentBinding; native fact value/status hashes join exact live consumed events and actual source/component/path/spelling/target/mechanism.",
+    "Only existing native proof objects are validated; absence labelled MISSING. Live before/after detached snapshots retain Python types, native fact object identity, config ledgers and ProgramIndex identity checked unchanged.",
+    "Current root IR compared to actual37 through identical existing JSON serialization; all live-vs-JSON type deltas retained. Prior32 remains a separate comparison, not proof substitution.",
+    "Mandatory source/83saved-input/script/completion guards retained; exact105 current saved obligations/80targets/15inputs independently rechecked. Runtime must actually capture20 contexts."
+  ],
+  "minor_label": "observation_contract return-map key original36 is retained as a historical label; its nested actual capture37 guard/pin is correct. No36 matrix or proof result is reused.",
+  "limits": [
+    "No model/test/proofobject runtime by reviewer. Root must execute observer serially then independently audit actual20contexts/105joins/80targets and unchanged missing proofs.",
+    "No output approval, architecture proof upgrade or blessing."
+  ]
+}

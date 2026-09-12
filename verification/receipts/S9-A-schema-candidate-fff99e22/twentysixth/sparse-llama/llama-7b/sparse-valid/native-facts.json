@@ -1,0 +1,3340 @@
+{
+  "model.hidden_size": {
+    "owner": "model",
+    "key": "hidden_size",
+    "value": 4096,
+    "status": "class_default",
+    "completeness": "complete",
+    "claim_kind": "value",
+    "claim_readers": [
+      "model_unfolder.evidence.class_default_value.model_hidden_size_class_default"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 435
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 336
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 41
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 429
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 337
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 46
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+        "line": 65
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "model.hidden_size",
+      "claim_kind": "value",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.class_default_value.model_hidden_size_class_default"
+      ],
+      "evidence_refs": [
+        "projection:model.hidden_size:4e51a9e148e3c210",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:12:337:23",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:4:337:23",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:429:23:429:43",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:25:435:31",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:8:435:32",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:46:0:46:44",
+        "source:root:5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda:65:4:65:27"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.ffn.intermediate_size": {
+    "owner": "decoder.ffn",
+    "key": "intermediate_size",
+    "value": 11008,
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "value",
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+    ],
+    "config_paths": [
+      "intermediate_size"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 177
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 178
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 179
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 183
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 180
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 184
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 176
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.ffn.intermediate_size",
+      "claim_kind": "value",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.intermediate_size:4c97e9d6f1864ba2",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:176:33:176:57",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.ffn.activation": {
+    "owner": "decoder.ffn",
+    "key": "activation",
+    "value": "silu",
+    "status": "class_default",
+    "completeness": "uninspected",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [],
+    "claim_proof": null,
+    "unknown_reason": null
+  },
+  "decoder.attention.rope_theta": {
+    "owner": "decoder.attention",
+    "key": "rope_theta",
+    "value": 10000.0,
+    "status": "code_and_config",
+    "completeness": "presence_only",
+    "claim_kind": "value",
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "config_paths": [
+      "rope_parameters.rope_theta"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 267
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 278
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 279
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 146
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 168
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 164
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 165
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 166
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 167
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 138
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 408
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 135
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 132
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 133
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 131
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 396
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 397
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 89
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 87
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 93
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 111
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 85
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.rope_theta",
+      "claim_kind": "value",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_theta:6f8aee9beb40ac24",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:111:15:111:51",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:85:11:85:25",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:43:87:76",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:8:87:76",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:89:8:89:68",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:93:4:120:41"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.rope_initialization": {
+    "owner": "decoder.attention",
+    "key": "rope_initialization",
+    "value": {
+      "kind": "local_default",
+      "callable": "LlamaRotaryEmbedding.compute_default_rope_parameters",
+      "selector": null,
+      "parameters": {
+        "rope_parameters.rope_theta": 10000.0,
+        "rope_parameters.rope_type": "default"
+      }
+    },
+    "status": "code_and_config",
+    "completeness": "presence_only",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "config_paths": [
+      "rope_parameters.rope_type"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 267
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 278
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 279
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 146
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 168
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 164
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 165
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 166
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 167
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 138
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 408
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 135
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 132
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 133
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 131
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 396
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 397
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 89
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 87
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 93
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 111
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 85
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.rope_initialization",
+      "claim_kind": "applied_function",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_initialization:9787accbb0ae34c0",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:111:15:111:51",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:85:11:85:25",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:43:87:76",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:87:8:87:76",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:89:8:89:68",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:93:4:120:41"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.position_schedule": {
+    "owner": "decoder.attention",
+    "key": "position_schedule",
+    "value": [
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": null
+      }
+    ],
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+    ],
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 363
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 297
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 267
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 278
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 279
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 146
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 168
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 164
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 165
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 166
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 167
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 138
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 408
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 135
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 132
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 133
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 131
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 396
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 397
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.position_schedule",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.position_schedule:b558ebc2063408fd",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:131:18:131:51",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:132:18:132:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:133:18:133:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:135:8:135:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:138:0:142:39",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:146:0:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:164:4:164:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:165:4:165:38",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:166:4:166:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:167:4:167:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:168:4:168:27",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:35:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:82:267:85",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:87:267:90",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:267:8:267:91",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:278:12:278:24",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:279:12:279:22",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:25:297:75",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:65:297:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:12:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:27:396:92",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:396:95:396:111",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:12:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:397:27:397:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:30:408:87",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:408:74:408:86"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.mixer_schedule": {
+    "owner": "decoder.attention",
+    "key": "mixer_schedule",
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ],
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 363
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 316
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 297
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.mixer_schedule",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:db7d4c151cc72744",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:297:25:297:75",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.ffn.ffn_schedule": {
+    "owner": "decoder.ffn",
+    "key": "ffn_schedule",
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense"
+    ],
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+    ],
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 363
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 299
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 330
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 177
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 178
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 179
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 183
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 180
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 184
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.ffn.ffn_schedule",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.ffn_schedule:43c8dac4496c036b",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:299:19:299:35",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:12:363:99",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:13:363:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:39:363:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:54:363:63",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:67:363:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.mask_schedule": {
+    "owner": "decoder.attention",
+    "key": "mask_schedule",
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ],
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 399
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 411
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 413
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 316
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 318
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 281
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 214
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 357
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 336
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 41
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 355
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 363
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.mask_schedule",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask_schedule:61f6df5c5123ba18",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:38:214:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:8:214:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:281:12:281:26",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:318:27:318:41",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:355:17:355:37",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:25:357:31",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:8:357:32",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:22:405:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:8:405:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:413:31:413:42",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.layer.norm_kind": {
+    "owner": "decoder.layer",
+    "key": "norm_kind",
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "completeness": "presence_only",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 314
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 300
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 65
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 66
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 329
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 301
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.layer.norm_kind",
+      "claim_kind": "applied_function",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:d23812867aded33c",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.ffn.gated": {
+    "owner": "decoder.ffn",
+    "key": "gated",
+    "value": true,
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 177
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 178
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 179
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 183
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 180
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 184
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.ffn.gated",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.ffn.projection_mode": {
+    "owner": "decoder.ffn",
+    "key": "projection_mode",
+    "value": "split",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 177
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 178
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 179
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 183
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 180
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 184
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.ffn.projection_mode",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:177:25:177:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:178:23:178:96",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:179:25:179:98",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:180:22:180:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:20:183:84",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:65",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:35:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:47:183:64",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:183:68:183:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:184:8:184:24"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.projection_mode": {
+    "owner": "decoder.attention",
+    "key": "projection_mode",
+    "value": "split_qkv",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 238
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 262
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.projection_mode",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.output_projection": {
+    "owner": "decoder.attention",
+    "key": "output_projection",
+    "value": true,
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 238
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 262
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 221
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 247
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 288
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.output_projection",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:221:4:221:36",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:247:22:249:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:8:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:288:22:288:46"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.layer.norm_placement": {
+    "owner": "decoder.layer",
+    "key": "norm_placement",
+    "value": "pre",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 316
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 330
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 325
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 314
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 300
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 65
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 66
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 331
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 329
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 301
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 332
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.layer.norm_placement",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:325:24:325:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:331:24:331:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:332:8:332:28",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.mechanism": {
+    "owner": "decoder.attention",
+    "key": "mechanism",
+    "value": "mha",
+    "status": "class_default",
+    "completeness": "presence_only",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "config_paths": [
+      "num_key_value_heads"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 238
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 239
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 242
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 245
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 262
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.mechanism",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mechanism:7e943a2de3a9029e",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:32:239:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:61:239:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:242:32:242:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:245:32:245:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.head_geometry": {
+    "owner": "decoder.attention",
+    "key": "head_geometry",
+    "value": {
+      "kind": "mha",
+      "num_heads": 32,
+      "num_kv_heads": 32,
+      "head_dim": 128,
+      "q_lora_rank": null,
+      "kv_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    },
+    "status": "class_default",
+    "completeness": "complete",
+    "claim_kind": "relation",
+    "claim_readers": [
+      "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+    ],
+    "config_paths": [
+      "num_key_value_heads",
+      "head_dim"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 238
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 239
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 242
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 245
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 262
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 232
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.head_geometry",
+      "claim_kind": "relation",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.head_geometry:58e42c61f60ced05",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:232:24:232:101",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:32:239:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:239:61:239:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:242:32:242:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:245:32:245:74",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.bias": {
+    "owner": "decoder.attention",
+    "key": "bias",
+    "value": false,
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "existence",
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "config_paths": [
+      "attention_bias"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 238
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 262
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 221
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 247
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 288
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.bias",
+      "claim_kind": "existence",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.bias:df40488d7e9f5dfc",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:212:19:212:66",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:216:19:216:83",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:218:18:218:58",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:221:4:221:36",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:22:0:22:12",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:238:22:240:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:23:0:23:20",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:247:22:249:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:262:23:262:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:8:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:288:22:288:46"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.scores_scale": {
+    "owner": "decoder.attention",
+    "key": "scores_scale",
+    "value": "sqrt(head_dim)",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 216
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 23
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 212
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 22
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 218
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 214
+      }
+    ],
+    "claim_proof": null,
+    "unknown_reason": null
+  },
+  "decoder.attention.cached": {
+    "owner": "decoder.attention",
+    "key": "cached",
+    "value": true,
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 241
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 244
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 263
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 264
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 270
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 269
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.cached",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cached:7f3e293636cd0a7c",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:241:22:243:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:244:22:246:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:263:21:263:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:264:23:264:49",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:269:8:270:103",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:270:12:270:103",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:270:39:270:103",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.attention.mask": {
+    "owner": "decoder.attention",
+    "key": "mask",
+    "value": "causal",
+    "status": "code_and_config",
+    "completeness": "complete",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 399
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 411
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 413
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 316
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 318
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 276
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 281
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 214
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 357
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 336
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 41
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 355
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 363
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.attention.mask",
+      "claim_kind": "applied_function",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask:d633e0971d5d5f6d",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:38:214:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:214:8:214:52",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:276:36:285:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:281:12:281:26",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:318:27:318:41",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:355:17:355:37",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:25:357:31",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:357:8:357:32",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:363:73:363:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:22:405:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:399:8:405:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:413:31:413:42",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.layer.residual_topology": {
+    "owner": "decoder.layer",
+    "key": "residual_topology",
+    "value": "sequential",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "connection",
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 316
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 330
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 325
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 314
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 300
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 65
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 66
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 331
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 329
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 301
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 332
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "decoder.layer.residual_topology",
+      "claim_kind": "connection",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:300:31:300:88",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:301:40:301:97",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:314:24:314:59",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:316:27:324:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:325:24:325:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:329:24:329:68",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:330:24:330:47",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:331:24:331:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:332:8:332:28",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  },
+  "decoder.layer.parallel_norm_count": {
+    "owner": "decoder.layer",
+    "key": "parallel_norm_count",
+    "value": null,
+    "status": "ambiguous",
+    "completeness": "uninspected",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "config_paths": [],
+    "source_spans": [],
+    "claim_proof": null,
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "model.tie_word_embeddings": {
+    "owner": "model",
+    "key": "tie_word_embeddings",
+    "value": false,
+    "status": "config_declared",
+    "completeness": "complete",
+    "claim_kind": "value",
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "config_paths": [
+      "tie_word_embeddings"
+    ],
+    "source_spans": [],
+    "claim_proof": {
+      "fact_id": "model.tie_word_embeddings",
+      "claim_kind": "value",
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "model_unfolder.adapters.transformer.parser.parse"
+      ],
+      "evidence_refs": [
+        "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [],
+      "fact_status": "config_declared"
+    },
+    "unknown_reason": null
+  },
+  "model.final_norm_kind": {
+    "owner": "model",
+    "key": "final_norm_kind",
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "completeness": "complete",
+    "claim_kind": "applied_function",
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "config_paths": [],
+    "source_spans": [
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 421
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 365
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 65
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 66
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 422
+      },
+      {
+        "component": "root",
+        "class_name": null,
+        "method": null,
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+        "line": 411
+      }
+    ],
+    "claim_proof": {
+      "fact_id": "model.final_norm_kind",
+      "claim_kind": "applied_function",
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+      ],
+      "evidence_refs": [
+        "projection:model.final_norm_kind:d23812867aded33c",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:365:20:365:77",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:411:28:419:13",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:421:24:421:48",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:422:8:425:9",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:65:19:65:62",
+        "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:66:40:66:85"
+      ],
+      "recipe_ids": [],
+      "document_fingerprints": [
+        "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+      ],
+      "index_fingerprints": [
+        "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+      ],
+      "fact_status": ""
+    },
+    "unknown_reason": null
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "decision": "ACCEPT",
+  "scope": "Source-only e97662f5 nineteenth return correction; no runtime or diffusion producer acceptance",
+  "manifest_sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452",
+  "findings": [],
+  "accepted_boundaries": [
+    "Only identity-None under unknown, ambiguous or oracle_missing bypasses complete-negative obligation. Existing allowed-status/type checks remain. Explicit False, none spelling, and None under claiming status still require complete inspection. No completeness rewrite or absence proof is introduced.",
+    "Six actual-ledger controls retain uninspected/partial/presence_only; explicit-negative and legacy-lifted claiming-None poisons still demand rejection.",
+    "Manual tie wrong-kind fixture now carries actual reader id so EvidenceFact schema admits the fixture and the intended-kind check is reached. No production change in that correction.",
+    "Exactly ten diffusion definitions add class_default to allowed statuses; owner/value types/kind/projection/proof routes unchanged. This is schema allowance only, not acceptance of the forthcoming default-channel producer implementation."
+  ],
+  "limits": [
+    "Original nineteenth 377 PASS / 6 FAIL remains the actual result for that snapshot. No runtime rerun performed by reviewer.",
+    "Full sparse C9 and output acceptance remain open."
+  ]
+}

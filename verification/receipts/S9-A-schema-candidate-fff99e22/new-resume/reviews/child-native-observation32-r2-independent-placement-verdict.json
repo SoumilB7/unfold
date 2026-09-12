@@ -1,0 +1,17 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-native-observation32-proposal-r2/manifest.json",
+  "manifest_sha256": "f22ef0f35557a85efa3586853f4241073388921a9c9954fb7146dfd7106cfdb3",
+  "checks": [
+    "Exact held pins and saved inputs verified; Python AST parsed only.",
+    "Deepcopy applies only to already-exported fact records, IR dictionaries and returned spec. Live typed facts and proof objects stay original and are validated on their existing identities.",
+    "Type-preserving before/after snapshots use exhaustive recursive type/value/path deltas; native fact object identities independently remain unchanged. Snapshot/delta bytes persist before a mutation rejection.",
+    "Root live IR and saved capture use the same existing JSON encoding for value comparison. All live Python types and tuple/list differences remain separately visible; no field filtering or acceptance canonicalizer introduced.",
+    "All R1 exact child document/source/index proof and105 obligation association guards remain. Original projector runs once; observation error still fails packet without substituting product result.",
+    "Recursive artifact census now includes child snapshots; old R1 remains unchanged with its failed verdict."
+  ],
+  "limits": [
+    "Source-only review does not establish actual child tuple paths or15/105/80 runtime joins. R2 root-owned execution must measure them.",
+    "The R1 child comparison cause remains unmeasured until R2; serialized root equality is saved-data evidence only. Missing proofs cannot upgrade and no output is blessed."
+  ]
+}

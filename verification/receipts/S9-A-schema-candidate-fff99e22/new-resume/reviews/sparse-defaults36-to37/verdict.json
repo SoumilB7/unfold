@@ -1,0 +1,306 @@
+{
+  "verdict": "PASS_ACTUAL37_FINITE_DEFAULT_DIAGNOSTIC_SCOPE",
+  "cases": {
+    "bloom-ordinary": {
+      "result": {
+        "case": "ordinary",
+        "count_traces": 4,
+        "error": null,
+        "layers": 70
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 13,
+        "input.json": 0,
+        "ir.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "actual_typed_chips": [],
+      "card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "embed_norm",
+        "rms1",
+        "attn",
+        "add1",
+        "rms2",
+        "ffn",
+        "add2",
+        "final_rms",
+        "lm_head",
+        "default",
+        "qkv_proj",
+        "q_split",
+        "k_split",
+        "v_split",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "kv_cache",
+        "alibi_offsets",
+        "alibi_bias",
+        "score_bias_add",
+        "up_proj",
+        "activation",
+        "down_proj"
+      ],
+      "html_bytes": [
+        63372,
+        63669
+      ],
+      "css_only_after_exact_recorded_mount_pair": true
+    },
+    "bloom-missing_root_count": {
+      "result": {
+        "case": "missing_root_count",
+        "count_traces": 1,
+        "error": null,
+        "layers": 2
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 4,
+        "input.json": 0,
+        "ir.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "actual_typed_chips": [
+        {
+          "kind": "class_default",
+          "owner": "decoder.attention",
+          "card": "attn",
+          "tag": "span",
+          "classes": "uf-fact uf-chip-class_default",
+          "text": "class_default \u00b7 position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]",
+          "depth": 9
+        }
+      ],
+      "card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "embed_norm",
+        "rms1",
+        "attn",
+        "add1",
+        "rms2",
+        "ffn",
+        "add2",
+        "final_rms",
+        "lm_head",
+        "default",
+        "qkv_proj",
+        "q_split",
+        "k_split",
+        "v_split",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "kv_cache",
+        "alibi_offsets",
+        "alibi_bias",
+        "score_bias_add",
+        "block"
+      ],
+      "html_bytes": [
+        54278,
+        54575
+      ],
+      "css_only_after_exact_recorded_mount_pair": true
+    },
+    "layer-ordinary": {
+      "result": {
+        "case": "ordinary",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 6,
+        "input.json": 0,
+        "ir.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "actual_typed_chips": [],
+      "card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "html_bytes": [
+        108794,
+        109091
+      ],
+      "css_only_after_exact_recorded_mount_pair": true
+    },
+    "layer-missing_decoder_count": {
+      "result": {
+        "case": "missing_decoder_count",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 5,
+        "input.json": 0,
+        "ir.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "actual_typed_chips": [
+        {
+          "kind": "class_default",
+          "owner": "decoder.attention",
+          "card": "cross_attn",
+          "tag": "span",
+          "classes": "uf-fact uf-chip-class_default",
+          "text": "class_default \u00b7 cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+          "depth": 9
+        }
+      ],
+      "card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "html_bytes": [
+        109420,
+        109717
+      ],
+      "css_only_after_exact_recorded_mount_pair": true
+    },
+    "layer-explicit_null": {
+      "result": {
+        "case": "explicit_null",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "limited_unchanged": true
+    },
+    "layer-explicit_zero": {
+      "result": {
+        "case": "explicit_zero",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      },
+      "json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_facts_IR_inputs_results_exact": true,
+      "limited_unchanged": true
+    }
+  },
+  "scope": "Actual root-produced37 HTML, not CSS-derived preview. All six inputs/results/native facts/IR exact36; four successful HTML pages differ only source-reviewed9-line typed CSS insertion plus exact random mount identity. Full chip text and card IDs unchanged. Null/zero remain limited. Browser visibility and actual37 fleet reviewed separately; no output blessing."
+}

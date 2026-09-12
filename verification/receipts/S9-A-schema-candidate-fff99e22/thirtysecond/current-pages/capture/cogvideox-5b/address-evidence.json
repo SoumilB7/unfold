@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "5cf8c2f80c884c625298898dce5115e25ea1feaa38744fdcb76ee61df0feb1c2",
+  "input": "tests/sable_test_corpus/cogvideox-5b.json",
+  "input_sha256": "8da9cccfafce3e9735601aea8fcc3783247a0ed7a68773d42650871e5437847e",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.cogvideox_transformer_3d",
+    "qualname": "CogVideoXTransformer3DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

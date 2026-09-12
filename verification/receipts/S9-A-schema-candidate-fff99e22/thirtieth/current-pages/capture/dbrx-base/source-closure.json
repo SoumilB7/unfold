@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "ca11367f22a7d0a438247885a1accf0b3458fa3a87bfd883d946135531038a3b",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "ca11367f22a7d0a438247885a1accf0b3458fa3a87bfd883d946135531038a3b",
+  "reference26_seal": "ca11367f22a7d0a438247885a1accf0b3458fa3a87bfd883d946135531038a3b",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "b32e2c369bfdb1c5745478c6cb19340654d192f12e02b9f3cbe3311a84296b0a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_dbrx.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "6d70d97449fc80d3d61b98ea1d55059aa32178e486d0ad8fee791c7eb4237157",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_dbrx.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

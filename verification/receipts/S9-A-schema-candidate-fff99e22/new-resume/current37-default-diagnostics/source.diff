@@ -1,0 +1,58 @@
+--- before/run-bloom-default-diagnostic.py
++++ after/run-bloom-default-diagnostic.py
+@@ -1,12 +1,12 @@
+ from pathlib import Path
+ import dataclasses, importlib.util, json, os, sys
+ root=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg')
+-tree=root/'.claude/worktrees/verify-s9-a-thirtysixth'
+-out=Path('/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic');out.mkdir(exist_ok=False)
++tree=root/'.claude/worktrees/verify-s9-a-thirtyseventh'
++out=Path('/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic');out.mkdir(exist_ok=False)
+ os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',TOKENIZERS_PARALLELISM='false',UNFOLD_EVIDENCE_CACHE_DIR=str(out/'cache'))
+ spec=importlib.util.spec_from_file_location('s9_first_verify',tree/'scripts/verify_commit.py');module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)
+ module._stage_external_artifacts(root,tree)
+-result=module._run_lane(module.Lane('bloom-default-diagnostic',(sys.executable,'/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic.py')),tree,out)
++result=module._run_lane(module.Lane('bloom-default-diagnostic',(sys.executable,'/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic.py')),tree,out)
+ record={**dataclasses.asdict(result),'log_path':str(result.log_path),'passed':result.passed}
+ (out/'result.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2),flush=True)
+ sys.exit(0 if result.passed else 1)
+--- before/bloom-default-diagnostic.py
++++ after/bloom-default-diagnostic.py
+@@ -4,7 +4,7 @@
+ from model_unfolder import config_to_ir
+ from model_unfolder.diagram import Diagram
+ from model_unfolder.evidence.context import ParseContext
+-out=Path('/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture');out.mkdir(parents=True,exist_ok=False)
++out=Path('/private/tmp/unfold-s9a-thirtyseventh/bloom-default-diagnostic/capture');out.mkdir(parents=True,exist_ok=False)
+ def plain(value):
+  if dataclasses.is_dataclass(value):return {f.name:plain(getattr(value,f.name)) for f in dataclasses.fields(value)}
+  if isinstance(value,dict):return {str(k):plain(v) for k,v in value.items()}
+--- before/run-layer-default-diagnostic.py
++++ after/run-layer-default-diagnostic.py
+@@ -1,12 +1,12 @@
+ from pathlib import Path
+ import dataclasses, importlib.util, json, os, sys
+ root=Path('/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg')
+-tree=root/'.claude/worktrees/verify-s9-a-thirtysixth'
+-out=Path('/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic');out.mkdir(exist_ok=False)
++tree=root/'.claude/worktrees/verify-s9-a-thirtyseventh'
++out=Path('/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic');out.mkdir(exist_ok=False)
+ os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',TOKENIZERS_PARALLELISM='false',UNFOLD_EVIDENCE_CACHE_DIR=str(out/'cache'))
+ spec=importlib.util.spec_from_file_location('s9_first_verify',tree/'scripts/verify_commit.py');module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)
+ module._stage_external_artifacts(root,tree)
+-result=module._run_lane(module.Lane('layer-default-diagnostic',(sys.executable,'/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic.py')),tree,out)
++result=module._run_lane(module.Lane('layer-default-diagnostic',(sys.executable,'/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic.py')),tree,out)
+ record={**dataclasses.asdict(result),'log_path':str(result.log_path),'passed':result.passed}
+ (out/'result.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2),flush=True)
+ sys.exit(0 if result.passed else 1)
+--- before/layer-default-diagnostic.py
++++ after/layer-default-diagnostic.py
+@@ -4,7 +4,7 @@
+ from model_unfolder import config_to_ir
+ from model_unfolder.diagram import Diagram
+ from model_unfolder.evidence.context import ParseContext
+-out=Path('/private/tmp/unfold-s9a-thirtysixth/layer-default-diagnostic/capture');out.mkdir(parents=True,exist_ok=False)
++out=Path('/private/tmp/unfold-s9a-thirtyseventh/layer-default-diagnostic/capture');out.mkdir(parents=True,exist_ok=False)
+ def plain(value):
+  if dataclasses.is_dataclass(value):return {f.name:plain(getattr(value,f.name)) for f in dataclasses.fields(value)}
+  if isinstance(value,dict):return {str(k):plain(v) for k,v in value.items()}

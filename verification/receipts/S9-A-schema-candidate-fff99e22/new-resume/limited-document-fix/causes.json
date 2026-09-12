@@ -1,0 +1,30 @@
+{
+  "document_boundary": {
+    "earliest_measured_failure": "transformer/parser.py::parse hidden_size VALUE writer called qualify_config_value_fact with None; explicit tie_word_embeddings had the same latent boundary.",
+    "masked_followup": "Actual unbound reader invocations reached declare_reader_fact with matching actual_document=None but were rejected solely for being None.",
+    "fix": "Guard only the two value qualifier callers. Allow matching None/None in declaration-only helper while retaining original result, index and actual document identity authentication.",
+    "unchanged_guards": [
+      "qualify_config_value_fact rejects None",
+      "ReaderProjectionClaimProof requires prepared mapping/token",
+      "ReaderOccurrenceCitation requires prepared mapping",
+      "validate_reader_investigation rejects missing mapping",
+      "foreign index/invocation/document rejects"
+    ]
+  },
+  "hidream_fixture": {
+    "source_file": "diffusers/models/transformers/transformer_hidream_image.py",
+    "source_sha256": "6c720bd49c6387a26f5825ce859e0bb208834506e9e0125c3952314b9a493b46",
+    "facts": {
+      "num_layers_default_line615": 16,
+      "num_single_layers_default_line616": 32,
+      "double_loop_line": 653,
+      "single_loop_line": 669,
+      "forward_loops": [
+        857,
+        893
+      ]
+    },
+    "diagnosis": "No alias error: fixture declared num_layers=4 and omitted num_single_layers, so correct class defaults produce 4+32=36.",
+    "correction": "Fixture explicitly supplies num_single_layers=0, retaining its intended four-layer router-absence check. No diffusion production behavior changed."
+  }
+}

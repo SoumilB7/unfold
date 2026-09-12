@@ -1,0 +1,12 @@
+{
+  "status": "Earlier author audit is superseded by independent RETURN on placement integration",
+  "earlier_author_audit_sha256": "f658065a22319e7c1df74eaefb6a59808446bb18d52b82a4efe45e25b1875c8e",
+  "finding": "The actual scalar banner event retained empty block_path. Legacy source-span placement joins could use a valid class-default scalar proof to mark its constructor occurrence rendered. The local scalar receipt controls did not cover this downstream use.",
+  "correction_handoff": "width-banner-receipt-r2/manifest.json",
+  "correction_manifest_sha256": "3f1b60021aecd56489bdd7b09e39f7b4d4c88a276d27d60cffface35afc00dc9",
+  "coverage_addendum": "All eight width-related frozen28 failures now require both original scalar receipt/capability repair and the finite downstream occurrence exclusion. Existing full28-failure-coverage.json is an attribution inventory, not fix acceptance.",
+  "limits": [
+    "Independent r2 review and root exact current runtime pending.",
+    "Earlier manifests and failed evidence remain unchanged."
+  ]
+}

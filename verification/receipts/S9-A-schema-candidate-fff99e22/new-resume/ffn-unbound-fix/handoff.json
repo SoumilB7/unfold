@@ -1,0 +1,22 @@
+{
+  "role": "bounded producer implementation handoff; root independent review required",
+  "base_manifest_sha256": "530f3bf47884ed42e8ab424d6c3c7a41f01982e218befd7f3160b347b71e944e",
+  "cause": "All five remaining product failures first enter FFNMechanismClaimWitness.project from parser._note_ffn_mechanism_fact without a prepared document. Project reads activation_config_path before the shared qualifier can abstain. ConfigSelectedFFNMechanism also has an earlier selector lookup with the same missing-document domain.",
+  "repair": "Only document-dependent FFN witness projections raise ReaderClaimUnavailable when document is None: every ConfigSelected branch projection, or a nonliteral activation_config_path. The exact parser already catches this and retains the actual intended declaration with no proof. Literal source projections remain unchanged. The legacy activation-label comparison similarly rejects missing document with typed unavailability.",
+  "authority_unchanged": [
+    "reader_operand unchanged",
+    "positive proof document guard unchanged",
+    "no fake prepared document",
+    "no new selector fallback or event emission",
+    "no None-document occurrence citation or class3",
+    "ordinary prepared-document FFN computation unchanged"
+  ],
+  "tests": "New source-backed direct parser dispatch/literal tests require actual value, tier, intended kind, no proof/token/citation, exact deciding-event count/hash for dispatch, and no fake document. Actual retained config-selected readers test both branches and all three fact kinds: unbound projection unavailable/declaration retained/positive proof rejected; a fresh bound read still builds a positive proof with the exact boolean operand. Direct legacy-label check on missing document is covered.",
+  "other_callsite_audit": [
+    "Only two direct transformer parser witness.project calls exist: FFN eager qualification (fixed) and model_hidden_size_class_default. The latter reader returns a value only after _declaration verifies an actual PreparedDocument; witness.project rechecks exact document identity. It cannot resolve a no-document default.",
+    "Other reader_operand calls in attention, geometry, widths, topology, projection bias, codebooks, per-layer input, schedules and position are witness projection/validation methods or their delegates entered by ReaderProjectionClaimProof after strict document/token validation. Width and position composition calls another witness within that authenticated proof path.",
+    "FFN producer activation_registry lookup already handles prepared=None as ReaderClaimUnavailable and retains activation_gap. The parser selector-default helper already has an explicit current_prepared_document is not None condition. resolve_reader_operand is a separate lawful direct-config resolver that does not issue a retained positive proof.",
+    "Diffusion declared operand helpers dereference a document and are consumed by diffusion witness projections/validation; no eager unbound transformer caller reaches them in this static callsite census. This is a bounded production-callsite review, not a theorem that arbitrary external calls to every private helper accept None."
+  ],
+  "validation": "Source-only AST parse and callsite reads; no product imports/tests/models. Root must run new test plus original five regressions, FFN mechanism/reader claims/operand channel/event association suites under frozen source brackets. Existing sparse rawFAIL not altered."
+}

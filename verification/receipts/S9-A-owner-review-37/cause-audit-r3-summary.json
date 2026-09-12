@@ -1,0 +1,696 @@
+{
+  "association_counts": {
+    "different": 13,
+    "matching": 286,
+    "native_fact_not_exposed_in_this_canonical_surface": 488,
+    "no_expected_hash_recorded": 34
+  },
+  "baseline_test_outcomes": {
+    "passed": 52
+  },
+  "cause_counts": {
+    "chip": 3,
+    "embedding": 14,
+    "finite_unknown_slots": 25,
+    "html_meta": 29,
+    "legacy_unknown": 25,
+    "obligation": 407,
+    "references": 461,
+    "sable": 406,
+    "schedule_card_reference": 94,
+    "schedule_qualification": 2,
+    "scope": 1247,
+    "unknown": 7920,
+    "width": 14
+  },
+  "current_test_outcomes": {
+    "failed": 29,
+    "passed": 23
+  },
+  "findings": [
+    {
+      "fact_key": "decoder.ffn.intermediate_size",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 2,
+      "slug": "bloom"
+    },
+    {
+      "fact_key": "decoder.ffn.expert.expert_activation_formula",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 12,
+      "slug": "dbrx-base"
+    },
+    {
+      "fact_key": "decoder.ffn.expert.expert_activation_formula",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 34,
+      "slug": "deepseek-v3"
+    },
+    {
+      "fact_key": "decoder.ffn.expert.shared_expert_count",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 41,
+      "slug": "deepseek-v3"
+    },
+    {
+      "fact_key": "decoder.attention.scores_scale",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 20,
+      "slug": "gemma-2-2b-it"
+    },
+    {
+      "fact_key": "decoder.attention.bias",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 21,
+      "slug": "glm-4-5"
+    },
+    {
+      "fact_key": "decoder.ffn.expert.expert_activation_formula",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 23,
+      "slug": "glm-4-5"
+    },
+    {
+      "fact_key": "decoder.ffn.expert.shared_expert_count",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 30,
+      "slug": "glm-4-5"
+    },
+    {
+      "fact_key": "decoder.attention.scores_scale",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 17,
+      "slug": "granite-3-0-8b-instruct"
+    },
+    {
+      "fact_key": "decoder.layer.norm_placement",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 9,
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "fact_key": "decoder.layer.residual_topology",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 10,
+      "slug": "qwen3-5-27b-text"
+    },
+    {
+      "before_lines": [
+        17,
+        17
+      ],
+      "findings": [
+        "HTML_hunk_requires_evidence_level_review"
+      ],
+      "slug": "stable-diffusion-xl-base-1-0",
+      "surface": "html"
+    },
+    {
+      "before_lines": [
+        463,
+        463
+      ],
+      "findings": [
+        "HTML_hunk_requires_evidence_level_review"
+      ],
+      "slug": "stable-diffusion-xl-base-1-0",
+      "surface": "html"
+    },
+    {
+      "before_lines": [
+        468,
+        468
+      ],
+      "findings": [
+        "HTML_hunk_requires_evidence_level_review"
+      ],
+      "slug": "stable-diffusion-xl-base-1-0",
+      "surface": "html"
+    },
+    {
+      "before_lines": [
+        616,
+        616
+      ],
+      "findings": [
+        "HTML_hunk_requires_evidence_level_review"
+      ],
+      "slug": "stable-diffusion-xl-base-1-0",
+      "surface": "html"
+    },
+    {
+      "fact_key": "decoder.layer.residual_topology",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 17,
+      "slug": "stablelm-2-1-6b"
+    },
+    {
+      "fact_key": "decoder.attention.bias",
+      "findings": [
+        "consumption_hash_differs_from_actual_native_fact"
+      ],
+      "obligation": 26,
+      "slug": "stablelm-2-1-6b"
+    }
+  ],
+  "limits": [
+    "Full ordered raw deltas and actual HTML are retained. Cause labels are bounded source routing; unresolved findings still require review.",
+    "No native proof object is reconstructed or validated. Presentation summaries are not fresh semantic proof.",
+    "Missing child ledgers are explicitly limited; prior32 child evidence is not silently relabelled37.",
+    "No assertion that ordinary fact tiers stay unchanged: schedule status/proof/config paths are enumerated.",
+    "Only existing first-mount HTML comparison is used alongside exact raw diff. Browser/design approval remains separate.",
+    "Zero output blessing, approved artifact writes or approval inferred from packet completeness."
+  ],
+  "original_render_audit": {
+    "packet_witness_rows": 58,
+    "rows_byte_identical": 0,
+    "rows_identical_under_first_mount_law": 58,
+    "rows_mount_only_difference": 58,
+    "rows_with_four_original_renders": 58
+  },
+  "packet_complete": true,
+  "preservation_passed": false,
+  "recovered_baseline_files_rehashed": 20459,
+  "source37": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "source_manifest37": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "status": "COMPLETE_CAUSE_INVENTORY_NOT_ACCEPTANCE",
+  "witnesses": {
+    "auraflow-v0-3": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 146,
+      "native_fact_delta_count": 9,
+      "new_view_count": 15,
+      "old_view_count": 15,
+      "raw_html_sha256": [
+        "3babb9282bf2e3f22b7acf673257a724e6a0e914cb732005bb1880c2374431de",
+        "4ed19d51f523e5222f706753c812d58fdb4fa6a092784191c5551ea7d61d4821"
+      ],
+      "view_delta_count": 0
+    },
+    "bloom": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 206,
+      "native_fact_delta_count": 24,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "7716fcb579201ba5ebab59af59be762a4871578853b3f5ea7a60712c09e494fe",
+        "532fe8e5861aca32423c14c612482c51039992fbe58a3eefd8c0a47768691710"
+      ],
+      "view_delta_count": 0
+    },
+    "cogvideox-5b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 160,
+      "native_fact_delta_count": 7,
+      "new_view_count": 15,
+      "old_view_count": 15,
+      "raw_html_sha256": [
+        "c5ae761d7cbdb98ce062640289c2aec7d975e2915327410871f8b4d2c900210c",
+        "46cfff3d327bf035d47f855668447bb7ad6e9c2a419d860a9997fa5cbc775654"
+      ],
+      "view_delta_count": 0
+    },
+    "dbrx-base": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 99,
+      "native_fact_delta_count": 26,
+      "new_view_count": 6,
+      "old_view_count": 6,
+      "raw_html_sha256": [
+        "dbc303515d7fe1c473e46b2b0c0fb8099f6807718b8fea6604e76cd4a2a2d86e",
+        "059f84938be4812d4f4e222e52dfbb26641dd504afd5a508207e38ff7e7385a6"
+      ],
+      "view_delta_count": 0
+    },
+    "deepseek-v3": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 127,
+      "native_fact_delta_count": 28,
+      "new_view_count": 11,
+      "old_view_count": 11,
+      "raw_html_sha256": [
+        "d775516fc84703f2963a301dfdb10128d933a2f45bc6d94e71405584fbab4975",
+        "17602548ad40a1ff17b70feacd4fe386e90509bb13013fccd788dd61a6ab5ec8"
+      ],
+      "view_delta_count": 0
+    },
+    "flux-2-dev": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 192,
+      "native_fact_delta_count": 10,
+      "new_view_count": 16,
+      "old_view_count": 16,
+      "raw_html_sha256": [
+        "01e31f9171add056c566687c1729ea6e9844e89322faad90ee94de752636eb9b",
+        "5016b4dd699127be5c80cbf69ad54bd6d9f4caa362e6c1ce1317c2d2d7c99d39"
+      ],
+      "view_delta_count": 0
+    },
+    "fluxtransformer2dmodel": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 196,
+      "native_fact_delta_count": 9,
+      "new_view_count": 20,
+      "old_view_count": 20,
+      "raw_html_sha256": [
+        "1ecc72a01d82482139433adb6ad09721ac9a88ec38c04b68e8f1c978908316b5",
+        "df870d0f33f73fdda67b885a38462191bb9d8201e09ff5807a9a1b92d662a7cb"
+      ],
+      "view_delta_count": 0
+    },
+    "gemma-2-2b-it": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 26,
+      "new_view_count": 6,
+      "old_view_count": 6,
+      "raw_html_sha256": [
+        "63a80bb026835110a8d632ccb212e4a025e57a29a13e305718d55fcc60533dce",
+        "019dfc3452439d6c63cb1cfa1ae163a02b535f944dee51db8c388d0d1ebbec8b"
+      ],
+      "view_delta_count": 0
+    },
+    "glm-4-5": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 102,
+      "native_fact_delta_count": 31,
+      "new_view_count": 9,
+      "old_view_count": 9,
+      "raw_html_sha256": [
+        "286aaf7a0c83b62a41885ab78a04e83bcf179df5aba92fd3b2bee2babf7d9436",
+        "d73959309acddae29d9a880eac80091cbc9f370303e3018a921e68f953c34072"
+      ],
+      "view_delta_count": 0
+    },
+    "gpt-oss-20b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 99,
+      "native_fact_delta_count": 27,
+      "new_view_count": 8,
+      "old_view_count": 8,
+      "raw_html_sha256": [
+        "7545af02835637217bf40df981355f4972e60178d832fc17cc096203f8370de1",
+        "b481f938ca00e06f38ecfdf4aea85c18581a02087d8259a27ad2a858f766bb8c"
+      ],
+      "view_delta_count": 0
+    },
+    "granite-3-0-8b-instruct": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 26,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "5076def1293f17f42dbe80b9f5dc006959e3d9a8feaca7d7e720653eb9ca083c",
+        "6bc6ce163daca07650aad9fe98e8f96fcf2b1e87ccda3ea1b5957e8d76c9edcd"
+      ],
+      "view_delta_count": 0
+    },
+    "hunyuanvideo": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 218,
+      "native_fact_delta_count": 20,
+      "new_view_count": 20,
+      "old_view_count": 20,
+      "raw_html_sha256": [
+        "2717531e4620d9670156046413171bbd0194175b3daad4ddbfc3bcb53bcab133",
+        "cc932459fde7686fbc057e193de4eac18bd341b6a98a572de7ce84f7dc380dbc"
+      ],
+      "view_delta_count": 0
+    },
+    "llama-7b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 97,
+      "native_fact_delta_count": 25,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "b5fbc30df0c9562e6075141ea4fcb646433cb7c20cbd4ab9c8239a2f5f64b70c",
+        "070696194bfc897b528b7dcd2ae316339c6e2fc27890a0a323548832c1ec4a1a"
+      ],
+      "view_delta_count": 0
+    },
+    "ltx-video": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 159,
+      "native_fact_delta_count": 7,
+      "new_view_count": 12,
+      "old_view_count": 12,
+      "raw_html_sha256": [
+        "5cc3b5353bb9aa030a7318455055588f13152ca406d8b0d5616abbb72d50b3a0",
+        "805b8b3f68514c1da8b55b16f0047a363b1a0f9f5c5a5c7d5f18205f27a4b4f1"
+      ],
+      "view_delta_count": 0
+    },
+    "lumina-image-2-0": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 141,
+      "native_fact_delta_count": 9,
+      "new_view_count": 16,
+      "old_view_count": 16,
+      "raw_html_sha256": [
+        "7da3211f41ed5e4583646d87aeb0f95860fc10e8309b18f689b2dc508fa5395d",
+        "861ead1347128ea32946d6a9a3f12df18b170c9da12e8c653a0092a590296e68"
+      ],
+      "view_delta_count": 0
+    },
+    "mochi-1-preview": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 119,
+      "native_fact_delta_count": 3,
+      "new_view_count": 9,
+      "old_view_count": 9,
+      "raw_html_sha256": [
+        "d1c8081b4d18be0fa6fdfac38c279c51206ed673e306561f8fb395e116cbfec3",
+        "b8d7591a4629453f9879e0079b312fe1791a7c37ada36e1c21526dac9203e2fa"
+      ],
+      "view_delta_count": 0
+    },
+    "musicgen-small": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 238,
+      "native_fact_delta_count": 21,
+      "new_view_count": 8,
+      "old_view_count": 8,
+      "raw_html_sha256": [
+        "9e13e1d5d621de9fc4328d33bae39d6958b33f082c2c2291429fe0ecf9506309",
+        "121bcc7f4a48ea6d9bacd66461fce882b3f2b7ccf7f226867a40ab299d22acd8"
+      ],
+      "view_delta_count": 0
+    },
+    "olmo-2-1124-7b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 27,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "8fc70bb55b02c075a8cd418dff3599746b81bea36bc923613a040323cadd7a61",
+        "e2fa2ab9e1b84a8887c20133ef007063cd8508ef33306534ebb5b6efe2fe0151"
+      ],
+      "view_delta_count": 0
+    },
+    "pixart-sigma-xl-2-1024-ms": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 71,
+      "native_fact_delta_count": 1,
+      "new_view_count": 13,
+      "old_view_count": 13,
+      "raw_html_sha256": [
+        "b88c31cfd58c90a6c4b14d1f9ac92b309a455166b078eb220dc2d551ef805416",
+        "14737dca6ae0a33a00f1f848beac7a9232f740f7ebd578daec77ac7e246dc169"
+      ],
+      "view_delta_count": 0
+    },
+    "prxpixel-t2i": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 126,
+      "native_fact_delta_count": 7,
+      "new_view_count": 9,
+      "old_view_count": 9,
+      "raw_html_sha256": [
+        "717d90c04066b503f747b132fa830661a4f5dee4e2156b35f959a83c0186a768",
+        "8daaea50675fead4cf8b0bb6cb661a2b06024fe235c10f7a4923f0f18e337585"
+      ],
+      "view_delta_count": 0
+    },
+    "qwen-image": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 199,
+      "native_fact_delta_count": 7,
+      "new_view_count": 13,
+      "old_view_count": 13,
+      "raw_html_sha256": [
+        "f89bfb681aad1da8f204ad30b8f0d906b020a30488e061cf97811072fa566c51",
+        "c4f38689f288cd470b5f60ad46529dcf87c2fed2ec5a2e62801d18270e0c6a69"
+      ],
+      "view_delta_count": 0
+    },
+    "qwen2-vl-7b-instruct": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 97,
+      "native_fact_delta_count": 22,
+      "new_view_count": 11,
+      "old_view_count": 11,
+      "raw_html_sha256": [
+        "393d3d3f5eb5cb35eb4db8ad989f967490301fbc36b2126e39b106261d823ee5",
+        "24687ae6b10f52eddb6c3d1dc1833028d73e71cd44d07a9e70bea22999eecea8"
+      ],
+      "view_delta_count": 0
+    },
+    "qwen3-5-27b-text": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 25,
+      "new_view_count": 6,
+      "old_view_count": 6,
+      "raw_html_sha256": [
+        "072754257ca9a40a553f217f7278392fb66e81144bbd1586edcefb0aebae3601",
+        "e7b2528f86cddad0a36424d98e9d4b7191cd13eae177c3723b2224149637c7b5"
+      ],
+      "view_delta_count": 0
+    },
+    "qwen3-8b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 27,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "977013953affc6ba5ce3e1f1217e2ef4bbe6df284f3e788078847ab7ae85922e",
+        "390cd5c047d91a21d5ce6f967bbac701cbdcbbe0a593093ccc573fdbd8c1040e"
+      ],
+      "view_delta_count": 0
+    },
+    "sana-1600m-1024px-diffusers": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 139,
+      "native_fact_delta_count": 7,
+      "new_view_count": 12,
+      "old_view_count": 12,
+      "raw_html_sha256": [
+        "1645cec36b5abd140ef601b86deb4c5c206171d1d03a03ab60e5a552cb62ad7d",
+        "c1045d5525c4e5c322ed338cda1bc3ef4774d68a094282cadad5a28cfdcfb181"
+      ],
+      "view_delta_count": 0
+    },
+    "stable-diffusion-3-5-large": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 75,
+      "native_fact_delta_count": 1,
+      "new_view_count": 19,
+      "old_view_count": 19,
+      "raw_html_sha256": [
+        "7c2d725bad9d247ce39cc7b89b95b747cc58c5505cfeebe026fe45bf85e5b0c7",
+        "d7fe9b5cb651041a0824a281300572cc42a4435974d92303b0de48c3dc4ae387"
+      ],
+      "view_delta_count": 0
+    },
+    "stable-diffusion-xl-base-1-0": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 6945,
+      "native_fact_delta_count": 12,
+      "new_view_count": 143,
+      "old_view_count": 143,
+      "raw_html_sha256": [
+        "174a7e208b9afcc67d1e302b451c9850d63b5dbad8652ceef40086e441d80352",
+        "49202d7c05d3f91cd12bb8e0ffb26b12eeead071a493f955bc4423336cb8559c"
+      ],
+      "view_delta_count": 0
+    },
+    "stablelm-2-1-6b": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 98,
+      "native_fact_delta_count": 27,
+      "new_view_count": 4,
+      "old_view_count": 4,
+      "raw_html_sha256": [
+        "042c3a2c7ecfdfc4cd324910cad9bbbaf9b18a11b57bddf6b21b6034cd69a1b8",
+        "47cc10955c122c4942852a45aec0c2ad720c10862056d1f079459155d7e942ee"
+      ],
+      "view_delta_count": 0
+    },
+    "wan2-2-t2v-a14b-diffusers": {
+      "changed_surfaces": [
+        "html_meta",
+        "ir",
+        "ledgers",
+        "sable"
+      ],
+      "exact_canonical_delta_count": 108,
+      "native_fact_delta_count": 4,
+      "new_view_count": 12,
+      "old_view_count": 12,
+      "raw_html_sha256": [
+        "ac0e6f01b15a813e9153328a34bdeef93803b3a407bad41dcf34571b77f040b7",
+        "d0f8d39dbcc817de27c62d6887db61ea62227b8c7e169c3f3db0f90d4d77321e"
+      ],
+      "view_delta_count": 0
+    }
+  }
+}

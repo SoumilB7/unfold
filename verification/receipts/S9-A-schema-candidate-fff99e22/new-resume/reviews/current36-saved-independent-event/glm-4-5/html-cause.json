@@ -1,0 +1,20 @@
+{
+  "after_bytes": 128712,
+  "after_sha256": "84c4208612f584e2a74639266bd6919c9f0254f22ca088e1e9fdc6332ee1f61b",
+  "before_bytes": 128712,
+  "before_sha256": "9ae6e807e813a9d04aaed05547390aec7fc769d1dc158f5978a35420ec309713",
+  "exact_new_mount_occurrences": 302,
+  "exact_old_mount_occurrences": 302,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-3f5065ac12",
+  "mount_identity_before": "uf-caeaf39c08",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 10,
+  "raw_ordered_svg_count_before": 10,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "glm-4-5",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

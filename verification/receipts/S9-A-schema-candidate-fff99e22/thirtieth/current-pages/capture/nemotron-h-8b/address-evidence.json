@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "34fe03766a7cde6f03456b2f863afaea667787aa883fbf2cf48c7af936b91ef6",
+  "input": "verification/s7/inputs/nemotron-h-8b.json",
+  "input_sha256": "81e822f85d6471312bcc0ccd34cc62789075376ecedca7fde0e451584943368b",
+  "resolved_class": {
+    "module": "transformers.models.nemotron_h.modeling_nemotron_h",
+    "qualname": "NemotronHForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

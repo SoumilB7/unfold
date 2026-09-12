@@ -1,0 +1,11 @@
+{
+  "status": "SOURCE_ONLY_PROPOSAL_NOT_APPLIED",
+  "scope": "Four existing typed chip classes only. Retain complete rendered text, metadata, all color/border/radius distinctions and ordinary uf-fact behavior. No clipping, truncation, ellipsis, max-height or schema/graph/fact/receipt edits.",
+  "reason": "Saved36 real browser found default chips overflowing644px cards to1419/2267/3161px due inherited nowrap.",
+  "source_manifest_sha256": "c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc",
+  "growth": {
+    "added": 8,
+    "deleted": 0
+  },
+  "validation": "Independent source review; actual browser comparison of exact saved36 pages with only this rendered CSS insertion. Full native candidate regeneration remains root-owned."
+}

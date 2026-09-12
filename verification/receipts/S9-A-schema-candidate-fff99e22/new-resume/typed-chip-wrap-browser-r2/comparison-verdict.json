@@ -1,0 +1,72 @@
+{
+  "verdict": "PASS_BOUNDED_CSS_WRAP_BROWSER_COMPARISON",
+  "cases": {
+    "llama": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "sdxl": {
+      "before_scroll_width": 2267,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "bloom-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "bloom-sparse": {
+      "before_scroll_width": 1419,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "musicgen-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    },
+    "musicgen-sparse": {
+      "before_scroll_width": 3161,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_and_card_identity_exact": true,
+      "borders_and_colors_exact": true,
+      "page_errors": []
+    }
+  },
+  "proposal_manifest_sha256": "da92c41973cd615901b03f7ae431619d3b6eefc090be08b9107d529b39dee18c",
+  "runtime_manifest_sha256": "bc4578709efbdb5faacb6744edfe19c13ae4ae7afc87a1f5c438efea8325fe91",
+  "before_runtime_manifest_sha256": "caa71a4996fa7192313bfe961ca9a73963014122375353ae5e9e480afb1e57cf",
+  "full_original_HTML_preserved_except_exact_recorded_CSS_insertions": true,
+  "four_styles_long_token_probe_fits750px_host": true,
+  "screenshots_visually_inspected": [
+    "sdxl/card-viewport.png",
+    "bloom-sparse/card-viewport.png",
+    "musicgen-sparse/card-viewport.png",
+    "four-style-probe.png"
+  ],
+  "visual_limits": "All full default JSON text now fits card width; long values remain dense and existing pill outlines remain unchanged. This bounded fix is not a new information-design treatment. Actual37 native regeneration and browser rerun remain root-owned; derived CSS-only saved pages are not blessed outputs.",
+  "runtime_limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection."
+}

@@ -1,0 +1,18 @@
+{
+  "decision": "RETURN",
+  "reviewer": "/root/independent_review",
+  "scope": "Eighth frozen S9-A registry authority, E1 correction, unavailable-kind metadata",
+  "blockers": [
+    "A1 selected activation binding/class mutation omitted from use closure",
+    "A2 async and keyword-only methods pass unsupported invocation protocol"
+  ],
+  "bounded_accepted": [
+    "E1 exact direct same-gate correction",
+    "typed unavailable declared-kind metadata has no proof/document seal",
+    "D1/D2 six reader bytes unchanged"
+  ],
+  "runtime_performed": false,
+  "output_approved": false,
+  "source_pins_sha256": "b8604643f12186f65c8b9ca717871267faf336edbe801cdc9cd67a9adbb8ddff",
+  "review_sha256": "09c61a3f8bead24ab60deb79067d23f95803e0cee99fda7711b7ab262dc8ae93"
+}

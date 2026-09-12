@@ -1,0 +1,39 @@
+{
+  "actual_portable_seal": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f",
+  "reference26_seal": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "769589db898d0b9d2a96ccbfe04e357f3d149d43792143723839a9d7a8675b51",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_jamba.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "1b6de555d8ca936419118fece90f955529c769564b78962f13fbae705379d534",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_jamba.py"
+    }
+  ],
+  "source_node_count": 4
+}

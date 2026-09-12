@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "4cbafebf87810a3b34f41804bb52e68e1130b048f3973b5d9ecbae27494ac752",
+  "input": "tests/sable_test_corpus/mochi-1-preview.json",
+  "input_sha256": "cd3de5b040745dc3bec9f5605b1c172b98451f45f340b7fb6932e7e9b35ce6b6",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_mochi",
+    "qualname": "MochiTransformer3DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

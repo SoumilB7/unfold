@@ -1,0 +1,398 @@
+{
+  "verdict": "PASS_FINITE_SAVED_SPARSE_DEFAULT_SCOPE",
+  "cases": {
+    "layer-ordinary": {
+      "before_generation": "thirtyfifth",
+      "results": [
+        {
+          "case": "ordinary",
+          "count_traces": 1,
+          "error": null,
+          "layers": 24
+        },
+        {
+          "case": "ordinary",
+          "count_traces": 1,
+          "error": null,
+          "layers": 24
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 6,
+        "input.json": 0,
+        "ir.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_equal": true,
+      "layers": 24,
+      "actual_html_chip_nodes": [],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "deferred_payloads": 0,
+      "page_sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f",
+      "page_bytes": 108794,
+      "cause": "No native or IR delta.",
+      "html_exact_recorded_mount_pair_only": {
+        "before": "uf-237f77d452",
+        "after": "uf-393560558f",
+        "scope": "Raw cause accounting only; not accepted output normalization."
+      }
+    },
+    "layer-missing_decoder_count": {
+      "before_generation": "thirtyfifth",
+      "results": [
+        {
+          "case": "missing_decoder_count",
+          "count_traces": 1,
+          "error": null,
+          "layers": 24
+        },
+        {
+          "case": "missing_decoder_count",
+          "count_traces": 1,
+          "error": null,
+          "layers": 24
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 5,
+        "input.json": 0,
+        "ir.json": 31,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_equal": true,
+      "layers": 24,
+      "actual_html_chip_nodes": [
+        {
+          "kind": "class_default",
+          "owner": "decoder.attention",
+          "card": "cross_attn",
+          "tag": "span",
+          "classes": "uf-fact uf-chip-class_default",
+          "text": "class_default \u00b7 cross_attention_schedule: [\"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\", \"additive_cross\"]",
+          "depth": 9
+        }
+      ],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "position_ids",
+        "position_embed",
+        "position_add",
+        "conditioning_path",
+        "fusion",
+        "attn",
+        "cross_attn",
+        "wiring_unresolved",
+        "ffn",
+        "cross_attention_states",
+        "final_rms",
+        "lm_head",
+        "default",
+        "prompt_tokens",
+        "conditioning_encoder",
+        "conditioning_projector",
+        "cross_attention_states",
+        "embed",
+        "conditioning_path",
+        "cross_attention_adapter",
+        "stack_input",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "attention_output_unresolved",
+        "qkv_projection_unresolved",
+        "block",
+        "default",
+        "conditioning_projector_op0"
+      ],
+      "deferred_payloads": 0,
+      "page_sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a",
+      "page_bytes": 109420,
+      "alias_probe_removal": {
+        "removed": [
+          "root:encoder_layers",
+          "root:n_blocks",
+          "root:n_layer",
+          "root:n_layers",
+          "root:num_blocks",
+          "root:num_layers"
+        ],
+        "added": [],
+        "raw_position_deltas": 31,
+        "inventory_exactly_equals34": true
+      },
+      "cause": "36 shared resolver removes35 parser duplicate alias probes; native class-default proof/card annotations unchanged.",
+      "html_exact_recorded_mount_pair_only": {
+        "before": "uf-77305c325e",
+        "after": "uf-7835474a6b",
+        "scope": "Raw cause accounting only; not accepted output normalization."
+      }
+    },
+    "layer-explicit_null": {
+      "before_generation": "thirtyfifth",
+      "results": [
+        {
+          "case": "explicit_null",
+          "count_traces": 1,
+          "error": {
+            "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+            "type": "ConfigParseError"
+          },
+          "layers": null
+        },
+        {
+          "case": "explicit_null",
+          "count_traces": 1,
+          "error": {
+            "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+            "type": "ConfigParseError"
+          },
+          "layers": null
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_equal": true,
+      "limited_without_default_rescue": true
+    },
+    "layer-explicit_zero": {
+      "before_generation": "thirtyfifth",
+      "results": [
+        {
+          "case": "explicit_zero",
+          "count_traces": 1,
+          "error": {
+            "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+            "type": "ConfigParseError"
+          },
+          "layers": null
+        },
+        {
+          "case": "explicit_zero",
+          "count_traces": 1,
+          "error": {
+            "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+            "type": "ConfigParseError"
+          },
+          "layers": null
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 2,
+        "input.json": 0,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_equal": true,
+      "limited_without_default_rescue": true
+    },
+    "bloom-ordinary": {
+      "before_generation": "thirtyfourth",
+      "results": [
+        {
+          "case": "ordinary",
+          "count_traces": 4,
+          "error": null,
+          "layers": 70
+        },
+        {
+          "case": "ordinary",
+          "count_traces": 4,
+          "error": null,
+          "layers": 70
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 0,
+        "events.json": 13,
+        "input.json": 0,
+        "ir.json": 70,
+        "native-facts.json": 0,
+        "prepared-documents.json": 0,
+        "result.json": 0
+      },
+      "native_equal": true,
+      "layers": 70,
+      "actual_html_chip_nodes": [],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "embed_norm",
+        "rms1",
+        "attn",
+        "add1",
+        "rms2",
+        "ffn",
+        "add2",
+        "final_rms",
+        "lm_head",
+        "default",
+        "qkv_proj",
+        "q_split",
+        "k_split",
+        "v_split",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "kv_cache",
+        "alibi_offsets",
+        "alibi_bias",
+        "score_bias_add",
+        "up_proj",
+        "activation",
+        "down_proj"
+      ],
+      "deferred_payloads": 0,
+      "page_sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba",
+      "page_bytes": 63372,
+      "cause": "70 exact qualified position schedule references on existing attention cards; native proof/value unchanged.",
+      "html_exact_recorded_mount_pair_only": {
+        "before": "uf-ddfe7f00b4",
+        "after": "uf-e277087aec",
+        "scope": "Raw cause accounting only; not accepted output normalization."
+      }
+    },
+    "bloom-missing_root_count": {
+      "before_generation": "thirtyfourth",
+      "results": [
+        {
+          "case": "missing_root_count",
+          "count_traces": 1,
+          "error": {
+            "message": "Loaded 'bloom' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+            "type": "ConfigParseError"
+          },
+          "layers": null
+        },
+        {
+          "case": "missing_root_count",
+          "count_traces": 1,
+          "error": null,
+          "layers": 2
+        }
+      ],
+      "full_json_delta_counts": {
+        "context-defaults.json": 0,
+        "count-resolution-traces.json": 5,
+        "events.json": 8,
+        "input.json": 0,
+        "ir.json": 1,
+        "native-facts.json": 1,
+        "prepared-documents.json": 0,
+        "result.json": 2
+      },
+      "native_equal": false,
+      "layers": 2,
+      "actual_html_chip_nodes": [
+        {
+          "kind": "class_default",
+          "owner": "decoder.attention",
+          "card": "attn",
+          "tag": "span",
+          "classes": "uf-fact uf-chip-class_default",
+          "text": "class_default \u00b7 position_schedule: [{\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}, {\"position_application\": \"attention_bias\", \"position_kind\": \"alibi\", \"rope_dim\": null}]",
+          "depth": 9
+        }
+      ],
+      "inline_card_ids": [
+        "default",
+        "tok_text",
+        "embed",
+        "embed_norm",
+        "rms1",
+        "attn",
+        "add1",
+        "rms2",
+        "ffn",
+        "add2",
+        "final_rms",
+        "lm_head",
+        "default",
+        "qkv_proj",
+        "q_split",
+        "k_split",
+        "v_split",
+        "scaled_scores",
+        "attn_softmax",
+        "attn_apply_v",
+        "concat_heads",
+        "o_proj",
+        "kv_cache",
+        "alibi_offsets",
+        "alibi_bias",
+        "score_bias_add",
+        "block"
+      ],
+      "deferred_payloads": 0,
+      "page_sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035",
+      "page_bytes": 54278,
+      "cause": "Exact current root prepared class default n_layer=2, joined through supported alias in shared operand resolver; former34 root returned ConfigParseError. Two source-backed ALiBi schedule rows and existing-card class_default span now present."
+    }
+  },
+  "limitations": "Exact saved native proof summaries, IR, HTML nodes and producer records inspected; no browser layout/interaction measurement, new proof qualification, occurrence-placement inference, runtime or output approval. Original34 Bloom failed packet is preserved as the comparison limitation, not relabelled green. All raw JSON deltas retained including process-local document tokens.",
+  "input_pins_sha256": "813237ef4399017e0191a6f7aae4ddbf7ae30615169b5e57a0356b1336fa3802"
+}

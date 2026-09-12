@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+  "baseline_output": {
+    "ir_after_sha256": "b4da9a5946efc06d8789da56d03fdb9794c1b6414ac6a3a9e1bbc9bba6472de0",
+    "ir_before_sha256": "b4da9a5946efc06d8789da56d03fdb9794c1b6414ac6a3a9e1bbc9bba6472de0",
+    "page_bytes": 57287,
+    "page_sha256": "d8a0c07b53049814e34f5f5d59be6c416d803da3ef4fae8adec2039810ca687b",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+  "seconds": 0.4156530420004856,
+  "slug": "stablelm-2-1-6b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "18933b09a5e5edcb2cdf09e586571c289ffaca0785c73a9c9d344ff02ed87f63",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_stablelm.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "40c2ede0bcc2942dbd1538400a780446cdc71645725cb29e154010d69ffe2a1d",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_stablelm.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

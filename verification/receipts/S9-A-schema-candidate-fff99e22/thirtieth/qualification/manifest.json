@@ -1,0 +1,24 @@
+{
+  "tests": 78,
+  "passed": true,
+  "pytest_seconds": 653.3,
+  "supervised_seconds": 663.3197751249991,
+  "files": [
+    {
+      "path": "correction-focus.log",
+      "sha256": "80e1220d2e83735f8cca8c9078caca5dc98e21e00e11baac3c5e1b73d11c862c"
+    },
+    {
+      "path": "result.json",
+      "sha256": "c06c58ab85fed0280f6ab6cd573211dfb4d0b7728f6d95a4ee15a3793e9554f3"
+    },
+    {
+      "path": "scope.json",
+      "sha256": "38c941a6e6803f426b723178af014729b23c4e78e5108003ff3f4043c83cfa5a"
+    },
+    {
+      "path": "run.py",
+      "sha256": "1b2ab9d2d22280cb46040edc20bedf93359c7f9d1d0995b6534db0d1ca171039"
+    }
+  ]
+}

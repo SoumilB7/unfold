@@ -49,6 +49,8 @@ from .program_index import (
     SourceSpan,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 
 
 @dataclass(frozen=True)
@@ -196,6 +198,47 @@ class PositionApplicationScheduleEvidence:
             raise ValueError("schedule provenance closes every joined boundary")
 
 
+@dataclass(frozen=True)
+class PositionScheduleClaimWitness:
+    index: ProgramIndex
+    schedule: PositionApplicationScheduleEvidence
+    reader_symbol = "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.schedule) is not PositionApplicationScheduleEvidence:
+            raise TypeError("position projection retains exact rotation and index transport")
+        self.schedule.__post_init__()
+        if result.status != "resolved" or result.value is not self.schedule \
+                or result.owner != self.schedule.attention_occurrence:
+            raise ValueError("position projection belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "position_schedule"):
+            raise ValueError("rotation schedule cannot author this projection")
+        value = self.schedule
+        dependencies = {
+            value.transport.count_config_path: (value.transport.count_source_kind,
+                                                value.transport.layer_count),
+            **{path: (kind, operand) for path, kind, operand in value.selector_config_values},
+            **{path: (kind, operand) for path, kind, operand in value.geometry.width_config_values}}
+        validate_reader_operands(document, (
+            (path, kind, operand) for path, (kind, operand) in dependencies.items()))
+        rotated_width = value.geometry.rotated_width if value.geometry.mode == "partial" else None
+        projected = tuple({
+            "position_kind": "rope" if item.state == "active" else "unknown",
+            "position_application": "qk_rotation" if item.state == "active" else "unknown",
+            "rope_dim": rotated_width if item.state == "active" else None,
+        } for item in value.decisions)
+        status = ("class_default" if any(kind == "class_default"
+                                        for kind, _operand in dependencies.values())
+                  else "code_and_config")
+        return ReaderFactProjection(owner, key, "relation", projected, status,
+                                    tuple(dependencies))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'position_schedule', 'relation'),
+))
 def decoder_position_application_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -345,6 +388,7 @@ def decoder_position_application_schedule_for_path(
         factor, geometry, tuple(decisions), paths, tuple(values), spans)
     return ReaderResult.resolved(
         attention.compute_occurrence, value,
+        claim_witness=PositionScheduleClaimWitness(index, value),
         provenance=(ReaderProvenance(
             "code_and_config", spans=spans,
             config_paths=tuple(dict.fromkeys((

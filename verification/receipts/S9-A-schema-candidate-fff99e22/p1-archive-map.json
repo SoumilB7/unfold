@@ -1,0 +1,486 @@
+{
+  "archiver_sha256": "d2ea941e75821e28f52f921186f0773f659f14248d4fa3845e1a635215c17f58",
+  "directories": [
+    {
+      "archived": "position-closure/qualification",
+      "original": "/private/tmp/unfold-s9a-position-closure/qualification"
+    },
+    {
+      "archived": "p1-first-correction-independent-review",
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/model_unfolder"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/tests"
+    },
+    {
+      "archived": "p1-second-correction-independent-review",
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/model_unfolder"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/tests"
+    },
+    {
+      "archived": "p1-final-independent-review",
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review"
+    },
+    {
+      "archived": "p1-final-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source"
+    },
+    {
+      "archived": "p1-final-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/model_unfolder"
+    },
+    {
+      "archived": "p1-final-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "p1-final-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/tests"
+    },
+    {
+      "archived": "presentation-firewall-independent-review",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/renderers",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/renderers"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/renderers/html",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/renderers/html"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "position-closure/qualification/result.json",
+      "bytes": 545,
+      "original": "/private/tmp/unfold-s9a-position-closure/qualification/result.json",
+      "sha256": "40446e91b23e503877d33f4740f9da46ac8bc56b4ab828d712302a76c2d689e0"
+    },
+    {
+      "archived": "position-closure/qualification/schema-proof-metadata.log",
+      "bytes": 100,
+      "original": "/private/tmp/unfold-s9a-position-closure/qualification/schema-proof-metadata.log",
+      "sha256": "017693541d8d9cf28da6d5ebf5c4ba640a267c023a0c38307330f28a27e450a0"
+    },
+    {
+      "archived": "position-closure/run.py",
+      "bytes": 1145,
+      "original": "/private/tmp/unfold-s9a-position-closure/run.py",
+      "sha256": "32be79954d1dc9329aa5ad40024b7d56c06234c5ecd472213d19e899ac410235"
+    },
+    {
+      "archived": "position-closure/source-manifest.json",
+      "bytes": 14545,
+      "original": "/private/tmp/unfold-s9a-position-closure/source-manifest.json",
+      "sha256": "5e91aba357de80db5f2fc16d4e0715869731d17825a77756afdea4c9270af954"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/review.md",
+      "bytes": 1924,
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/review.md",
+      "sha256": "6a1e68d51fdd62446286b5b74b127f29c7387d82bf111bf15f28559bdb37d6f3"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/model_unfolder/evidence/position_fixed.py",
+      "bytes": 46925,
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/model_unfolder/evidence/position_fixed.py",
+      "sha256": "200febb0c3906e0a78eb7d5b74cc6d412dec6355756d3e51dcb8e6076f7124c8"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/source/tests/test_s9_input_position_claims.py",
+      "bytes": 9591,
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/source/tests/test_s9_input_position_claims.py",
+      "sha256": "0ec7d47a6f78ab552c4dfb249db8c3558d412e1e41edf07013989d3995e7b87b"
+    },
+    {
+      "archived": "p1-first-correction-independent-review/verdict.json",
+      "bytes": 826,
+      "original": "/private/tmp/unfold-s9a-independent-p1-first-correction-review/verdict.json",
+      "sha256": "3890d71e7842ca473486a4a103f32eb888ff9352b29510d09141b703f8078078"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/model_unfolder/evidence/position_fixed.py",
+      "bytes": 52183,
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/model_unfolder/evidence/position_fixed.py",
+      "sha256": "134c45edbd89de5cc1f9d3bf3f6f1c715bf08e8dac08a450e03e49a817ae0065"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 29041,
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/model_unfolder/evidence/reader_claims.py",
+      "sha256": "33493c17d0930edadebc5f4adfc204a3e1431c6fb87c910dac6a0979bf4757e1"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/source/tests/test_s9_input_position_claims.py",
+      "bytes": 10985,
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/source/tests/test_s9_input_position_claims.py",
+      "sha256": "6dd27c2169886c3e5a390c0842e9ae13c656e52037d6c8c58deb78bfa0358e93"
+    },
+    {
+      "archived": "p1-second-correction-independent-review/verdict.json",
+      "bytes": 1455,
+      "original": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/verdict.json",
+      "sha256": "4d1e5ef771deebc281f1c757bd6fff29e7fc537a777b9c9b7a23edca0cf0ae25"
+    },
+    {
+      "archived": "p1-final-independent-review/review.md",
+      "bytes": 1388,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/review.md",
+      "sha256": "9bc07b99058b898e002f7eb4feb7a72e2867b14269c7c83755361430f6919077"
+    },
+    {
+      "archived": "p1-final-independent-review/source/model_unfolder/evidence/position_fixed.py",
+      "bytes": 52142,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/model_unfolder/evidence/position_fixed.py",
+      "sha256": "8360cbe7d9ab1c574ed5c0a57fa5f3302bdb0662579364b9f45e68a1967697bc"
+    },
+    {
+      "archived": "p1-final-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "p1-final-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 28886,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/model_unfolder/evidence/reader_claims.py",
+      "sha256": "ce35651c1e916d245263388365384018294aaa0e544a87a21ee15613c272d7f6"
+    },
+    {
+      "archived": "p1-final-independent-review/source/tests/test_s9_input_position_claims.py",
+      "bytes": 11175,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/source/tests/test_s9_input_position_claims.py",
+      "sha256": "6315b23d2e440e045342c6dcb46d22dc5adc6fd1fe48b1b8f4fd86f84e5fdbee"
+    },
+    {
+      "archived": "p1-final-independent-review/verdict.json",
+      "bytes": 917,
+      "original": "/private/tmp/unfold-s9a-independent-p1-final-review/verdict.json",
+      "sha256": "e6dd3547e3321c4154ae1fc73c4cfcced0a6362ba8f841f08102c17deeb99cec"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/review.md",
+      "bytes": 1834,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/review.md",
+      "sha256": "3f388e6495f239f112c69172553eca38ffd3ad5ca2a4c441db358829d1d1b621"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/evidence/consumer_firewall.py",
+      "bytes": 37293,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/evidence/consumer_firewall.py",
+      "sha256": "519aeb9019b545a848f15e0370af1532824785946a3008a1f4bbb8ab3f021a64"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/presentation.py",
+      "bytes": 19703,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/presentation.py",
+      "sha256": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/renderers/html/cards.py",
+      "bytes": 11938,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/renderers/html/cards.py",
+      "sha256": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/renderers/html/render_context.py",
+      "bytes": 8311,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/renderers/html/render_context.py",
+      "sha256": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/model_unfolder/renderers/html/utils.py",
+      "bytes": 6416,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/model_unfolder/renderers/html/utils.py",
+      "sha256": "2cf96830d5a113587befd9c4b9db9636141f3b8420f6668565bbc59c9d4cd136"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/source/tests/test_consumer_firewall.py",
+      "bytes": 11928,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/source/tests/test_consumer_firewall.py",
+      "sha256": "00b843f9fce91e0d4b5b9c440a9412dbf66b2e52d16e97e9c87ebd34e8834b71"
+    },
+    {
+      "archived": "presentation-firewall-independent-review/verdict.json",
+      "bytes": 1001,
+      "original": "/private/tmp/unfold-s9a-independent-presentation-firewall-review/verdict.json",
+      "sha256": "3fcf57e6f3d3d13bf7557525f96a7c74f5c0b336771fd44955cab30cd9a3a863"
+    }
+  ],
+  "outcomes": {
+    "matrix_or_baseline_changed": false,
+    "output_approval": false,
+    "position_log_sha256": "017693541d8d9cf28da6d5ebf5c4ba640a267c023a0c38307330f28a27e450a0",
+    "position_result": {
+      "after": "8637da80106b01f37b83263f8a4c09df0c78ce045385e580bae17369697796dc",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "before": "8637da80106b01f37b83263f8a4c09df0c78ce045385e580bae17369697796dc",
+      "duration": 15.228385041933507,
+      "log_path": "/private/tmp/unfold-s9a-position-closure/qualification/schema-proof-metadata.log",
+      "name": "schema-proof-metadata",
+      "passed": true,
+      "returncode": 0
+    },
+    "reviews": {
+      "p1-final": {
+        "decision": "ACCEPT_BOUNDED_P1_SOURCE_CORRECTIONS",
+        "manifest_sha256": "5e91aba357de80db5f2fc16d4e0715869731d17825a77756afdea4c9270af954",
+        "output_approval": false,
+        "prior_return": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/verdict.json",
+        "review_sha256": "9bc07b99058b898e002f7eb4feb7a72e2867b14269c7c83755361430f6919077",
+        "reviewer": "/root/independent_review",
+        "runtime_performed": false,
+        "source_pins": {
+          "model_unfolder/evidence/position_fixed.py": "8360cbe7d9ab1c574ed5c0a57fa5f3302bdb0662579364b9f45e68a1967697bc",
+          "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+          "model_unfolder/evidence/reader_claims.py": "ce35651c1e916d245263388365384018294aaa0e544a87a21ee15613c272d7f6",
+          "tests/test_s9_input_position_claims.py": "6315b23d2e440e045342c6dcb46d22dc5adc6fd1fe48b1b8f4fd86f84e5fdbee"
+        }
+      },
+      "p1-first-correction": {
+        "blockers": [
+          "forward bare-self alias or namespace-reflected buffer mutation",
+          "constructor mutation after admitted installation"
+        ],
+        "decision": "RETURN",
+        "output_approval": false,
+        "program_index_unchanged_from_ninth": true,
+        "review_sha256": "6a1e68d51fdd62446286b5b74b127f29c7387d82bf111bf15f28559bdb37d6f3",
+        "reviewer": "/root/independent_review",
+        "runtime_performed": false,
+        "scope": "P1 first correction source 200febb0",
+        "source_pins": {
+          "model_unfolder/evidence/position_fixed.py": "200febb0c3906e0a78eb7d5b74cc6d412dec6355756d3e51dcb8e6076f7124c8",
+          "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+          "tests/test_s9_input_position_claims.py": "0ec7d47a6f78ab552c4dfb249db8c3558d412e1e41edf07013989d3995e7b87b"
+        }
+      },
+      "p1-second-correction": {
+        "accepted_bounded_corrections": [
+          "closed four-method class and final-install constructor grammar",
+          "forward exact self-use addresses refuse aliases/reflection",
+          "actual retained unavailable-origin declaration has no proof/token"
+        ],
+        "decision": "RETURN_ONE_REMAINING_P1_LINK",
+        "output_approval": false,
+        "remaining_issue": {
+          "counterexample": "torch.cat([torch.cos(angle), torch.sin(angle)], dim=1).to(torch.bool)",
+          "location": "_fixed_claim_origin cat-to-sinusoid-binding wrapper loop",
+          "minimal_correction": "Apply existing finite tensor return-chain validator to binding.value rooted at exact cat span; retain old unsupported values unqualified.",
+          "reason": "Old wrapper-name-only loop admits arbitrary to arguments; new finite helper covers binding-to-return but not cat-to-binding, so a transformed table can acquire sinusoidal origin authority."
+        },
+        "reviewer": "/root/independent_review",
+        "runtime_performed": false,
+        "source_pins": {
+          "model_unfolder/evidence/position_fixed.py": "134c45edbd89de5cc1f9d3bf3f6f1c715bf08e8dac08a450e03e49a817ae0065",
+          "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+          "model_unfolder/evidence/reader_claims.py": "33493c17d0930edadebc5f4adfc204a3e1431c6fb87c910dac6a0979bf4757e1",
+          "tests/test_s9_input_position_claims.py": "6dd27c2169886c3e5a390c0842e9ae13c656e52037d6c8c58deb78bfa0358e93"
+        }
+      },
+      "presentation-firewall": {
+        "decision": "ACCEPT_BOUNDED_SOURCE",
+        "output_approval": false,
+        "review_sha256": "3f388e6495f239f112c69172553eca38ffd3ad5ca2a4c441db358829d1d1b621",
+        "reviewer": "/root/independent_review",
+        "runtime_performed": false,
+        "scope": "Renderer-only exact four presentation capabilities",
+        "source_pins": {
+          "model_unfolder/evidence/consumer_firewall.py": "519aeb9019b545a848f15e0370af1532824785946a3008a1f4bbb8ab3f021a64",
+          "model_unfolder/presentation.py": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4",
+          "model_unfolder/renderers/html/cards.py": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80",
+          "model_unfolder/renderers/html/render_context.py": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07",
+          "model_unfolder/renderers/html/utils.py": "2cf96830d5a113587befd9c4b9db9636141f3b8420f6668565bbc59c9d4cd136",
+          "tests/test_consumer_firewall.py": "00b843f9fce91e0d4b5b9c440a9412dbf66b2e52d16e97e9c87ebd34e8834b71"
+        }
+      }
+    }
+  },
+  "reused_prior_review": {
+    "all_original_and_archived_bytes_rechecked": true,
+    "files": [
+      {
+        "archived": "ninth-independent-review/review.md",
+        "bytes": 4883,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/review.md",
+        "sha256": "4dcd9b0a91db63ef5d60d4585f75f1ea1e491b3f6afab845a1a306f31e6d7c3a"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/adapters/transformer/parser.py",
+        "bytes": 254747,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/adapters/transformer/parser.py",
+        "sha256": "9e35ed1815d223b4e059413d1470ebcb4a1a67eb996c327128723636c2e3d00b"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/activation_registry.py",
+        "bytes": 26040,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/activation_registry.py",
+        "sha256": "a99b40fcf16f07cf3a5f156d1f4eb68904f94c2ca01949dcff4e9334c2e7068a"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/activation_semantics.py",
+        "bytes": 802,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/activation_semantics.py",
+        "sha256": "f16de418337671f1a80b72a917af73237b70038c64a30fe9b786f06020602fd1"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/attention.py",
+        "bytes": 246192,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/attention.py",
+        "sha256": "821652b3e7ddaafb4a7ae58e7d6def7c8be0811101bc148a41217b94fbc6ca74"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/expert_storage.py",
+        "bytes": 68282,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/expert_storage.py",
+        "sha256": "1f31642bb3d8370b8eaa821fb4d7fb610da7b4eb3b2005883b7041106478057f"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/position_fixed.py",
+        "bytes": 35154,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/position_fixed.py",
+        "sha256": "dde50ac6555e388d98c4c3480ad0d79f813597ca8930393c13934f185bb2b413"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/program_index.py",
+        "bytes": 156229,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/program_index.py",
+        "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+      },
+      {
+        "archived": "ninth-independent-review/source/model_unfolder/evidence/reader_claims.py",
+        "bytes": 28886,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/model_unfolder/evidence/reader_claims.py",
+        "sha256": "ce35651c1e916d245263388365384018294aaa0e544a87a21ee15613c272d7f6"
+      },
+      {
+        "archived": "ninth-independent-review/source/tests/test_expert_storage.py",
+        "bytes": 25847,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/tests/test_expert_storage.py",
+        "sha256": "d70138ea58f061a8d9a515560aff94d21f5ee6caa281aa7a15868e80ba1ff0db"
+      },
+      {
+        "archived": "ninth-independent-review/source/tests/test_position_fixed.py",
+        "bytes": 6736,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/tests/test_position_fixed.py",
+        "sha256": "df22ecbdbeae0e2cf5199eda1a898e1a101d30a6d01879aebe5531614c308949"
+      },
+      {
+        "archived": "ninth-independent-review/source/tests/test_reader_claims.py",
+        "bytes": 42303,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/tests/test_reader_claims.py",
+        "sha256": "f214c83cd8318b199beb1066ff637dd3d311f18fc3036ea05d5de76f53468944"
+      },
+      {
+        "archived": "ninth-independent-review/source/tests/test_s9_input_position_claims.py",
+        "bytes": 8083,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source/tests/test_s9_input_position_claims.py",
+        "sha256": "92ba9814b998d57953b5b4824280a00f6181fd5f675b1627704c3784fe58db2d"
+      },
+      {
+        "archived": "ninth-independent-review/source-pins.json",
+        "bytes": 2875,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/source-pins.json",
+        "sha256": "f78f287ec2c4abc2d5a44e8096a534938249f6138944e31b848b76ea9a1baf4c"
+      },
+      {
+        "archived": "ninth-independent-review/verdict.json",
+        "bytes": 878,
+        "original": "/private/tmp/unfold-s9a-independent-ninth-review/verdict.json",
+        "sha256": "aca5f71bbba7ab0cb4c6eb25f34608be1d3dbc7fe0d491227dc359c9fae732ba"
+      }
+    ],
+    "map": "ninth-archive-map.json",
+    "map_sha256": "95baff5130835e13c0916e50dd07046e622e5769e86d0f0a80350d21a9e153b1",
+    "scope": "ninth-independent-review"
+  },
+  "scope": "Released final P1 candidate/result, all P1 review rounds and presentation-firewall review; prior ninth RETURN reused exactly",
+  "source_archives": [
+    {
+      "archive": "position-closure/changed-sources.tar.gz",
+      "archive_sha256": "25b18ae387ca7472b95db631b92782ba653610c7cf40d0ffbfe9ffc1d727cf2e",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 99,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-position-closure",
+      "manifest_sha256": "5e91aba357de80db5f2fc16d4e0715869731d17825a77756afdea4c9270af954",
+      "phase": "position-closure",
+      "uncompressed_bytes": 3502008
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 830884,
+    "copied_files": 28,
+    "prior_review_rechecked_files": 15,
+    "source_files": 99
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "decision": "RETURN",
+  "reviewer": "/root/independent_review",
+  "scope": "Ninth frozen S9-A corrected registry/storage and new score/fixed-position proofs",
+  "bounded_accepted": [
+    "A1 selected class/import identity guard",
+    "A2 synchronous positional lookup/forward guards",
+    "expert latest same-guard consumed product selection",
+    "raw score versus unproved multiplier distinction"
+  ],
+  "blockers": [
+    "P1 fixed-position returned-value preservation and intervening mutation",
+    "A3 terminal functional activation identity and supported kwargs",
+    "S1 duplicate positional/keyword SDPA optional arguments"
+  ],
+  "runtime_performed": false,
+  "output_approval": false,
+  "source_pins_sha256": "f78f287ec2c4abc2d5a44e8096a534938249f6138944e31b848b76ea9a1baf4c",
+  "review_sha256": "4dcd9b0a91db63ef5d60d4585f75f1ea1e491b3f6afab845a1a306f31e6d7c3a"
+}

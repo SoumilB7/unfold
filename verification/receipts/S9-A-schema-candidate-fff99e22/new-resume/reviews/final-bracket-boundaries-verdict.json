@@ -1,0 +1,14 @@
+{
+  "verdict": "ACCEPT bounded source-only three boundary corrections; runtime pending",
+  "manifest_sha256": "759665de392b828823060005f072dcf609a1772efbfd4b2ecbe29cb3f50cc098",
+  "all_three_before_after_and_live_pins_checked": true,
+  "findings": [
+    "tie_word_embeddings retains its model-owned Boolean VALUE declaration and existing parser manual-source code_proven status; registry does not add evidence, permit relation kind, change reader validation, or stamp proof. Existing declaration test explicitly requires no claim_evidence/token and rejects relation. Banner registry changes remain in composed before snapshot.",
+    "InstanceInventory is the frozen returned-data DTO; checkpoint_metadata compares exact config fingerprint and header shapes. Import vocabulary adds that one symbol only, retaining worker API and module import rejection. S11 N2 remains open.",
+    "Storage test now counts actual cache factory calls at the existing cache boundary and leaves the authenticated reader identity unchanged. It retains exact result object identity and no-repeat-fill assertions, additionally requiring resolved status. No production cache change."
+  ],
+  "limits": [
+    "No model/project imports or tests by reviewer. Root must execute exact failed cases and complete full gate.",
+    "Registry vocabulary change has source/cache identity impact; no output blessing or claim qualification approval."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "architecture": "SD3Transformer2DModel",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "SD3Transformer2DModel",
+    "text_encoder": "CLIPTextModelWithProjection",
+    "text_encoder_2": "CLIPTextModelWithProjection",
+    "text_encoder_3": "T5EncoderModel"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_sd3.py"
+    ],
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+    ],
+    "text_encoder_2": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py"
+    ],
+    "text_encoder_3": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py"
+    ]
+  },
+  "component_model_types": {
+    "text_encoder": "clip_text_model",
+    "text_encoder_2": "clip_text_model",
+    "text_encoder_3": "t5"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_sd3.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/modeling_clip.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/modeling_t5.py"
+  ],
+  "import_roots": {
+    "root": [
+      {
+        "package": "diffusers",
+        "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+      }
+    ]
+  },
+  "model_id": "stabilityai/stable-diffusion-3.5-large",
+  "model_type": null,
+  "pipeline_components": [
+    "text_encoder",
+    "text_encoder_2",
+    "text_encoder_3"
+  ],
+  "source": "local",
+  "supporting_files": {
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/configuration_clip.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ],
+    "text_encoder_2": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/clip/configuration_clip.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ],
+    "text_encoder_3": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/t5/configuration_t5.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

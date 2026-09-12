@@ -1,0 +1,61 @@
+{
+  "all_existing_fact_value_status_source_triples_unchanged": true,
+  "canonical_delta_counts": {
+    "expanded": 0,
+    "gallery": 0,
+    "html_meta": 1,
+    "ir": 2,
+    "ledgers": 81,
+    "params": 0,
+    "sable": 14
+  },
+  "causes": {
+    "activation": 1,
+    "embedding": 1,
+    "finite_unknown_slots": 1,
+    "geometry": 3,
+    "legacy_unknown": 1,
+    "mechanism": 4,
+    "references": 25,
+    "sable": 14,
+    "scope": 43,
+    "tie": 1,
+    "width": 3
+  },
+  "findings": [],
+  "html_hunk_counts": {
+    "banner": 1,
+    "css": 1,
+    "html_unknown": 1
+  },
+  "matched_actual_fact_event_hash_rows": 11,
+  "new_fact_keys": [
+    "model.hidden_size"
+  ],
+  "new_sable_checks": [
+    {
+      "blocking": true,
+      "findings": [],
+      "name": "presentation_census",
+      "passed": true
+    },
+    {
+      "blocking": false,
+      "findings": [],
+      "name": "pending_design",
+      "passed": true
+    }
+  ],
+  "original_mounts": [
+    "uf-476cb2351a",
+    "uf-440f553e51"
+  ],
+  "raw_html_sha256": [
+    "5076def1293f17f42dbe80b9f5dc006959e3d9a8feaca7d7e720653eb9ca083c",
+    "fff5807f6e84ff9c6e1120fa76eb7efba43041226ca8a37f4e4c60bf74d24255"
+  ],
+  "unexposed_nested_event_hash_rows": 0,
+  "unknown_report_counts": [
+    80
+  ]
+}

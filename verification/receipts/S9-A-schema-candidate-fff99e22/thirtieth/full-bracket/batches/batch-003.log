@@ -1,0 +1,55 @@
+..............................................................s.ss..ssss [ 41%]
+.s...ss...sss...s............................................F.......... [ 83%]
+......F.....................                                             [100%]
+=================================== FAILURES ===================================
+______ test_injected_default_without_prepared_class_evidence_is_rejected _______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-47/test_injected_default_without_0')
+
+    def test_injected_default_without_prepared_class_evidence_is_rejected(tmp_path):
+        from model_unfolder import config_to_ir
+    
+        _index, bundle, _root, _block = _pipeline(tmp_path)
+        config = json.loads((_CORPUS / "llama-7b.json").read_text())["config"]
+        config.update({"hidden": 128, "layers": 2})
+        config.pop("attention_cap", None)
+        context = ParseContext(
+            source_bundle=bundle,
+            declared_decoderness="decoder_only_wrapper",
+            class_defaults={"attention_cap": 17.0},
+        )
+>       with pytest.raises(ValueError, match="class-default evidence"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_attention_softcap.py:239: Failed
+_____________ test_example_check_never_invokes_platform_rasterizer _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x3094b7c20>
+
+    def test_example_check_never_invokes_platform_rasterizer(monkeypatch):
+        monkeypatch.setattr(
+            generate_examples, "svg_to_png",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("verification invoked the platform rasterizer")))
+>       assert generate_examples.check() == 0
+E       assert 1 == 0
+E        +  where 1 = <function check at 0x10b0c8860>()
+E        +    where <function check at 0x10b0c8860> = generate_examples.check
+
+tests/test_s5_release.py:205: AssertionError
+----------------------------- Captured stdout call -----------------------------
+examples are stale
+- manifest metadata or hero SVG-input seal is stale
+- deterministic HTML is stale: deepseek-v3.html
+- deterministic HTML is stale: granite-3-0-8b-instruct.html
+- deterministic HTML is stale: hunyuanvideo.html
+- deterministic HTML is stale: llama-7b.html
+- deterministic HTML is stale: musicgen-small.html
+- deterministic HTML is stale: pixart-sigma-xl-2-1024-ms.html
+- deterministic HTML is stale: qwen2-vl-7b-instruct.html
+- deterministic HTML is stale: stable-diffusion-xl-base-1-0.html
+=========================== short test summary info ============================
+FAILED tests/test_attention_softcap.py::test_injected_default_without_prepared_class_evidence_is_rejected
+FAILED tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer
+2 failed, 156 passed, 14 skipped in 350.99s (0:05:50)

@@ -1,0 +1,30 @@
+{
+  "status": "HELD_SOURCE_ONLY_REVIEW_AND_RUNTIME_PENDING",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "2610e6a2ee40a3acdedec6600ea5239dc4deec604586491338f2060d38933dbd"
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "proposed_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07"
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "sha256": "7bf4faf9ca457f4f52acd3304558ab3be2b16bc90396670d4e5a57ad61d7ffd4"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "ee4fee3603522b593a57f17f640e7a35b2907ca1e170ee775dcbc06b114ea590"
+    },
+    {
+      "path": "source-pins.json",
+      "sha256": "ff76fe0001830c5b081a656539d34b6f319a490f8c088e96b1e2afc7072ff18e"
+    }
+  ],
+  "predecessor_manifest_sha256": "4003b0093857a4ccec2c0b761003c065a255194ff8cd9b28f21403dd2a831e82"
+}

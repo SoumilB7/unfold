@@ -1,0 +1,97 @@
+[
+  {
+    "case": "llama",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysixth/llama-7b.html",
+    "original_sha256": "25949499d548b0255689648e551cde6f4205fc9eaecc29a5efd71c54beb23157",
+    "derived": "inputs/S9-transformer/schema-thirtysixth/llama-7b.html",
+    "derived_sha256": "cffb914c968edb1c0963963e71c173826b6b95fc63855cb7452a5c8c1813c3b3",
+    "exact_insertions": [
+      {
+        "scope": "uf-b9723490bb",
+        "newline": "\n",
+        "inserted": "\n#uf-b9723490bb .uf-chip-unresolved,\n#uf-b9723490bb .uf-chip-pending_design,\n#uf-b9723490bb .uf-chip-class_default,\n#uf-b9723490bb .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  },
+  {
+    "case": "sdxl",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-unet/schema-thirtysixth/stable-diffusion-xl-base-1-0.html",
+    "original_sha256": "8a972e6cb63429b0de1e269028d38750f1fc9b5a2fc9a4a2ddd7459334e12650",
+    "derived": "inputs/S9-unet/schema-thirtysixth/stable-diffusion-xl-base-1-0.html",
+    "derived_sha256": "618dcff8c13bbb2f84848f7be804ca76ea0de7602f4d09dd2e466bf608acc2d5",
+    "exact_insertions": [
+      {
+        "scope": "uf-b17b7addcc",
+        "newline": "\n",
+        "inserted": "\n#uf-b17b7addcc .uf-chip-unresolved,\n#uf-b17b7addcc .uf-chip-pending_design,\n#uf-b17b7addcc .uf-chip-class_default,\n#uf-b17b7addcc .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      },
+      {
+        "scope": "@@UNFOLD_PRESENTATION_MOUNT@@",
+        "newline": "\\n",
+        "inserted": "\\n#@@UNFOLD_PRESENTATION_MOUNT@@ .uf-chip-unresolved,\\n#@@UNFOLD_PRESENTATION_MOUNT@@ .uf-chip-pending_design,\\n#@@UNFOLD_PRESENTATION_MOUNT@@ .uf-chip-class_default,\\n#@@UNFOLD_PRESENTATION_MOUNT@@ .uf-chip-symbolic {\\n  display:inline-block; box-sizing:border-box;\\n  max-width:100%; min-width:0;\\n  border-radius:4px;\\n  white-space:normal; overflow-wrap:anywhere;\\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  },
+  {
+    "case": "bloom-ordinary",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/ordinary.html",
+    "original_sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba",
+    "derived": "inputs/S9-schema/defaults-thirtysixth/bloom/ordinary.html",
+    "derived_sha256": "0056ba099d9054a730e8d3b02e2ab06b0d0e55e3bd4f1859ebffb48369691238",
+    "exact_insertions": [
+      {
+        "scope": "uf-e277087aec",
+        "newline": "\n",
+        "inserted": "\n#uf-e277087aec .uf-chip-unresolved,\n#uf-e277087aec .uf-chip-pending_design,\n#uf-e277087aec .uf-chip-class_default,\n#uf-e277087aec .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  },
+  {
+    "case": "bloom-sparse",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-schema/defaults-thirtysixth/bloom/sparse.html",
+    "original_sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035",
+    "derived": "inputs/S9-schema/defaults-thirtysixth/bloom/sparse.html",
+    "derived_sha256": "168e071243737bd5c6cd9019c841ca9355f5676182bf560521b9384c3d8fb3c1",
+    "exact_insertions": [
+      {
+        "scope": "uf-6ff1bd1be0",
+        "newline": "\n",
+        "inserted": "\n#uf-6ff1bd1be0 .uf-chip-unresolved,\n#uf-6ff1bd1be0 .uf-chip-pending_design,\n#uf-6ff1bd1be0 .uf-chip-class_default,\n#uf-6ff1bd1be0 .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  },
+  {
+    "case": "musicgen-ordinary",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/ordinary.html",
+    "original_sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f",
+    "derived": "inputs/S9-schema/defaults-thirtysixth/musicgen/ordinary.html",
+    "derived_sha256": "01e5614e8f632c80affe69412d143f6c199078617d7e92c9ed6d02b090f534a3",
+    "exact_insertions": [
+      {
+        "scope": "uf-393560558f",
+        "newline": "\n",
+        "inserted": "\n#uf-393560558f .uf-chip-unresolved,\n#uf-393560558f .uf-chip-pending_design,\n#uf-393560558f .uf-chip-class_default,\n#uf-393560558f .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  },
+  {
+    "case": "musicgen-sparse",
+    "original": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-schema/defaults-thirtysixth/musicgen/sparse.html",
+    "original_sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a",
+    "derived": "inputs/S9-schema/defaults-thirtysixth/musicgen/sparse.html",
+    "derived_sha256": "9f7fff10001a993e1e9f7e11c57d018329f12a637ff956a70f7f6616f2c946cc",
+    "exact_insertions": [
+      {
+        "scope": "uf-7835474a6b",
+        "newline": "\n",
+        "inserted": "\n#uf-7835474a6b .uf-chip-unresolved,\n#uf-7835474a6b .uf-chip-pending_design,\n#uf-7835474a6b .uf-chip-class_default,\n#uf-7835474a6b .uf-chip-symbolic {\n  display:inline-block; box-sizing:border-box;\n  max-width:100%; min-width:0;\n  border-radius:4px;\n  white-space:normal; overflow-wrap:anywhere;\n}"
+      }
+    ],
+    "scope": "Exact original saved36 HTML + only proposed R2 CSS rule in root/payload stylesheet; native regeneration not claimed."
+  }
+]

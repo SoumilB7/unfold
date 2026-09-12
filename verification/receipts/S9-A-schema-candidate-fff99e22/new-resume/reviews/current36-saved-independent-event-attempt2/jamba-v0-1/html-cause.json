@@ -1,0 +1,19 @@
+{
+  "after_bytes": 74438,
+  "after_sha256": "8f452e81ebae67abbd92b4f5b2d88b8af6f0a207ad4c8e004a1321ce36a6624f",
+  "before_bytes": 74438,
+  "before_sha256": "bf404349e0dc3b3067d43f39007aeb6f91a93efabab9c8c71e82bc97b2d56b87",
+  "exact_new_mount_occurrences": 139,
+  "exact_old_mount_occurrences": 139,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-0201f543f7",
+  "mount_identity_before": "uf-261e839d0b",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "jamba-v0-1",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

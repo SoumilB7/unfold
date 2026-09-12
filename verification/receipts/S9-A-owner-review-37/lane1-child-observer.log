@@ -1,0 +1,15 @@
+{
+  "name": "actual37-child-native-ledgers",
+  "returncode": 0,
+  "duration": 42.27325912500237,
+  "before": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "after": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyseventh/child-native-observation/actual37-child-native-ledgers.log",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "pins_equal": true,
+  "packet_passed": true,
+  "passed": true,
+  "scope": "Native child-ledger observation only; missing proof stays missing; no output approval."
+}

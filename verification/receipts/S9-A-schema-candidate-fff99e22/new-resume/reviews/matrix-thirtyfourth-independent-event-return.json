@@ -1,0 +1,11 @@
+{
+  "verdict": "RETURN_R1_SAVED_CANDIDATE_NOT_BOUND_TO_COMPLETED34_SOURCE",
+  "manifest_sha256": "523ebe56fb11b821d71f9ce351b52983e820fc216aab2616d31db55d0ac84e32",
+  "script_sha256": "ae4c134aaa7bfd2af16e8b6346d86c7771517e697f15fd217844e06b15805913",
+  "bounded_finding": "Successful exact34 completion fingerprint is checked independently of arbitrary --candidate. Candidate matrix.sources is enumerated only as a metadata delta, not verified against exact34 source bytes/generator source membership. A valid historical32 matrix supplied with a successful34 completion result therefore passes this source gate.",
+  "required_r2": "Bind candidate and completion paths; require exact34 manifest hash and actual source rows; verify candidate source hashes/membership under existing generation source law. Keep historical sources as comparisons and all raw deltas unchanged. No product imports or new architectural inference.",
+  "descriptive_corrections": "prepared-contract checks still refer to exact32 source, versus32 and new32 projection-kind delta as current. Correct these current self-labels; preserve historical executed32 comparison.",
+  "comparison_core": "Full row, companion, metadata/citation/axis/order comparison remains suitable; no142 closure hard-coded. R2 is a saved-data guard repair and does not block actual34 matrix generation.",
+  "source_only_no_runtime": true,
+  "output_approval": false
+}

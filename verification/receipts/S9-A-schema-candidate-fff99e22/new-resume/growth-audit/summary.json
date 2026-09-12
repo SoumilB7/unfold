@@ -1,0 +1,122 @@
+{
+  "scope": "Bounded source-only growth/authority/debt audit: frozen26 vs independently held S10-1 census-fix. No product imports, tests, models, acceptance or blessing.",
+  "baseline_exclusion": "S10 deleted UNet adapter/differential/renderer paths and its debt reductions are excluded from S9-A credit.",
+  "line_growth": {
+    "total_added": 12369,
+    "total_deleted": 683,
+    "product_added": 7716,
+    "product_deleted": 597,
+    "tests_added": 4652,
+    "tests_deleted": 86,
+    "scripts_added": 1
+  },
+  "new_product_modules": {
+    "model_unfolder/evidence/activation_registry.py": "Finite exact activation registry/callable proof; unsupported applications remain unavailable.",
+    "model_unfolder/evidence/checkpoint_metadata.py": "Independent checkpoint shape consistency findings; no mechanism authority from headers.",
+    "model_unfolder/evidence/class_default_value.py": "Narrow root hidden_size scalar class-default VALUE witness with constructor override guard.",
+    "model_unfolder/evidence/presentation_census.py": "Count serialized presentation annotations separately from architecture occurrences.",
+    "model_unfolder/evidence/presentation_projection.py": "Project qualified/default/unknown annotations onto existing product routes.",
+    "model_unfolder/evidence/reader_claims.py": "Bind original reader result, source index, exact document and finite fact projection; declaration alone cannot qualify.",
+    "model_unfolder/evidence/reader_placement.py": "Exact reader target occurrence citation; migrated norm slot cannot return to shared-class span matching.",
+    "model_unfolder/presentation.py": "Typed four-kind display schema and fact references, not parallel architecture IR.",
+    "model_unfolder/uncertainty.py": "Shared typed unknown schema, moved S7 investigation/exhaustion types, strict class-3 provenance."
+  },
+  "whole_product_files_deleted": [],
+  "authority_restriction": {
+    "path": "model_unfolder/evidence/reconciliation.py::_fact_static_claims",
+    "removed_scope": "Shared-class semantic-span placement for decoder.layer.norm_kind or facts carrying decoder_norm_kind_for_path reader identity. Missing/empty/erased citations cannot fall back.",
+    "replacement": "reader_placement.py::ReaderOccurrenceCitation -> decoder_norm.py::DecoderNormClaimWitness.placement_occurrences exact callee targets; callers remain context only.",
+    "residual": "All nonmigrated facts still reach explicitly documented legacy span join. It remains open debt; this audit does not count every runtime occurrence.",
+    "tests": [
+      "tests/test_s9_reader_placement.py::test_shared_primitive_spans_keep_exact_decoder_targets_and_exclude_towers_and_final_norm",
+      "tests/test_s9_reader_placement.py::test_missing_migrated_citation_cannot_restore_shared_class_placement",
+      "tests/test_s9_reader_placement.py::test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback"
+    ]
+  },
+  "relocation_not_deletion": {
+    "from": "model_unfolder/evidence/reconciliation.py",
+    "to": "model_unfolder/uncertainty.py",
+    "top_level_definitions": [
+      "InvestigationRecord",
+      "ReaderExhaustion",
+      "_validate_exhaustion_reason",
+      "_validate_unresolved_class"
+    ],
+    "count_including_old_methods": 7
+  },
+  "retained_producer_inventory": {
+    "decorated_functions": 46,
+    "modules": 38,
+    "fixed_intended_triples": 50,
+    "limitation": "Static callable declarations are not counts of qualified facts. Dynamic diffusion owners are witness-owned; missing stronger proof remains debt. Exact list retained separately."
+  },
+  "structural_debt_register": {
+    "before": 101,
+    "after": 101,
+    "added": 0,
+    "eliminated": 0,
+    "extras": 9,
+    "config_read": 92,
+    "proof": "Register source byte-identical to S10 base; all literal call rows independently decoded with stdlib AST, no product execution.",
+    "limitation": "No claim that all 101 deletion predicates remain unsatisfied: that belongs to root gate. S7 fact-level findings are a separate census, not these register rows."
+  },
+  "legacy_inventory": {
+    "before_equals_after": true,
+    "quarantined_semantic_readers": 0,
+    "evidence_ast_parse_sites": 19,
+    "legacy_model_source_parse_sites": 8,
+    "limitation": "Values are unchanged generated inventory/source register, not a fresh dynamic census. All eight exact paths remain in unchanged inventory."
+  },
+  "identified_compatibility_paths": [
+    {
+      "name": "registered diffusion default compatibility wrapper",
+      "path": "model_unfolder/evidence/diffusion_stack.py::registered_diffusion_default",
+      "target": "model_unfolder/evidence/config_registration.py::registered_constructor_default",
+      "new": true,
+      "purpose": "Keep diffusion callers and tests on one name while routing to shared exact constructor-default authority.",
+      "callers": [
+        "model_unfolder/evidence/diffusion_stack.py::declared_diffusion_operand",
+        "model_unfolder/evidence/diffusion_stack.py::validate_diffusion_reads",
+        "model_unfolder/adapters/diffusor/config_binding.py::_ExactOperandSelector._resolve"
+      ],
+      "retirement": "No dedicated retirement predicate found in unchanged structural register; direct-call migration could remove wrapper. Treat as identified compatibility debt, not an independent default detector."
+    },
+    {
+      "name": "uncertainty import compatibility facade",
+      "path": "model_unfolder/evidence/reconciliation.py imports from model_unfolder/uncertainty.py",
+      "new": true,
+      "purpose": "Preserve former S7 symbol imports after moving typed unknown definitions to the shared layer.",
+      "retirement": "No explicit sunset found; record as compatibility facade, not deleted authority."
+    },
+    {
+      "name": "legacy activation-label qualification hold",
+      "path": "model_unfolder/evidence/reader_claims.py::qualify_reader_fact -> model_unfolder/evidence/ffn_mechanism.py::FFNMechanismClaimWitness.validate_legacy_projection_value",
+      "new": true,
+      "purpose": "When source proves a different activation than the old selector label, retain old output unqualified pending approved correction. Never stamp the wrong label.",
+      "retirement": "Reader/source-based output correction plus owner approval must replace the old selector-label writer before this hold is removed; no registry predicate currently names this hold.",
+      "test": "tests/test_reader_claims.py::test_registry_target_establishes_function_not_its_selected_key"
+    }
+  ],
+  "compatibility_count_scope": "Three concrete new compatibility/hold paths identified; no blanket zero-bridge claim and no invented exhaustive retirement count. Two facades have no declared sunset, one guards approval-required label correction.",
+  "residual_proof_debt": {
+    "activation": "Frozen26 actual Llama ordinary and sparse both retain decoder.ffn.activation applied_function/uninspected/null proof; event/default provenance agreement is not application proof.",
+    "score_formula": "Frozen26 actual Llama decoder.attention.scores_scale also remains unqualified; existing scaled-path presence does not prove exact formula.",
+    "legacy_span_join": "Nonmigrated fact placement remains shared-class-span based outside norm_kind guarded scope.",
+    "other_register_debt": "All 101 structural rows and all eight legacy parse sites remain. N1/N2 S11 module-map carryovers remain; this audit does not close them."
+  },
+  "source_pins": {
+    "model_unfolder/evidence/structural_debt.py": {
+      "base_sha256": "41a7cc7264fd8cc1bead067dd8d57f61d8fcbfabeb690c130ccbf78460e65c48",
+      "candidate_sha256": "41a7cc7264fd8cc1bead067dd8d57f61d8fcbfabeb690c130ccbf78460e65c48"
+    },
+    "model_unfolder/evidence/legacy_reader_quarantine.py": {
+      "base_sha256": "118a826ee0e7c1cb9fdd4f11b134da09a1da68ac99eadb2b08d1d06611a56d30",
+      "candidate_sha256": "118a826ee0e7c1cb9fdd4f11b134da09a1da68ac99eadb2b08d1d06611a56d30"
+    },
+    "docs/U3_CURRENT_READER_INVENTORY.md": {
+      "base_sha256": "621267d3fbf1f589652581530664c840b6dc5921d020035b1b06f4bc6e964e92",
+      "candidate_sha256": "621267d3fbf1f589652581530664c840b6dc5921d020035b1b06f4bc6e964e92"
+    }
+  },
+  "growth_input_sha256": "7483bb133ee01b692fd31c588f25078edea9879735e9c6f879604d42e240e498"
+}

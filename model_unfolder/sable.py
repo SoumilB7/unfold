@@ -163,14 +163,16 @@ _CENSUS_ADDRESS_KEYS = (
 )
 
 
-def _projection_audit_findings(ir: dict, render_log) -> list[str]:
+def _projection_audit_findings(ir: dict, render_log, *, pending_fact_keys=()) -> list[str]:
     """Every evidenced structural fact on a drawable family must have a DRAWN
     witness (U2 P4 net #13).  Diffs the ledger's code/config-proven facts against
     the union of ``RenderEvent.facts_projected`` — a fact read from the modeling
     source but projected NOWHERE is the granite-score-multiplier class: a value
     the model uses that the picture silently drops.  ``unknown`` / ``asserted`` /
     ``oracle_missing`` owe no witness (they render pale-honest / are the census
-    net's target)."""
+    net's target). ``pending_fact_keys`` comes only from the separately checked
+    actual annotation census. Those obligations remain explicitly NOT DRAWN
+    there; their visible pending marker is not a silent loss or a drawn fact."""
     from .renderers.html.fact_projection import (
         PROJECTED_STATUSES, DRAWABLE_FAMILY_SEGMENTS, family_segment,
     )
@@ -184,7 +186,7 @@ def _projection_audit_findings(ir: dict, render_log) -> list[str]:
             continue
         if family_segment(key) not in DRAWABLE_FAMILY_SEGMENTS:
             continue
-        if key not in projected:
+        if key not in projected and key not in pending_fact_keys:
             findings.append(
                 f"ledger fact {key!r} ({rec.get('status')}) is proven from evidence "
                 "but no render surface projects it — add its leaf to the surface's "
@@ -436,6 +438,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # debt never authorizes a receipt.
     _receipt_fabrication_findings = fabrication_findings(
         _receipts, _fact_rows, _claimed_targets)
+    from .evidence.presentation_census import presentation_census
+    _presentation = presentation_census(ir, render_context, context.facts.typed_records())
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.
@@ -526,9 +530,16 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # corpus witnesses every evidenced fact (verified clean on landing).
         SableCheck(
             "projection_audit",
-            _projection_audit_findings(ir, render_log),
+            _projection_audit_findings(
+                ir, render_log,
+                pending_fact_keys=_presentation["qualified_complete_pending_fact_keys"]),
             blocking=_PROJECTION_AUDIT_BLOCKING,
         ),
+        SableCheck("presentation_census", _presentation["findings"]),
+        SableCheck(
+            "pending_design", [], blocking=False,
+            note=(f"{len(_presentation['pending_design'])} proven presentation obligations "
+                  "await design; these are visibly marked and not drawn.")),
         # Schema lawfulness is not instance authority.  This complementary
         # reverse net joins the concrete CANONICAL SPEC value to THIS model's
         # owner-qualified typed fact.  Cards/JSON/params/opgraph are forbidden
@@ -713,6 +724,7 @@ def sable(model_or_id, *, token=None, source: str = "local",
             for row in ship_rows if isinstance(row, dict)
         ] + sorted(side_reader_flags),
         "silent_findings": silent_findings,
+        "presentation": _presentation,
     }
     return SableReport(model=diagram.ir.name, checks=checks,
                        view_hashes=view_hashes, gallery=gallery, oracle=oracle,

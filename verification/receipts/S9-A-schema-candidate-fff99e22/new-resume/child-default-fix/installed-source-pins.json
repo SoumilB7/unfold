@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "package_path": "transformers/models/qwen2_audio/configuration_qwen2_audio.py",
+      "sha256": "39c4ed36bcdb896a1c60359f76ecdd5d5e1dfa3548b21abe5527bb7705d140aa"
+    },
+    {
+      "package_path": "transformers/models/qwen2_audio/modeling_qwen2_audio.py",
+      "sha256": "3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848"
+    },
+    {
+      "package_path": "transformers/models/qwen2/configuration_qwen2.py",
+      "sha256": "281986fef33b2c5226389a479113eb963c8336467e76e1b8d49fd3d18ee4a882"
+    },
+    {
+      "package_path": "transformers/models/qwen2/modeling_qwen2.py",
+      "sha256": "99fa98c5676604cf6ef505892b70fda5c1c4cd835971459f38d61090cccab1e4"
+    },
+    {
+      "package_path": "transformers/models/llama/configuration_llama.py",
+      "sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda"
+    }
+  ]
+}

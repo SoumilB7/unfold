@@ -12,7 +12,8 @@ therefore means ``unknown``, not ``no positional mechanism``.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from .reader_claims import ReaderClaimUnavailable, retained_claim_reader
 
 from .attention_storage import producer_sources_reaching_expressions
 from .construction_calls import resolve_construction_call
@@ -97,6 +98,37 @@ class LearnedAbsolutePositionEvidence:
             raise ValueError("this DTO expresses only learned embedding addition")
 
 
+@dataclass(frozen=True)
+class LearnedAbsolutePositionClaimDeclaration:
+    """Producer-owned intended kind; the stronger projection remains unproved."""
+
+    index: ProgramIndex
+    value: LearnedAbsolutePositionEvidence
+    reader_symbol = "model_unfolder.evidence.position_absolute.decoder_learned_absolute_position_for_path"
+
+    def validate_result(self, result):
+        if type(self.value) is not LearnedAbsolutePositionEvidence:
+            raise TypeError("declaration requires the reader's actual typed aggregate")
+        self.value.__post_init__()
+        value = self.value
+        if result.status != "resolved" or result.value is not value \
+                or result.owner != value.owner:
+            raise ValueError("declaration belongs to another actual reader result or owner")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ('decoder.input', 'position_addition'):
+            raise ValueError("reader has no such intended projection")
+        return 'connection'
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "learned-position lookup/addition projection qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.input', 'position_addition', 'connection'),
+))
 def decoder_learned_absolute_position_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -119,7 +151,9 @@ def decoder_learned_absolute_position_for_path(
                 "incomplete_graph",
                 "exact decoder path is not resolved: " + "; ".join(
                     item.detail for item in path.failures)),))
-    return read_learned_absolute_position(index, path.value)
+    result = read_learned_absolute_position(index, path.value)
+    return replace(result, claim_witness=LearnedAbsolutePositionClaimDeclaration(index, result.value)) \
+        if result.status == "resolved" else result
 
 
 def read_learned_absolute_position(

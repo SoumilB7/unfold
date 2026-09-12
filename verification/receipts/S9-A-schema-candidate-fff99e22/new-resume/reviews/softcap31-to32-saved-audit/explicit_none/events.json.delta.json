@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/0/document_token",
+    "before": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "after": "26bd94eeb191133f9eba015df8d94ad9750a0fc439ceb7826cd610d74e58f5a2"
+  },
+  {
+    "path": "/1/document_token",
+    "before": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "after": "26bd94eeb191133f9eba015df8d94ad9750a0fc439ceb7826cd610d74e58f5a2"
+  },
+  {
+    "path": "/2/document_token",
+    "before": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "after": "26bd94eeb191133f9eba015df8d94ad9750a0fc439ceb7826cd610d74e58f5a2"
+  }
+]

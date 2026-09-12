@@ -1,0 +1,19 @@
+{
+  "after_bytes": 63225,
+  "after_sha256": "a751d7067161040f2a9c92f3b11ab4fdcdd4e78fe759bce3fb4a4ea5bc8420c3",
+  "before_bytes": 63225,
+  "before_sha256": "13737db4e4557e2256796542140b114a8128e281cb3d951f614dabbc9f46fa0f",
+  "exact_new_mount_occurrences": 185,
+  "exact_old_mount_occurrences": 185,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-8081bb6223",
+  "mount_identity_before": "uf-379f63ebc4",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 4,
+  "raw_ordered_svg_count_before": 4,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "qwen3-8b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

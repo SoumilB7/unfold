@@ -1,0 +1,16 @@
+{
+  "decision": "ACCEPT_BOUNDED_SOURCE",
+  "reviewer": "/root/independent_review",
+  "scope": "Renderer-only exact four presentation capabilities",
+  "source_pins": {
+    "model_unfolder/evidence/consumer_firewall.py": "519aeb9019b545a848f15e0370af1532824785946a3008a1f4bbb8ab3f021a64",
+    "tests/test_consumer_firewall.py": "00b843f9fce91e0d4b5b9c440a9412dbf66b2e52d16e97e9c87ebd34e8834b71",
+    "model_unfolder/presentation.py": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4",
+    "model_unfolder/renderers/html/utils.py": "2cf96830d5a113587befd9c4b9db9636141f3b8420f6668565bbc59c9d4cd136",
+    "model_unfolder/renderers/html/cards.py": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80",
+    "model_unfolder/renderers/html/render_context.py": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+  },
+  "review_sha256": "3f388e6495f239f112c69172553eca38ffd3ad5ca2a4c441db358829d1d1b621",
+  "runtime_performed": false,
+  "output_approval": false
+}

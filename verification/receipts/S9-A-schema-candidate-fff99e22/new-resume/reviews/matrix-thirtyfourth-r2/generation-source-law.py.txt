@@ -1,0 +1,21 @@
+def _generation_sources(targets: tuple[dict[str, Any], ...]) -> tuple[Path, ...]:
+    """The closed input/code dependency surface of the persisted S7 result.
+
+    S7 invokes the real parser, source index and physics workers.  Maintaining a
+    hand-picked import list made freshness self-referential: a dependency could
+    change without invalidating the matrix.  Hash the complete production
+    Python surface plus every exact denominator input instead.  This is a
+    conservative invalidation boundary, never an architectural classifier.
+    """
+    paths = {
+        Path(__file__).resolve(),
+        *(ROOT / row["input"] for row in targets),
+        *(ROOT / "model_unfolder").rglob("*.py"),
+        *(ROOT / "model_unfolder").rglob("*.yaml"),
+        *(ROOT / "model_unfolder").rglob("*.yml"),
+        *(ROOT / "physics").rglob("*.py"),
+        *(ROOT / "verification" / "s6" / "pilots").rglob("*.json"),
+    }
+    return tuple(sorted(
+        (path.resolve() for path in paths if path.is_file()),
+        key=lambda path: path.relative_to(ROOT).as_posix()))

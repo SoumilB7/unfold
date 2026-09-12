@@ -1,0 +1,100 @@
+{
+  "status": "R2_HELD_SOURCE_ONLY_REVIEW_AND_RUNTIME_PENDING",
+  "base": "r1 exact held manifest 2cc25ae214c34631407e133c4a4b77fdb2878d81b442c6fb8e77148b9257a860 preserved unchanged",
+  "scope": "Retain original exact config registry/source address for a current child. Reprepare current values through the existing AutoConfig path; no identity-name exception and no original checkpoint/default overlay copied.",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/document.py",
+      "held_path": "held/model_unfolder/evidence/document.py",
+      "before_sha256": "9867e79e886297beabc89c35e8cbef65f2116b10c37c2c1d5ade0905ab0b5be2",
+      "sha256": "23fcf4b1c0080a04c0e93ad61663a7854b9a22e2b6da5f3a446897e960a26c42",
+      "bytes": 22729,
+      "lines_added": 12,
+      "lines_deleted": 1
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "held_path": "held/model_unfolder/evidence/context.py",
+      "before_sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc",
+      "bytes": 26982,
+      "lines_added": 0,
+      "lines_deleted": 0
+    },
+    {
+      "path": "model_unfolder/adapters/diffusor/parser.py",
+      "held_path": "held/model_unfolder/adapters/diffusor/parser.py",
+      "before_sha256": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af",
+      "sha256": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af",
+      "bytes": 40111,
+      "lines_added": 0,
+      "lines_deleted": 0
+    },
+    {
+      "path": "physics/result_cache.py",
+      "held_path": "held/physics/result_cache.py",
+      "before_sha256": "f1fcfc928803de2fc7985014f813a7a1688cb417c2fcb392f332ecd29baf2111",
+      "sha256": "f8a1737fe6041868995f1944c5519390c1adb83cfa6ce05ad802466bbc6a2553",
+      "bytes": 31433,
+      "lines_added": 10,
+      "lines_deleted": 1
+    },
+    {
+      "path": "tests/test_s9_slot_config_class_address.py",
+      "held_path": "held/tests/test_s9_slot_config_class_address.py",
+      "before_sha256": "7cf4edb3d28e6c45344546ac63f1e92cb0aa087cdb642145ee0f8bbdd43d9d50",
+      "sha256": "e4ae1ea38ca5e8ad9f567fe9a085e6f8651c2bad0bf34deb858e42898d2e5391",
+      "bytes": 10634,
+      "lines_added": 49,
+      "lines_deleted": 0
+    },
+    {
+      "path": "tests/test_config_access.py",
+      "held_path": "held/tests/test_config_access.py",
+      "before_sha256": "8ed838b6cf07fa0a2b700294ab0ed27381e1e7b876b2ff0072a77da172fb49d2",
+      "sha256": "8ed838b6cf07fa0a2b700294ab0ed27381e1e7b876b2ff0072a77da172fb49d2",
+      "bytes": 39192,
+      "lines_added": 0,
+      "lines_deleted": 0
+    }
+  ],
+  "diff_sha256": "e05b5cd2017507cc4a03e50cdd94bab72bdac136cd98e78962a1e8d2652a5518",
+  "growth": {
+    "added": 347,
+    "deleted": 31
+  },
+  "capability_checks": [
+    "Current parent path must reach the exact current child object.",
+    "Original context document-path registry key must agree with the source bundle component model type, architecture, modeling sources and supporting sources.",
+    "Class address is data only; no old checkpoint/value/proof travels on it.",
+    "Cache validates descriptor before lookup; exact descriptor and current source file hashes join current raw input in the preparation key. No heavy imports are needed to validate/replay.",
+    "Current PreparedDocument supplies current overlay to slot context; failed preparation cannot borrow historical defaults.",
+    "Existing decorator calls and cache keys are unchanged when no address override is provided."
+  ],
+  "proposed_root_checks": [
+    "tests/test_s9_slot_config_class_address.py",
+    "tests/test_config_access.py",
+    "tests/test_s81_result_cache.py",
+    "tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference",
+    "Original/scrubbed FLUX child diagnostics and per-field output comparison; no comparison exclusions added."
+  ],
+  "remaining_limits": [
+    "Source diagnosis predicts rejected current child preparation as cause; actual root runtime must confirm FLUX recovery and no new structural delta.",
+    "The supported config-class address is the original AutoConfig registry key tied to exact resolved component sources; it does not prove mechanism or execution.",
+    "Same-process mutation of a third-party registry without changing its source/package versions is outside the existing persisted cache contract."
+  ],
+  "runtime": "None executed by event_executor; AST syntax inspection only.",
+  "growth_since_r1": {
+    "added": 71,
+    "deleted": 2
+  },
+  "r1_return": "OSError reading an unavailable modeling/support source escaped the typed preparation/cache boundary. Fixed in r2; no foreign-binding exception is caught.",
+  "r2_behavior": [
+    "PreparationFailure.kind extends truthfully with source_unavailable at hydrate stage; current checkpoint/provenance preserved and empty overlay. No_mapping and class_rejected retain their existing meanings.",
+    "Only OSError from exact source reads is handled. Type/source-slot/parent binding mismatches still raise before hydration or replay.",
+    "Provisional hit becomes _ReplayMismatch; cold/off/fresh preparation returns the typed limited result. No historical success is reused.",
+    "Failure message includes component and exception type, not str(OSError) or an absolute filename.",
+    "Six missing/unreadable-source poisons span cache off/fresh/replay; foreign descriptor rejection is tested even while source is unavailable."
+  ],
+  "source_consumer_audit": "PreparationFailure is a dataclass record without a closed enum constructor. Existing default readers reject any non-None preparation failure; cache roundtrip preserves the kind. No consumer requires relabeling the new reason as a class rejection."
+}

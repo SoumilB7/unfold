@@ -1,0 +1,19 @@
+{
+  "decision": "ACCEPT bounded D1 v5 source correction plus actual dedicated controls",
+  "manifest_sha256": "dc5c7d070f6d12c7f4055c7c117da970139de316f6186069109b360565eaabf4",
+  "source_pins": {
+    "model_unfolder/evidence/class_default_value.py": "09eb3b634d30f50e0aecfca154b5b6fd8541c28c3a78bfdc71b82a00a80c7e51",
+    "tests/test_s9_class_default_value.py": "862e144aa656e682fcb95457c9c2b7d3a650878433c43f68c37edc682dd51d25",
+    "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+  },
+  "reason": "ProgramIndex._module_access_syntax ast.walk includes names in assignment targets and loop bodies. Config name inside vars(config) retains exact parent call and load context. New check evaluates this before filtering store/delete, so the earlier calls_in coverage assumption is unnecessary. Original failing poison retained; loop target added.",
+  "actual": {
+    "result_sha256": "114bb9e0b5812d30882bd8940294652c286010177e00f725206b7edc7e869398",
+    "log_sha256": "3e575a27c37b6bba186a86da8ba8b7a285bcf1026769fe5ad4f1e4795169880f",
+    "count": "78 passed",
+    "returncode": 0,
+    "source_before_after": "6b4a5c5447056cf50f34e2858a7f9d362e90034f580ab59e75de421296148384",
+    "artifacts_before_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e"
+  },
+  "limits": "No reviewer runtime. Original17 FAIL and invalidated D1v4 source verdict preserved. Other17 operand O1/O2/O3 and downstream FFN status returns not covered; sparse architectural output acceptance separate. No output blessing."
+}

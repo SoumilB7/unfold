@@ -1,0 +1,43 @@
+{
+  "actual_portable_seal": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+  "baseline_output": {
+    "ir_after_sha256": "74c98e431c5c608c00d169a1e418997a0ea61a77f876e29a08cd152a85c203a3",
+    "ir_before_sha256": "74c98e431c5c608c00d169a1e418997a0ea61a77f876e29a08cd152a85c203a3",
+    "page_bytes": 39137,
+    "page_sha256": "9d3fc8f0b839fc610a9fcb1da71a397875c4fa161b65f0b00d62d3a37aaec674",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+  "seconds": 0.13019962500038673,
+  "slug": "jamba-v0-1",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "769589db898d0b9d2a96ccbfe04e357f3d149d43792143723839a9d7a8675b51",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_jamba.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "1b6de555d8ca936419118fece90f955529c769564b78962f13fbae705379d534",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_jamba.py"
+    }
+  ],
+  "source_node_count": 3,
+  "status": "REPRODUCED"
+}

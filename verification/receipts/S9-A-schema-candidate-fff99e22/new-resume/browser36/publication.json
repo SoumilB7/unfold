@@ -1,0 +1,15 @@
+{
+  "outputs": {
+    "z-docs/12-design/S9-schema/browser-thirtysixth/bloom-ordinary.png": "e9bc605276e320426ea130c7e52f60796e0cadc90e738d7dbe15adc35c765d25",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/bloom-sparse.png": "94616d6aace515fad16ec4972afbd291ec2e0061302eb631e399678aec7fd30a",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/four-style-probe.png": "8c231a88d9b9f9307c3c5ee61c8aeb73688cdfaf00f03af2c952b460877be049",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/index.html": "615d8fe3cbdcbfbfe28b137ece84298398908e47d0575c382bd2a629410869bb",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/llama.png": "46a1d6a2d974b43cbe3b44aedf1ecc2ceb090201206e0812b8cb69dbb0bb45ed",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/musicgen-ordinary.png": "2c080d97231813be367ba883dcd5108b8bc0fe08405eb9b94fcdf92a9ebbbcc7",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/musicgen-sparse.png": "72d6eda523aea2607793e0dae5ec468daaaec80a2e770df9433940fb452d5fbc",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/sdxl-nested.png": "079e3b261e96f75cc2bcd3eee75d74fa98f9a49d4a776a00495337731e33aef6",
+    "z-docs/12-design/S9-schema/browser-thirtysixth/sdxl.png": "c56613b7e191210b0fa0012851cf96f39f7be1e8781d6db5cadddd192189f5d5",
+    "z-docs/12-design/S9-schema/current-thirtysixth.html": "f01c77306f7a7af81f470a9f27c30b22e9d98b2dc5f066ccfe88ca2b9973c7f3"
+  },
+  "before_sha256": "628722de3b45bf0e6cfd76fa83538500ab6ed777cda3536238d10b3ccfe1129c"
+}

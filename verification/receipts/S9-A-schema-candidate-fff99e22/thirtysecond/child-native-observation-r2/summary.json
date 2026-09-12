@@ -1,0 +1,245 @@
+{
+  "R1_failure_cause_now_observed_in_R2": "Live records include tuple-valued ffn_schedule/mask_schedule; returned sub_model schedule runs also contain tuples. Full exact paths are retained in diagnostic inventory. R1 did not persist its own child local types; R2 supplies current observations, never retroactively relabels R1 PASS.",
+  "accuracy_limit": "This closes only the native value/status hash and exact association validation limit for147 recorded delta rows. It does not prove missing mechanisms, drawing presence, browser visibility, or S9-A completion. It does not rewrite original RED R1 or the original unverified audit.",
+  "actual_child_contexts": 20,
+  "all_captured_native_declarations": 401,
+  "all_captured_native_existing_proof_states": {
+    "MISSING_UNCHANGED": 150,
+    "VALIDATED": 251
+  },
+  "all_original_calls_once_and_return_identity_preserved": true,
+  "archive": {
+    "all_members_rehashed": true,
+    "files": 190,
+    "raw_bytes": 336743735,
+    "tar_sha256": "bad712fa8811bab4942814944e13cda57a7e4a856b1b8ce5534963146ba357eb"
+  },
+  "by_fact_key_obligation": {
+    "activation": {
+      "MISSING_UNCHANGED": 17
+    },
+    "head_geometry": {
+      "VALIDATED": 34
+    },
+    "hidden_size": {
+      "MISSING_UNCHANGED": 20
+    },
+    "mechanism": {
+      "VALIDATED": 21
+    },
+    "tie_word_embeddings": {
+      "MISSING_UNCHANGED": 13
+    }
+  },
+  "child_json_serialization_tuple_to_list_diagnostics": 446,
+  "lane": {
+    "after": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "duration": 78.47695866600043,
+    "log_path": "/private/tmp/unfold-s9a-thirtysecond/child-native-observation-r2/actual32-child-native-ledgers.log",
+    "name": "actual32-child-native-ledgers",
+    "packet_passed": true,
+    "passed": true,
+    "pins_equal": true,
+    "returncode": 0,
+    "scope": "Native child-ledger observation only; missing proof stays missing; no output approval.",
+    "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e"
+  },
+  "live_before_after_snapshot_pairs_exact_values_and_types": 20,
+  "live_mutation_delta_count": 0,
+  "models": 15,
+  "original_canonical_delta_rows": 147,
+  "output_approval": false,
+  "per_model": [
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 0
+      },
+      "joined_obligations": 3,
+      "joined_targets": 3,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "auraflow-v0-3"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 6,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "cogvideox-5b"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 4
+      },
+      "joined_obligations": 7,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "flux-2-dev"
+    },
+    {
+      "captured_children": 2,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 4,
+        "VALIDATED": 5
+      },
+      "joined_obligations": 9,
+      "joined_targets": 8,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "fluxtransformer2dmodel"
+    },
+    {
+      "captured_children": 2,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 5,
+        "VALIDATED": 8
+      },
+      "joined_obligations": 13,
+      "joined_targets": 9,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "hunyuanvideo"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 6,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "ltx-video"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 5
+      },
+      "joined_obligations": 8,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "lumina-image-2-0"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 6,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "mochi-1-preview"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 6,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "pixart-sigma-xl-2-1024-ms"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 5
+      },
+      "joined_obligations": 8,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "prxpixel-t2i"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 5
+      },
+      "joined_obligations": 8,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "qwen-image"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 5
+      },
+      "joined_obligations": 8,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "sana-1600m-1024px-diffusers"
+    },
+    {
+      "captured_children": 3,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 5,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 8,
+      "joined_targets": 7,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "stable-diffusion-3-5-large"
+    },
+    {
+      "captured_children": 2,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 3
+      },
+      "joined_obligations": 6,
+      "joined_targets": 5,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "stable-diffusion-xl-base-1-0"
+    },
+    {
+      "captured_children": 1,
+      "existing_proof_validation": {
+        "MISSING_UNCHANGED": 3,
+        "VALIDATED": 0
+      },
+      "joined_obligations": 3,
+      "joined_targets": 3,
+      "serialized_root_ir_equal_saved_actual32": true,
+      "slug": "wan2-2-t2v-a14b-diffusers"
+    }
+  ],
+  "proof_scope": "30 unique mechanism/geometry target facts (55 obligations) were validated live from existing proofs. 50 unique target facts (50 obligations) retain no proof:20 hidden_size,17 activation,13 tie_word_embeddings. The saved audit verifies exact data joins and unchanged snapshots; it does not replay process-local proof identity or upgrade missing proofs.",
+  "root_live_vs_saved_json_type_diagnostics": {
+    "EvidenceWarning->str": 48,
+    "tuple->list": 158
+  },
+  "root_saved_json_delta_count": 0,
+  "runtime_by_root_only": true,
+  "saved_data_audit_performed_no_product_imports_or_tests": true,
+  "target_index_relation_by_obligation": {
+    "no_existing_proof": 50,
+    "same_retained_object": 55
+  },
+  "target_proofs_by_obligation": {
+    "MISSING_UNCHANGED": 50,
+    "VALIDATED": 55
+  },
+  "target_proofs_by_unique_target": {
+    "MISSING_UNCHANGED": 50,
+    "VALIDATED": 30
+  },
+  "unique_native_targets": 80,
+  "unique_obligations": 105,
+  "verdict": "PASS_BOUND_CHILD_NATIVE_HASH_LIMIT_CLOSED_147_ROWS"
+}

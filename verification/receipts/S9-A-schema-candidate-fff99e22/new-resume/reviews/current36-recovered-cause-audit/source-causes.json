@@ -1,0 +1,280 @@
+{
+  "activation": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      1740,
+      1748
+    ],
+    "needle": "_activation_event_status",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "banner": {
+    "baseline_sha256": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+    "matching_lines": [
+      147,
+      170,
+      174
+    ],
+    "needle": "stats_hidden_size",
+    "path": "model_unfolder/renderers/html/sections.py",
+    "sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f"
+  },
+  "chip": {
+    "baseline_sha256": null,
+    "matching_lines": [
+      35
+    ],
+    "needle": "def attach_fact_chips",
+    "path": "model_unfolder/evidence/presentation_projection.py",
+    "sha256": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff"
+  },
+  "css": {
+    "baseline_sha256": "b7ab36421bc31be780dbc13166c34b802535f9d46163ad5f7cfa1981247fda99",
+    "matching_lines": [
+      310
+    ],
+    "needle": "Typed annotations remain distinguishable",
+    "path": "model_unfolder/renderers/html/styles.py",
+    "sha256": "d6cc43de84c3077cb7e087298709f46a5f6230036be2dd9c944bd7ded71a3fd3"
+  },
+  "embedding": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      4958,
+      4959,
+      4960,
+      4961
+    ],
+    "needle": "_width_block",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "finite_unknown_slots": {
+    "baseline_sha256": null,
+    "matching_lines": [
+      285
+    ],
+    "needle": "def unresolved_spec_values",
+    "path": "model_unfolder/presentation.py",
+    "sha256": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740"
+  },
+  "geometry": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      353,
+      359,
+      364,
+      2769,
+      2819,
+      2822,
+      2836,
+      2875,
+      2927,
+      2992
+    ],
+    "needle": "attention_head_geometry",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "html_chip": {
+    "baseline_sha256": "89608410534b74db158a7ea56677e38c1d2a00dd3200ce7c2d1ed787866bd8c2",
+    "matching_lines": [
+      8,
+      143
+    ],
+    "needle": "presentation_chip_html",
+    "path": "model_unfolder/renderers/html/cards.py",
+    "sha256": "c2346bd0e1cb7a397ed18765c22fc37e91e9607b84d9479ec2e633f0d801ac80"
+  },
+  "html_meta": {
+    "baseline_sha256": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+    "matching_lines": [
+      147,
+      170,
+      174
+    ],
+    "needle": "stats_hidden_size",
+    "path": "model_unfolder/renderers/html/sections.py",
+    "sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f"
+  },
+  "html_unknown": {
+    "baseline_sha256": "0466fcf688efdab126fdfd9c4c8b95b56fa6556c11eb7280c490cce5f0ee64ac",
+    "matching_lines": [
+      117
+    ],
+    "needle": "def append_unknown_value_report",
+    "path": "model_unfolder/renderers/html/utils.py",
+    "sha256": "2cf96830d5a113587befd9c4b9db9636141f3b8420f6668565bbc59c9d4cd136"
+  },
+  "legacy_unknown": {
+    "baseline_sha256": "89fa621fb9358107f3a54430f1f96a467ad22b9853e5584d64ec76e5e5f7b5b8",
+    "matching_lines": [
+      356
+    ],
+    "needle": "legacy_unknown_reason_unrecorded",
+    "path": "model_unfolder/evidence/facts.py",
+    "sha256": "63c8d617efe3b2306fb2b5d749e2007eed78726b3ba82b0d5638e426c153b928"
+  },
+  "mechanism": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      336,
+      341,
+      346,
+      918,
+      920,
+      948,
+      1319,
+      2645,
+      2648,
+      2649,
+      2655,
+      2657,
+      2716,
+      2766,
+      2872,
+      2882,
+      2889,
+      2924,
+      2934,
+      2941,
+      2952,
+      2954,
+      2969
+    ],
+    "needle": "attention_mechanism",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "native_unknown": {
+    "baseline_sha256": "89fa621fb9358107f3a54430f1f96a467ad22b9853e5584d64ec76e5e5f7b5b8",
+    "matching_lines": [
+      198,
+      356
+    ],
+    "needle": "unknown_reason_unrecorded",
+    "path": "model_unfolder/evidence/facts.py",
+    "sha256": "63c8d617efe3b2306fb2b5d749e2007eed78726b3ba82b0d5638e426c153b928"
+  },
+  "obligation": {
+    "baseline_sha256": "5ce12076a9244e6554ed59c38a30f5a01a8a941e015dba10e453b355e8adc4eb",
+    "matching_lines": [
+      494,
+      665
+    ],
+    "needle": "expected_value_status_hash",
+    "path": "model_unfolder/evidence/config_access.py",
+    "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4"
+  },
+  "payload": {
+    "baseline_sha256": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e",
+    "matching_lines": [
+      350
+    ],
+    "needle": "digest = hashlib.sha256(fragment.encode())",
+    "path": "model_unfolder/renderers/html/card_payload.py",
+    "sha256": "3900c0057ccde0252c67bd2b48949b7ad9b224bdb4375964587a969933d8be8e"
+  },
+  "reference_snapshot": {
+    "baseline_sha256": null,
+    "matching_lines": [
+      64,
+      169
+    ],
+    "needle": "def from_fact",
+    "path": "model_unfolder/presentation.py",
+    "sha256": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740"
+  },
+  "references": {
+    "baseline_sha256": "6abd0046e1d4a6f06f7d8b186f1af2793f3ee03202f8e20a8834506c403dfadc",
+    "matching_lines": [
+      151
+    ],
+    "needle": "presentation_reference",
+    "path": "model_unfolder/evidence/context.py",
+    "sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc"
+  },
+  "sable": {
+    "baseline_sha256": "2d243b5d371cbb3d0c986d89ae2ad47b7958ff53f7c1947e638c7f828580f7c2",
+    "matching_lines": [
+      538
+    ],
+    "needle": "SableCheck(\"presentation_census\"",
+    "path": "model_unfolder/sable.py",
+    "sha256": "922d99334cd41194366d8cec2e89e494cb934ec5beb3cec69f4fd0c16ca9f340"
+  },
+  "schedule_card_reference": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      4340,
+      4354,
+      4603
+    ],
+    "needle": "_repeated_schedule_cards",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "schedule_qualification": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      1412
+    ],
+    "needle": "def _repeated_schedule_projection",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "scope": {
+    "baseline_sha256": "478b14edfe83e7d74a25b5da8871db5da539550c02117eb3183e4e880593e7cf",
+    "matching_lines": [
+      258,
+      261,
+      264,
+      267
+    ],
+    "needle": "model_hidden_size_value",
+    "path": "model_unfolder/evidence/registry.py",
+    "sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b"
+  },
+  "scope_serialization": {
+    "baseline_sha256": "87e81898d672d190df24fb74b180f130bfebdb03699a73b9b12dd38210a79ff5",
+    "matching_lines": [
+      303,
+      376,
+      377
+    ],
+    "needle": "receipted_scopes",
+    "path": "model_unfolder/parser.py",
+    "sha256": "671ab55689057a003f246bea148db022889055159969af55ed76e3aebc8e7344"
+  },
+  "tie": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      4632,
+      4647,
+      4663
+    ],
+    "needle": "key=\"tie_word_embeddings\"",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  },
+  "unknown": {
+    "baseline_sha256": null,
+    "matching_lines": [
+      10
+    ],
+    "needle": "def attach_unresolved_envelope_reasons",
+    "path": "model_unfolder/evidence/presentation_projection.py",
+    "sha256": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff"
+  },
+  "width": {
+    "baseline_sha256": "bc4539253bc9d865987c84314c18a0424eeba7c360c6f51f77f564d92d31a2b2",
+    "matching_lines": [
+      1479,
+      1521
+    ],
+    "needle": "model_hidden_size_value",
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "sha256": "740a6adcb99710c108f08e10d76a05d0bffe809b4c06c8b66791766f07b4974a"
+  }
+}

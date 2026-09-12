@@ -1,0 +1,90 @@
+{
+  "input": "S9-schema/defaults-thirtysixth/bloom/ordinary.html",
+  "sha256": "0056ba099d9054a730e8d3b02e2ab06b0d0e55e3bd4f1859ebffb48369691238",
+  "bytes": 63669,
+  "load_ms": 43.916665999859106,
+  "initial_dom": {
+    "elements": 488,
+    "cards": 29,
+    "op_nodes": 27,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1463
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "attn",
+      "click_to_card_ms": 76.07412499783095,
+      "card": {
+        "id": "attn",
+        "text": "Attention\nMulti-head self-attention \u2014 every head attends over the sequence.\n112 heads\nhead dim 128\nALiBi\n+bias\nQK norm unresolved\nin/out 14,336\nin (14,336)\nLinear (QKV)\nK/V cache\nupdate + read\nQ K^T\nsqrt(dim)\nSoftmax\nConcat heads\nLinear (out)\nSplit Q\nSplit K\nSplit V\nALiBi bias\nRelative positions",
+        "rect": {
+          "x": 348,
+          "y": 131.9375,
+          "width": 644,
+          "height": 743.4375,
+          "top": 131.9375,
+          "right": 992,
+          "bottom": 875.375,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": []
+      },
+      "dom": {
+        "elements": 488,
+        "cards": 29,
+        "op_nodes": 27,
+        "visible_cards": [
+          "attn"
+        ],
+        "chip_kinds": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 2156
+        }
+      }
+    }
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 488,
+    "cards": 29,
+    "op_nodes": 27,
+    "visible_cards": [
+      "attn"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 2156
+    }
+  }
+}

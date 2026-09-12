@@ -1,0 +1,178 @@
+--- before/model_unfolder/adapters/transformer/parser.py
++++ after/model_unfolder/adapters/transformer/parser.py
+@@ -17,7 +17,6 @@
+ """
+ from __future__ import annotations
+ 
+-from dataclasses import replace
+ import math
+ from pathlib import Path
+ from typing import Any
+@@ -243,7 +242,6 @@
+     if context is None:
+         return None
+     from ...evidence.ffn_mechanism import decoder_ffn_mechanism_for_path
+-    from ...evidence import config_access as _config_access
+     config_path = tuple(config_path)
+ 
+     def _select(exact_path):
+--- before/model_unfolder/evidence/cross_attention_schedule.py
++++ after/model_unfolder/evidence/cross_attention_schedule.py
+@@ -36,7 +36,7 @@
+     ReaderResult,
+ )
+ 
+-from .reader_claims import (ReaderFactProjection, retained_claim_reader,
++from .reader_claims import (ReaderFactProjection,
+                             repeated_count_operand)
+ 
+ 
+--- before/model_unfolder/evidence/position_linear_bias.py
++++ after/model_unfolder/evidence/position_linear_bias.py
+@@ -46,7 +46,7 @@
+     ReaderResult,
+ )
+ 
+-from .reader_claims import (ReaderFactProjection, retained_claim_reader,
++from .reader_claims import (ReaderFactProjection,
+                             repeated_count_operand)
+ 
+ 
+--- before/model_unfolder/evidence/decoder_norm.py
++++ after/model_unfolder/evidence/decoder_norm.py
+@@ -39,7 +39,7 @@
+     primitive_kind_for_site,
+ )
+ from .program_index import (
+-    CallObservation, CallSiteId,
++    CallObservation,
+     ConstructionSite,
+     ProgramIndex,
+     SourceSpan,
+--- before/model_unfolder/evidence/diffusion_stack.py
++++ after/model_unfolder/evidence/diffusion_stack.py
+@@ -688,7 +688,6 @@
+ def validate_diffusion_reads(index, root, reads, document):
+     """Check actual deciding operands, including every unselected rival."""
+     from .config_registration import RegisteredConstructorDefaultValue
+-    from .reader_claims import reader_operand
+     from .receipts import value_status_hash
+     for read in reads:
+         selected = read.selected
+@@ -744,7 +743,7 @@
+         validate_diffusion_reads(self.index, self.root, self.selector_reads, document)
+ 
+     def project(self, owner, key, document):
+-        from .reader_claims import ReaderFactProjection, reader_operand
++        from .reader_claims import ReaderFactProjection
+         self.validate_inputs(document)
+         matches = tuple(stack for number, stack in enumerate(self.inventory.stacks)
+                         if owner == f"root.denoiser.stacks[{number}]")
+--- before/model_unfolder/evidence/diffusion_stream.py
++++ after/model_unfolder/evidence/diffusion_stream.py
+@@ -12,7 +12,7 @@
+ """
+ from __future__ import annotations
+ 
+-from dataclasses import dataclass, field, replace, replace
++from dataclasses import dataclass, field, replace
+ 
+ from .attention_lane import FrameworkAttentionLaneEvidence
+ from .call_arguments import bind_addressed_invocation
+--- before/model_unfolder/evidence/reader_claims.py
++++ after/model_unfolder/evidence/reader_claims.py
+@@ -699,8 +699,6 @@
+     read of one question cannot manufacture exhaustion of another question.
+     """
+     from .final_bookend import FinalNormClaimWitness
+-    from .decoder_norm import DecoderNormClaimWitness
+-    from .embedding_bookend import EmbeddingNormClaimWitness
+     symbol, index, document, occurrence = retained_reader_attempt(result)
+     if result.status not in {"failed", "ambiguous", "incomplete", "absent"}:
+         raise ValueError("resolved reader evidence is not an exhaustion result")
+--- before/model_unfolder/evidence/reconciliation.py
++++ after/model_unfolder/evidence/reconciliation.py
+@@ -27,7 +27,6 @@
+ from .claim_evidence import CLAIM_KINDS, ClaimProofSummary
+ from .facts import EvidenceFact
+ from .program_index import ProgramIndex
+-from .reader_result import FAILURE_KINDS as READER_FAILURE_KINDS, ReaderResult
+ 
+ 
+ CONSTRUCTION_KINDS = frozenset({
+@@ -47,12 +46,15 @@
+     "conditional_skip", "side_head", "relation_unresolved",
+ })
+ from ..uncertainty import (
+-    UNRESOLVED_REASON_CLASSES, INVESTIGATION_KINDS,
++    UNRESOLVED_REASON_CLASSES, INVESTIGATION_KINDS as _INVESTIGATION_KINDS,
+     CONCRETE_UNRESOLVED_REASONS, BLOCKING_UNRESOLVED_REASON_CLASSES,
+     ReaderExhaustion, InvestigationRecord, _validate_exhaustion_reason,
+     _validate_unresolved_class,
+ )
+ 
++
++# Compatibility export for the uncertainty vocabulary moved out of this joiner.
++INVESTIGATION_KINDS = _INVESTIGATION_KINDS
+ 
+ def _sha256(value: Any) -> str:
+     payload = json.dumps(value, sort_keys=True, separators=(",", ":"),
+--- before/model_unfolder/uncertainty.py
++++ after/model_unfolder/uncertainty.py
+@@ -6,8 +6,12 @@
+ from __future__ import annotations
+ 
+ from dataclasses import asdict, dataclass
+-from typing import Any, Mapping
++from typing import TYPE_CHECKING, Any, Mapping
+ import json
++
++if TYPE_CHECKING:
++    from .evidence.facts import EvidenceFact
++    from .evidence.reader_result import ReaderResult
+ 
+ UNRESOLVED_REASON_CLASSES = frozenset({
+     "investigation_missing", "structure_unaccounted", "mechanism_unresolved",
+--- before/tests/test_s9_fact_unknowns.py
++++ after/tests/test_s9_fact_unknowns.py
+@@ -6,7 +6,7 @@
+ 
+ from model_unfolder.evidence.context import FactLedger, FactRecord
+ from model_unfolder.evidence.facts import EvidenceFact
+-from model_unfolder.evidence.reader_result import ReaderFailure, ReaderResult
++from model_unfolder.evidence.reader_result import ReaderResult
+ from model_unfolder.presentation import ChipFactReference, PresentationChip
+ from model_unfolder.uncertainty import InvestigationRecord, UnknownReason, UnknownReasonDisplay
+ 
+--- before/tests/test_s9_presentation_chips.py
++++ after/tests/test_s9_presentation_chips.py
+@@ -1,6 +1,6 @@
+ """Typed chip authority, transport, exact emissions and denominator separation."""
+ from copy import deepcopy
+-from dataclasses import asdict, replace
++from dataclasses import replace
+ import json
+ import subprocess
+ import sys
+@@ -9,11 +9,10 @@
+ import pytest
+ 
+ from model_unfolder.presentation import (
+-    ChipFactReference, PresentationChip, SymbolicParameter, chips_from_block,
++    ChipFactReference, PresentationChip, SymbolicParameter,
+ )
+-from model_unfolder.uncertainty import UnknownReason, UnknownReasonDisplay, InvestigationRecord
++from model_unfolder.uncertainty import UnknownReason, UnknownReasonDisplay
+ from model_unfolder.evidence.facts import EvidenceFact
+-from model_unfolder.evidence.reader_result import ReaderFailure, ReaderResult
+ from model_unfolder.evidence.instance_shape_claim import read_instance_shapes
+ from model_unfolder.renderers.html import cards
+ from model_unfolder.renderers.html.render_context import RenderContext, activate_render_context
+--- before/tests/test_s9_projection_claim_requirements.py
++++ after/tests/test_s9_projection_claim_requirements.py
+@@ -1,5 +1,4 @@
+ """Product admission keeps exact migrated proofs and refuses weaker questions."""
+-from dataclasses import replace
+ import json
+ from pathlib import Path
+ 

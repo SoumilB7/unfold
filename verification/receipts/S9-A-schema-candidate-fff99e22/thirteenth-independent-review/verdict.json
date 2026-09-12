@@ -1,0 +1,32 @@
+{
+  "decision": "RETURN",
+  "scope": "Thirteenth frozen S9-A source review only",
+  "manifest_sha256": "2acaaad227f467c085326de997792455cfca5a4c4c9c20061d764388848b274c",
+  "source_pins": {
+    "model_unfolder/evidence/config_access.py": "3f3251d6b301ddc5aa235829b8cb500d7bd841e85d931ce96b34ee07bd6caaba",
+    "tests/test_config_access.py": "9bfc08a00d4b6a15436228f4b3867eae7fd2962590eaa54257835933fc99748a",
+    "model_unfolder/evidence/activation_registry.py": "910b5959b4580021b6b44590a2cff937d7ac1cb1971af97376b1315ed5f2f53f",
+    "tests/test_reader_claims.py": "9d0501e9d652cd0c85a0aea265a02fcb7a02c38ea1b4cfac70748fd5f48a1d13"
+  },
+  "config_resolution": {
+    "decision": "ACCEPT bounded source change",
+    "lines": "config_access.py:995-1030; tests/test_config_access.py:363-390",
+    "reason": "A status-bearing absent class_default resolution can record its upstream decision hash. Event remains absent_default, present=False, value_state=missing; no consumed occurrence is introduced. Unknown absence cannot borrow expected_value. Existing composite expected_value convention remains unchanged. Four parameterized false/zero/null/integer cases plus unknown-absence poison encode this boundary. This is ledger expectation linkage, not independent source proof or output approval."
+  },
+  "a5": {
+    "decision": "RETURN",
+    "location": "activation_registry.py:_ancestor_read_has_local_mutation",
+    "findings": [
+      {
+        "case": "self.member=getattr(torch, requested); sink(value=self.member)",
+        "cause": "Field argument escape checks positional parent.children only, omitting keyword_children."
+      },
+      {
+        "case": "self.member=getattr(torch, requested); return [self.member]",
+        "cause": "Return escape checks only whole receiver path, omitting nested returned field occurrences."
+      }
+    ],
+    "basis": "Source inference; not executed by reviewer. Subsequent expression correction is separate and not accepted by this verdict."
+  },
+  "prior_scope": "A3/S1/A4/P1 and earlier bounded acceptances unchanged. Direct nested getter mutator guard present. No tests/models/output blessing performed."
+}

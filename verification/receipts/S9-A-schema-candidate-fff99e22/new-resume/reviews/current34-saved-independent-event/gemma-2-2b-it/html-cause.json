@@ -1,0 +1,19 @@
+{
+  "after_bytes": 108210,
+  "after_sha256": "db765d700f515be11fa5cb9bff83f3deac9af8da48835335594fa2f04b9d8f94",
+  "before_bytes": 108210,
+  "before_sha256": "e99b316a8dbba7b1c01aecd10095f00fcc029d8d942f101aaac2b3fd07f6a0f0",
+  "exact_new_mount_occurrences": 273,
+  "exact_old_mount_occurrences": 273,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-cbbc10dac1",
+  "mount_identity_before": "uf-268d7860d4",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 7,
+  "raw_ordered_svg_count_before": 7,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "gemma-2-2b-it",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

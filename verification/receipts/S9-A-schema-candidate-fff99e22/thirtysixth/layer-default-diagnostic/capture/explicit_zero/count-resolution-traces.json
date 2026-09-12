@@ -1,0 +1,36 @@
+[
+  {
+    "fact_class_defaults": null,
+    "field": "num_hidden_layers",
+    "has_default_premise": false,
+    "resolution": {
+      "ambiguous": false,
+      "canonical": "num_hidden_layers",
+      "path": null,
+      "present": true,
+      "provenance": "checkpoint_declared",
+      "selected_path": "decoder.num_hidden_layers",
+      "source_kind": "checkpoint",
+      "state": "present",
+      "value": 0
+    },
+    "selected_text_config": {
+      "activation_function": "gelu",
+      "audio_channels": 1,
+      "ffn_dim": 4096,
+      "hidden_size": 1024,
+      "max_position_embeddings": 2048,
+      "model_type": "musicgen_decoder",
+      "num_attention_heads": 16,
+      "num_codebooks": 4,
+      "num_hidden_layers": 0,
+      "scale_embedding": false,
+      "tie_word_embeddings": false,
+      "vocab_size": 2048
+    },
+    "shape_completion_defaults": {},
+    "text_path": [
+      "decoder"
+    ]
+  }
+]

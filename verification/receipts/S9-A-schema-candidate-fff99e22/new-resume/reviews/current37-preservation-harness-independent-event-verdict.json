@@ -1,0 +1,29 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT_SERIAL_EXECUTION",
+  "manifest_sha256": "d1bcadd24e9a98ccf2b7f4dac00dbe3b0241aec4ce3be79b87c63a86c4398f19",
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "source_rows_rehashed": 199,
+  "negative_pins_verified": [
+    "model_unfolder/adapters/diffusor/unet.py",
+    "model_unfolder/adapters/diffusor/unet_differential.py",
+    "model_unfolder/everchanging/diffusor/conditioning.yaml"
+  ],
+  "import_source_files_and_membership_rehashed": 391,
+  "input_counts_rehashed": {
+    "corpus": 511,
+    "historical_baseline": 203
+  },
+  "source_delta_from36": [
+    "model_unfolder/renderers/html/styles.py"
+  ],
+  "checks": [
+    "Five executable scripts exactly accepted36 after generation coordinates. All held files/source rows/input census verified; no model/test or product imports.",
+    "Original31 recovered baseline lane/origin and expected-hash join remain exact; all203 historical files and unchanged saved-baseline inventory retain118 historical canonical expectation mismatches as non-authoritative.",
+    "Fresh current37 output only; original29-witness52-test observer and canonical functions unchanged. No guarded writer, active baseline renewal or source re-stamp.",
+    "Actual native37 CSS output changes must be recorded per surface/view. No assumption of byte preservation is used to waive deltas."
+  ],
+  "limits": [
+    "Source review only; final runtime/results and independent cause audit pending.",
+    "Do not rerun existing original31 baseline producer. No output approval/blessing."
+  ]
+}

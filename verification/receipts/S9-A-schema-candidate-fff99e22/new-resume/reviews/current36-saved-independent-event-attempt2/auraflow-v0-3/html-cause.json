@@ -1,0 +1,19 @@
+{
+  "after_bytes": 165273,
+  "after_sha256": "0d421a3bb106282e79bd8f598f9e701c0fc5cd0bea700eed303acfc1fdae1580",
+  "before_bytes": 165273,
+  "before_sha256": "0eb6092caadc08d7677f40e93c80868e7e6dd18f9330901595e7b3c964166827",
+  "exact_new_mount_occurrences": 331,
+  "exact_old_mount_occurrences": 331,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-9d98e9b35e",
+  "mount_identity_before": "uf-c466e82f0b",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 17,
+  "raw_ordered_svg_count_before": 17,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "auraflow-v0-3",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

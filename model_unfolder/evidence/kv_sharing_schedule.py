@@ -34,6 +34,8 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 
 
 _UNKNOWN = object()
@@ -117,6 +119,37 @@ class DecoderKVSharingSchedule:
             raise ValueError("KV schedule provenance is closed")
 
 
+@dataclass(frozen=True)
+class KVSharingClaimWitness:
+    index: ProgramIndex
+    schedule: DecoderKVSharingSchedule
+    owner: object
+    reader_symbol = "model_unfolder.evidence.kv_sharing_schedule.decoder_kv_sharing_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.schedule) is not DecoderKVSharingSchedule:
+            raise TypeError("KV sharing requires the complete read/write and selector proof")
+        self.schedule.__post_init__()
+        if result.status != "resolved" or result.value is not self.schedule or result.owner != self.owner:
+            raise ValueError("KV sharing belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "kv_sharing_schedule"):
+            raise ValueError("KV sharing cannot author this projection")
+        from .mixer_schedule import MixerScheduleClaimWitness
+        MixerScheduleClaimWitness(self.index, self.schedule.mixer_schedule).validate_document(document)
+        validate_reader_operands(document, (
+            (operand.path, operand.source_kind, operand.value)
+            for schedule in self.schedule.field_schedules
+            for decision in schedule.decisions for operand in decision.operands))
+        status = "class_default" if any(kind == "class_default" for _path, kind in self.schedule.config_dependencies) else "code_and_config"
+        return ReaderFactProjection(owner, key, "relation", tuple(self.schedule.decisions), status,
+                                    tuple(path for path, _kind in self.schedule.config_dependencies))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'kv_sharing_schedule', 'relation'),
+))
 def decoder_kv_sharing_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -237,6 +270,7 @@ def decoder_kv_sharing_schedule_for_path(
         tuple(dependencies.items()), spans)
     return ReaderResult.resolved(
         occurrence, value,
+        claim_witness=KVSharingClaimWitness(index, value, occurrence),
         provenance=(*mixer_result.provenance, ReaderProvenance(
             "code_and_config", spans=spans,
             config_paths=tuple(dependencies),

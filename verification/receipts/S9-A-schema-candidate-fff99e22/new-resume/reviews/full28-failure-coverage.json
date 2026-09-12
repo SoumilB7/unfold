@@ -1,0 +1,264 @@
+{
+  "verdict": "All 22 frozen28 failures assigned a concrete existing candidate or explicit guarded stale-artifact renewal; no runtime closure claimed",
+  "failure_inventory_sha256": "6c057618c31edca46a53f2ca441f16312a34dbac445a3c0e2159425c5b442fe2",
+  "failure_count": 22,
+  "non_stale_failures": 20,
+  "counts": {
+    "boundary": 3,
+    "child_defaults": 4,
+    "conformance": 1,
+    "fixture": 1,
+    "flux_rename": 1,
+    "position": 1,
+    "raw_scalar": 1,
+    "stale_examples": 1,
+    "stale_s7": 1,
+    "width": 8
+  },
+  "rows": [
+    {
+      "failure": "tests/test_u2_r2_raw_consume_debt.py::test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow",
+      "batch": "batch-000",
+      "raw_log_sha256": "3c574bff291b59be0b680623b4865e2c5e21a48cb7b70ca591cf018befff8687",
+      "cause_group": "raw_scalar",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Two new scalar reads use typed consumption; frozen legacy threshold remains two.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/typed-scalar-consumption/manifest.json",
+      "handoff_sha256": "6258409b1c39dd39009c4f1ea974bdfcfaecb513e4ffc200fd25751956122af1",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config",
+      "batch": "batch-002",
+      "raw_log_sha256": "87256cca32371ac3ad913d0bbf0395451e275ff05f3ab3b591b937876b623d2c",
+      "cause_group": "child_defaults",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Source-resolved constructed child config literal default; failed enclosing preparation cannot borrow independent local overlay.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-default-fix/manifest.json",
+      "handoff_sha256": "02907c59e173bbde353f1b0cefa0bd2f3c6a1c974d407d4855c79f2327926e7f",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference",
+      "batch": "batch-003",
+      "raw_log_sha256": "51a83805271ee6fd041aefb00a0b2a7b92b78b4c5859f920613b4fe5b3dfd053",
+      "cause_group": "flux_rename",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Retain exact declared child config class address, reprepare current child values with exact source and cache identity; no original defaults transplanted.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/slot-config-class-address-r2/manifest.json",
+      "handoff_sha256": "9c499a6a07839e9c38e88b868bb5fb94f14219e3f960ba126cdd0db63432bef1",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer",
+      "batch": "batch-006",
+      "raw_log_sha256": "92d782ba1738f14db85b0855e008639ff9978d22140627c1ba7deefeed5692b9",
+      "cause_group": "stale_examples",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "coverage": "OPEN GUARDED OUTPUT RENEWAL; not a proposed source repair",
+      "proposed_source_cause": "Raw log explicitly reports stale example metadata/hero input seal and eight deterministic HTML pages."
+    },
+    {
+      "failure": "tests/test_conformance.py::test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved[unet]",
+      "batch": "batch-007",
+      "raw_log_sha256": "7bbdd68a278e87ce611ebb7102c4c812a80a8af31ddf1a90509dc97593c2c905",
+      "cause_group": "conformance",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Custom test render context receives this Diagram own fact rows; strict chip validation remains.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/conformance-context-fix/manifest.json",
+      "handoff_sha256": "8f58f09e28b950dc78cb5d8b5903cd03cdd0b92bd001b1cbd9da3f6de8db02e7",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_smoke.py::test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure",
+      "batch": "batch-013",
+      "raw_log_sha256": "024f9afdd0560dc0b4f74c101c07be544e5ac844cbd7e1fe501151804243c1e9",
+      "cause_group": "child_defaults",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Source-resolved constructed child config literal default; failed enclosing preparation cannot borrow independent local overlay.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-default-fix/manifest.json",
+      "handoff_sha256": "02907c59e173bbde353f1b0cefa0bd2f3c6a1c974d407d4855c79f2327926e7f",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_smoke.py::test_qwen2_audio_code_evidence_does_not_mark_config_partial",
+      "batch": "batch-013",
+      "raw_log_sha256": "024f9afdd0560dc0b4f74c101c07be544e5ac844cbd7e1fe501151804243c1e9",
+      "cause_group": "child_defaults",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Source-resolved constructed child config literal default; failed enclosing preparation cannot borrow independent local overlay.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-default-fix/manifest.json",
+      "handoff_sha256": "02907c59e173bbde353f1b0cefa0bd2f3c6a1c974d407d4855c79f2327926e7f",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_smoke.py::test_modality_host_looks_through_declared_wrappers",
+      "batch": "batch-013",
+      "raw_log_sha256": "024f9afdd0560dc0b4f74c101c07be544e5ac844cbd7e1fe501151804243c1e9",
+      "cause_group": "child_defaults",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Source-resolved constructed child config literal default; failed enclosing preparation cannot borrow independent local overlay.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/child-default-fix/manifest.json",
+      "handoff_sha256": "02907c59e173bbde353f1b0cefa0bd2f3c6a1c974d407d4855c79f2327926e7f",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_qk_norm.py::test_parser_records_and_receipts_uniform_gated_false",
+      "batch": "batch-013",
+      "raw_log_sha256": "024f9afdd0560dc0b4f74c101c07be544e5ac844cbd7e1fe501151804243c1e9",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_position_initialization.py::test_real_llama_parser_projects_only_the_proved_frequency_base",
+      "batch": "batch-014",
+      "raw_log_sha256": "79153dd40b58277dc000881fe425ca08b860e81220ff8accd511f07bb84d9949",
+      "cause_group": "position",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Retain scalar/status/source equality and validate new exact presentation reference against actual native fact.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/position-metadata-test-fix/manifest.json",
+      "handoff_sha256": "499c8fca0aa51853295c8a1ca9dede9f8aee7edd5ea13b64a05dc2be168359c7",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_receipts.py::test_qwen2vl_positive_one_exact_chain - Assert...",
+      "batch": "batch-017",
+      "raw_log_sha256": "7071064ae1a80a84d69b5ddd475f4af2bd258f8f3896ada940c24d57f2e7a8db",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_receipts.py::test_u8_layer_schedules_are_receipted_by_the_real_layer_map",
+      "batch": "batch-017",
+      "raw_log_sha256": "7071064ae1a80a84d69b5ddd475f4af2bd258f8f3896ada940c24d57f2e7a8db",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_isolation.py::test_no_module_imports_another_test_module - ...",
+      "batch": "batch-019",
+      "raw_log_sha256": "0f94ca864d9b42fd8f257895fa886f8c6da36028732217fee49d559c4eabe4c8",
+      "cause_group": "fixture",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Move shared helper definitions to test_support with assertions preserved.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/fixture-isolation/manifest.json",
+      "handoff_sha256": "ae3260e5df8a7215279836d211c439c2ca78e6280b97fde367b90a01072db6bc",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_fact_ledger.py::test_tie_code_channel_order - ValueError: t...",
+      "batch": "batch-021",
+      "raw_log_sha256": "89e487775060265911e198f51be1c7a4d66b838fcc529a93184e17fb65c62012",
+      "cause_group": "boundary",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Finite registry tie VALUE status, immutable inventory DTO import, authenticated reader cache-fill test instrumentation.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/final-bracket-boundaries/manifest.json",
+      "handoff_sha256": "759665de392b828823060005f072dcf609a1772efbfd4b2ecbe29cb3f50cc098",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_sable.py::test_u2_projection_and_census_nets_are_wired_blocking_and_clean",
+      "batch": "batch-024",
+      "raw_log_sha256": "5ffc3347e5a0700b048294263bfb06516deb34484578aa50a2e79297b53823c8",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_sable.py::test_sable_mechanical_pass_on_corpus[LLAMA-cfg2]",
+      "batch": "batch-024",
+      "raw_log_sha256": "5ffc3347e5a0700b048294263bfb06516deb34484578aa50a2e79297b53823c8",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_sable.py::test_sable_regression_corpus - AssertionError: bl...",
+      "batch": "batch-024",
+      "raw_log_sha256": "5ffc3347e5a0700b048294263bfb06516deb34484578aa50a2e79297b53823c8",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent",
+      "batch": "batch-025",
+      "raw_log_sha256": "1344a87969ea4a0ae0ffe9c1c98139fffcae8426d487508f7fe59b15361cb558",
+      "cause_group": "boundary",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Finite registry tie VALUE status, immutable inventory DTO import, authenticated reader cache-fill test instrumentation.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/final-bracket-boundaries/manifest.json",
+      "handoff_sha256": "759665de392b828823060005f072dcf609a1772efbfd4b2ecbe29cb3f50cc098",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_projection_audit.py::test_projection_audit_is_wired_into_sable_as_blocking_and_clean",
+      "batch": "batch-025",
+      "raw_log_sha256": "1344a87969ea4a0ae0ffe9c1c98139fffcae8426d487508f7fe59b15361cb558",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_attention_storage.py::test_parser_and_conformance_share_one_exact_storage_result",
+      "batch": "batch-026",
+      "raw_log_sha256": "90defea6b26ebb5cfca546fc9357ea73b21b0f60238c4c322503755a138916b0",
+      "cause_group": "boundary",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Finite registry tie VALUE status, immutable inventory DTO import, authenticated reader cache-fill test instrumentation.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/final-bracket-boundaries/manifest.json",
+      "handoff_sha256": "759665de392b828823060005f072dcf609a1772efbfd4b2ecbe29cb3f50cc098",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    },
+    {
+      "failure": "tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current",
+      "batch": "batch-030",
+      "raw_log_sha256": "a2b384d42c91733c99e56de72efc5b913d1a556526d891916e322fb49dd80baf",
+      "cause_group": "stale_s7",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "coverage": "OPEN GUARDED OUTPUT RENEWAL; not a proposed source repair",
+      "proposed_source_cause": "Raw log explicitly reports S7 matrix dependency surface stale. Current exact matrix replay and owner-reviewed guarded renewal required."
+    },
+    {
+      "failure": "tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn",
+      "batch": "batch-030",
+      "raw_log_sha256": "a2b384d42c91733c99e56de72efc5b913d1a556526d891916e322fb49dd80baf",
+      "cause_group": "width",
+      "runtime_verdict": "Not rerun by reviewer; raw frozen28 failure remains recorded.",
+      "proposed_source_cause": "Receipt existing exact numeric HIDDEN cell, actual stats_banner capability replacing false architecture_view promise.",
+      "handoff": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/width-banner-receipt/manifest.json",
+      "handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+      "coverage": "Source-level candidate exists, current29 targeted/full runtime required."
+    }
+  ],
+  "independence_limits": [
+    "Width repair source attribution is author audit, requires a different independent reviewer.",
+    "This audit assigns source fixes to observed earliest causes; it does not independently approve every referenced handoff or claim the candidate passes.",
+    "Source fixes may expose later masked failures. Exact frozen29 targeted/full runtime is necessary.",
+    "Example and S7 stale failures cannot be waived, re-stamped blindly, or called done before guarded owner-approved output renewal."
+  ]
+}

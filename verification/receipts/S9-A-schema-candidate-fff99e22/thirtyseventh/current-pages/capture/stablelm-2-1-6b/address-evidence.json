@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "b4e7a3363a538c6b909ed84ee29b250c8e758fbb794f13c140d3bf99e1d82788",
+  "input": "tests/sable_test_corpus/stablelm-2-1-6b.json",
+  "input_sha256": "cd029b8a1d65aa26423707d02832afbff9dffd380b7c55a94d459520eb496632",
+  "resolved_class": {
+    "module": "transformers.models.stablelm.modeling_stablelm",
+    "qualname": "StableLmForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

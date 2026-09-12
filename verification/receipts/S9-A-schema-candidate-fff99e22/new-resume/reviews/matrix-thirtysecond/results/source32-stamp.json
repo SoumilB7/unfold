@@ -1,0 +1,217 @@
+{
+  "global_source_fingerprint": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+  "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e",
+  "all_stamped_source_files_rehashed_against_exact32_tree": 394,
+  "only_matrix_summary_delta_vs26": [
+    {
+      "path": [
+        "sources",
+        "model_unfolder/adapters/diffusor/parser.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "e92a41d4aa8092e1816fe2258257175a7c97a2752e3cf761b9c707ad5f504783",
+      "after": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/adapters/transformer/parser.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "4c9bdaf9e69ba39715ee8a068349170317768fd6abacb28a2525a46f6e4f112b",
+      "after": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/class_default_value.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "9b3311740467832884d440fc217e5b7cf5cded7132d29b8fe46ca35ba2fb95b2",
+      "after": "20dfe12577200b57f9e83877772608d335333509f43d025a5cfea5e83aa09556"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/context.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c",
+      "after": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/cross_attention_schedule.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "8f4ac2858d6f096cf75606f451be1a649322376c0abe5182cece089c1f564c5b",
+      "after": "a9d5b7d8322034bd6b96fe21df67792a1721a294fcb91f211f451b12e288926d"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/decoder_norm.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "5631d108109806371684d8f66c8f3b9f644e159e619862a196e54803621fdef9",
+      "after": "49c08fbac556158b63b7a7b854f16502476f2ba5d2853504d10054a27fb7ec9c"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/diffusion_stack.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "9420b3aa5f107826847129792b51901a9c3f9622329c7a16c5608066660b23c7",
+      "after": "5a53d6e6e9e4fddd4f9d2037583374b53e74d22080fc2ec47efb1820b3031d09"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/diffusion_stream.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775",
+      "after": "81c8d29cf64321cec50961ad01c2b15095151c3fa1ccad4db10789be1b5c9eb6"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/document.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7",
+      "after": "23fcf4b1c0080a04c0e93ad61663a7854b9a22e2b6da5f3a446897e960a26c42"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/ffn_mechanism.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "2834b3059cce9f553283906f227e01b57ee4f64bda49bb0c076a4fbc729be3a9",
+      "after": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/position_linear_bias.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "3551597eb9d8ab66996bb44bef53e26553e6b00f84c72fc70ea1b601df12f96d",
+      "after": "e56f69808c0e6b1c11a6640bd789f2535aa529abd30da634e1980b2dae034bb6"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/reader_claims.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "aee930638b7b6287c9b1b0435096fcbda70de72f3d042c27f6e149ad85972db6",
+      "after": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/reconciliation.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "3790b963bd1f433dfa592d3adaef0eb52a43eb477c17c68c3770f437e3ab9d1d",
+      "after": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/registry.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615",
+      "after": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/evidence/structural_writes.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "20a723380a500c61ee2fa534f4c0c1ed118486297aa2f4c311a84351daa4b612",
+      "after": "d3e89d6e1bc3752e9f3b0fcc0208f55b3ab27ff8fcb39ffc59d6eaeef81ace2b"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/presentation.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4",
+      "after": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/renderers/html/block_views/attention.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1",
+      "after": "a14e54916470208eb44dcbe012e72d0677a9f488fb508c18161817ad074a9377"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/renderers/html/fact_projection.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "b63c7c99ea72f7b5d9106ae61716fbf601c4210d37d60170ce2182f586cfb474",
+      "after": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/renderers/html/sections.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "22c585ae8e4062763e5aa1a4d123f50ef949032999e0e16e921df2fb017c6153",
+      "after": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f"
+    },
+    {
+      "path": [
+        "sources",
+        "model_unfolder/uncertainty.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "9618e67124068c24419e10393004bfb3ce3892e968ac408360b41e86b505bb16",
+      "after": "f29d5fba5f33b4f4a969759dd06a2202cec0c3a258957355f227bd00616afab6"
+    },
+    {
+      "path": [
+        "sources",
+        "physics/result_cache.py"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "e7f56fdecc99410f71fba078929f2a875620936025c85bc8dcc30646df7f3cca",
+      "after": "f8a1737fe6041868995f1944c5519390c1adb83cfa6ce05ad802466bbc6a2553"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "after": {
+      "presentation_reference": {
+        "claim_proof": null,
+        "completeness": "partial",
+        "fact_key": "decoder.attention.logit_softcap",
+        "owner": "decoder.attention",
+        "status": "unknown",
+        "value_status_hash": "99416b5d747a826c"
+      },
+      "source": "decoder_attention_logit_softcap_for_path",
+      "status": "unknown",
+      "unknown_reason": {
+        "concrete_reason": "softcap_operand_unavailable",
+        "investigation": null,
+        "reason_class": "investigation_missing"
+      },
+      "value": null
+    },
+    "kind": "add",
+    "path": "/decoder.attention.logit_softcap"
+  }
+]

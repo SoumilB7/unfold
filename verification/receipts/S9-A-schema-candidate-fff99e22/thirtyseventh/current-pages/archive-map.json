@@ -1,0 +1,3545 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/actual37-pages-presentation-closures.log",
+      "archive": "thirtyseventh/current-pages/actual37-pages-presentation-closures.log",
+      "sha256": "1ee92c334c44b834a61314e35217c50cd229466fb414d3575625596a691337a7",
+      "bytes": 77204
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/actual-emission-counts.json",
+      "sha256": "0e7906f991efee9636998f48af8a45f02e197f2139c4eb0dcd448d8e7d9df4df",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/address-evidence.json",
+      "sha256": "cba307a8f13b42c286e23e70a8f2da315c9f82f2dccd38440a389d50218e3f26",
+      "bytes": 468
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/declarations.json",
+      "sha256": "5cffa4b7a19efeaebf7eee3ae269eb95067fd0395c11c824e2c710da6b45cb5c",
+      "bytes": 36340
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/diagram-ir-after-render.json.gz",
+      "sha256": "bad2101c0ffcef7d2172be25c467145c6b7c417557197c78e1895b19acdf3d41",
+      "bytes": 16428
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/diagram-ir-before-render.json.gz",
+      "sha256": "bad2101c0ffcef7d2172be25c467145c6b7c417557197c78e1895b19acdf3d41",
+      "bytes": 16428
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/facts.json",
+      "sha256": "1c3e1be17f8affb95660dd510010cc29353e2b2a0faec676fc5527b17e842e27",
+      "bytes": 21353
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/input.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/input.json",
+      "sha256": "0faef033042a3539fe40aca27ceefd3dc547a6608780cdc3ce0632b3f49fbeb9",
+      "bytes": 3099
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/ir-after-render.json.gz",
+      "sha256": "9b593d0301ac833c983fa95c3970c048ba8ae54255fc137c86125f458b868c00",
+      "bytes": 16391
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/ir-before-render.json.gz",
+      "sha256": "9b593d0301ac833c983fa95c3970c048ba8ae54255fc137c86125f458b868c00",
+      "bytes": 16391
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/page.html.gz",
+      "sha256": "815f5c264ea71ce776cb026f29d83cf20c659b07443923040125d5a845f211cb",
+      "bytes": 18788
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/presentation-census.json",
+      "sha256": "6d9fd30750cbd31461be3309a9991cc3758daf539e675178617c666d3f7cb650",
+      "bytes": 572090
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/render-context-local.json.gz",
+      "sha256": "24d5f9614a0d20ab7f0a1b3f59f629e0b46c19bf00f75e8c703cd9faf6fd9ae3",
+      "bytes": 8883
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/source-bundle-after-local.json",
+      "sha256": "7691119fce3f8595d562100e52be3631e9e3dc22a6f9c135eab47f483c1f65c5",
+      "bytes": 1845
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/source-bundle-before-local.json",
+      "sha256": "7691119fce3f8595d562100e52be3631e9e3dc22a6f9c135eab47f483c1f65c5",
+      "bytes": 1845
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/auraflow-v0-3/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/auraflow-v0-3/source-closure.json",
+      "sha256": "ebd72a92a72b6471137cd2cb1edbf12606dec0b005be01da7584f858bf184da9",
+      "bytes": 1651
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/actual-emission-counts.json",
+      "sha256": "a37ae773a530bd98fdf6d81f94ebb617b75457be026998453f9d42b09f30dd2d",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/address-evidence.json",
+      "sha256": "89607ff04dae290dc3b86450a1bb29d01757c2a6458440855b9a2ea0100670d6",
+      "bytes": 437
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/declarations.json",
+      "sha256": "684cd32cb20a007d6cfd217100db741fd68d902adf223f3d5299b08b11202355",
+      "bytes": 104521
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/diagram-ir-after-render.json.gz",
+      "sha256": "94681b35dc0469603da98cc95594acb4c260348e70a33d68918545338829a1cd",
+      "bytes": 11820
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/diagram-ir-before-render.json.gz",
+      "sha256": "94681b35dc0469603da98cc95594acb4c260348e70a33d68918545338829a1cd",
+      "bytes": 11820
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/facts.json",
+      "sha256": "082b94e077e4914c58a571c1da672ef714b1691d58f214068adefd1632a4c893",
+      "bytes": 60188
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/input.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/input.json",
+      "sha256": "23f84920adfc10e68115959e32a32b5bd2a03d4a566984f1fbe66c5182289d26",
+      "bytes": 941
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/ir-after-render.json.gz",
+      "sha256": "280a692741b7c93e4db762927a5c1987bcf4bc7c1c600a59e13c4b79900a902e",
+      "bytes": 11770
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/ir-before-render.json.gz",
+      "sha256": "280a692741b7c93e4db762927a5c1987bcf4bc7c1c600a59e13c4b79900a902e",
+      "bytes": 11770
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/page.html.gz",
+      "sha256": "18ff7c19ce739eb0d9258066c9f0b5a701ce698e00e62d433c98f1e967ea0b90",
+      "bytes": 10385
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/presentation-census.json",
+      "sha256": "9bd952596a98e25e3b94a75bd1950c2d02c408c8fdd998dbe684352078085046",
+      "bytes": 85755
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/bloom/render-context-local.json.gz",
+      "sha256": "5918f42f73026c240241ad3c05f70718f9e7272923602b1596e1dd086f53e24f",
+      "bytes": 5936
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/source-bundle-after-local.json",
+      "sha256": "ea9da8671823e0304f2be1e35785e69320e8e53efe28cf7fdc3e0d03221e2b22",
+      "bytes": 1112
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/source-bundle-before-local.json",
+      "sha256": "ea9da8671823e0304f2be1e35785e69320e8e53efe28cf7fdc3e0d03221e2b22",
+      "bytes": 1112
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/bloom/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/bloom/source-closure.json",
+      "sha256": "8b31f4863644860cb3d5f0522b498fd82b904e3f3c7f83c49e82d5e27580441f",
+      "bytes": 1161
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/actual-emission-counts.json",
+      "sha256": "d7b6cc268ad01ef88eb27efea699d59c14c0d0e8a8844c8a7bc4d5012695abd7",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/address-evidence.json",
+      "sha256": "310f48e4aeecced24c25227e8c2d71cc9ef7e9ceb4e4d57f47e790ecb4653e3f",
+      "bytes": 469
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/declarations.json",
+      "sha256": "d2593e49dff7bfef6ead25775eaccf9f6180ef6143f468a272958977a8e8f1e0",
+      "bytes": 19376
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/diagram-ir-after-render.json.gz",
+      "sha256": "8c73ea55c613a3c4ce5f15a94e114c7e99340687658f28e49a0f76215d82ae28",
+      "bytes": 18131
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/diagram-ir-before-render.json.gz",
+      "sha256": "8c73ea55c613a3c4ce5f15a94e114c7e99340687658f28e49a0f76215d82ae28",
+      "bytes": 18131
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/facts.json",
+      "sha256": "c71fa9df6105107c34bee2261fa03c2985e415912dbac3cdce1e16a455424557",
+      "bytes": 12699
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/input.json",
+      "sha256": "b3c9251de74ba374002d131662c58928d3a629b0ecbafc8e633dea2cef2ad36e",
+      "bytes": 3707
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/ir-after-render.json.gz",
+      "sha256": "ae51664ed0fdb2f19bf5b5430a4d2965d6e7bfae01bb28b38ae5d7d563de922f",
+      "bytes": 17964
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/ir-before-render.json.gz",
+      "sha256": "ae51664ed0fdb2f19bf5b5430a4d2965d6e7bfae01bb28b38ae5d7d563de922f",
+      "bytes": 17964
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/page.html.gz",
+      "sha256": "4663f67ef19551c23334147ef4548a88717461156d89e7d824d5b9db0f79caf7",
+      "bytes": 21258
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/presentation-census.json",
+      "sha256": "201ef9a66cd720216a6fa787e47336637622cfc04ea14e54be11d44b31434edb",
+      "bytes": 844560
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/render-context-local.json.gz",
+      "sha256": "b29b99e18301b7fc000b29ddf7da18a94ff1b584a284f03079bb08324ebcd445",
+      "bytes": 10093
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/source-bundle-after-local.json",
+      "sha256": "99430b129c4fedd67535825865cef2180ed26c5b4dd01487cfcc5b82c4940719",
+      "bytes": 1834
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/source-bundle-before-local.json",
+      "sha256": "99430b129c4fedd67535825865cef2180ed26c5b4dd01487cfcc5b82c4940719",
+      "bytes": 1834
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/cogvideox-5b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/cogvideox-5b/source-closure.json",
+      "sha256": "6e0232210a19185e1225b09cf2b2ddca6187aa5b5a381310ed3e197d29c15d89",
+      "bytes": 1648
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/actual-emission-counts.json",
+      "sha256": "aee71fd54c9320e004e5898c2d103ef715dd01e42ff32c7cc305154a00755259",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/address-evidence.json",
+      "sha256": "f71f4a16e1c975d52f3a47e91051b60138c09e07d804eb548bb034d942236148",
+      "bytes": 458
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/declarations.json",
+      "sha256": "3329389e42f3511f36cb7a83c10f7763f95e3749a205c94ed3b8bfeaa6354c5b",
+      "bytes": 97598
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/diagram-ir-after-render.json.gz",
+      "sha256": "46e7d34d41ffc8f61fe455b9170d397da7da756cc47d6415913bbcfd93e5bb11",
+      "bytes": 13288
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/diagram-ir-before-render.json.gz",
+      "sha256": "46e7d34d41ffc8f61fe455b9170d397da7da756cc47d6415913bbcfd93e5bb11",
+      "bytes": 13288
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/facts.json",
+      "sha256": "1c067789630b71b08b05aabda751fff40c9d2e914b5b769eab4216867033ff8f",
+      "bytes": 49263
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/input.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/input.json",
+      "sha256": "4ebdb047bf28d0f3d0a796587b824d992390c905968d9f8ed2e1875b98d9eb9c",
+      "bytes": 2943
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/ir-after-render.json.gz",
+      "sha256": "08cf6147557b2e7667733a73a6224725800dee9cfaf97ba57dd820c575530a1e",
+      "bytes": 13194
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/ir-before-render.json.gz",
+      "sha256": "08cf6147557b2e7667733a73a6224725800dee9cfaf97ba57dd820c575530a1e",
+      "bytes": 13194
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/page.html.gz",
+      "sha256": "67c2a3d3714bb20c1a20359a3c4c9c9e98910f24b55d7e028d4fef02f9ad9b5f",
+      "bytes": 12698
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/presentation-census.json",
+      "sha256": "df4fa3bc58855597d97e8e855cdc943894273799e7c22c2052bd7260cd0c85b5",
+      "bytes": 316359
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/render-context-local.json.gz",
+      "sha256": "1a889786821fcc1313144194e58fae7e204b2642cf697c5ed270cc592cd2741c",
+      "bytes": 7220
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/source-bundle-after-local.json",
+      "sha256": "19f34be605b38add10e07afb5eed820670e0fd2d46afaf881ddf0cf4c07da6ab",
+      "bytes": 1395
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/source-bundle-before-local.json",
+      "sha256": "19f34be605b38add10e07afb5eed820670e0fd2d46afaf881ddf0cf4c07da6ab",
+      "bytes": 1395
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/command-a-03-2025/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/command-a-03-2025/source-closure.json",
+      "sha256": "672071e57aebabee3d9037b3280c8a3b63860cc4f940bae30f653676b87bbacb",
+      "bytes": 1621
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/actual-emission-counts.json",
+      "sha256": "63b18682870265c2b3441a79bf7c160e0f8628d0f8a1469fe8ed56f9c942ff1f",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/address-evidence.json",
+      "sha256": "b6187e0dedc987ee32658ebe829986cc7ce91a1d640fe540acf1b42167b5be14",
+      "bytes": 438
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/declarations.json",
+      "sha256": "3eeb965bf8982a10f456e368324b7f512b81b459d78885728ba7a8bf8229c09e",
+      "bytes": 159590
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/diagram-ir-after-render.json.gz",
+      "sha256": "44e4b60179c63de15b035285d79bdfa45994a9a096d39e3b7abac68a9040b1e9",
+      "bytes": 15427
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/diagram-ir-before-render.json.gz",
+      "sha256": "44e4b60179c63de15b035285d79bdfa45994a9a096d39e3b7abac68a9040b1e9",
+      "bytes": 15427
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/facts.json",
+      "sha256": "3df33b268e0eb22aedba11aa54124297b953c95c716e8ec80553726d00d3821d",
+      "bytes": 69910
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/input.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/input.json",
+      "sha256": "82dd05e27fa811ceb477f866f0da616abb2f9f7347bb9b2c8bee56359438e726",
+      "bytes": 519
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/ir-after-render.json.gz",
+      "sha256": "332c1dd0a60c497d31eb30507de379fc3b05fe73fae30e591c57049f4b125eb0",
+      "bytes": 15268
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/ir-before-render.json.gz",
+      "sha256": "332c1dd0a60c497d31eb30507de379fc3b05fe73fae30e591c57049f4b125eb0",
+      "bytes": 15268
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/page.html.gz",
+      "sha256": "bb6a0943615345b0b7155b83d83c0e9b92b01ae4736c845e773bed0d476b3766",
+      "bytes": 13292
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/presentation-census.json",
+      "sha256": "372a5b89bf02e264c188eab593ebda8574a94c3860b184dee13b1ab2571891de",
+      "bytes": 298795
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/render-context-local.json.gz",
+      "sha256": "9996229bd6f0e121960815fecea37be9952033bcab801a1260468c20d0a0cf99",
+      "bytes": 9258
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/source-bundle-after-local.json",
+      "sha256": "c82ac62b6773e69d18f55cf89c348b676cf48c559aff496dc56981abb70e9d6e",
+      "bytes": 1511
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/source-bundle-before-local.json",
+      "sha256": "c82ac62b6773e69d18f55cf89c348b676cf48c559aff496dc56981abb70e9d6e",
+      "bytes": 1511
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/dbrx-base/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/dbrx-base/source-closure.json",
+      "sha256": "d7b09afc57cf2e34ca25ea373efaca9530f6731cc024ba366dc6d4d71c915af1",
+      "bytes": 1615
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/actual-emission-counts.json",
+      "sha256": "088c1459779bb305485aebe9b5aabfa4598c50ddacfd166e8b40fe4217ee3e8c",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/address-evidence.json",
+      "sha256": "894c8b6c4a8a3a1efcfe16a4042c87e7eeabdd0fe8c7b1e71e79c47ce290ce68",
+      "bytes": 474
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/declarations.json",
+      "sha256": "a81c32816caccf41a0c8c76a3b00321219fcf0086781a30b03ce5fa1b1fbb27e",
+      "bytes": 84011
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/diagram-ir-after-render.json.gz",
+      "sha256": "a8d6eb811198250723c10db88876de99429651665c5e5731fd767dcdaabffcbc",
+      "bytes": 12059
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/diagram-ir-before-render.json.gz",
+      "sha256": "a8d6eb811198250723c10db88876de99429651665c5e5731fd767dcdaabffcbc",
+      "bytes": 12059
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/facts.json",
+      "sha256": "ba2a553d920b82f31827ffe1e6c2679507d8c0d595037241b97997d44533e606",
+      "bytes": 40280
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/input.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/input.json",
+      "sha256": "06050468bc09ab5e2e36816db27eff40a5d86a27b0f3c5aa46b46b3731a4b527",
+      "bytes": 1960
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/ir-after-render.json.gz",
+      "sha256": "758b935c333ff950eb793eecfbf4a9cd990a90233eeca5915036ce599d013022",
+      "bytes": 11917
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/ir-before-render.json.gz",
+      "sha256": "758b935c333ff950eb793eecfbf4a9cd990a90233eeca5915036ce599d013022",
+      "bytes": 11917
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/page.html.gz",
+      "sha256": "c2d6a2bd02d5479ff78bfd3030480eca700d78452165f867e05adfa8eeeef28f",
+      "bytes": 12914
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/presentation-census.json",
+      "sha256": "9dc5b4ac1888746a46eb1c70f512c84dc564c453ea499fa2f22fa97791387875",
+      "bytes": 280979
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/render-context-local.json.gz",
+      "sha256": "7bbaa8cd6e2aa47b1b7d267ae423b12963d9c2878bef6bf60077b605efc0f5b5",
+      "bytes": 7238
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-bundle-after-local.json",
+      "sha256": "eef1eed6c3cdf822b805503b39d51ef88d822b47f4bbd6f6a93902e601d55629",
+      "bytes": 1439
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-bundle-before-local.json",
+      "sha256": "eef1eed6c3cdf822b805503b39d51ef88d822b47f4bbd6f6a93902e601d55629",
+      "bytes": 1439
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-coder-v2-lite/source-closure.json",
+      "sha256": "aa90c0aae98d9a58fdea087f5096fefa7a90725a4877dee11a0ff2dce43620f5",
+      "bytes": 1629
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/actual-emission-counts.json",
+      "sha256": "4cd224d6fcf68306751fa8faf7937cf2a269d417b4546d158c741f5cadedc9e0",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/address-evidence.json",
+      "sha256": "e888badbfa6e82158a391205447234f857b0861cfec2e33ce154d8bb56c0550f",
+      "bytes": 460
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/declarations.json",
+      "sha256": "b3ec7805886cbe006cf19db837f644857485cd6add08511630655e0462ab5183",
+      "bytes": 176355
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/diagram-ir-after-render.json.gz",
+      "sha256": "31d77e09fe3fe6e6b4fe91e6d87ef5bfdd4d33d382dac4b2e6573c27d8d29d12",
+      "bytes": 21264
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/diagram-ir-before-render.json.gz",
+      "sha256": "31d77e09fe3fe6e6b4fe91e6d87ef5bfdd4d33d382dac4b2e6573c27d8d29d12",
+      "bytes": 21264
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/facts.json",
+      "sha256": "5e2ef05c92eb6971801f7a4f4272064e805ee9652fe6a0d8b60137a371287425",
+      "bytes": 80048
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/input.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/input.json",
+      "sha256": "dfc1e775059089d30f01a2e3b67d81cb2957dd5a78947fa642791bbe5d7ccba6",
+      "bytes": 2133
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/ir-after-render.json.gz",
+      "sha256": "dc58703795f7a142de423d5e022bd14ca60781ba949610c46d19d255630d3465",
+      "bytes": 21127
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/ir-before-render.json.gz",
+      "sha256": "dc58703795f7a142de423d5e022bd14ca60781ba949610c46d19d255630d3465",
+      "bytes": 21127
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/page.html.gz",
+      "sha256": "43a8c4961267e1c3e14ebbc1a9529b892ab819b5daf05bfaa9f02abf791fe9de",
+      "bytes": 16048
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/presentation-census.json",
+      "sha256": "b7f52e53ab23f7de43648c1c39bdd1595c066d3f60a8bd254a9c6186b22201f7",
+      "bytes": 148498
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/render-context-local.json.gz",
+      "sha256": "e9a6de69f989a3a2de8bda012474815b898d427947fe782c743e79399d9681d0",
+      "bytes": 10161
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/source-bundle-after-local.json",
+      "sha256": "7aaf7bee55067503ec04ec55901ed409e61db6ebf8938fe8d959c06d5742dcba",
+      "bytes": 1513
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/source-bundle-before-local.json",
+      "sha256": "7aaf7bee55067503ec04ec55901ed409e61db6ebf8938fe8d959c06d5742dcba",
+      "bytes": 1513
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v3/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v3/source-closure.json",
+      "sha256": "917977f8f4f25001414afa5b015f2ac0aa6b827be47f87fb7cce25130ed67ec9",
+      "bytes": 1629
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/actual-emission-counts.json",
+      "sha256": "b40d7359a654ac4526f6e08a2d4db7ef9e5aa6c8ae6d2e3bcb8f7895532f4320",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/address-evidence.json",
+      "sha256": "9bf8f99f1eb8c3300c1da8aa6caee1d6fae8886fa6fa12765256e94f29bafbd1",
+      "bytes": 465
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/declarations.json",
+      "sha256": "5a023dc4c0a0e49a4c736668997abb31f9765a02ea4b07b287681c05379fe37a",
+      "bytes": 23964
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/diagram-ir-after-render.json.gz",
+      "sha256": "4e10c6f2fb62f97f493e668096f1f407052785ee6ac9dee2de574bf6d910a464",
+      "bytes": 13305
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/diagram-ir-before-render.json.gz",
+      "sha256": "4e10c6f2fb62f97f493e668096f1f407052785ee6ac9dee2de574bf6d910a464",
+      "bytes": 13305
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/facts.json",
+      "sha256": "00ea6ef712177b925c4a5ece163342884f93213afc6f454dd3ab5e1205bd6d02",
+      "bytes": 14533
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/input.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/input.json",
+      "sha256": "9e160a195b4ca3ca2a077516a0fe47b11144379e29457d3ec70efc34b1aa4302",
+      "bytes": 1929
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/ir-after-render.json.gz",
+      "sha256": "c4c0aed7f62c3cf80f5c19371be7247c659ca68b1a9b7629af3bb146a088dfac",
+      "bytes": 13133
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/ir-before-render.json.gz",
+      "sha256": "c4c0aed7f62c3cf80f5c19371be7247c659ca68b1a9b7629af3bb146a088dfac",
+      "bytes": 13133
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/page.html.gz",
+      "sha256": "b619e7b35c0a99387f8e1ca0ec4ad6337e17f1fa99a81994a3f11a322ae14bca",
+      "bytes": 13606
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/presentation-census.json",
+      "sha256": "ebf4e7c0509d19cf1d78fd718f8e278c2522b4963e791858734be6451de75146",
+      "bytes": 771569
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/render-context-local.json.gz",
+      "sha256": "8af8fca69dc9566ab35f407d26aea89d542fa107f06a6d71df127a39e6200871",
+      "bytes": 8639
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/source-bundle-after-local.json",
+      "sha256": "4f6a2117dcf4829c08ac5892d2159e6f5018d5668bd902c92ceacec6ede9f2c8",
+      "bytes": 1492
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/source-bundle-before-local.json",
+      "sha256": "4f6a2117dcf4829c08ac5892d2159e6f5018d5668bd902c92ceacec6ede9f2c8",
+      "bytes": 1492
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/deepseek-v4-flash/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/deepseek-v4-flash/source-closure.json",
+      "sha256": "7fa36ad5d1dda97b13838fd7746ecedd23d7cd3e408c663a3d856feedf478c60",
+      "bytes": 1629
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/actual-emission-counts.json",
+      "sha256": "34278c6a1e36d5e0f3fbcbe9b007b6180c04c837fdbdba4ffcc34c721035ea95",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/address-evidence.json",
+      "sha256": "b2539d4b493396998a80352f326126aad12fcae5ad433656acaf296e6701de18",
+      "bytes": 456
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/declarations.json",
+      "sha256": "0b12938f9058306d31640836db7253b68835f63c6c6b2e0edf8b1601cbd278bb",
+      "bytes": 50119
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/diagram-ir-after-render.json.gz",
+      "sha256": "f04de74e3f250a3a3d77519a8496f9bdfd3c1cc19ad875c8366fb7971cc58ed1",
+      "bytes": 21229
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/diagram-ir-before-render.json.gz",
+      "sha256": "0668bbbde681d7ea6be33d9d216066666abd18375c07a3016ade11d373e6945a",
+      "bytes": 21191
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/facts.json",
+      "sha256": "415e4a148a8388a472cac170fe564425c3337b9d65a5dce36919aff5258585d9",
+      "bytes": 26919
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/input.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/input.json",
+      "sha256": "c156891b818f7775fd3a46910aec24982e6452df63499c965945012e93bf0865",
+      "bytes": 5346
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/ir-after-render.json.gz",
+      "sha256": "b8945df3170bc1fcdbc1ccbf152aec00eea51eb25913fc927a9b8c1f03dfde22",
+      "bytes": 21192
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/ir-before-render.json.gz",
+      "sha256": "2768fcafd8d98210fa0eac14b405749c5210aa6f10845bd435a99e5d01e9c878",
+      "bytes": 21154
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/page.html.gz",
+      "sha256": "a93dc8070b0ac75f4e54f6c7c7b673aeb19b1b3d59cc562571768323eff4ad3e",
+      "bytes": 24002
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/presentation-census.json",
+      "sha256": "978b1f047fb3e8d5f7e9876bfb7676f7d5d46059cf6d692cd7665af9f25978e4",
+      "bytes": 1076615
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/render-context-local.json.gz",
+      "sha256": "845fb0ec30c7ca888518ec9330eba14e6a7d7b9e97581934d1a41f309e6b5428",
+      "bytes": 12627
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/source-bundle-after-local.json",
+      "sha256": "b42ba48a639176876eb63f6ec7ae7988fe484d85cf1336e48c417a571000fd7f",
+      "bytes": 3981
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/source-bundle-before-local.json",
+      "sha256": "b42ba48a639176876eb63f6ec7ae7988fe484d85cf1336e48c417a571000fd7f",
+      "bytes": 3981
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/flux-2-dev/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/flux-2-dev/source-closure.json",
+      "sha256": "a87c34ca6ec68593ff907ec872b87a33c7e8d2149e409e4aae4f2b6826902890",
+      "bytes": 4400
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/actual-emission-counts.json",
+      "sha256": "37569a4952c34b9d30d9c855b0c11bd59bc8ec59386af9dbb412161996e76b02",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/address-evidence.json",
+      "sha256": "07cee620b54693c40e91c190061e5e58221c6b0aa78a68ae947a28ecbeffd900",
+      "bytes": 466
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/declarations.json",
+      "sha256": "1c617fa6396882fdfa6ae47a1c8abe7fd82dc17ea8d7f0ecb37a9f3b51b17e32",
+      "bytes": 38664
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/diagram-ir-after-render.json.gz",
+      "sha256": "2e34ba510d095a0f9ded0d9465191893534f096bff74773dca4fc934e1357071",
+      "bytes": 21282
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/diagram-ir-before-render.json.gz",
+      "sha256": "2e34ba510d095a0f9ded0d9465191893534f096bff74773dca4fc934e1357071",
+      "bytes": 21282
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/facts.json",
+      "sha256": "b7afe2fa1641ad071671be8730464097cba5dc7657731c7b30010c137b8490f5",
+      "bytes": 20842
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/input.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/input.json",
+      "sha256": "ac6a060a5b5258428622bf97f0ea7a11f1634c9fa7a95798afee2aaddbbe2726",
+      "bytes": 1509
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/ir-after-render.json.gz",
+      "sha256": "f7fcb1d2ecd58a77f176592c181f2f6fe29cc238c593d522845ae9b8590aa015",
+      "bytes": 21246
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/ir-before-render.json.gz",
+      "sha256": "f7fcb1d2ecd58a77f176592c181f2f6fe29cc238c593d522845ae9b8590aa015",
+      "bytes": 21246
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/page.html.gz",
+      "sha256": "83aafb55f8f486c5f4f020c65cbe4fdb276eedbbf51aa5655a82e33171c43023",
+      "bytes": 24603
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/presentation-census.json",
+      "sha256": "324985e11f5cac7668c83ea364e6d3288bf0037ed86dcee51def554d9f81882e",
+      "bytes": 954607
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/render-context-local.json.gz",
+      "sha256": "67e82b4b5373c7855c10e79b3feb822b0be16465085e25fd8d51d864b23c1de8",
+      "bytes": 12083
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-bundle-after-local.json",
+      "sha256": "6db081b8f6a8ca43a26ce7c76aec9dbd02851f275ffdf34a9bf7ef8103b3a0f1",
+      "bytes": 2541
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-bundle-before-local.json",
+      "sha256": "6db081b8f6a8ca43a26ce7c76aec9dbd02851f275ffdf34a9bf7ef8103b3a0f1",
+      "bytes": 2541
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/fluxtransformer2dmodel/source-closure.json",
+      "sha256": "7b600a55ec4b632c738ce3b665e7f608a8d226d0fb9e4b973859d06e62067578",
+      "bytes": 2593
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/actual-emission-counts.json",
+      "sha256": "a4cf14f72228a95e1d2edd790162f629c3a2344f20949e6d8a9a5505a41dc1b6",
+      "bytes": 252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/address-evidence.json",
+      "sha256": "de06acfdc9e4f37a83fad9c2983b42f0098a8fdb1fc22afb0d64fc1ae5ee22b9",
+      "bytes": 448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/declarations.json",
+      "sha256": "e8ab9907ce8fe11786a31815a79ade0aa7166d65e29154221bdfceafdc99f7db",
+      "bytes": 141376
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/diagram-ir-after-render.json.gz",
+      "sha256": "494e35863a37ad35ebf3c249c3f5b7019cff80a7695485131c886a4fbb88eda5",
+      "bytes": 11146
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/diagram-ir-before-render.json.gz",
+      "sha256": "494e35863a37ad35ebf3c249c3f5b7019cff80a7695485131c886a4fbb88eda5",
+      "bytes": 11146
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/facts.json",
+      "sha256": "86faf6469b44be6140845b4fbd5c2e41f81a2bf28cff583d8078f4db2174f00f",
+      "bytes": 67765
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/input.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/input.json",
+      "sha256": "d4ddeee740082a0cfe7b36fb3985ab7fd10ab4b26e97a188aaf27cea990c045a",
+      "bytes": 1925
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/ir-after-render.json.gz",
+      "sha256": "1bb5945663988ade4dbb34f6d87d98afcbe68f4ebf589e0bc6403ab6127936ff",
+      "bytes": 11060
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/ir-before-render.json.gz",
+      "sha256": "1bb5945663988ade4dbb34f6d87d98afcbe68f4ebf589e0bc6403ab6127936ff",
+      "bytes": 11060
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/page.html.gz",
+      "sha256": "989e4abdd9c7d73613baa8ac63edd966669800c7c3960ddf3caa9dbe6b5af4b7",
+      "bytes": 11893
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/presentation-census.json",
+      "sha256": "a6da78ae9a0d455716cf76d9657c21968af75d306d734bced386d29e98544119",
+      "bytes": 32690
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/render-context-local.json.gz",
+      "sha256": "71b56febbc5ed49f2eca2e75542b56faf951403aecbcac927aee3ab902872e10",
+      "bytes": 6600
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/source-bundle-after-local.json",
+      "sha256": "37e48198cd1f206e81cb6cc0ef5be22b93a865ff5e66b387684b435bfcfda7e6",
+      "bytes": 1372
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/source-bundle-before-local.json",
+      "sha256": "37e48198cd1f206e81cb6cc0ef5be22b93a865ff5e66b387684b435bfcfda7e6",
+      "bytes": 1372
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-2-2b-it/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-2-2b-it/source-closure.json",
+      "sha256": "be7d1efb9de11689e8145cf7428f18a999ddcb341a841883068dae50fac10540",
+      "bytes": 1619
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/actual-emission-counts.json",
+      "sha256": "caaa34ddb87063b201ba18e1cdd40b20b8549b27c0ef9b22ee1f9e83679d3859",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/address-evidence.json",
+      "sha256": "92a84fa8f36606ece9902e1c0998dbc00d1029b105d035f0cc0680c01ac6ca7d",
+      "bytes": 462
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/declarations.json",
+      "sha256": "0d505caed0f0ca959ea99c4aeabab2d18099122702e6443520dbcbcc0d9ea5bb",
+      "bytes": 80075
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/diagram-ir-after-render.json.gz",
+      "sha256": "5790a82f227d44ad52bb8208d60f125909bf293193568b46dbccc317ce453696",
+      "bytes": 16402
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/diagram-ir-before-render.json.gz",
+      "sha256": "5790a82f227d44ad52bb8208d60f125909bf293193568b46dbccc317ce453696",
+      "bytes": 16402
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/facts.json",
+      "sha256": "491d839413537a596aaa1ca1d1f27b1a93ac01c41a773c4d7f90afa0a3662ac5",
+      "bytes": 35432
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/input.json",
+      "sha256": "53dbc746ab2a4d1496dca0fd4449be6880e3783bedca2d8be7e50f0a1fa9b21a",
+      "bytes": 4214
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/ir-after-render.json.gz",
+      "sha256": "2e3e3668d5a8f259bea10692b783718ea68e59a98ba47be0c51cc337e9eb475d",
+      "bytes": 16244
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/ir-before-render.json.gz",
+      "sha256": "2e3e3668d5a8f259bea10692b783718ea68e59a98ba47be0c51cc337e9eb475d",
+      "bytes": 16244
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/page.html.gz",
+      "sha256": "913cdf0680e3d2d5f40f8adf8c5a11eefaae9ac0bdef0df2f6ae76c27db80feb",
+      "bytes": 17736
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/presentation-census.json",
+      "sha256": "53bb697b559b7a7a6cf33b465294576d06f9764aeaead4061e69c374fcbb33c5",
+      "bytes": 401292
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/render-context-local.json.gz",
+      "sha256": "01cfed412e17a8b6b21760c64fbdd7a55a5b3d4a5c32206fbbcf3cfb7d35ab44",
+      "bytes": 9464
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/source-bundle-after-local.json",
+      "sha256": "5cd4407f1f5dd469524099eb56667cbfe9570da498cb44f0a35a442ac236d141",
+      "bytes": 4328
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/source-bundle-before-local.json",
+      "sha256": "5cd4407f1f5dd469524099eb56667cbfe9570da498cb44f0a35a442ac236d141",
+      "bytes": 4328
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gemma-3n-e2b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/gemma-3n-e2b/source-closure.json",
+      "sha256": "b55025550804caa740e3f52016e8fb5060fc360b4c8366fa68ed01e65c7c572b",
+      "bytes": 6123
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/actual-emission-counts.json",
+      "sha256": "c0e3e08ab34230f4c2492a4024afe5ab5a09e37940a97e48b0ce3f0ce8c02364",
+      "bytes": 252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/address-evidence.json",
+      "sha256": "f5ff299dba736c7fa72ae89e9b4b07225fed6e45f113b3453695ffe41e0d8909",
+      "bytes": 447
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/declarations.json",
+      "sha256": "f0a10199c685bd3876c1406dc988bb4c9944e6b94cffe51d96b086eb0bbef74c",
+      "bytes": 197605
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/diagram-ir-after-render.json.gz",
+      "sha256": "369fcad2870f58b2fa58681b708aca45c3a2bc0ecd4c8296214557c345c2afbb",
+      "bytes": 20708
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/diagram-ir-before-render.json.gz",
+      "sha256": "369fcad2870f58b2fa58681b708aca45c3a2bc0ecd4c8296214557c345c2afbb",
+      "bytes": 20708
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/facts.json",
+      "sha256": "eeb08379e24e9dc524beedddb348caa8fa3a0deb9af7715aa43c4c919e4ae513",
+      "bytes": 94962
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/input.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/input.json",
+      "sha256": "72f552f52016e1a2816210d8e181b74a2a7c506e4a3d84fb9e4e2c51ea6f6ba7",
+      "bytes": 1420
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/ir-after-render.json.gz",
+      "sha256": "faf312099fed9e602599c8613bf970aa84754df75d5eeb71b65e09d4fb71ffec",
+      "bytes": 20568
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/ir-before-render.json.gz",
+      "sha256": "faf312099fed9e602599c8613bf970aa84754df75d5eeb71b65e09d4fb71ffec",
+      "bytes": 20568
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/page.html.gz",
+      "sha256": "34448c61cb0b6e79734b795c6043bea726b369c235d722bb3ac2a536934d5d41",
+      "bytes": 14314
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/presentation-census.json",
+      "sha256": "ba7874bf19d322ae330a2a449453196b20fef0dde77371c797a9ea877eaf3c5f",
+      "bytes": 1549
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/render-context-local.json.gz",
+      "sha256": "e3a96de5b539d28de53a91edd52377410efdd0d88595cb3ddc30c6c4487e11a2",
+      "bytes": 7885
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/source-bundle-after-local.json",
+      "sha256": "7e53f0f8cd1e2394814226f0fa630be4ab4dac9a1d722845392bbef94f100e8c",
+      "bytes": 1385
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/source-bundle-before-local.json",
+      "sha256": "7e53f0f8cd1e2394814226f0fa630be4ab4dac9a1d722845392bbef94f100e8c",
+      "bytes": 1385
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/glm-4-5/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/glm-4-5/source-closure.json",
+      "sha256": "de2bcd0b3507905876fabbfbe310c662b4cd081b6805b8c44b5b8cb589566a2a",
+      "bytes": 1623
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/actual-emission-counts.json",
+      "sha256": "91aa0ed9bfc92ee5b9e41d011322b781506742bfe8bb36d7ac5cc74024bf308d",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/address-evidence.json",
+      "sha256": "a4ec5f61bfc382f22c0725a900c28a25806c445ed476074d26ccab0cb052a5f9",
+      "bytes": 448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/declarations.json",
+      "sha256": "e3aeed848cc1ae37a717a457d0631e50a506e2677a94577d3815a7a9ddc0b69a",
+      "bytes": 165888
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/diagram-ir-after-render.json.gz",
+      "sha256": "3648f4384b40cedbedf4d7eeb455d3a1d31439f2e7c7d31d4052512b28ddbf30",
+      "bytes": 13608
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/diagram-ir-before-render.json.gz",
+      "sha256": "3648f4384b40cedbedf4d7eeb455d3a1d31439f2e7c7d31d4052512b28ddbf30",
+      "bytes": 13608
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/facts.json",
+      "sha256": "ef021a89e1b1b8f74a8bc8c11f49b0a1c7450bb911ff0b7f9ab0fe5eb2ec2a61",
+      "bytes": 73660
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/input.json",
+      "sha256": "40c46aa571a7b75c86d72410c7482448aa638472093c2e5e7c312fcf6f840fff",
+      "bytes": 2177
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/ir-after-render.json.gz",
+      "sha256": "c2604c90c4780015c44c0e39b55f600f5917ba1dc57d6ff7e3aa9037c82ae205",
+      "bytes": 13511
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/ir-before-render.json.gz",
+      "sha256": "c2604c90c4780015c44c0e39b55f600f5917ba1dc57d6ff7e3aa9037c82ae205",
+      "bytes": 13511
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/page.html.gz",
+      "sha256": "4618b90a41df7c029ca9dd9cc075ac539f3a456b857154691c9c8d0b2bfdec7e",
+      "bytes": 14060
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/presentation-census.json",
+      "sha256": "f60da1253102611c8988015170977b188f7cbddb9e9b9067ea03883448fb5765",
+      "bytes": 167191
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/render-context-local.json.gz",
+      "sha256": "e4964e0eb364051ff06d3c71de731804e5a6087cd95c2c986944f2a05cbe728b",
+      "bytes": 9599
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/source-bundle-after-local.json",
+      "sha256": "12c2e06b4eea2da7b73714a1974d137cf7037cf98db04bb5105be82d22313b63",
+      "bytes": 1349
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/source-bundle-before-local.json",
+      "sha256": "12c2e06b4eea2da7b73714a1974d137cf7037cf98db04bb5105be82d22313b63",
+      "bytes": 1349
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/gpt-oss-20b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/gpt-oss-20b/source-closure.json",
+      "sha256": "5f2e646f241909fc309f97884df2df3d7453b2e1d83d750e2f7ea8b94fc8821e",
+      "bytes": 1397
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/actual-emission-counts.json",
+      "sha256": "618942de771c6112f946bc5fc4608620f2c715999bcd7e3973def0ec6e6bb08f",
+      "bytes": 252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/address-evidence.json",
+      "sha256": "8935d9116a5c2c4f6c00e77cd13c5fb58c052d63853279788804df90949eab3b",
+      "bytes": 461
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/declarations.json",
+      "sha256": "6a74428e4ad2cf84a9eb18327484ead7fbae7412fb6fe860dddb5e100a98a69c",
+      "bytes": 145426
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/diagram-ir-after-render.json.gz",
+      "sha256": "51c6207ed12ade8e23d7ae28148b6b0bdfc82cde0714f34262ad4d3d8e5bc857",
+      "bytes": 12146
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/diagram-ir-before-render.json.gz",
+      "sha256": "51c6207ed12ade8e23d7ae28148b6b0bdfc82cde0714f34262ad4d3d8e5bc857",
+      "bytes": 12146
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/facts.json",
+      "sha256": "a69948d8eefffce787123e9a3a6b6f0df947337da97c50849cb5e690d65eca8a",
+      "bytes": 71520
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/input.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/input.json",
+      "sha256": "79d26311a9f7349c0acf844b1362ac0ae94f6f4fa06b9f7f034f1954f073d21d",
+      "bytes": 846
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/ir-after-render.json.gz",
+      "sha256": "e8e5d7849f336703bf01b514c1331db67ef9b1fcf04bbfe899d6c8fa56aa074a",
+      "bytes": 12059
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/ir-before-render.json.gz",
+      "sha256": "e8e5d7849f336703bf01b514c1331db67ef9b1fcf04bbfe899d6c8fa56aa074a",
+      "bytes": 12059
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/page.html.gz",
+      "sha256": "ef10183558ede36574571ecc529ff0753a7cea3a510caebd296130c4f10b9bbd",
+      "bytes": 10927
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/presentation-census.json",
+      "sha256": "14b04461ff088e4959dd4988881977a2dc686ac701f26e5f98261671e6fc1a34",
+      "bytes": 49599
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/render-context-local.json.gz",
+      "sha256": "3e636b799860b6919e08c9860c981b5e2011d744593fb674d1ee38ea5d9bbdde",
+      "bytes": 6578
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-bundle-after-local.json",
+      "sha256": "7d910c65d28578069e0f339d56f099b987435d3f00a57b3b38803ad75e1caeb5",
+      "bytes": 1397
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-bundle-before-local.json",
+      "sha256": "7d910c65d28578069e0f339d56f099b987435d3f00a57b3b38803ad75e1caeb5",
+      "bytes": 1397
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/granite-3-0-8b-instruct/source-closure.json",
+      "sha256": "07573d7d8b6c8de41216bb55b3a1f1d96faed71dc99e3a8cc0e1ac4aeae754dc",
+      "bytes": 1621
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/actual-emission-counts.json",
+      "sha256": "5d0d5405c87dd600e85beb4dd4469a71c967132321ca6bcd554154a65fc43bd9",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/address-evidence.json",
+      "sha256": "6f28f4a0324d09de451de3e8f6a4b4f1e2c2007e2e7a88256608e9901d8343bb",
+      "bytes": 473
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/declarations.json",
+      "sha256": "664d1c07a32c574fd312f5cc4bed845f2a6e440ec4a51cf32fa934356f6b511c",
+      "bytes": 77040
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/diagram-ir-after-render.json.gz",
+      "sha256": "044e119afdbf1c5597c55ff64fe8c355c858960feed6e89939d3de7c2e940391",
+      "bytes": 23762
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/diagram-ir-before-render.json.gz",
+      "sha256": "309f7d518d90c5167eb0f7c86270741218cde026f87485b90bb9d2456d87a217",
+      "bytes": 23718
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/facts.json",
+      "sha256": "69c0adf2fa4c1a91bcd3be39d63d3293bf589696ad38ffeca547d95d0f8ea57c",
+      "bytes": 42672
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/input.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/input.json",
+      "sha256": "7d3f8479f281f795af87bc2d142ac191c3538bcd1bdfe91039d283b9a21d49bd",
+      "bytes": 4860
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/ir-after-render.json.gz",
+      "sha256": "3a1bf8f25c6083abc2c86e5e372e1dc5dd09982a13fbfd9797d849e4f5db1582",
+      "bytes": 23591
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/ir-before-render.json.gz",
+      "sha256": "11cb8d01929cbdb15d2b45f1f0c59d3d1ea2302f1c9c8bdab3e25e0193d4eba5",
+      "bytes": 23547
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/page.html.gz",
+      "sha256": "7641a4ce371fa16507de34d50ba9cb83400f557dc2edd1b99e66f584c78e97d0",
+      "bytes": 25351
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/presentation-census.json",
+      "sha256": "4a58d302f2775da5069f9498de8ffa5830de2081322efd4419f4d490aeda3e67",
+      "bytes": 989154
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/render-context-local.json.gz",
+      "sha256": "db6cf53ec33dd9eeb770fb915ed3090800f8fc5f5c60f01a95b537dea3dbdbfe",
+      "bytes": 13310
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/source-bundle-after-local.json",
+      "sha256": "1971e41a80b1889ab6bacd8a45f17ba1e12012e67c3c4f80a879e0aa65cc9071",
+      "bytes": 2827
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/source-bundle-before-local.json",
+      "sha256": "1971e41a80b1889ab6bacd8a45f17ba1e12012e67c3c4f80a879e0aa65cc9071",
+      "bytes": 2827
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/hunyuanvideo/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/hunyuanvideo/source-closure.json",
+      "sha256": "aceb0f0fd9141ee0c8c9b2c304f68e0759c5ec5af0b71c41f7a6ab810cf37622",
+      "bytes": 2849
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/actual-emission-counts.json",
+      "sha256": "463bde87acfb10666274aa595785463c5d49cdbefeb512bef84b4eec5d80cf85",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/address-evidence.json",
+      "sha256": "38fc18c18dabfe6ce1ef5d09723808fe745e9cadcde2b67189ec335ff464e3ec",
+      "bytes": 445
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/declarations.json",
+      "sha256": "10cce84c3aad1d80d5866398707a02ad2b6c7b4e4dc9a6f9c4f9f1256f03c11d",
+      "bytes": 8268
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/diagram-ir-after-render.json.gz",
+      "sha256": "3144f9bf1b05ff115dc48293fc51f74a2c266b5dafb3a7a5558b8186daf6e488",
+      "bytes": 10196
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/diagram-ir-before-render.json.gz",
+      "sha256": "3144f9bf1b05ff115dc48293fc51f74a2c266b5dafb3a7a5558b8186daf6e488",
+      "bytes": 10196
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/facts.json",
+      "sha256": "874fb5ffd78b6adc9d43c0aff82268523bf5b626e9c11502787998f7572c47ea",
+      "bytes": 7765
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/input.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/input.json",
+      "sha256": "dea1f5960dc015437c18f07ff0dab8e5f6cdb50eadef6e1c18a2d1b10a1a3520",
+      "bytes": 1599
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/ir-after-render.json.gz",
+      "sha256": "5ccf8a90e024801e1487c95eda41d74642a30afc63dca617a070f209cc705c3a",
+      "bytes": 10028
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/ir-before-render.json.gz",
+      "sha256": "5ccf8a90e024801e1487c95eda41d74642a30afc63dca617a070f209cc705c3a",
+      "bytes": 10028
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/page.html.gz",
+      "sha256": "e8ec2346e5ee0b9317122a3d00d12cebb3af475c441abc5d1ec9029b9e2b967e",
+      "bytes": 12087
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/presentation-census.json",
+      "sha256": "033e4c08110480348e318b1bec6deb61aa8624d902cf1e0eaba314a790f25924",
+      "bytes": 630499
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/render-context-local.json.gz",
+      "sha256": "8cba90083d56f3158d713434c0fb303f80017d90ffabf5da5ba7bdf3b9aacad9",
+      "bytes": 6881
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/source-bundle-after-local.json",
+      "sha256": "44a24563f9796261da61d0de3c024973a7a2454bd9f5bc69f0dfbda53f0d3eee",
+      "bytes": 1234
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/source-bundle-before-local.json",
+      "sha256": "44a24563f9796261da61d0de3c024973a7a2454bd9f5bc69f0dfbda53f0d3eee",
+      "bytes": 1234
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/jamba-v0-1/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/jamba-v0-1/source-closure.json",
+      "sha256": "33a2450c6da14f3d9bb57b7683453ad40ee551596272b26db173c09d319fe444",
+      "bytes": 1385
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/actual-emission-counts.json",
+      "sha256": "618942de771c6112f946bc5fc4608620f2c715999bcd7e3973def0ec6e6bb08f",
+      "bytes": 252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/address-evidence.json",
+      "sha256": "45a7a8bb7d01f3f76a1521d271c10b09975de438e8760a9700aab357d80f91cb",
+      "bytes": 441
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/declarations.json",
+      "sha256": "4a7a71d5ef7bfec5c9e2702acad377acdbcce8af5ebbbc9ca1aba9179ba4670a",
+      "bytes": 113499
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/diagram-ir-after-render.json.gz",
+      "sha256": "7080fdbf59aa61396e7fcbe0c288687e3edee144b215e922539fe2413350672e",
+      "bytes": 10437
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/diagram-ir-before-render.json.gz",
+      "sha256": "7080fdbf59aa61396e7fcbe0c288687e3edee144b215e922539fe2413350672e",
+      "bytes": 10437
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/facts.json",
+      "sha256": "1fea4135626a0bf61607237e9796c48c6f1e07a7c6e91c9f8e3476ce2b4d616c",
+      "bytes": 57285
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/input.json",
+      "sha256": "f0501dc89c8e58bcb7d74286c4800a283fb7110afae1b9cc2ae95aa01f57c1df",
+      "bytes": 1687
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/ir-after-render.json.gz",
+      "sha256": "0380286f1a05a4d85f21e0e0eb5a0e8090dba0c3bd0b9adfd8d74e74bc3dd18c",
+      "bytes": 10327
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/ir-before-render.json.gz",
+      "sha256": "0380286f1a05a4d85f21e0e0eb5a0e8090dba0c3bd0b9adfd8d74e74bc3dd18c",
+      "bytes": 10327
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/page.html.gz",
+      "sha256": "8593f3817bc3aec74684c1f85bf457381139775d74abdd4ec02cf98799d307b1",
+      "bytes": 11044
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/presentation-census.json",
+      "sha256": "2b8bd511bac5c661787a3e5cad5c453a2bd531d3139be1d8e965693ff87aeff0",
+      "bytes": 45767
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/render-context-local.json.gz",
+      "sha256": "032cb79cd914a559b966593a397deae5f33a5cc89c9d3852927be42d5a145173",
+      "bytes": 5941
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/source-bundle-after-local.json",
+      "sha256": "d7554e5da18a16272ec554cdb5589987c8ac0866047f604f464155015e20cc3f",
+      "bytes": 1231
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/source-bundle-before-local.json",
+      "sha256": "d7554e5da18a16272ec554cdb5589987c8ac0866047f604f464155015e20cc3f",
+      "bytes": 1231
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lfm2-1-2b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/lfm2-1-2b/source-closure.json",
+      "sha256": "9021ef1b3576e9578e3143d59eb257ee00e65cd86bc821fb1c0ad9bd7588fe1a",
+      "bytes": 1391
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/actual-emission-counts.json",
+      "sha256": "7fc3906e5adfbde641ddff572b6c6e70810a2e06cb7cd69b2551a0db8097b139",
+      "bytes": 252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/address-evidence.json",
+      "sha256": "c1f1f68794396d283c99f5c15773d5e1899d8b10f0121580d74e81951772b905",
+      "bytes": 440
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/declarations.json",
+      "sha256": "29dcadabd701b8c11ae57e41de037da2409a56917f017382a3bab7df50447282",
+      "bytes": 130630
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/diagram-ir-after-render.json.gz",
+      "sha256": "9ad97570bb80203305a7a3358263b538bef47a9edf405c4e6beaedacee99e3dd",
+      "bytes": 10363
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/diagram-ir-before-render.json.gz",
+      "sha256": "9ad97570bb80203305a7a3358263b538bef47a9edf405c4e6beaedacee99e3dd",
+      "bytes": 10363
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/facts.json",
+      "sha256": "3a096436c6b05fc24ad4a5058be1e2e7a5e5723227232d9cf080a827f3696826",
+      "bytes": 64946
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/input.json",
+      "sha256": "196fd6ae5c096016b8413b69705434c2cbd31539e7f436585d1e79c6adf85662",
+      "bytes": 1087
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/ir-after-render.json.gz",
+      "sha256": "24c0ed6de0d3edf689758a74747b08d30c96a7c65969fba58148ea1b64da1c82",
+      "bytes": 10273
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/ir-before-render.json.gz",
+      "sha256": "24c0ed6de0d3edf689758a74747b08d30c96a7c65969fba58148ea1b64da1c82",
+      "bytes": 10273
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/page.html.gz",
+      "sha256": "1ee57d874901f7cefa2f0bfbefc22e79d2384a0c98a39c2ac4e53f73b411bb9d",
+      "bytes": 10064
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/presentation-census.json",
+      "sha256": "2a9a8aeef98f46f237b4338ab58c7d358538222f3a6bea88d8c9681fa3c5421a",
+      "bytes": 39899
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/render-context-local.json.gz",
+      "sha256": "aac9afbd5835e5b961d48cbd5a8c3f5c8d7fec8fd7d8a65cc6a0781311472168",
+      "bytes": 6105
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/source-bundle-after-local.json",
+      "sha256": "7e499512cea89d6d5212ba21d79e6d2e85f9e8f631c0d290e88f0708262165e6",
+      "bytes": 1361
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/source-bundle-before-local.json",
+      "sha256": "7e499512cea89d6d5212ba21d79e6d2e85f9e8f631c0d290e88f0708262165e6",
+      "bytes": 1361
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/llama-7b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/llama-7b/source-closure.json",
+      "sha256": "48846e98f074ef57fb61fcf91644711dfeb763790f7371c7109786639f278ed5",
+      "bytes": 1617
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/actual-emission-counts.json",
+      "sha256": "580c24fbe2508565397ebb528db30331f1dfbc8da06c855fbc33012392ab2f89",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/address-evidence.json",
+      "sha256": "6fe2c2b2a5563cd59a9d93c87f83d6be5d2f4e40171e6b94da1833f422cf3f26",
+      "bytes": 456
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/declarations.json",
+      "sha256": "2546196aa284ca75d17892a1ce23a0b8bd61c11c35a7ea65640142ddad1a0065",
+      "bytes": 38221
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/diagram-ir-after-render.json.gz",
+      "sha256": "383149fa8fa1fe04d4c66f0cfc12d7a6178555226d8fcdfc324e398b44b2ffbb",
+      "bytes": 18448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/diagram-ir-before-render.json.gz",
+      "sha256": "383149fa8fa1fe04d4c66f0cfc12d7a6178555226d8fcdfc324e398b44b2ffbb",
+      "bytes": 18448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/facts.json",
+      "sha256": "72f0629c385b776866adfb4059a10147b624e3f3b8902dbe1b83f1fd9a21d025",
+      "bytes": 24799
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/input.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/input.json",
+      "sha256": "f52345b5a08e84442d1ae0cccad291eb9d2805bcdc03cbcf03e81d18b682bd4f",
+      "bytes": 3342
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/ir-after-render.json.gz",
+      "sha256": "751b8ffa51cb0c62c2cb3b370bcf1e1ad23bf33c9c42155e5be470bfd47a41f7",
+      "bytes": 18410
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/ir-before-render.json.gz",
+      "sha256": "751b8ffa51cb0c62c2cb3b370bcf1e1ad23bf33c9c42155e5be470bfd47a41f7",
+      "bytes": 18410
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/page.html.gz",
+      "sha256": "86c4e28029d1fa5f232c15dbaac0424282b7e1be8522e72de507188244d09069",
+      "bytes": 20297
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/presentation-census.json",
+      "sha256": "18e8b042a57c206714b2b423adadc09aeaa52756c445aa6e1a38e486f09f0b3f",
+      "bytes": 930224
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/render-context-local.json.gz",
+      "sha256": "a64c6fb3072aec4a5c53aaca6d33ca2c1191c931e935a1ad2091356a22d1358e",
+      "bytes": 11397
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/source-bundle-after-local.json",
+      "sha256": "cb8aca634dc375e16d5e2e5cb5db7ede284db48f5bb392a3176e4550dfb5e987",
+      "bytes": 1816
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/source-bundle-before-local.json",
+      "sha256": "cb8aca634dc375e16d5e2e5cb5db7ede284db48f5bb392a3176e4550dfb5e987",
+      "bytes": 1816
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/ltx-video/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/ltx-video/source-closure.json",
+      "sha256": "1afd81dbfbcff206ee9eda076deaae5166a2b79885c808064fae8006e568b3cb",
+      "bytes": 1639
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/actual-emission-counts.json",
+      "sha256": "428dbc30b8714d03c2c35bf413473cf73fa729a3632ccef179d70dd9376ff873",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/address-evidence.json",
+      "sha256": "9ec5fdbc3d7a0df3c0d613d4fbdeacb1e44dd9799a846a4eb0cfb3fff5805387",
+      "bytes": 466
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/declarations.json",
+      "sha256": "68b7e8075daccd8fc87b2b8f4b10f5b1a94baf42f9d22c4832142c47478c90fd",
+      "bytes": 29623
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/diagram-ir-after-render.json.gz",
+      "sha256": "7b97642cc6e0f3d09d2c70da17a001b47c3ca80b8969d95e6274095206dc0cbb",
+      "bytes": 17228
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/diagram-ir-before-render.json.gz",
+      "sha256": "64efb9d5d24e21cc3b172ddce63818bdac83e90d5f5a9d9e873a213332ee5524",
+      "bytes": 17186
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/facts.json",
+      "sha256": "2f176aae6982c19bf98096dcbed2289439340fe64cee5480a9d7b0e959d8c118",
+      "bytes": 17477
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/input.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/input.json",
+      "sha256": "cf90762ffedd24634427a5845594184bc246dff814cd61f15937486b97c198e8",
+      "bytes": 4642
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/ir-after-render.json.gz",
+      "sha256": "62c20960f94b7c87d3fb2d8db9e617de3682ef93f1b6e6b56ff9ce348b82f291",
+      "bytes": 17191
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/ir-before-render.json.gz",
+      "sha256": "40ed48f664b401eb0eacc6dd16590d646e1fe3bcdf9160b0fa6b3f170ac8b1df",
+      "bytes": 17150
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/page.html.gz",
+      "sha256": "5bd405ae3d15aaee89d1b06672e9bef0290f52386841fe30aeac79157889b4df",
+      "bytes": 21596
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/presentation-census.json",
+      "sha256": "00d658d8f6468fdba3be16fd36884acb05dcf16cbae562d9047e1f953292af15",
+      "bytes": 594745
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/render-context-local.json.gz",
+      "sha256": "4bde31b6713e0fcd98e7be6268a2f0c102637dd863faa9b9fcf6e08f29e6da35",
+      "bytes": 8612
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/source-bundle-after-local.json",
+      "sha256": "0f9e3a37547e7ffe7ddafd34534fa391fc9b626673f04ff5901a97dce2b0217b",
+      "bytes": 1981
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/source-bundle-before-local.json",
+      "sha256": "0f9e3a37547e7ffe7ddafd34534fa391fc9b626673f04ff5901a97dce2b0217b",
+      "bytes": 1981
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/lumina-image-2-0/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/lumina-image-2-0/source-closure.json",
+      "sha256": "d6c70ad3eaf8241bdc0f5cbb7ac133a2c1aac3c13700cfb2c71ac6d04d8e6803",
+      "bytes": 1891
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/actual-emission-counts.json",
+      "sha256": "34c46e0aa2f1cc4499042040f9a640bf987b726abe0bc5de2579f50ca317b09a",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/address-evidence.json",
+      "sha256": "ea91900029a12d44edddb0632de69e0cf184697ed3c7fa6cf4000871e07243af",
+      "bytes": 461
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/declarations.json",
+      "sha256": "303ae78ec87618867add7ccf0cc243705b55a90b2186aa8268474ae397f56169",
+      "bytes": 6575
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/diagram-ir-after-render.json.gz",
+      "sha256": "f677ff30dc06ca5c9ef28aac20a69b95df75c95b99892c3fa100580d20e9b8f1",
+      "bytes": 13368
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/diagram-ir-before-render.json.gz",
+      "sha256": "f677ff30dc06ca5c9ef28aac20a69b95df75c95b99892c3fa100580d20e9b8f1",
+      "bytes": 13368
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/facts.json",
+      "sha256": "23452da827fd9087cd3341b3eae9ba9b4fd371074dcfc664508d7672f666776e",
+      "bytes": 4480
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/input.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/input.json",
+      "sha256": "74dd7401dd06955af3b92f1c53720828a3f13cd65c6b6ea81d5ac75e2fd28d56",
+      "bytes": 3554
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/ir-after-render.json.gz",
+      "sha256": "fad181b5ee6ca0429095c1835f74b6361ba4bb2008afd5f221324682eb40828a",
+      "bytes": 13331
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/ir-before-render.json.gz",
+      "sha256": "fad181b5ee6ca0429095c1835f74b6361ba4bb2008afd5f221324682eb40828a",
+      "bytes": 13331
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/page.html.gz",
+      "sha256": "ef9cb0e3e06e721b5e07f9836a4eec006752c3e38c840454aacaf926aef66b45",
+      "bytes": 16609
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/presentation-census.json",
+      "sha256": "1b5af72e1cbe48bae39442af3224273356e4e7277d20f4d5d68db2d19e17648c",
+      "bytes": 495132
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/render-context-local.json.gz",
+      "sha256": "e297ad62377f793dfeaec8116a98441e305e10d7bcafa034e09a5d6fe753884b",
+      "bytes": 6732
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/source-bundle-after-local.json",
+      "sha256": "2dd4c5b010e7d4089887dbab4e4482617df12b987463718a646f81cc67a38593",
+      "bytes": 1815
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/source-bundle-before-local.json",
+      "sha256": "2dd4c5b010e7d4089887dbab4e4482617df12b987463718a646f81cc67a38593",
+      "bytes": 1815
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/mochi-1-preview/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/mochi-1-preview/source-closure.json",
+      "sha256": "37ea160a90525d3a6e7917cec2ff1e01329737a4104b8fa73e2222317f29e18a",
+      "bytes": 1641
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/actual-emission-counts.json",
+      "sha256": "aafb151d4fce2e3490034b74eb7bf293e0ba60e91a8189bbe66acb4fa9d8f48b",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/address-evidence.json",
+      "sha256": "e4bd34a61771ca0bcaef48d54c89af3a8268750929eca9737e1e6bc9b9e7d892",
+      "bytes": 468
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/declarations.json",
+      "sha256": "14cd45eef89778bf0db2b5e9842fcd20b4ec0e65e9c31bd88fe47ab784f394f1",
+      "bytes": 85004
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/diagram-ir-after-render.json.gz",
+      "sha256": "a450db9b32a896611eb7f0035c7f09e75b7a0afcbebeeee480b99cbe9d967b92",
+      "bytes": 15002
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/diagram-ir-before-render.json.gz",
+      "sha256": "a450db9b32a896611eb7f0035c7f09e75b7a0afcbebeeee480b99cbe9d967b92",
+      "bytes": 15002
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/facts.json",
+      "sha256": "5fa20e9950a62558544ba48ec82d8c71f2cccb355a517d3a60909708c62956e4",
+      "bytes": 39602
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/input.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/input.json",
+      "sha256": "c3df161181ad2b4b42ca1d0fd86a077382c34ddbebbf2e285ef6b4ee8fc08c92",
+      "bytes": 1129
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/ir-after-render.json.gz",
+      "sha256": "aa27c2819150bd4b7609e13f00d13183c8d650a51d5323b30ba6bc7b88305432",
+      "bytes": 14877
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/ir-before-render.json.gz",
+      "sha256": "aa27c2819150bd4b7609e13f00d13183c8d650a51d5323b30ba6bc7b88305432",
+      "bytes": 14877
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/page.html.gz",
+      "sha256": "a2a90c0725b4d53b1efc56dbe608f74214b84f48a9b1653902a132a3b6e9aac3",
+      "bytes": 14815
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/presentation-census.json",
+      "sha256": "b923053c7540aae2366b2da3eea3c8559fc5684f9a8bc3ef16c2889229463741",
+      "bytes": 539382
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/render-context-local.json.gz",
+      "sha256": "2accda27cc17d12bf922c1940a9192f59bcd2c196331510d3cfe1551b472b223",
+      "bytes": 9473
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/source-bundle-after-local.json",
+      "sha256": "ef8a466037a7e13fdeb523d606d27f23dc4dac56fbe52aa8f406ab49b91d5078",
+      "bytes": 3654
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/source-bundle-before-local.json",
+      "sha256": "ef8a466037a7e13fdeb523d606d27f23dc4dac56fbe52aa8f406ab49b91d5078",
+      "bytes": 3654
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/musicgen-small/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/musicgen-small/source-closure.json",
+      "sha256": "91094d3bd029a1577ec212085c467b2ba38243c9e79cccd22fe179c6ab8c32b4",
+      "bytes": 4443
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/actual-emission-counts.json",
+      "sha256": "df233528531ad507918a550bbdf3bdd483059b2fbbe98acebd2f991f6c8b87ac",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/address-evidence.json",
+      "sha256": "9cdd8e590c149d095387134ea1f074c0bff57e9dcfea2d00302241a93421c50b",
+      "bytes": 458
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/declarations.json",
+      "sha256": "4b415dcb91c8b7575c46535857e98c60606e5c50a9ffa69622add32aa20e0fa5",
+      "bytes": 12984
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/diagram-ir-after-render.json.gz",
+      "sha256": "ca5e2cc485cd8f8ae48c325fe3126a96efc10e9c91c3b60f1ef9f61aa2adb7f4",
+      "bytes": 14031
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/diagram-ir-before-render.json.gz",
+      "sha256": "ca5e2cc485cd8f8ae48c325fe3126a96efc10e9c91c3b60f1ef9f61aa2adb7f4",
+      "bytes": 14031
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/facts.json",
+      "sha256": "f8f77bdcad016f07c958a597cf497811ba085185c9160039d37faadb3bca02c7",
+      "bytes": 9835
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/input.json",
+      "sha256": "81e822f85d6471312bcc0ccd34cc62789075376ecedca7fde0e451584943368b",
+      "bytes": 1504
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/ir-after-render.json.gz",
+      "sha256": "f9320f1d5d0a6350cb4643ce28aa3570d51e8e1ceb68380d2999c68b1c54fa2a",
+      "bytes": 13867
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/ir-before-render.json.gz",
+      "sha256": "f9320f1d5d0a6350cb4643ce28aa3570d51e8e1ceb68380d2999c68b1c54fa2a",
+      "bytes": 13867
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/page.html.gz",
+      "sha256": "d6e322093fe1f1642fa4b3c0dd329c714448bc6c7cf440bf4ac08468a1a518a6",
+      "bytes": 14646
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/presentation-census.json",
+      "sha256": "5a059043b24493c78630d85ff394bd1a1d3ae05b53d829abcb12d28905595f14",
+      "bytes": 996309
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/render-context-local.json.gz",
+      "sha256": "7634b4e79172b90a2251c249e7e675144b3357fc9350f2cd53f6d43f9dfd586d",
+      "bytes": 9700
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/source-bundle-after-local.json",
+      "sha256": "3fbea2a38f7080ec8fe9caf4a60abf17c66ff0bb6f9a55d429c413f1030c384c",
+      "bytes": 1265
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/source-bundle-before-local.json",
+      "sha256": "3fbea2a38f7080ec8fe9caf4a60abf17c66ff0bb6f9a55d429c413f1030c384c",
+      "bytes": 1265
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/nemotron-h-8b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/nemotron-h-8b/source-closure.json",
+      "sha256": "e8bad31618f4987149a4298e88907d6289164297daff06019f9513f706dd9e65",
+      "bytes": 1395
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/actual-emission-counts.json",
+      "sha256": "7cb81e151b36b11a5847596ef7a002a3e6fdd76663f738e07e772069ff84d4cc",
+      "bytes": 251
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/address-evidence.json",
+      "sha256": "ab469f1006e0d781fbbad25b07b4098db252c234269e803a1636b0747bc1ec0b",
+      "bytes": 446
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/declarations.json",
+      "sha256": "f769ab3d693f31c3b1c64cbf0ca85e5e816135bf5bc8b08486df33684fc5f4ba",
+      "bytes": 145035
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/diagram-ir-after-render.json.gz",
+      "sha256": "0c0704fb29b605d0865ba84a965fb74f26692d9e18470f9f5ce55de27ee24883",
+      "bytes": 10309
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/diagram-ir-before-render.json.gz",
+      "sha256": "0c0704fb29b605d0865ba84a965fb74f26692d9e18470f9f5ce55de27ee24883",
+      "bytes": 10309
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/facts.json",
+      "sha256": "0cc86bddb7964340a52404c85edd3cd3a0f61143e076bd93cb037bf2e28a0483",
+      "bytes": 71854
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/input.json",
+      "sha256": "ab760587844125c17a92c6576f724298ac97adad595e4d358ce4aeb3e9b6009f",
+      "bytes": 1009
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/ir-after-render.json.gz",
+      "sha256": "b2e29524095cb279f37d95ba974f20fd3a6f7eaf163af190306c3a074ae5763b",
+      "bytes": 10222
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/ir-before-render.json.gz",
+      "sha256": "b2e29524095cb279f37d95ba974f20fd3a6f7eaf163af190306c3a074ae5763b",
+      "bytes": 10222
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/page.html.gz",
+      "sha256": "ceb6cad6705bf8774e87477e3be163e551187e1e392507d410b012b869667283",
+      "bytes": 9796
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/presentation-census.json",
+      "sha256": "e05bf693f7fb1e79180efdb083b9eb48aaf99187f6a3dcfef2c6140b0cef8d26",
+      "bytes": 1354
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/render-context-local.json.gz",
+      "sha256": "717daa537dc99808f81afb6218748d875e2d06a47b08f0e2e3b38887975d0e98",
+      "bytes": 5912
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-bundle-after-local.json",
+      "sha256": "d48c308215c0ad067fed926685fe7104ea7cfc041cecfb96afcd86692bd4dbba",
+      "bytes": 1364
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-bundle-before-local.json",
+      "sha256": "d48c308215c0ad067fed926685fe7104ea7cfc041cecfb96afcd86692bd4dbba",
+      "bytes": 1364
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/olmo-2-1124-7b/source-closure.json",
+      "sha256": "b290643fc43f0fcb5d6e19e255eb9487f77d9cdaa1e4b25edb80ffd84cf9c520",
+      "bytes": 1617
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/actual-emission-counts.json",
+      "sha256": "bcf9a377581e2e93518c183c0ea546ddcda1c42ac437446a042dbc153086d2a2",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/address-evidence.json",
+      "sha256": "686ff4fb73899e8ab8c213293ec964d72cf72a6d0995540a2e61bd8d18b66073",
+      "bytes": 476
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/declarations.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/diagram-ir-after-render.json.gz",
+      "sha256": "afcdb06514301cb8d1be4595411c726023cc96d93a4e3fe3417f83babb21021f",
+      "bytes": 8498
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/diagram-ir-before-render.json.gz",
+      "sha256": "afcdb06514301cb8d1be4595411c726023cc96d93a4e3fe3417f83babb21021f",
+      "bytes": 8498
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/facts.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/input.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/input.json",
+      "sha256": "6abd01c484ac932b6e62538f0c75294345e09c278b40c2ea7a71ab3a7f47478b",
+      "bytes": 4027
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-after-render.json.gz",
+      "sha256": "99f95d86468ffb8079aa70165aaeaf84f7c0cf32c48841331fd841463ae383ee",
+      "bytes": 8461
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-before-render.json.gz",
+      "sha256": "99f95d86468ffb8079aa70165aaeaf84f7c0cf32c48841331fd841463ae383ee",
+      "bytes": 8461
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "sha256": "710aea1de77d7c67cee253720b40556745c9366ee8441eeedb1478e92f4c115c",
+      "bytes": 14682
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/presentation-census.json",
+      "sha256": "4c6f339b7da50fab17e0b12742ef010f35a4d7dcc115ad540928c64d9fe76e23",
+      "bytes": 18704
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/render-context-local.json.gz",
+      "sha256": "b38083a1e2ef98686ce2709bb6d8c328e589b93d667438fb72ee06746fe461f8",
+      "bytes": 1585
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-bundle-after-local.json",
+      "sha256": "fffe286fdc68323266005abb9eb4bd01970faef6c4cdde50b199a705e0786f88",
+      "bytes": 1822
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-bundle-before-local.json",
+      "sha256": "fffe286fdc68323266005abb9eb4bd01970faef6c4cdde50b199a705e0786f88",
+      "bytes": 1822
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/pixart-sigma-xl-2-1024-ms/source-closure.json",
+      "sha256": "24d4b50e55427bafc5c6050268370cea197e338b4b0cba1b832d20b7dc8ba475",
+      "bytes": 1638
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/actual-emission-counts.json",
+      "sha256": "55600dcb93055ffb0d5fbb313c7812608ddf2f455335d56ccc14d1625dab2525",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/address-evidence.json",
+      "sha256": "78e822367f49d9b86d6903cc6068f585da716c3cd4eb3317cffae0183ba0aaaf",
+      "bytes": 454
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/declarations.json",
+      "sha256": "fd5110c1bc55a25af0213b35a5a6179c9b53648ef4064eee3c245c30504398eb",
+      "bytes": 25810
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/diagram-ir-after-render.json.gz",
+      "sha256": "f37829034bd0a6a09a4b722e269d08be7a12f6b881e3a5175ecfc95ae14d33b3",
+      "bytes": 13743
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/diagram-ir-before-render.json.gz",
+      "sha256": "f37829034bd0a6a09a4b722e269d08be7a12f6b881e3a5175ecfc95ae14d33b3",
+      "bytes": 13743
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/facts.json",
+      "sha256": "6810fb9ced43aecc17443c6ee7eb5a9986c1156e25fad5ec56096a2bde05fac4",
+      "bytes": 15401
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/input.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/input.json",
+      "sha256": "ee4a167399eb45c0d40e6101dff9f36c5c3dce9e9cec2eeeefe56e0eb1484230",
+      "bytes": 1977
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/ir-after-render.json.gz",
+      "sha256": "1f23579aae501c3f9fc1fe41d4f2ef848d6b01fe55064e0ad2748ba302351390",
+      "bytes": 13709
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/ir-before-render.json.gz",
+      "sha256": "1f23579aae501c3f9fc1fe41d4f2ef848d6b01fe55064e0ad2748ba302351390",
+      "bytes": 13709
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/page.html.gz",
+      "sha256": "ea220ce8bf88d50b72d804f56a502dd64b28c48823cf83f57cc2171f2257ddcf",
+      "bytes": 16852
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/presentation-census.json",
+      "sha256": "7aa6d8f7362028ea26feeaa93c55961a95b4b3a96508a8cb13fe1714f3c41f28",
+      "bytes": 463537
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/render-context-local.json.gz",
+      "sha256": "392e2489ec77ae5751f67f3176d6ec280ec24f94067983636d00ee5a86a060c6",
+      "bytes": 7306
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/source-bundle-after-local.json",
+      "sha256": "e576d39c28457bdeb88a742cca80ee601c2056c305a4538c58f47a73e47f6deb",
+      "bytes": 2117
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/source-bundle-before-local.json",
+      "sha256": "e576d39c28457bdeb88a742cca80ee601c2056c305a4538c58f47a73e47f6deb",
+      "bytes": 2117
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/prxpixel-t2i/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/prxpixel-t2i/source-closure.json",
+      "sha256": "ab91c4c4a2ea5b1ee8b922cf5319ffa3024a4a01af16028f93334ed83b0168b7",
+      "bytes": 2125
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/actual-emission-counts.json",
+      "sha256": "f4ac45e202a577c9289780e7abc8d355ac0897d9430215ecab664315cebcae8b",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/address-evidence.json",
+      "sha256": "f92a2c5bd77d64db89249e5e22676a9043ab03386ed34265b9e0499aab38422e",
+      "bytes": 464
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/declarations.json",
+      "sha256": "64f79971f27a7fd69651177ec93f0d966b9691cfacf69ddf28bccadb0ffe8c62",
+      "bytes": 25508
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/diagram-ir-after-render.json.gz",
+      "sha256": "539f69078fc82bae90fcfdd007d9d96cd73e71b66977163c4ee110435fa80635",
+      "bytes": 20448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/diagram-ir-before-render.json.gz",
+      "sha256": "539f69078fc82bae90fcfdd007d9d96cd73e71b66977163c4ee110435fa80635",
+      "bytes": 20448
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/facts.json",
+      "sha256": "65f4984a9b59d5bbd20c47762f71bb95d755ac9bc2bf17f629114fa76c01a00d",
+      "bytes": 13718
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/input.json",
+      "sha256": "d83a1cf2adc6393c659a71031d1a661c76105147cfd53d9f98c8fb56191a8b71",
+      "bytes": 6095
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/ir-after-render.json.gz",
+      "sha256": "4a0c929bdb000cb0a94a1d53bfda91f1421271532edc41d9151a0b4ddd029584",
+      "bytes": 20278
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/ir-before-render.json.gz",
+      "sha256": "4a0c929bdb000cb0a94a1d53bfda91f1421271532edc41d9151a0b4ddd029584",
+      "bytes": 20278
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/page.html.gz",
+      "sha256": "9543460dfe7c3c7e57640dde6b4d3f3f4e8960effc44d63823d8f3d676c6129a",
+      "bytes": 21966
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/presentation-census.json",
+      "sha256": "2e2ad76403ff0c608fea348abe9358f63cd07979a71abcd7eaeb3b942e6bf3f2",
+      "bytes": 1157646
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/render-context-local.json.gz",
+      "sha256": "327cfed13f352259ba65a0874e07a41a6939a9c6a3a83c3c56f66506fd17caf1",
+      "bytes": 12096
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/source-bundle-after-local.json",
+      "sha256": "3e944344ba6a5f648e375fa673a88b934fddf8be3c3669f026ca1ab699e8686c",
+      "bytes": 3759
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/source-bundle-before-local.json",
+      "sha256": "3e944344ba6a5f648e375fa673a88b934fddf8be3c3669f026ca1ab699e8686c",
+      "bytes": 3759
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen-image/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen-image/source-closure.json",
+      "sha256": "da4181263e12beaeb1c57cfbf61bbba91e5c59f6f2bfec453f9ea45af8c3fbcf",
+      "bytes": 4426
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/actual-emission-counts.json",
+      "sha256": "708371e0d37368791f372a6b4abc7d25d8cc918c812f22928a7dbdb8cc56f1ae",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/address-evidence.json",
+      "sha256": "79c8d60796c7929d7c917cdf35217cc502157582d0abcb0a3111008e77b0b8e7",
+      "bytes": 473
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/declarations.json",
+      "sha256": "ede8499cf05ad4eab73117ba36a00bb1e1201e1fa085f9337685ace6d8ead993",
+      "bytes": 93030
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/diagram-ir-after-render.json.gz",
+      "sha256": "b50328659718aa73c39e03f12756d924fbc6915f53cf225a168d949be3722b70",
+      "bytes": 11514
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/diagram-ir-before-render.json.gz",
+      "sha256": "b50328659718aa73c39e03f12756d924fbc6915f53cf225a168d949be3722b70",
+      "bytes": 11514
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/facts.json",
+      "sha256": "704fae5a6ee7311e74f4e715cb0a2a1772766e83ba01f0cff30abe7dd96af5bf",
+      "bytes": 44788
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/input.json",
+      "sha256": "4b76709aadbbee595f3fbc25f00535247d3198ffcb488eccc68f0b607acc6f91",
+      "bytes": 3302
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/ir-after-render.json.gz",
+      "sha256": "f77f16d3c38fffc28da9364389a72fd0d29a7dd702110302de2846cd7f551a5b",
+      "bytes": 11414
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/ir-before-render.json.gz",
+      "sha256": "f77f16d3c38fffc28da9364389a72fd0d29a7dd702110302de2846cd7f551a5b",
+      "bytes": 11414
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/page.html.gz",
+      "sha256": "c3754ceb3f657ee3f53e1e4859054b349f73efec804bb7700df1dc8a383eb866",
+      "bytes": 14522
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/presentation-census.json",
+      "sha256": "358dc331b61b8d41b74fcc8a6d0b240b256b3b16f791bcb455e75a3726b8353d",
+      "bytes": 174936
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/render-context-local.json.gz",
+      "sha256": "10fe7f4fdae94a1ccd6106bc941b63d790ceaba95bb7ec59df3e4786957c3191",
+      "bytes": 6938
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-bundle-after-local.json",
+      "sha256": "1a0fe24ff2e96136fdd73bc734bc2cc84d8ea7c02141f3e045bcac5424ffaaef",
+      "bytes": 3054
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-bundle-before-local.json",
+      "sha256": "1a0fe24ff2e96136fdd73bc734bc2cc84d8ea7c02141f3e045bcac5424ffaaef",
+      "bytes": 3054
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen2-vl-7b-instruct/source-closure.json",
+      "sha256": "d709b75fb83035a02ab393299cdb2db0cd20f618d4a4910553727f75f6cf9bf8",
+      "bytes": 4010
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/actual-emission-counts.json",
+      "sha256": "854e666f934d74fcf8a5df58898228a53b1c23b5040e6fa42a8f29acf27cb839",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/address-evidence.json",
+      "sha256": "958283e52c3c6f876b68dfd1a5fe3ec4964d0c0a3a966e30a7694e1ed193134f",
+      "bytes": 470
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/declarations.json",
+      "sha256": "3bad5e9dbbb2fe5fa17ec90c6a911ab05d879397b4559ca1ed881f500a4c1d82",
+      "bytes": 201587
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/diagram-ir-after-render.json.gz",
+      "sha256": "03d072a6f155aa138c77fd92ee0bf500264950764c695ef9de63d795df1fd3ac",
+      "bytes": 17637
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/diagram-ir-before-render.json.gz",
+      "sha256": "03d072a6f155aa138c77fd92ee0bf500264950764c695ef9de63d795df1fd3ac",
+      "bytes": 17637
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/facts.json",
+      "sha256": "bda22a607931f40d897bdae9baa90203d4c2376ca5700f527a0fb7340e7865e7",
+      "bytes": 78920
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/input.json",
+      "sha256": "0e91ba01aa06043ccb1414bedfa0fbef74c0ecc7fdae13bd2ef6aa0748d58440",
+      "bytes": 4702
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/ir-after-render.json.gz",
+      "sha256": "26cfea2278ab188703630daad7766d2d7e56be4c050b85ce0b04464aced9c31b",
+      "bytes": 17505
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/ir-before-render.json.gz",
+      "sha256": "26cfea2278ab188703630daad7766d2d7e56be4c050b85ce0b04464aced9c31b",
+      "bytes": 17505
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/page.html.gz",
+      "sha256": "1e55a9e4db3c37781f9daceaa147da7a274eba8a54ea08e9b4d67772fb766dd9",
+      "bytes": 20916
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/presentation-census.json",
+      "sha256": "ce8d01826aafeb4825a957d454313b3cc4c290f8d2cd29555ee604890a417c94",
+      "bytes": 300687
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/render-context-local.json.gz",
+      "sha256": "f23ae3a745ac6571d84ef76c74d5a068d29ac74f651c68a96276203cab54f613",
+      "bytes": 9974
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/source-bundle-after-local.json",
+      "sha256": "e1debb174009064dc186b4330955509829226af3b93b1e2d0b3fc987777a69d8",
+      "bytes": 3407
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/source-bundle-before-local.json",
+      "sha256": "e1debb174009064dc186b4330955509829226af3b93b1e2d0b3fc987777a69d8",
+      "bytes": 3407
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b/source-closure.json",
+      "sha256": "7de9b67b631546dfc673c5f7d59f63f11126c1d3f74c5394f5e33dd57dc676f9",
+      "bytes": 4698
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/actual-emission-counts.json",
+      "sha256": "a241c0181da73e01c9ac6bdb0fb8c802dfea4b161794a28fe38e41fecc8faf28",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/address-evidence.json",
+      "sha256": "542c16b90d3486fbc4aae0fd46d9451efcd2444acce9376a9e520bdb776c3a07",
+      "bytes": 454
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/declarations.json",
+      "sha256": "46c2f7681f37979d2da10bc0f0f7e2ab79da1129d27763f1ae99f48d2b778410",
+      "bytes": 144180
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/diagram-ir-after-render.json.gz",
+      "sha256": "7fcc624c736ab8d3b82ae976deb44b7aa4e85ba5fa426b4beab78b8e856d454d",
+      "bytes": 14790
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/diagram-ir-before-render.json.gz",
+      "sha256": "7fcc624c736ab8d3b82ae976deb44b7aa4e85ba5fa426b4beab78b8e856d454d",
+      "bytes": 14790
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/facts.json",
+      "sha256": "bd05f3eacb98fe5fbf00208b1cc7095c94931aa7b2e1dd4d440ff421169fa0e2",
+      "bytes": 61936
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/input.json",
+      "sha256": "d07ac232393ced7c313a09f5aa0e885d2f9b7e8a43fc449aab74c710568dd1db",
+      "bytes": 2872
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/ir-after-render.json.gz",
+      "sha256": "9fdc90cc9293fe6d14d126dde8c5ab88b2ac245f85cf9a4aa5bbe9a624c144fc",
+      "bytes": 14669
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/ir-before-render.json.gz",
+      "sha256": "9fdc90cc9293fe6d14d126dde8c5ab88b2ac245f85cf9a4aa5bbe9a624c144fc",
+      "bytes": 14669
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/page.html.gz",
+      "sha256": "2873e3ef781bbcbf7dbeb1300d28feb6eb72e0814f88016124b0773ee1f2f398",
+      "bytes": 14276
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/presentation-census.json",
+      "sha256": "6b7291b7898b087d7af4fabc16cb2b91dead51b07edf0b5c34ecebdc520f0005",
+      "bytes": 297446
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/render-context-local.json.gz",
+      "sha256": "5fdb65e77eaf115eaeb4e873fc5dd3f65b762932153a01834b7f6c651a49c1e2",
+      "bytes": 8200
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-bundle-after-local.json",
+      "sha256": "f4d61f60832ec52352cb42f5cf3be685b7d8def946df77fa0aff28a113ac7bfb",
+      "bytes": 1526
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-bundle-before-local.json",
+      "sha256": "f4d61f60832ec52352cb42f5cf3be685b7d8def946df77fa0aff28a113ac7bfb",
+      "bytes": 1526
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-5-27b-text/source-closure.json",
+      "sha256": "974378e66c8f65ab77274054e5de43cbf5d0e698623fbdb59fee1b45c2c8d628",
+      "bytes": 1847
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/actual-emission-counts.json",
+      "sha256": "7cb81e151b36b11a5847596ef7a002a3e6fdd76663f738e07e772069ff84d4cc",
+      "bytes": 251
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/address-evidence.json",
+      "sha256": "89429d44cbc446230e84e00d7db4f23e41f2350ee09df907faa72e821049dd68",
+      "bytes": 440
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/declarations.json",
+      "sha256": "92554ca4dfac34f91b2d337f6d0089eeb353bea4b5d8767bfb808e6645de5d56",
+      "bytes": 146159
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/diagram-ir-after-render.json.gz",
+      "sha256": "28f856af18f168a524d15b98ad929f3cee69a32ca0434d3165e6d6aee56970e9",
+      "bytes": 10644
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/diagram-ir-before-render.json.gz",
+      "sha256": "28f856af18f168a524d15b98ad929f3cee69a32ca0434d3165e6d6aee56970e9",
+      "bytes": 10644
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/facts.json",
+      "sha256": "5ab47f6934350a153585913ccc1fb4e80fc865807fb695d58f5f5a32d1ba55a2",
+      "bytes": 72697
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/input.json",
+      "sha256": "6ff8e14cce781075568111fd904a58dab025b195cb864214244d431e4fe949ce",
+      "bytes": 1920
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/ir-after-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa",
+      "bytes": 10558
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/ir-before-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa",
+      "bytes": 10558
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/page.html.gz",
+      "sha256": "020e477b7cdd30ce31b20f8fefc3318e10419dc1dc70cd95cbc8d9876aac9125",
+      "bytes": 10150
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/presentation-census.json",
+      "sha256": "e05bf693f7fb1e79180efdb083b9eb48aaf99187f6a3dcfef2c6140b0cef8d26",
+      "bytes": 1354
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/render-context-local.json.gz",
+      "sha256": "bbb63718ba9c05cdadc3455933391ad96c1a85e839a230a9e0e2d76de6970e5b",
+      "bytes": 5931
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/source-bundle-after-local.json",
+      "sha256": "183b739c47bf09015e23d3d1993f753addfc0727241c56bd466570d98416c47a",
+      "bytes": 1355
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/source-bundle-before-local.json",
+      "sha256": "183b739c47bf09015e23d3d1993f753addfc0727241c56bd466570d98416c47a",
+      "bytes": 1355
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-8b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-8b/source-closure.json",
+      "sha256": "315cb7995a1376b5b6efa2a51dffdf8b4e83f8336a7f705156d9f726e2f0cee4",
+      "bytes": 1617
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/actual-emission-counts.json",
+      "sha256": "d27ab7fb47940a5b9e633d4cb6fdc249b87d78a4822076412f6a166e71f21ac4",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/address-evidence.json",
+      "sha256": "5becfbeda196723858079469c74b0f20e527b53b93394b5e2a32ad905d6bea9f",
+      "bytes": 487
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/declarations.json",
+      "sha256": "96c125a022196295d2fe986c60bc10598a9501bde5b7e9d8c546ce93363cdb5b",
+      "bytes": 8376
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/diagram-ir-after-render.json.gz",
+      "sha256": "71b303b567cedaf483942a1c15670f6b9abf42e89f6b60043cd78a40caacf517",
+      "bytes": 15467
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/diagram-ir-before-render.json.gz",
+      "sha256": "71b303b567cedaf483942a1c15670f6b9abf42e89f6b60043cd78a40caacf517",
+      "bytes": 15467
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/facts.json",
+      "sha256": "44bdb61a9804bffb2d3e7e12228d35c406cc4b88ff006f45c4991c8a00a923e7",
+      "bytes": 7819
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/input.json",
+      "sha256": "30b801addb9aac83055f80c4a24c97000849b12d23dd7280fac150fc352c5678",
+      "bytes": 12984
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/ir-after-render.json.gz",
+      "sha256": "620cfec025a0da7f23d1bd88c56702037c6d5837931907925bbf025971d5f8dc",
+      "bytes": 15302
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/ir-before-render.json.gz",
+      "sha256": "620cfec025a0da7f23d1bd88c56702037c6d5837931907925bbf025971d5f8dc",
+      "bytes": 15302
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/page.html.gz",
+      "sha256": "c634d2db25742641879eca36cd178fdfcc673b31b9a356989ed14490d18857e4",
+      "bytes": 17324
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/presentation-census.json",
+      "sha256": "59c5dc56fd1a3c757aea97b8a93abb0034138b1698b1f382b0214cae5558eb09",
+      "bytes": 954006
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/render-context-local.json.gz",
+      "sha256": "46452015ac29e06d3157e5fa4ee9eb9805f495d431e0ff6d02c89c3febe821a8",
+      "bytes": 9368
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/source-bundle-after-local.json",
+      "sha256": "c0d09716e020c093f73094c3bd2b384ceba71bd1d092f3f7a2bb243cc13cbe1d",
+      "bytes": 6970
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/source-bundle-before-local.json",
+      "sha256": "c0d09716e020c093f73094c3bd2b384ceba71bd1d092f3f7a2bb243cc13cbe1d",
+      "bytes": 6970
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-omni-30b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-omni-30b/source-closure.json",
+      "sha256": "c7c300167c80012852fd5fb98562dc3be96594134c9e4889a9341bd0e9d26869",
+      "bytes": 9281
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/actual-emission-counts.json",
+      "sha256": "2702a73cec68cb1c2dd172996236100d777739084c402524a99cd0e725627534",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/address-evidence.json",
+      "sha256": "c5573caa4e99fdfc634252c5aff7f286390922fd54738a010b8cd69aa5d7b798",
+      "bytes": 480
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/declarations.json",
+      "sha256": "f6516601e38b37c8fe8ac5a0415f7a9ba9d366f18464f8b69b8c985b30903015",
+      "bytes": 156901
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/diagram-ir-after-render.json.gz",
+      "sha256": "09b86a7d73833e1f60d6d3047a56fe26b657ee1dca03d163b26a73954a3f01ff",
+      "bytes": 24040
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/diagram-ir-before-render.json.gz",
+      "sha256": "09b86a7d73833e1f60d6d3047a56fe26b657ee1dca03d163b26a73954a3f01ff",
+      "bytes": 24040
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/facts.json",
+      "sha256": "190ad6e9c7427a70cff37772da0fcb3ec8648479bc3e585c988dbb27aef9e754",
+      "bytes": 68669
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/input.json",
+      "sha256": "072fcea50c9f7d32c350ba27641cf7ac22f2148ad184846f02159192ae9ca46e",
+      "bytes": 2916
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/ir-after-render.json.gz",
+      "sha256": "7a4750dce7058242dc630b490bdd9a79201ec9420b1dee6b9fdf62bc3d329e27",
+      "bytes": 23906
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/ir-before-render.json.gz",
+      "sha256": "7a4750dce7058242dc630b490bdd9a79201ec9420b1dee6b9fdf62bc3d329e27",
+      "bytes": 23906
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/page.html.gz",
+      "sha256": "64538e67dc3aef2eeac2d6d367575af331bd481283b8dc7ea9247bcacf8b848b",
+      "bytes": 21191
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/presentation-census.json",
+      "sha256": "5d71265320a8e8e0dff2890259bec07539295a7e766f1fc5c4126a680aaa5866",
+      "bytes": 992394
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/render-context-local.json.gz",
+      "sha256": "2b6cec6ce626eccb8fb2f1b112a3021ff8fc8739daa298bfec327d517c6562ff",
+      "bytes": 13287
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/source-bundle-after-local.json",
+      "sha256": "93ab5c5ab582f0a5d4ed20dca589577f034a95b018abbc078e97f5ce526dccca",
+      "bytes": 3525
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/source-bundle-before-local.json",
+      "sha256": "93ab5c5ab582f0a5d4ed20dca589577f034a95b018abbc078e97f5ce526dccca",
+      "bytes": 3525
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/qwen3-vl-235b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/qwen3-vl-235b/source-closure.json",
+      "sha256": "b3e1132a2ee54b225236e43ea0cd40e5a1a6bcce10c6d8d20c617628ec6a21b6",
+      "bytes": 4728
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/result.json",
+      "archive": "thirtyseventh/current-pages/capture/result.json",
+      "sha256": "fa4d8173ca58640234b1e21735f6cfdbd31902aa3f501b5c361f81320a7eb170",
+      "bytes": 14517656
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/actual-emission-counts.json",
+      "sha256": "fe32aa3069061d88341e44e4fe9d506434cf60d0573acbc5d50bf9c66d264ca1",
+      "bytes": 255
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/address-evidence.json",
+      "sha256": "e88fa66ecc31d6b0fa193b65138be7690868e9655c0f227d4a2c32bdc94f7a8b",
+      "bytes": 471
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/declarations.json",
+      "sha256": "0ddf97bbfa0c90dcc3aaab9a89105086a55796e52986f255730ae4517ba39b94",
+      "bytes": 39785
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/diagram-ir-after-render.json.gz",
+      "sha256": "1f38e0557fd5eb61004682dc7cfc9c6c7857157354eceb06c0ea3936d5b13580",
+      "bytes": 17143
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/diagram-ir-before-render.json.gz",
+      "sha256": "1f38e0557fd5eb61004682dc7cfc9c6c7857157354eceb06c0ea3936d5b13580",
+      "bytes": 17143
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/facts.json",
+      "sha256": "a4970ea8bbc773357c01c93a3aaf200d992e3ef810f5b7136e7539642a4d3973",
+      "bytes": 23392
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/input.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/input.json",
+      "sha256": "8e09dc9f707c3c9ea872d5eef50bfc083673d00f50bee5e14e0346b183f4d532",
+      "bytes": 5700
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/ir-after-render.json.gz",
+      "sha256": "fd787a4a76b57b450dd3de5c8597f84d537392a3ccd33be48abad8197c2116db",
+      "bytes": 17105
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/ir-before-render.json.gz",
+      "sha256": "fd787a4a76b57b450dd3de5c8597f84d537392a3ccd33be48abad8197c2116db",
+      "bytes": 17105
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/page.html.gz",
+      "sha256": "4cf84e036c0b70078f793a87a64a7b3b27e19f11bde98da219a89125a9627fe4",
+      "bytes": 20408
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/presentation-census.json",
+      "sha256": "ca32bdfe5970fad2e49ac8ee5e06441d6793ff4ce92fc067b84767ffcffe2528",
+      "bytes": 645644
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/render-context-local.json.gz",
+      "sha256": "b911a3b0803540c58418634ecc291744503919b17e85469698716136a2997818",
+      "bytes": 9445
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-bundle-after-local.json",
+      "sha256": "67f14f6705da59b7987053198ef5ee0d3facbc65ad71a7b5c40806d25262ba66",
+      "bytes": 1991
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-bundle-before-local.json",
+      "sha256": "67f14f6705da59b7987053198ef5ee0d3facbc65ad71a7b5c40806d25262ba66",
+      "bytes": 1991
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/sana-1600m-1024px-diffusers/source-closure.json",
+      "sha256": "299885a163eb98474386704b9b53df8c80fdc40e78c97438ed422e10a9af3977",
+      "bytes": 1888
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/actual-emission-counts.json",
+      "sha256": "816282a3b8297f93b51f9dfb1c2071356b573be3b5ff56221be2abf028f2bc6c",
+      "bytes": 253
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/address-evidence.json",
+      "sha256": "a488e7356219c58b3982e501d8e06c08f9bd94f81fa4fb7f6c0c34ed83e10f10",
+      "bytes": 468
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/declarations.json",
+      "sha256": "fecb9c9da848fcdd9233adfae28ae7cac40508020131db974f57b23170a428db",
+      "bytes": 1470
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/diagram-ir-after-render.json.gz",
+      "sha256": "0cb55195c90454de6330f5192e4f88140518ff05f299b857a4f16e0324ab9a60",
+      "bytes": 11160
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/diagram-ir-before-render.json.gz",
+      "sha256": "79e2f2c2e2a0f6c05a6b6465f50ee72fb0e70944c844598c30590d68ec4d323c",
+      "bytes": 11122
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/facts.json",
+      "sha256": "78809a8103e87e3dcdcdf61495959c3eb0625462bc0f83325d11faec9f5c2d4e",
+      "bytes": 1218
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/input.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/input.json",
+      "sha256": "0bfa20660795d732dd7067019ccb043c32ed8c458f7507ed91c95da3c78b6e45",
+      "bytes": 5678
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/ir-after-render.json.gz",
+      "sha256": "9c5664c94aa22eee7a1abd4dab6c30d6ff36e678e4a9abca1a311088d7c9e512",
+      "bytes": 11123
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/ir-before-render.json.gz",
+      "sha256": "3177b161282321d834fd45c3c78245e7ace06a80b59803899be416cf47b01de7",
+      "bytes": 11086
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/page.html.gz",
+      "sha256": "0287418669e9cd814fd1ef5bdba0ce393df33de64a41be84e746dbe962a507fc",
+      "bytes": 17070
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/presentation-census.json",
+      "sha256": "c500ab66078d7616326fe23a7d132722431051e9178c689119f167ab8895503a",
+      "bytes": 43087
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/render-context-local.json.gz",
+      "sha256": "f91d8fd7bbc1cd68d0f84f42ad83800cbc89b48b3384340a60817ebb0cfc7c60",
+      "bytes": 2471
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-bundle-after-local.json",
+      "sha256": "833653ad8db1e484676121cbb0feca9dca64c4ad2df1dd49f7d7fa8ec5d52a31",
+      "bytes": 3369
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-bundle-before-local.json",
+      "sha256": "833653ad8db1e484676121cbb0feca9dca64c4ad2df1dd49f7d7fa8ec5d52a31",
+      "bytes": 3369
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-3-5-large/source-closure.json",
+      "sha256": "735c408cda51f446632bbcc5198dee0e6743c6ad4adc433ccf341efd9409f6f6",
+      "bytes": 3546
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/actual-emission-counts.json",
+      "sha256": "21fbce4e6bb1685ea20617035f1984588f62baf218ab2a4d8c680a32fd2ce258",
+      "bytes": 257
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/address-evidence.json",
+      "sha256": "59c077d712d844a972b46e7940fe5b5a75c5714b0109bba672c366caac084d15",
+      "bytes": 464
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/declarations.json",
+      "sha256": "23bfddfa38883c9b6f3cb4d509d165bd1218554bec29f00f3b4c9de1c98245fd",
+      "bytes": 9931942
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/diagram-ir-after-render.json.gz",
+      "sha256": "910cfb26d75f25dab9ccc112e13f6389cd2d5590a6f402a2bcf780d71e7a7e2f",
+      "bytes": 394674
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/diagram-ir-before-render.json.gz",
+      "sha256": "910cfb26d75f25dab9ccc112e13f6389cd2d5590a6f402a2bcf780d71e7a7e2f",
+      "bytes": 394674
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/facts.json",
+      "sha256": "719efb79ac33f25042668c3deee06701c9d924406d06bff184b082a690ca8489",
+      "bytes": 9924563
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/input.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/input.json",
+      "sha256": "1dc8ec0a5612bdd2165d4610672ed552bcdee3cd76522dea89359dbab487d1db",
+      "bytes": 5759
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/ir-after-render.json.gz",
+      "sha256": "6e250c2136d833122530f531bef91388bec456754974d529c27bf0b659d58334",
+      "bytes": 394608
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/ir-before-render.json.gz",
+      "sha256": "6e250c2136d833122530f531bef91388bec456754974d529c27bf0b659d58334",
+      "bytes": 394608
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/page.html.gz",
+      "sha256": "7551a0cf9e29143bd66d574de16336f2bcf62dfb0788cf1f34ca6b8ec34b887c",
+      "bytes": 274604
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/presentation-census.json",
+      "sha256": "d25e9373c27d30eb9ea4e5de45c3e4fefa05c7c3ce89de2da752578fde4188df",
+      "bytes": 9765659
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/render-context-local.json.gz",
+      "sha256": "1e46e0dbb58a810c2d7fedd9b7ba9ce66a8f1b1d8fd764b5c120afb5cb4edf41",
+      "bytes": 199837
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-bundle-after-local.json",
+      "sha256": "6863862fa3df7d6910e280ad521d780750579c2e94725a5384785a3217229326",
+      "bytes": 2545
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-bundle-before-local.json",
+      "sha256": "6863862fa3df7d6910e280ad521d780750579c2e94725a5384785a3217229326",
+      "bytes": 2545
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/stable-diffusion-xl-base-1-0/source-closure.json",
+      "sha256": "7da40051c4e05bd01c3b194ef47570ea84e63041771382367b12d22ba1c93751",
+      "bytes": 5604
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/actual-emission-counts.json",
+      "sha256": "7cb81e151b36b11a5847596ef7a002a3e6fdd76663f738e07e772069ff84d4cc",
+      "bytes": 251
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/address-evidence.json",
+      "sha256": "e00bc4ec238dc2a55a10a0559561d5d0a61b10981f54683a472f7d250314365f",
+      "bytes": 456
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/declarations.json",
+      "sha256": "aecc6f7b2d56f4f83a47a1588a5e6820f9f8a35ec6c5a386e182183718883b05",
+      "bytes": 147665
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/diagram-ir-after-render.json.gz",
+      "sha256": "f3ada6dbd0f2dddb7ad4e2aeef9f55e3ce5118155e48e181c85c2ced0a6ca3a8",
+      "bytes": 10062
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/diagram-ir-before-render.json.gz",
+      "sha256": "f3ada6dbd0f2dddb7ad4e2aeef9f55e3ce5118155e48e181c85c2ced0a6ca3a8",
+      "bytes": 10062
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/facts.json",
+      "sha256": "659c7c05f2ed97f967ba53f74a3dc92cc8d58027a96351e62e51dde1f9588b70",
+      "bytes": 71500
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/input.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/input.json",
+      "sha256": "4979943717cc69a03942e953c1b5edbc7cf123723ae6ea5ddcef302de80d76ff",
+      "bytes": 1169
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/ir-after-render.json.gz",
+      "sha256": "c6329103a2f324d6c4df33625a27525822ccc99011cf6c5e3b6fe1a98b626f73",
+      "bytes": 9977
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/ir-before-render.json.gz",
+      "sha256": "c6329103a2f324d6c4df33625a27525822ccc99011cf6c5e3b6fe1a98b626f73",
+      "bytes": 9977
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/page.html.gz",
+      "sha256": "4b9a2db234d45a278a39cf95bcbebae068031632cae01fc6deaf65069ff7e797",
+      "bytes": 9775
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/presentation-census.json",
+      "sha256": "e05bf693f7fb1e79180efdb083b9eb48aaf99187f6a3dcfef2c6140b0cef8d26",
+      "bytes": 1354
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/render-context-local.json.gz",
+      "sha256": "0c6ca898e00ebdd33d0f185e8eafe7ab163386394e5fb8fd433bfcc12843d355",
+      "bytes": 6046
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-bundle-after-local.json",
+      "sha256": "09a971673a516d00a1e5b0ff714c1cbbedecb29bfe70c16f07e6e1ce3620ba59",
+      "bytes": 1399
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-bundle-before-local.json",
+      "sha256": "09a971673a516d00a1e5b0ff714c1cbbedecb29bfe70c16f07e6e1ce3620ba59",
+      "bytes": 1399
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/stablelm-2-1-6b/source-closure.json",
+      "sha256": "0c23918acfda93f7fbcc2cc6e3c04199271616a0262414651beac7040404f4c2",
+      "bytes": 1623
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/actual-emission-counts.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/actual-emission-counts.json",
+      "sha256": "68141b2fc847f1baa936e6d15a66e1f4ad944ba90cb87b2d92cdc5502ea394c3",
+      "bytes": 254
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/address-evidence.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/address-evidence.json",
+      "sha256": "37ff6bce6dc36fefbee1de64c0557744b450b60c3b56ef6c0d92cbe7ff981f95",
+      "bytes": 467
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/declarations.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/declarations.json",
+      "sha256": "feb47f3e4d561372f0fa54a230d83ae0ec96022abcf8d505a6e65a4d893b9dbf",
+      "bytes": 8478
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/diagram-ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/diagram-ir-after-render.json.gz",
+      "sha256": "e35944f3204a1b997d9b23b57792c731f65dcfc7b5aea13c10dbb209a724619e",
+      "bytes": 12657
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/diagram-ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/diagram-ir-before-render.json.gz",
+      "sha256": "e35944f3204a1b997d9b23b57792c731f65dcfc7b5aea13c10dbb209a724619e",
+      "bytes": 12657
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/facts.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/facts.json",
+      "sha256": "e93fc87eefe182a1bb03bc7e8eceb3579fee7d99c0245667fddeb1069f19b840",
+      "bytes": 6139
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/input.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/input.json",
+      "sha256": "b2fcdbcc40520a508a9b0dcc072bbfb142537ece6b96a279295387fd400c90f0",
+      "bytes": 4185
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-after-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-after-render.json.gz",
+      "sha256": "10d8086bc857f448751eeb2b81a48458ded8e108c809c01a9341f5cb1827f036",
+      "bytes": 12622
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-before-render.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-before-render.json.gz",
+      "sha256": "10d8086bc857f448751eeb2b81a48458ded8e108c809c01a9341f5cb1827f036",
+      "bytes": 12622
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/page.html.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/page.html.gz",
+      "sha256": "ea8eece9a1ff0f7936e5c311c07a5f04bd4331b0b420001d348dafa835ce9197",
+      "bytes": 15635
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/presentation-census.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/presentation-census.json",
+      "sha256": "3de01565c300e76190cfc4c7b15e0bfeaa5c585e42ce37704d1ab7248fdc011e",
+      "bytes": 413301
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/render-context-local.json.gz",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/render-context-local.json.gz",
+      "sha256": "4029024dcc56cd3559932cf4c83eb263dc2c2697fab8aebf626a5a820bf5eeab",
+      "bytes": 6252
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-bundle-after-local.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-bundle-after-local.json",
+      "sha256": "8d58d56684ba22e933a8a433e3175ae850d7ae6eaca7f8d4e4bfe549943d891c",
+      "bytes": 1834
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-bundle-before-local.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-bundle-before-local.json",
+      "sha256": "8d58d56684ba22e933a8a433e3175ae850d7ae6eaca7f8d4e4bfe549943d891c",
+      "bytes": 1834
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-closure.json",
+      "archive": "thirtyseventh/current-pages/capture/wan2-2-t2v-a14b-diffusers/source-closure.json",
+      "sha256": "76e21d8948d362cf352127b0463e17ff76ed4313a74158bf98883dd3af6deb1b",
+      "bytes": 1643
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/pins-after.json",
+      "archive": "thirtyseventh/current-pages/pins-after.json",
+      "sha256": "39b16e3180ba1d366b8ae2a0189d65710f690fcb800a9dccbc4056f22b3db67b",
+      "bytes": 70219
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/pins-before.json",
+      "archive": "thirtyseventh/current-pages/pins-before.json",
+      "sha256": "39b16e3180ba1d366b8ae2a0189d65710f690fcb800a9dccbc4056f22b3db67b",
+      "bytes": 70219
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtyseventh/current-pages/result.json",
+      "archive": "thirtyseventh/current-pages/result.json",
+      "sha256": "ed0533497d783dd43f45368c10e64838953d8e6d22099169b36b5610425b425c",
+      "bytes": 795
+    }
+  ],
+  "authority": "Exact saved root actual37 capture; no regeneration or blessing."
+}

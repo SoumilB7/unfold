@@ -1,0 +1,68 @@
+........................................................................ [ 43%]
+.........F.............................................................. [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_parser_and_conformance_share_one_exact_storage_result __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x30fe40680>
+
+    def test_parser_and_conformance_share_one_exact_storage_result(monkeypatch):
+        from model_unfolder import config_to_ir
+        from model_unfolder.evidence import attention_storage as storage_module
+        from model_unfolder.evidence.conformance import check_fact_conformance
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.parser import _coerce
+    
+        corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+        data = json.loads((corpus / "musicgen-small.json").read_text())
+        cfg = _coerce(data["config"])
+        context = ParseContext.build(cfg)
+        real_reader = storage_module.decoder_attention_projection_storage_for_path
+        calls = []
+    
+        def counted_reader(*args, **kwargs):
+            calls.append((args[2], kwargs.get("allow_root_stage")))
+            return real_reader(*args, **kwargs)
+    
+        monkeypatch.setattr(
+            storage_module, "decoder_attention_projection_storage_for_path",
+            counted_reader)
+>       ir = config_to_ir(cfg, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_attention_storage.py:522: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:2464: in parse
+    _code_attention_storage = _code_attention_storage_mode(
+model_unfolder/adapters/transformer/parser.py:389: in _code_attention_storage_mode
+    result = _attention_storage_result(context, config_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:324: in _attention_storage_result
+    return context.cached_reader_result(
+model_unfolder/evidence/context.py:314: in cached_reader_result
+    self.reader_results[key] = factory()
+                               ^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:327: in <lambda>
+    lambda: decoder_attention_projection_storage_for_path(
+tests/test_attention_storage.py:517: in counted_reader
+    return real_reader(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(canonical_path='/Library/Framewor... 'MusicgenPreTrainedModel', 'text_encoder': 'T5Model'}, pipeline_components=(), companion_components=()), ('decoder',))
+kwargs = {'allow_root_stage': True}
+
+    @wraps(function)
+    def invoke(*args, **kwargs):
+        if function.__code__ is not code or getattr(module, function.__name__, None) is not invoke \
+                or _PRODUCER_CALLABLES.get(symbol) != (function, code, invoke, intended_claims):
+>           raise ValueError("reader claim producer callable changed after registration")
+E           ValueError: reader claim producer callable changed after registration
+
+model_unfolder/evidence/reader_claims.py:326: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_attention_storage.py::test_parser_and_conformance_share_one_exact_storage_result
+1 failed, 165 passed in 45.40s

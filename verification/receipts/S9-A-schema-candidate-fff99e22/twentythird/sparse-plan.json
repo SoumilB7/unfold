@@ -1,0 +1,27 @@
+{
+  "scope": "S9-A sparse config: two explicit witnesses, no baseline mutation",
+  "source_candidate": "verify-s9-a-twentythird",
+  "witnesses": [
+    {
+      "slug": "llama-7b",
+      "fixture": "tests/sable_test_corpus/llama-7b.json",
+      "fixture_sha256": "41a9bb408dce7c2227a9d9070cb74327df1bf4e1967fa331967000c963ab1931",
+      "omit": [
+        "hidden_act",
+        "hidden_size",
+        "num_attention_heads"
+      ],
+      "default_channel": "class_overlay"
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "fixture": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+      "fixture_sha256": "a18b1951b99f69f1ed80941ea9c91e3961e9a27283ad5a98abab67f870d55fdc",
+      "omit": [
+        "act_fn",
+        "norm_eps"
+      ],
+      "default_channel": "registered_constructor"
+    }
+  ]
+}

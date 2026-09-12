@@ -1,0 +1,506 @@
+{
+  "True": [
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "decoder.layer.norm_kind",
+        "decoder.layer.norm_placement",
+        "decoder.layer.parallel_norm_count",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind",
+        "model.tie_word_embeddings"
+      ],
+      "node_ids": [],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "architecture"
+    },
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "activation",
+        "cache",
+        "context_window",
+        "dot_product",
+        "formula",
+        "linear",
+        "port",
+        "reshape",
+        "rope"
+      ],
+      "facts_projected": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.logit_softcap",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.projection_mode",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.attention.scores_scale"
+      ],
+      "node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipts": [
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.logit_softcap",
+          "fact_key": "logit_softcap",
+          "fact_value_status_hash": "50e85094ee77b765",
+          "mechanism": "attention_logit_softcap",
+          "node_ids": [
+            "attn_softcap"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "attn_softcap",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.cached",
+          "fact_key": "cached",
+          "fact_value_status_hash": "7f3e293636cd0a7c",
+          "mechanism": "attention_cache_update",
+          "node_ids": [
+            "kv_cache"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "cached",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.output_projection",
+          "fact_key": "output_projection",
+          "fact_value_status_hash": "7f3e293636cd0a7c",
+          "mechanism": "attention_output_projection",
+          "node_ids": [
+            "o_proj"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "output_projection",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.rope_theta",
+          "fact_key": "rope_theta",
+          "fact_value_status_hash": "6f8aee9beb40ac24",
+          "mechanism": "position_frequency_initialization",
+          "node_ids": [
+            "q_rope",
+            "k_rope"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "rope_theta",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.rope_initialization",
+          "fact_key": "rope_initialization",
+          "fact_value_status_hash": "1892a2d4b841b53c",
+          "mechanism": "position_frequency_initialization",
+          "node_ids": [
+            "q_rope",
+            "k_rope"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "rope_initialization",
+          "surface": "opgraph"
+        }
+      ],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Gemma2ForCausalLM",
+      "variant": "(('attention', (('kind', 'gqa'), ('num_heads', 8), ('mixer_state', 'ordinary_attention'), ('num_kv_heads', 4), ('head_dim', 256), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', 10000.0), ('rope_initialization', (('callable', 'Gemma2RotaryEmbedding.compute_default_rope_parameters'), ('kind', 'local_default'), ('parameters', (('rope_parameters.rope_theta', 10000.0), ('rope_parameters.rope_type', 'default'))), ('selector', None))), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'sliding'), ('window_size', 4096), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', 50.0), ('qkv_clip', None), ('rope', True), ('position_kind', 'rope'), ('position_application', 'qk_rotation'), ('bias', False), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', True), ('output_projection', True), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', True), ('projection_mode', 'split_qkv'), ('variant', None))), ('ffn', (('kind', 'dense'), ('activation', 'gelu_pytorch_tanh'), ('intermediate_size', 9216), ('gated', True), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', 'split'), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'rmsnorm'), ('norm_placement', 'double'), ('residual_topology', 'sequential'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'rms1'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'q_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'v_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'scaled_scores'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softmax'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_apply_v'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'concat_heads'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'o_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'kv_cache'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softcap'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'q_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_attn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add1'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms1'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'rms2'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'gated_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'gate_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'up_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'activation'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'multiply'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'down_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_ffn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add2'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms2'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))))",
+      "view": "gqa-attn"
+    },
+    {
+      "block_path": [
+        "ffn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "activation",
+        "gate_mul",
+        "linear",
+        "port"
+      ],
+      "facts_projected": [
+        "decoder.ffn.activation",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.gated",
+        "decoder.ffn.intermediate_size",
+        "decoder.ffn.projection_mode"
+      ],
+      "node_ids": [
+        "activation",
+        "down_proj",
+        "gate_proj",
+        "hidden",
+        "multiply",
+        "region_out",
+        "up_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Gemma2ForCausalLM",
+      "variant": "(('attention', (('kind', 'gqa'), ('num_heads', 8), ('mixer_state', 'ordinary_attention'), ('num_kv_heads', 4), ('head_dim', 256), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', 10000.0), ('rope_initialization', (('callable', 'Gemma2RotaryEmbedding.compute_default_rope_parameters'), ('kind', 'local_default'), ('parameters', (('rope_parameters.rope_theta', 10000.0), ('rope_parameters.rope_type', 'default'))), ('selector', None))), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'sliding'), ('window_size', 4096), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', 50.0), ('qkv_clip', None), ('rope', True), ('position_kind', 'rope'), ('position_application', 'qk_rotation'), ('bias', False), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', True), ('output_projection', True), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', True), ('projection_mode', 'split_qkv'), ('variant', None))), ('ffn', (('kind', 'dense'), ('activation', 'gelu_pytorch_tanh'), ('intermediate_size', 9216), ('gated', True), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', 'split'), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'rmsnorm'), ('norm_placement', 'double'), ('residual_topology', 'sequential'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'rms1'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'q_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'v_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'scaled_scores'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softmax'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_apply_v'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'concat_heads'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'o_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'kv_cache'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softcap'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'q_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_attn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add1'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms1'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'rms2'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'gated_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'gate_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'up_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'activation'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'multiply'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'down_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_ffn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add2'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms2'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))))",
+      "view": "ffn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "decoder.layer.norm_kind",
+        "decoder.layer.norm_placement",
+        "decoder.layer.parallel_norm_count",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind",
+        "model.tie_word_embeddings"
+      ],
+      "node_ids": [],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "architecture"
+    },
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "activation",
+        "cache",
+        "dot_product",
+        "formula",
+        "linear",
+        "port",
+        "reshape",
+        "rope"
+      ],
+      "facts_projected": [
+        "decoder.attention.bias",
+        "decoder.attention.cached",
+        "decoder.attention.head_geometry",
+        "decoder.attention.logit_softcap",
+        "decoder.attention.mask",
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mechanism",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.output_projection",
+        "decoder.attention.position_schedule",
+        "decoder.attention.projection_mode",
+        "decoder.attention.rope_initialization",
+        "decoder.attention.rope_theta",
+        "decoder.attention.scores_scale"
+      ],
+      "node_ids": [
+        "attn_apply_v",
+        "attn_softcap",
+        "attn_softmax",
+        "concat_heads",
+        "hidden",
+        "k_proj",
+        "k_rope",
+        "kv_cache",
+        "o_proj",
+        "q_proj",
+        "q_rope",
+        "region_out",
+        "scaled_scores",
+        "v_proj"
+      ],
+      "receipts": [
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.logit_softcap",
+          "fact_key": "logit_softcap",
+          "fact_value_status_hash": "50e85094ee77b765",
+          "mechanism": "attention_logit_softcap",
+          "node_ids": [
+            "attn_softcap"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "attn_softcap",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.cached",
+          "fact_key": "cached",
+          "fact_value_status_hash": "7f3e293636cd0a7c",
+          "mechanism": "attention_cache_update",
+          "node_ids": [
+            "kv_cache"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "cached",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.output_projection",
+          "fact_key": "output_projection",
+          "fact_value_status_hash": "7f3e293636cd0a7c",
+          "mechanism": "attention_output_projection",
+          "node_ids": [
+            "o_proj"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "op",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "output_projection",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.rope_theta",
+          "fact_key": "rope_theta",
+          "fact_value_status_hash": "6f8aee9beb40ac24",
+          "mechanism": "position_frequency_initialization",
+          "node_ids": [
+            "q_rope",
+            "k_rope"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "rope_theta",
+          "surface": "opgraph"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.rope_initialization",
+          "fact_key": "rope_initialization",
+          "fact_value_status_hash": "1892a2d4b841b53c",
+          "mechanism": "position_frequency_initialization",
+          "node_ids": [
+            "q_rope",
+            "k_rope"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+          "structural_target": "rope_initialization",
+          "surface": "opgraph"
+        }
+      ],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Gemma2ForCausalLM",
+      "variant": "(('attention', (('kind', 'gqa'), ('num_heads', 8), ('mixer_state', 'ordinary_attention'), ('num_kv_heads', 4), ('head_dim', 256), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', 10000.0), ('rope_initialization', (('callable', 'Gemma2RotaryEmbedding.compute_default_rope_parameters'), ('kind', 'local_default'), ('parameters', (('rope_parameters.rope_theta', 10000.0), ('rope_parameters.rope_type', 'default'))), ('selector', None))), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'global'), ('window_size', None), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', 50.0), ('qkv_clip', None), ('rope', True), ('position_kind', 'rope'), ('position_application', 'qk_rotation'), ('bias', False), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', True), ('output_projection', True), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', True), ('projection_mode', 'split_qkv'), ('variant', None))), ('ffn', (('kind', 'dense'), ('activation', 'gelu_pytorch_tanh'), ('intermediate_size', 9216), ('gated', True), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', 'split'), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'rmsnorm'), ('norm_placement', 'double'), ('residual_topology', 'sequential'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'rms1'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'q_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'v_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'scaled_scores'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softmax'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_apply_v'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'concat_heads'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'o_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'kv_cache'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softcap'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'q_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_attn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add1'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms1'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'rms2'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'gated_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'gate_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'up_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'activation'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'multiply'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'down_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_ffn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add2'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms2'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))))",
+      "view": "gqa-attn"
+    },
+    {
+      "block_path": [
+        "ffn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "activation",
+        "gate_mul",
+        "linear",
+        "port"
+      ],
+      "facts_projected": [
+        "decoder.ffn.activation",
+        "decoder.ffn.ffn_schedule",
+        "decoder.ffn.gated",
+        "decoder.ffn.intermediate_size",
+        "decoder.ffn.projection_mode"
+      ],
+      "node_ids": [
+        "activation",
+        "down_proj",
+        "gate_proj",
+        "hidden",
+        "multiply",
+        "region_out",
+        "up_proj"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Gemma2ForCausalLM",
+      "variant": "(('attention', (('kind', 'gqa'), ('num_heads', 8), ('mixer_state', 'ordinary_attention'), ('num_kv_heads', 4), ('head_dim', 256), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', 10000.0), ('rope_initialization', (('callable', 'Gemma2RotaryEmbedding.compute_default_rope_parameters'), ('kind', 'local_default'), ('parameters', (('rope_parameters.rope_theta', 10000.0), ('rope_parameters.rope_type', 'default'))), ('selector', None))), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'global'), ('window_size', None), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', 50.0), ('qkv_clip', None), ('rope', True), ('position_kind', 'rope'), ('position_application', 'qk_rotation'), ('bias', False), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', True), ('output_projection', True), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', True), ('projection_mode', 'split_qkv'), ('variant', None))), ('ffn', (('kind', 'dense'), ('activation', 'gelu_pytorch_tanh'), ('intermediate_size', 9216), ('gated', True), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', 'split'), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'rmsnorm'), ('norm_placement', 'double'), ('residual_topology', 'sequential'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'rms1'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'q_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'v_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'scaled_scores'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softmax'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_apply_v'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'concat_heads'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'o_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'kv_cache'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'attn_softcap'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'q_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'k_rope'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_attn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add1'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms1'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'rms2'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'gated_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'gate_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'up_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'activation'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'multiply'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'down_proj'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))), ((('id', 'post_ffn_ln'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()), ((('id', 'add2'), ('role', 'residual'), ('kind', 'residual_add'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', 'rms2'), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()))))",
+      "view": "ffn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "decoder.attention.mask_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.attention.position_schedule",
+        "decoder.ffn.ffn_schedule"
+      ],
+      "node_ids": [
+        "layer_map"
+      ],
+      "receipts": [
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.mask_schedule",
+          "fact_key": "mask_schedule",
+          "fact_value_status_hash": "d449e1e73f0f2412",
+          "mechanism": "mask_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "mask_schedule",
+          "surface": "html"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.position_schedule",
+          "fact_key": "position_schedule",
+          "fact_value_status_hash": "6848c362e8451259",
+          "mechanism": "position_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "position_schedule",
+          "surface": "html"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.attention.mixer_schedule",
+          "fact_key": "mixer_schedule",
+          "fact_value_status_hash": "44b3e72ffca808db",
+          "mechanism": "mixer_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "mixer_schedule",
+          "surface": "html"
+        },
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "decoder.ffn.ffn_schedule",
+          "fact_key": "ffn_schedule",
+          "fact_value_status_hash": "4d2e1a5142bd1b7f",
+          "mechanism": "ffn_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.ffn",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "ffn_schedule",
+          "surface": "html"
+        }
+      ],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "layer_map"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "model.hidden_size"
+      ],
+      "node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipts": [
+        {
+          "context_token": "d42b3ae42a584e638ebbc2e16a904444",
+          "fact_id": "model.hidden_size",
+          "fact_key": "hidden_size",
+          "fact_value_status_hash": "30e6f97e61542821",
+          "mechanism": "model_hidden_size_value",
+          "node_ids": [
+            "stats_hidden_size"
+          ],
+          "output_hash": null,
+          "owner": "model",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.sections._stats_banner",
+          "structural_target": "stats_banner.hidden_size",
+          "surface": "html"
+        }
+      ],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "stats_banner"
+    }
+  ]
+}

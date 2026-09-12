@@ -1,0 +1,13 @@
+{
+  "files": {
+    "README.md": "8d995d10505b931626389389e6fca689620dc29fcd85e7344d49dc261cb991e4",
+    "obligation-transitions.json": "b0c047398c2ababd202f0805b489e6a38d797fda05cbdcec3e5728661a8a1ffa",
+    "obligations.json": "b412b193735254c6c86f3bfb1ada32d5c1f6c8a5ae7806574bbc883ad79f102d",
+    "observation_contract.py": "301da97c083bae60f32a3470c004a0f9de3bcfba562a321547700195674a0350",
+    "observe.py": "676bdd7db8d358f400084fd2893f4c0ca5ef6da9054218ccfea037f47964d7de",
+    "plan.json": "1641a129d1d92395fcd027cb643b8afee81bf54d70a6d83eea8561ba5c0cae75",
+    "run-observation.py": "b076999ccbb369691eebbf24867f86186b9b166bba5c061920f87e6debf900d2"
+  },
+  "predecessor_manifest_sha256": "a64ea89289c07c951755fa28de5dcecf1757f46ee608c5dc900ae3b28b123fa3",
+  "scope": "SOURCE_ONLY_CURRENT37_R2_SUCCESSOR_NOT_EXECUTED"
+}

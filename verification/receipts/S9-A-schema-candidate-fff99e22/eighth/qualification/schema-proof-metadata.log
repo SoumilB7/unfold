@@ -1,0 +1,56 @@
+..................................F..................................... [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 17%]
+..................................F..................................... [ 23%]
+........................................................................ [ 29%]
+........................................................................ [ 35%]
+........................................................................ [ 41%]
+........................................................................ [ 47%]
+........................................................................ [ 53%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 70%]
+........................................................................ [ 76%]
+........................................................................ [ 82%]
+........................................................................ [ 88%]
+........................................................................ [ 94%]
+...................................................................      [100%]
+=================================== FAILURES ===================================
+______________ test_structural_debt_register_is_lawful_and_exact _______________
+
+    def test_structural_debt_register_is_lawful_and_exact():
+        """§R6 blocking report on the LIVE register: no duplicate row, every row's
+        writer joins the live census (or exists, for non-census sinks), every
+        consumer symbol exists, no deletion condition already satisfied, and every
+        raw extras census target — top-level AND nested, family excuses are gone —
+        has its own exact row."""
+        from model_unfolder.evidence.structural_debt import debt_problems
+>       assert debt_problems() == []
+E       AssertionError: assert ['terminal co...66829b8ec33f'] == []
+E         
+E         Left contains 6 more items, first extra item: 'terminal consumer read without an exact debt row: model_unfolder/renderers/html/cards.py::_card_facts_html -> renderer.backward_import.e53f8fd9ac1462ca'
+E         Use -v to get more diff
+
+tests/test_structural_writes.py:63: AssertionError
+_______ test_swish_formula_requires_same_gate_inside_and_outside_sigmoid _______
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5871/test_swish_formula_requires_sa0')
+
+    def test_swish_formula_requires_same_gate_inside_and_outside_sigmoid(tmp_path):
+        source = _literal_swish_expert().replace(
+            "gate * torch.sigmoid(gate * self.alpha)",
+            "gate * torch.sigmoid(up * self.alpha)")
+        index, root, block = _bundle(tmp_path, expert_source=source)
+        result = routed_expert_storage_at_block(index, root, block)
+>       assert result.status == "resolved", result.failures
+E       AssertionError: (ReaderFailure(kind='incomplete_graph', detail='no exact invoked variant proves fused or split expert storage', span=None),)
+E       assert 'failed' == 'resolved'
+E         
+E         - resolved
+E         + failed
+
+tests/test_expert_storage.py:660: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_structural_writes.py::test_structural_debt_register_is_lawful_and_exact
+FAILED tests/test_expert_storage.py::test_swish_formula_requires_same_gate_inside_and_outside_sigmoid
+2 failed, 1217 passed in 230.54s (0:03:50)

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "f177bc038678622fda7bdc0a1388e241ca667e487fb7b0dbc8aac35805724c93",
+  "input": "tests/sable_test_corpus/flux-2-dev.json",
+  "input_sha256": "5dfc629aae88697e284f022ba2bb4d3245248f8cbb57189ed1773d47420de8d0",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_flux2",
+    "qualname": "Flux2Transformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

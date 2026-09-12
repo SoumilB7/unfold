@@ -1,0 +1,106 @@
+{
+  "actual_portable_seal": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+  "baseline_output": {
+    "ir_after_sha256": "d8cae0e6d3975afb3757cfb23e1a0ab75bc95c238eed3b16dc564d709a5f2e57",
+    "ir_before_sha256": "d8cae0e6d3975afb3757cfb23e1a0ab75bc95c238eed3b16dc564d709a5f2e57",
+    "page_bytes": 106332,
+    "page_sha256": "c4577754dfd79391c35b13f2f0f44c81ccb3a654aed0b38b92a89a568e8bfa9c",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+  "seconds": 4.580990250000468,
+  "slug": "qwen2-vl-7b-instruct",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 12,
+  "status": "REPRODUCED"
+}

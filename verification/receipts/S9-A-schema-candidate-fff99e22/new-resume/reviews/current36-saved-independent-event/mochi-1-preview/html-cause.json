@@ -1,0 +1,20 @@
+{
+  "after_bytes": 130639,
+  "after_sha256": "47caad06a0e97d081ff368d2b61149eae1bdc06f36d62e0be251d3e4bf141a4f",
+  "before_bytes": 130639,
+  "before_sha256": "d1b5e73720f661aeab93c443b27d609288808472475b503912763b3b8f8c8894",
+  "exact_new_mount_occurrences": 253,
+  "exact_old_mount_occurrences": 253,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-425c120a74",
+  "mount_identity_before": "uf-a8c297ac8c",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 10,
+  "raw_ordered_svg_count_before": 10,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "mochi-1-preview",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

@@ -1,0 +1,25 @@
+{
+  "decision": "RETURN",
+  "scope": "Seventh frozen S9-A diffusion corrections, norm and width/storage proofs",
+  "reviewer": "/root/independent_review",
+  "source_corrections_accepted": [
+    "D1 recursive authenticated upstream input reconciliation",
+    "D2 nested selector snapshots"
+  ],
+  "bounded_source_accepted": [
+    "decoder/embedding norm positive proof boundaries",
+    "FFN/expert width operand and upstream binding",
+    "expert storage relation separate from activation formula"
+  ],
+  "blockers": [
+    "E1 expert swish formula lacks same-operand gate identity; concrete actual-producer poison required"
+  ],
+  "excluded": [
+    "activation registry positive authority",
+    "runtime success",
+    "artifact approval"
+  ],
+  "runtime_performed": false,
+  "review_sha256": "af8d79421bcdd35b85bbf366590051c30b7eed8b655cde89e7a7089c5e40ee43",
+  "source_pins_sha256": "b921bc52e75115c608b1760de71f25e13496ae30ed8226492079f8b2aa41f923"
+}

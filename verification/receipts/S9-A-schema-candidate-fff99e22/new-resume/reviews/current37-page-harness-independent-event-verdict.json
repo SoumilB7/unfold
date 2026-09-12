@@ -1,0 +1,20 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT_SERIAL_EXECUTION",
+  "manifests": {
+    "current37-capture-template": "0715529b929281edbfce6c3e98b8946e18a79d04e5ed9347e41719cd0e8c1dd4",
+    "reviews/current37-saved-audit": "e8500ad10cd7a983cfed33482e35b23ba17449ce61c146c8459bf5c1db280fd5"
+  },
+  "source_manifest_sha256": "ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99",
+  "root_source_fingerprint": "c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747",
+  "source_rows_rehashed": 199,
+  "deletions_verified": [
+    "model_unfolder/adapters/diffusor/unet.py",
+    "model_unfolder/adapters/diffusor/unet_differential.py",
+    "model_unfolder/everchanging/diffusor/conditioning.yaml"
+  ],
+  "targets_input_inventory_class_addresses_verified": 39,
+  "executable_review": "All four capture executables and saved audit exactly retain accepted36 logic after generation coordinates. Mandatory source/input/script/artifact pins, negative deletions, actual proof/binding/HTML/local-context/census controls preserved.",
+  "comparison_origins": "Executed36 fleet, completed32 matrix. Aborted36 matrix excluded. Original26 source-seal references remain comparison-only.",
+  "minor_label_note": "census.py source-closure.scope updates Actual37 but retains the literal not a36 matrix from its predecessor. This is descriptive only and makes no false execution claim; actual target/source fields and hard guards correctly identify37. No row36 is reused.",
+  "limits": "Source/AST/hash only; no model/test/browser runtime. Actual37 outputs/CSS deltas and matrix results still need independent review; no blessing."
+}

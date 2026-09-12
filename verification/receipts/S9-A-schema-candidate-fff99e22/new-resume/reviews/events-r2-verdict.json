@@ -1,0 +1,42 @@
+{
+  "decision": "ACCEPT exact runtime-return correction; runtime pending",
+  "manifest_sha256": "969808bf356973d547a793494fab7348a15335d8bda11cee38f397dd1a93a38d",
+  "source_pins": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "4c9bdaf9e69ba39715ee8a068349170317768fd6abacb28a2525a46f6e4f112b",
+      "base_sha256": "efd17066cf2c941bc1e0e134253b648127f626d29bf8f7fa5a74aea2259bf435",
+      "bytes": 266060
+    },
+    {
+      "path": "tests/test_s9_attention_event_association.py",
+      "sha256": "072d78c3d5783cfa4fd5af848917ed46c1e5ab158a2626dc100402eb19363c88",
+      "base_sha256": "62380443450f512f336dd3b024c61a6088118b6a385f3bb22138adaf821e45b3",
+      "bytes": 8610
+    }
+  ],
+  "scope_binding_inventory": {
+    "helper": [
+      [
+        "_ffn_status_with_selector_default",
+        "function",
+        961
+      ]
+    ],
+    "existing_scalar": [
+      [
+        "_ffn_fact_status",
+        "Store",
+        2152
+      ]
+    ]
+  },
+  "findings": [
+    "Renamed helper has exactly one parse-scope binding and two intended call sites; pre-existing FFN schedule status scalar remains separate.",
+    "Synthetic PreparedDocument fixture intentionally provides no provenance map, so exact empty provenance is correct for present fields. Default-origin checks remain exact class_default; production-prepared MLA/partial controls remain unchanged.",
+    "Original source verdict missed the scope collision. Frozen25 failures remain authoritative historical evidence, not superseded by source acceptance alone."
+  ],
+  "limitations": [
+    "Source-only independent review; no tests/models run. Root must rerun frozen candidate."
+  ]
+}

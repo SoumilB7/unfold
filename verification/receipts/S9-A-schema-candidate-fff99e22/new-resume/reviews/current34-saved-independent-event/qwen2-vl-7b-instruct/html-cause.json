@@ -1,0 +1,19 @@
+{
+  "after_bytes": 119309,
+  "after_sha256": "62ed652b702269ec3c330dbaf9c31164c65d38f3fc7f848feebce1d1f39adceb",
+  "before_bytes": 119309,
+  "before_sha256": "f3db4a0fac52f3fdfd888a7e9d114894a6be7ed7965a7a0ba1f13f17b807cf5e",
+  "exact_new_mount_occurrences": 250,
+  "exact_old_mount_occurrences": 250,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-18063ca1db",
+  "mount_identity_before": "uf-35a7bcf11f",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 13,
+  "raw_ordered_svg_count_before": 13,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "qwen2-vl-7b-instruct",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

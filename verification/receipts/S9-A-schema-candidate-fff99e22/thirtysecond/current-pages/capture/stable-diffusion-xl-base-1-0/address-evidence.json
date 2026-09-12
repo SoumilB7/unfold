@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "0ed9ed525605741fd6b848f58f84ee0f1b867169587cb932fdd5aa72b307dbcd",
+  "input": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+  "input_sha256": "a18b1951b99f69f1ed80941ea9c91e3961e9a27283ad5a98abab67f870d55fdc",
+  "resolved_class": {
+    "module": "diffusers.models.unets.unet_2d_condition",
+    "qualname": "UNet2DConditionModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

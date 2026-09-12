@@ -1,0 +1,19 @@
+{
+  "decision": "ACCEPT bounded source repair; runtime remains required, no S9-A/output acceptance",
+  "handoff_path": "../limited-document-fix/manifest.json",
+  "handoff_sha256": "425e9c257cf06d51d30a96235c6ea7c6b1b9b7e04fda3c78df88b0f94604de12",
+  "reviewer": "resume_review",
+  "findings": [
+    "The two explicit scalar caller paths always record their exact VALUE declarations; they invoke the unchanged strict qualifier only when a prepared document exists. No fake PreparedDocument or checkpoint proof is constructed for direct adapter parses.",
+    "Declaration-only helper now accepts an authenticated retained invocation whose actual document and requested document are both None. Exact result retention, producer callable, witness identity, source index identity, intended owner/key/kind and prior-proof anti-erasure remain enforced.",
+    "Positive reader proof still rejects document=None. Placement attachment still refuses a missing mapping. validate_reader_investigation still rejects absent mapping before permitting class3. Cached reader scope matching is unchanged and requires a non-None matching scope.",
+    "New tests exercise direct parse with missing/readable source; None/None declaration-only; copied result; wrong index; None-to-document and document-to-None transplant; missing-document scalar proof; positive reader proof; and investigation rejection. No test run by this reviewer.",
+    "HiDream fixture now explicitly requests zero single blocks alongside four double blocks. This retains its router-absence assertion while accounting for the recorded installed constructor default of 32 single blocks. The handoff records exact source hash/lines; no diffusion production code changed.",
+    "Two scalar publishers remain exactly two of the three parse ledger callsites: the finite writer-registration count remains compatible with this correction."
+  ],
+  "limits": [
+    "Source-only AST/read review. Exact new tests and original failing runtime cases must pass at root frozen candidate before claiming repair verified.",
+    "No blanket runtime gate, independent approval of changed pages, baseline renewal or source closure completeness is implied.",
+    "Installed HiDream source default is recorded in the executor receipt; this reviewer inspected the test delta and its bounded logic but did not rerun discovery or read a newly resolved environment source."
+  ]
+}

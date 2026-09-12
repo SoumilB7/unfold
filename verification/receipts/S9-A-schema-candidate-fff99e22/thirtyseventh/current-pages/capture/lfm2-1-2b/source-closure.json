@@ -1,0 +1,39 @@
+{
+  "actual_portable_seal": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "reference26_seal": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "scope": "Actual37 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "2dfafbc958c1b86d757fbf9c8c568e568febaa018b15cfab63f92381d51103ec",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_lfm2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "2ec8be8af6b65482f54d29e52da9765b863ce37b65846423dfbfda72f944f150",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_lfm2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4
+}

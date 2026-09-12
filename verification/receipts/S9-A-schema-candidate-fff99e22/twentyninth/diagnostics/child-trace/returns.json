@@ -1,0 +1,530 @@
+[
+  {
+    "function": "ModelHiddenSizeDefault",
+    "line": 28,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "ModelHiddenSizeDefaultClaimWitness",
+    "line": 363,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<module>",
+    "line": 374,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 377,
+    "returned": false,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 377,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 229,
+    "returned": null,
+    "locals": {
+      "prefix": "()",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 241,
+    "returned": null,
+    "locals": {
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 229,
+    "returned": null,
+    "locals": {
+      "prefix": "('text_config',)",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 241,
+    "returned": null,
+    "locals": {
+      "relative": "('hidden_size',)"
+    }
+  },
+  {
+    "function": "namespace",
+    "line": 73,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Child', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=25), source_segment='Child'), ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=32), source_segment='config'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=44), source_segment='config.text_config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_ch"
+    }
+  },
+  {
+    "function": "contains_namespace",
+    "line": 82,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Child', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=25), source_segment='Child'), ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=32), source_segment='config'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=44), source_segment='config.text_config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_ch"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 105,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "transported_config",
+    "line": 107,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Child', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=25), source_segment='Child'), ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=32), source_segment='config'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=44), source_segment='config.text_config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_ch",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 139,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 134,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 144,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 169,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 105,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "transported_config",
+    "line": 107,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='super', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=13), source_segment='super'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=15), source_segment='super()')",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 104,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 93,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "escaped",
+    "line": 94,
+    "returned": false,
+    "locals": {
+      "callee": "ExprNode(kind='attribute', name='__init__', const_value=None, operator='', children=(ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='super', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=13), source_segment='super'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=15), source_segment='super()'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=24), source_segment='super().__init__')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 177,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 169,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "transported_config",
+    "line": 103,
+    "returned": false,
+    "locals": {
+      "expression": "None",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 104,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 93,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "_constructor_preserves_operand",
+    "line": 170,
+    "returned": false,
+    "locals": {
+      "owner_symbol": "SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper')",
+      "parameter": "config",
+      "stored_field": "config",
+      "operand_path": "('text_config', 'hidden_size')",
+      "binding": "BindingObservation(owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), enclosing_callable=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper.__init__'), statement=StatementId(enclosing_callable=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper.__init__'), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=8, end_line=9, end_col=45), ordinal=0), targets=(ExprNode(kind='attribute', name='slot', const_value=None, operator='', children=(ExprNode(kind='name', name='self', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/privat",
+      "init": "CallableRecord(symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper.__init__'), owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), kind='method', params=(ParamRecord(name='self', has_default=False, default=None, kind='positional', annotation=None), ParamRecord(name='config', has_default=False, default=None, kind='positional', annotation=None)), returns=(), self_method_calls=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=7, col=4, end_line=9, end_col=45), decorators=())",
+      "parent": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Child', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=25), source_segment='Child'), ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=32), source_segment='config'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=26, end_line=9, end_col=44), source_segment='config.text_config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_ch"
+    }
+  },
+  {
+    "function": "_outer_operand_preserved",
+    "line": 269,
+    "returned": null,
+    "locals": {
+      "candidate": "ConfigConstructedCandidate(outer_root=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), outer_graph=OwnerGraph(root=OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=Fals",
+      "operand_path": "('text_config', 'hidden_size')",
+      "plans": "[(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=(ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), enclosing_c",
+      "node": "OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=(ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), enclosing_cal",
+      "alias": "ReaderResult(status='resolved', owner=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), value=FrameworkConfigAlias(owner_occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), owner_symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), owner_node=OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_construc",
+      "binding": "ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=())",
+      "prefix": "('text_config',)",
+      "init": "CallableRecord(symbol=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper.__init__'), owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), kind='method', params=(ParamRecord(name='self', has_default=False, default=None, kind='positional', annotation=None), ParamRecord(name='config', has_default=False, default=None, kind='positional', annotation=None)), returns=(), self_method_calls=(), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=7, col=4, end_line=9, end_col=45), decorators=())",
+      "allowed": "{SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=45), SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=8, col=8, end_line=8, end_col=24)}",
+      "stored_field": "config",
+      "child_sites": "{ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper'), enclosing_callable=SymbolId(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), qualified_name='Wrapper.__init__'), span=SourceSpan(source=SourceId(canonical_path='/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-38/test_exact_constructed_child_l0/modeling_child.py', content_fingerprint='b9ab1cd2a4c260372a072b58a1b0f1916766969c973156731fedd5a81e2bacec', component_key='root', external=False, external_provenance=''), line=9, col=20, end_line=9, end_col=45), ordinal=0)}",
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "_declaration",
+    "line": 306,
+    "returned": null,
+    "locals": {
+      "config_path": "('text_config',)",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 377,
+    "returned": false,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 377,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 229,
+    "returned": null,
+    "locals": {
+      "prefix": "()",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 241,
+    "returned": null,
+    "locals": {
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 229,
+    "returned": null,
+    "locals": {
+      "prefix": "()",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 241,
+    "returned": null,
+    "locals": {
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 229,
+    "returned": null,
+    "locals": {
+      "prefix": "()",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 241,
+    "returned": null,
+    "locals": {
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "namespace",
+    "line": 73,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Qwen2AudioModel', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=36), source_segment='Qwen2AudioModel'), ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=37, end_line=771, end_col=43), source_segment='config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), source_segment='Qwen2AudioModel(config)')"
+    }
+  },
+  {
+    "function": "contains_namespace",
+    "line": 82,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Qwen2AudioModel', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=36), source_segment='Qwen2AudioModel'), ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=37, end_line=771, end_col=43), source_segment='config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), source_segment='Qwen2AudioModel(config)')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 105,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "transported_config",
+    "line": 107,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Qwen2AudioModel', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=36), source_segment='Qwen2AudioModel'), ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=37, end_line=771, end_col=43), source_segment='config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), source_segment='Qwen2AudioModel(config)')",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "namespace",
+    "line": 73,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='attribute', name='Linear', const_value=None, operator='', children=(ExprNode(kind='name', name='nn', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=25), source_segment='nn'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=32), source_segment='nn.Linear'), ExprNode(kind='attribute', name='hidden_size', const_value=None, operator='', children=(ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=33, end_line=772, end_col=39), source_segment='config'),), keyword_children=(), "
+    }
+  },
+  {
+    "function": "contains_namespace",
+    "line": 82,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='attribute', name='Linear', const_value=None, operator='', children=(ExprNode(kind='name', name='nn', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=25), source_segment='nn'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=32), source_segment='nn.Linear'), ExprNode(kind='attribute', name='hidden_size', const_value=None, operator='', children=(ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=33, end_line=772, end_col=39), source_segment='config'),), keyword_children=(), "
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 105,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "transported_config",
+    "line": 107,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='attribute', name='Linear', const_value=None, operator='', children=(ExprNode(kind='name', name='nn', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=25), source_segment='nn'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=23, end_line=772, end_col=32), source_segment='nn.Linear'), ExprNode(kind='attribute', name='hidden_size', const_value=None, operator='', children=(ExprNode(kind='attribute', name='text_config', const_value=None, operator='', children=(ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=33, end_line=772, end_col=39), source_segment='config'),), keyword_children=(), ",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 139,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 134,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 139,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 134,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 144,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 169,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "<genexpr>",
+    "line": 105,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "transported_config",
+    "line": 107,
+    "returned": false,
+    "locals": {
+      "expression": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='super', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=13), source_segment='super'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=15), source_segment='super()')",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 104,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 93,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "escaped",
+    "line": 94,
+    "returned": false,
+    "locals": {
+      "callee": "ExprNode(kind='attribute', name='__init__', const_value=None, operator='', children=(ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='super', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=13), source_segment='super'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=15), source_segment='super()'),), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=24), source_segment='super().__init__')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 177,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 169,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "transported_config",
+    "line": 103,
+    "returned": false,
+    "locals": {
+      "expression": "None",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 104,
+    "returned": null,
+    "locals": {
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "<genexpr>",
+    "line": 93,
+    "returned": null,
+    "locals": {}
+  },
+  {
+    "function": "_constructor_preserves_operand",
+    "line": 170,
+    "returned": false,
+    "locals": {
+      "owner_symbol": "SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration')",
+      "parameter": "config",
+      "stored_field": "config",
+      "operand_path": "('text_config', 'hidden_size')",
+      "binding": "BindingObservation(owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), enclosing_callable=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration.__init__'), statement=StatementId(enclosing_callable=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration.__init__'), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=772, col=8, end_line=772, end_col=107), ordinal=0), targets=(ExprNode(kind='attribute', name='lm_head', const_value=None, operator='', children=(ExprNode(kind='name', name='self', const_value=None, opera",
+      "init": "CallableRecord(symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration.__init__'), owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), kind='method', params=(ParamRecord(name='self', has_default=False, default=None, kind='positional', annotation=None), ParamRecord(name='config', has_default=False, default=None, kind='positional', annotation=ExprNode(kind='name', name='Qwen2AudioConfig', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=769, col=31, end_line=769, end_col=47), source_segment='Qwen2AudioConfig'))), returns=(), self_method_calls=('post_init',), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f",
+      "parent": "ExprNode(kind='call', name='', const_value=None, operator='', children=(ExprNode(kind='name', name='Qwen2AudioModel', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=36), source_segment='Qwen2AudioModel'), ExprNode(kind='name', name='config', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=37, end_line=771, end_col=43), source_segment='config')), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), source_segment='Qwen2AudioModel(config)')"
+    }
+  },
+  {
+    "function": "_outer_operand_preserved",
+    "line": 269,
+    "returned": null,
+    "locals": {
+      "candidate": "ConfigConstructedCandidate(outer_root=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), outer_graph=OwnerGraph(root=OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee",
+      "operand_path": "('text_config', 'hidden_size')",
+      "plans": "[(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=(ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_ke",
+      "node": "OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), config_bindings=(ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=()),), config_prefix_candidates=((),), via_site=None, via_field='', via_kind='root', children=(OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=(ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key=",
+      "alias": "ReaderResult(status='resolved', owner=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), value=FrameworkConfigAlias(owner_occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), owner_symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), owner_node=OwnerNode(occurrence=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), sites=()), symbol=SymbolId(source=SourceId(can",
+      "binding": "ConfigBinding(parameter='config', prefixes=((),), origin='root_argument', invalidated_paths=(), normalized_overrides=())",
+      "prefix": "()",
+      "init": "CallableRecord(symbol=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration.__init__'), owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), kind='method', params=(ParamRecord(name='self', has_default=False, default=None, kind='positional', annotation=None), ParamRecord(name='config', has_default=False, default=None, kind='positional', annotation=ExprNode(kind='name', name='Qwen2AudioConfig', const_value=None, operator='', children=(), keyword_children=(), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=769, col=31, end_line=769, end_col=47), source_segment='Qwen2AudioConfig'))), returns=(), self_method_calls=('post_init',), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f",
+      "allowed": "{SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=770, col=8, end_line=770, end_col=24)}",
+      "stored_field": "config",
+      "child_sites": "{ConstructionSiteId(owner=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration'), enclosing_callable=SymbolId(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), qualified_name='Qwen2AudioForConditionalGeneration.__init__'), span=SourceSpan(source=SourceId(canonical_path='/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_audio/modeling_qwen2_audio.py', content_fingerprint='3f3312b44b6ee73453053592cafa10e552402089e38f6b91c600c8c1c0331848', component_key='root', external=False, external_provenance=''), line=771, col=21, end_line=771, end_col=44), ordinal=0)}",
+      "relative": "('text_config', 'hidden_size')"
+    }
+  },
+  {
+    "function": "_declaration",
+    "line": 306,
+    "returned": null,
+    "locals": {
+      "config_path": "('text_config',)",
+      "operand_path": "('text_config', 'hidden_size')"
+    }
+  }
+]

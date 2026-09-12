@@ -1,0 +1,115 @@
+{
+  "actual32_capture_summary_sha256": "61bbf743073ee77ef7c6c5414a2e4ac68931e099aaceeba06f24f8d949285659",
+  "actual32_input_and_obligation_matches": 147,
+  "actual32_lane": {
+    "after": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "duration": 137.70117420899987,
+    "log_path": "/private/tmp/unfold-s9a-thirtysecond/current-pages/actual32-pages-presentation-closures.log",
+    "name": "actual32-pages-presentation-closures",
+    "passed": true,
+    "pins_equal": true,
+    "returncode": 0,
+    "scope": "Actual32 capture and presentation findings; no blessing, browser verdict or normalization.",
+    "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e"
+  },
+  "authority": "These rows change consumption-to-fact association metadata, not serialized claim_kind/claim_proof fields. No claim that child proofs were revalidated follows from this absence. Existing source-bound proof validation may occur during actual child parsing, but this saved packet cannot independently recheck child native value/status hashes.",
+  "changed_field_counts": {
+    "expected_value_status_hash": 105,
+    "key": 21,
+    "mechanism": 20,
+    "owner": 1
+  },
+  "claim_kind_fields_changed": 0,
+  "claim_proof_fields_changed": 0,
+  "delta_rows": 147,
+  "models_affected": 15,
+  "native_hash_limits_closed": 0,
+  "native_hash_limits_remaining": 147,
+  "next_boundary_if_requested": "A separate source-reviewed observer could retain each actual child context native ledger and original proof validation while that context is alive, before encoder_panel projects/returns the sub_model. No such harness, runtime or production change is prepared or performed by this audit.",
+  "no_production_or_active_artifact_changes": true,
+  "no_runtime_models_or_tests": true,
+  "output_approval": false,
+  "per_model_counts": {
+    "auraflow-v0-3": 4,
+    "cogvideox-5b": 8,
+    "flux-2-dev": 10,
+    "fluxtransformer2dmodel": 13,
+    "hunyuanvideo": 18,
+    "ltx-video": 8,
+    "lumina-image-2-0": 11,
+    "mochi-1-preview": 8,
+    "pixart-sigma-xl-2-1024-ms": 8,
+    "prxpixel-t2i": 11,
+    "qwen-image": 12,
+    "sana-1600m-1024px-diffusers": 11,
+    "stable-diffusion-3-5-large": 12,
+    "stable-diffusion-xl-base-1-0": 9,
+    "wan2-2-t2v-a14b-diffusers": 4
+  },
+  "source_cause": "slot_parse_context creates a separate child ParseContext and FactLedger. Transformer parser writes its native records there. encoder_panel returns a projected sub_model spec; it does not return/register the child native ledger on the parent. Diagram seeds RenderContext.fact_rows from the enclosing IR fact_provenance. Capturing all fields of that RenderContext therefore still captures the parent ledger, not the discarded child ledger.",
+  "source_cause_counts": {
+    "activation": 17,
+    "geometry": 34,
+    "mechanism": 42,
+    "tie": 14,
+    "width": 40
+  },
+  "source_references": {
+    "model_unfolder/adapters/diffusor/parser.py": {
+      "matching_lines": [
+        758
+      ],
+      "needle": "context=_slot_context(",
+      "sha256": "a9f771e3ff2ca3658af86a849e5888dfe65c75eb6d048dae6568b7611f0030af"
+    },
+    "model_unfolder/adapters/transformer/parser.py": {
+      "matching_lines": [
+        888
+      ],
+      "needle": "_facts = getattr(context, \"facts\", None)",
+      "sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d"
+    },
+    "model_unfolder/diagram.py": {
+      "matching_lines": [
+        95,
+        179
+      ],
+      "needle": "fact_rows=dict(",
+      "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95"
+    },
+    "model_unfolder/encoder_panel.py": {
+      "matching_lines": [
+        78
+      ],
+      "needle": "return _project_encoder_spec(c, ir, context)",
+      "sha256": "5b88b29de473938e7d9dbac58e36b0a8802ac93ae29cd4432f81c7622287435b"
+    },
+    "model_unfolder/evidence/context.py": {
+      "matching_lines": [
+        520
+      ],
+      "needle": "return ParseContext(",
+      "sha256": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc"
+    },
+    "model_unfolder/renderers/html/render_context.py": {
+      "matching_lines": [
+        75
+      ],
+      "needle": "fact_rows: dict",
+      "sha256": "290abc5a6ebacfc0ba4c9cdab1de5f9912c72256cdf24374a684fe519a011e07"
+    },
+    "model_unfolder/submodel.py": {
+      "matching_lines": [
+        154
+      ],
+      "needle": "def submodel_spec(",
+      "sha256": "d0456bd359730bc465c98010f1818a7d2972fb48b1bd46eed332ce42e5739ed3"
+    }
+  },
+  "unique_child_fact_targets": 80,
+  "unique_consumption_obligations": 105,
+  "verdict": "LIMIT_REMAINS_ALL147_ROWS_NO_CHILD_NATIVE_RECORD_CAPTURED"
+}

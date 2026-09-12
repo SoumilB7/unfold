@@ -1,0 +1,86 @@
+{
+  "snapshot": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-eighth",
+  "source_manifest_sha256": "8c4ad13afb9fcfb480c80beb25e7e442bc50dd2b4d7ef370436c0d7352e17d39",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/activation_registry.py",
+      "sha256": "e75ad786b8d66901f9424c22f981775d3f24d0f38fb5ff0d3a637e8a5a91c34d",
+      "manifest_sha256": "e75ad786b8d66901f9424c22f981775d3f24d0f38fb5ff0d3a637e8a5a91c34d",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/activation_semantics.py",
+      "sha256": "f16de418337671f1a80b72a917af73237b70038c64a30fe9b786f06020602fd1",
+      "manifest_sha256": null,
+      "matches_manifest": null
+    },
+    {
+      "path": "model_unfolder/evidence/program_index.py",
+      "sha256": "e79ce714585ae29a641117ac217d8fa042a3ef79dcf50bb640fc052eab826e18",
+      "manifest_sha256": "e79ce714585ae29a641117ac217d8fa042a3ef79dcf50bb640fc052eab826e18",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/ffn_mechanism.py",
+      "sha256": "1f7016f2e0adb875b5727f2a5ef121607eddf467214cd6c766d21a51bcfe973c",
+      "manifest_sha256": "1f7016f2e0adb875b5727f2a5ef121607eddf467214cd6c766d21a51bcfe973c",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/expert_storage.py",
+      "sha256": "b579845756c863dd185513efc093e19ebfa0385d80e70d955ec28cbfc40fa389",
+      "manifest_sha256": "b579845756c863dd185513efc093e19ebfa0385d80e70d955ec28cbfc40fa389",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "ae842a327e26caba3096ddf3e2990c29994020dc3c6eb52a61c732e268a57c70",
+      "manifest_sha256": "ae842a327e26caba3096ddf3e2990c29994020dc3c6eb52a61c732e268a57c70",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/claim_evidence.py",
+      "sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a",
+      "manifest_sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/evidence/facts.py",
+      "sha256": "b8ea135abf31cee5600d7b7c0d34ec8671f3866b555d3018aedddad86bd95684",
+      "manifest_sha256": "b8ea135abf31cee5600d7b7c0d34ec8671f3866b555d3018aedddad86bd95684",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "019112ff18413335c3271738b26527b08ef0097042fe1e617b13300438fc30af",
+      "manifest_sha256": "019112ff18413335c3271738b26527b08ef0097042fe1e617b13300438fc30af",
+      "matches_manifest": true
+    },
+    {
+      "path": "model_unfolder/presentation.py",
+      "sha256": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4",
+      "manifest_sha256": "68fa1f0ac09198ba8a79510444e6d5f6408129e606d8a2acf8e28cff5ca454e4",
+      "matches_manifest": true
+    },
+    {
+      "path": "tests/test_reader_claims.py",
+      "sha256": "a8922a2084a9c91faf94a8d577af3e78e1bcb5fd0dad616cc6883b42512080f9",
+      "manifest_sha256": "a8922a2084a9c91faf94a8d577af3e78e1bcb5fd0dad616cc6883b42512080f9",
+      "matches_manifest": true
+    },
+    {
+      "path": "tests/test_expert_storage.py",
+      "sha256": "a11f586978f1f345478f437bb040c1d3166745013a7d24775d03a0ddc3047c4e",
+      "manifest_sha256": "a11f586978f1f345478f437bb040c1d3166745013a7d24775d03a0ddc3047c4e",
+      "matches_manifest": true
+    }
+  ],
+  "previously_accepted_diffusion_sources_byte_unchanged": {
+    "model_unfolder/evidence/diffusion_root.py": true,
+    "model_unfolder/evidence/diffusion_stack.py": true,
+    "model_unfolder/evidence/diffusion_block.py": true,
+    "model_unfolder/evidence/diffusion_stream.py": true,
+    "model_unfolder/evidence/diffusion_conditioning.py": true,
+    "model_unfolder/evidence/diffusion_bookends.py": true
+  }
+}

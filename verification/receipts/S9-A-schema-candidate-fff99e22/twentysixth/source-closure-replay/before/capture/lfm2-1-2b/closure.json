@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "baseline_output": {
+    "ir_after_sha256": "59f19eaca0da12340091030d86053460757c4819f129ad9114bb8333e97bc4c0",
+    "ir_before_sha256": "59f19eaca0da12340091030d86053460757c4819f129ad9114bb8333e97bc4c0",
+    "page_bytes": 60473,
+    "page_sha256": "d6c0849ed671ec472c1820c799e5709c17a48583934daa6347fa7a838c841d1d",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "afa7899e5ae7d4adcbc994d51be54fbe0168c2493779b3c9e9524d838cbf54ec",
+  "seconds": 0.3695282919998135,
+  "slug": "lfm2-1-2b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "2dfafbc958c1b86d757fbf9c8c568e568febaa018b15cfab63f92381d51103ec",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_lfm2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "2ec8be8af6b65482f54d29e52da9765b863ce37b65846423dfbfda72f944f150",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_lfm2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

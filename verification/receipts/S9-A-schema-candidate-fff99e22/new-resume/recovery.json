@@ -1,0 +1,10 @@
+{
+  "base": "fff99e22",
+  "branch": "audio-composite-support",
+  "last_frozen": "twentyfourth",
+  "verified_source_paths": 125,
+  "source_manifest_sha256": "e055b2e17b3a00c0bdd3c9710f597454a8f9e509a7c906e4b1e79fced2f6ed99",
+  "temporary_handoffs_absent_on_resume": true,
+  "previous_runtime_processes_found": false,
+  "historical_logs_unchanged": true
+}

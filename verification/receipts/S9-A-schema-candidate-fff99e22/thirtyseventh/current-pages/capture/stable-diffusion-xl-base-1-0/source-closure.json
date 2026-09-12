@@ -1,0 +1,165 @@
+{
+  "actual_portable_seal": "9a05f66706f865fd95de5527a57b9e4b897c3532f83c91549967bafb39b07312",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "9a05f66706f865fd95de5527a57b9e4b897c3532f83c91549967bafb39b07312",
+  "reference26_seal": "9a05f66706f865fd95de5527a57b9e4b897c3532f83c91549967bafb39b07312",
+  "scope": "Actual37 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "0192998d3979533cdbc8eef9c8f783d0b4a4a547dec9e4388a17c9ae3b1c8ea8",
+      "external": false,
+      "external_provenance": "",
+      "locator": "attention.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "4a382975333be2e8bbd1f970cfa81e9442bfcc15485e30749654e267e8e5a0fc",
+      "external": false,
+      "external_provenance": "",
+      "locator": "attention_processor.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "4a7af9be48913edfa77f3d32c375c997fa15b53c3f04efd5c371b36c5c6c1960",
+      "external": false,
+      "external_provenance": "",
+      "locator": "diffusers/configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "2852f787a39f6f679578b9992c37b114c4b76cb9449b473267490429c22c396c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "downsampling.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "c3080adedd53766065df0c22f7d280734efcf3658bdce3111c8a91055cd860ce",
+      "external": false,
+      "external_provenance": "",
+      "locator": "dual_transformer_2d.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "d7a90ef799569e3f0fab41cadde1ecba023abd053af956c022bbfc097662a302",
+      "external": false,
+      "external_provenance": "",
+      "locator": "embeddings.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "a2a3a115d2b61ea396e196bb3b0fb545230b2cc42d6f64cf76d0a64a4dde0fbe",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "ab1767e8e44e7d4bf1cb18299ba33654329e2711fa983b1423fc4fe12de2c3ab",
+      "external": false,
+      "external_provenance": "",
+      "locator": "models/activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "78d1748aeec2a730f639bdeddc5c988c9f16e389c420d5ad8b150a50978c26dc",
+      "external": false,
+      "external_provenance": "",
+      "locator": "peft_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "b601e45d78a640e66b05822d3d008e40a039b92bb126abd1a9bdef6124666d84",
+      "external": false,
+      "external_provenance": "",
+      "locator": "resnet.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_2d.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "8a361d193393e46d1933644f33d3729bece636154526d1532d70e7b7ede72502",
+      "external": false,
+      "external_provenance": "",
+      "locator": "unet_2d_blocks.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "052506ca0503a06657cb1816c278f7b23520ca22b3a74a6ac63250a6cc711a26",
+      "external": false,
+      "external_provenance": "",
+      "locator": "unet_2d_condition.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "55173237780f25219fe14498d5ddb1c82a85fb56dd6200133f02b85bdf05ecee",
+      "external": false,
+      "external_provenance": "",
+      "locator": "upsampling.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformers/activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformers/configuration_utils.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformers/activations.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformers/configuration_utils.py"
+    }
+  ],
+  "source_node_count": 22
+}

@@ -1,0 +1,628 @@
+{
+  "files": [
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/auraflow-v0-3/declarations.json",
+      "sha256": "5cffa4b7a19efeaebf7eee3ae269eb95067fd0395c11c824e2c710da6b45cb5c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/auraflow-v0-3/ir-before-render.json.gz",
+      "sha256": "f9534f5923ea2c4c3720557f9087e1a3a5f5f5877bc5edef23bfc0f22ecaccf7"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/auraflow-v0-3/ir-after-render.json.gz",
+      "sha256": "f9534f5923ea2c4c3720557f9087e1a3a5f5f5877bc5edef23bfc0f22ecaccf7"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/auraflow-v0-3/page.html.gz",
+      "sha256": "bd620b5c9631b211616fc3d8a0bdaeea6504ff2e155ef16602bbf3d501052f9c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/bloom/declarations.json",
+      "sha256": "ee5a0e2e0d26c3812460043c2ac15ee57650fd2c2348ef1c89964e957ce3d23e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/bloom/ir-before-render.json.gz",
+      "sha256": "849831c0549f6ace01bf0de3cbeedee55b1aa8d330daebe6d78a004eceb7f899"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/bloom/ir-after-render.json.gz",
+      "sha256": "849831c0549f6ace01bf0de3cbeedee55b1aa8d330daebe6d78a004eceb7f899"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/bloom/page.html.gz",
+      "sha256": "bac5595343f04d6974a7eea2353f67df4072eef7014b794158bec26d1fa328a1"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/cogvideox-5b/declarations.json",
+      "sha256": "d2593e49dff7bfef6ead25775eaccf9f6180ef6143f468a272958977a8e8f1e0"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/cogvideox-5b/ir-before-render.json.gz",
+      "sha256": "e93512a4fc148184c7d008465ce0945c2d5bc5e18d5d2fa3b51a712233d63dca"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/cogvideox-5b/ir-after-render.json.gz",
+      "sha256": "e93512a4fc148184c7d008465ce0945c2d5bc5e18d5d2fa3b51a712233d63dca"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/cogvideox-5b/page.html.gz",
+      "sha256": "a244398009aa853d4f9fe68cd5d16d3685375adf05b99eae03753138c3ce7f29"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/command-a-03-2025/declarations.json",
+      "sha256": "3329389e42f3511f36cb7a83c10f7763f95e3749a205c94ed3b8bfeaa6354c5b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/command-a-03-2025/ir-before-render.json.gz",
+      "sha256": "abc908507269d2e84caeee48f87a9e9ad235564b5f877dc7735ea15d2d07588c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/command-a-03-2025/ir-after-render.json.gz",
+      "sha256": "abc908507269d2e84caeee48f87a9e9ad235564b5f877dc7735ea15d2d07588c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/command-a-03-2025/page.html.gz",
+      "sha256": "f108c45085e3102fbc2b5e233524ccfce5676e0004924bc2799691eb22da1975"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/dbrx-base/declarations.json",
+      "sha256": "3eeb965bf8982a10f456e368324b7f512b81b459d78885728ba7a8bf8229c09e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/dbrx-base/ir-before-render.json.gz",
+      "sha256": "3c6c3c398b3de329a88fb024167403f4d95898a8d8d10d8d83424e6f575064ee"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/dbrx-base/ir-after-render.json.gz",
+      "sha256": "3c6c3c398b3de329a88fb024167403f4d95898a8d8d10d8d83424e6f575064ee"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/dbrx-base/page.html.gz",
+      "sha256": "1b4b2a4f4f7aaaab2b30378f13941852e2507c1698c91847964a084082e8e45e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-coder-v2-lite/declarations.json",
+      "sha256": "a81c32816caccf41a0c8c76a3b00321219fcf0086781a30b03ce5fa1b1fbb27e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-coder-v2-lite/ir-before-render.json.gz",
+      "sha256": "aea7bf1a7f328db1c87d43ef842cf60fda8d0bab09f99f744291e7c4d59a71d5"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-coder-v2-lite/ir-after-render.json.gz",
+      "sha256": "aea7bf1a7f328db1c87d43ef842cf60fda8d0bab09f99f744291e7c4d59a71d5"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-coder-v2-lite/page.html.gz",
+      "sha256": "efc31afbebac8adc7c82629702a0cc5f99b38f1b0d0e21f0cbddb739eaa4a190"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v3/declarations.json",
+      "sha256": "b3ec7805886cbe006cf19db837f644857485cd6add08511630655e0462ab5183"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v3/ir-before-render.json.gz",
+      "sha256": "464e43f16c8cdb365b6dce42978f026374fd419cc4263c90ad94f19d00866f59"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v3/ir-after-render.json.gz",
+      "sha256": "464e43f16c8cdb365b6dce42978f026374fd419cc4263c90ad94f19d00866f59"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v3/page.html.gz",
+      "sha256": "4b5b6a9b2f1fab77920afdd888a719abd0efbe556805f664dc98575bc4018dca"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v4-flash/declarations.json",
+      "sha256": "5a023dc4c0a0e49a4c736668997abb31f9765a02ea4b07b287681c05379fe37a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v4-flash/ir-before-render.json.gz",
+      "sha256": "e6d655989e4c1af6fe4eb9d2922298446c3b67beadfe8e61341c1808d666c585"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v4-flash/ir-after-render.json.gz",
+      "sha256": "e6d655989e4c1af6fe4eb9d2922298446c3b67beadfe8e61341c1808d666c585"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/deepseek-v4-flash/page.html.gz",
+      "sha256": "8828029da6a3a25079c254fb890f9887717900dbf22e27c557247c3c090d8b5d"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/flux-2-dev/declarations.json",
+      "sha256": "0b12938f9058306d31640836db7253b68835f63c6c6b2e0edf8b1601cbd278bb"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/flux-2-dev/ir-before-render.json.gz",
+      "sha256": "d78d3ee95301480879cc34a538a852e1dcc17730d04ec1717165859dfabf2253"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/flux-2-dev/ir-after-render.json.gz",
+      "sha256": "eb16988275af0c850ebe53e2c1ad5e04f6180f6dbf3397b31d866f9163511248"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/flux-2-dev/page.html.gz",
+      "sha256": "082ed68140de2d1184ea77df8aea91cede0756b2e73d94692d69dbdb2a7471ff"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/fluxtransformer2dmodel/declarations.json",
+      "sha256": "1c617fa6396882fdfa6ae47a1c8abe7fd82dc17ea8d7f0ecb37a9f3b51b17e32"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/fluxtransformer2dmodel/ir-before-render.json.gz",
+      "sha256": "bec8f50c951a669954f605e22506cc3cca3227e68e66805aab4f7a5b33189f81"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/fluxtransformer2dmodel/ir-after-render.json.gz",
+      "sha256": "bec8f50c951a669954f605e22506cc3cca3227e68e66805aab4f7a5b33189f81"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/fluxtransformer2dmodel/page.html.gz",
+      "sha256": "74bb51c6d8bfa92256a4c9d4e67cd79ab4781022cb9ddff962a2faf83eaba17a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-2-2b-it/declarations.json",
+      "sha256": "e8ab9907ce8fe11786a31815a79ade0aa7166d65e29154221bdfceafdc99f7db"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-2-2b-it/ir-before-render.json.gz",
+      "sha256": "729aa2364dddf98b0ddefd11e686b47904d55bb5853e61c3024a1adc521b86d6"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-2-2b-it/ir-after-render.json.gz",
+      "sha256": "729aa2364dddf98b0ddefd11e686b47904d55bb5853e61c3024a1adc521b86d6"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-2-2b-it/page.html.gz",
+      "sha256": "8556de3368fc562c4090e666e2953c9cd47182b5e7afccf32ff207f40be03dad"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-3n-e2b/declarations.json",
+      "sha256": "0d505caed0f0ca959ea99c4aeabab2d18099122702e6443520dbcbcc0d9ea5bb"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-3n-e2b/ir-before-render.json.gz",
+      "sha256": "855e208b78b4a51422ef241d3461f0ed9466a6607c7f1a1c7eb5669de91c1c96"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-3n-e2b/ir-after-render.json.gz",
+      "sha256": "855e208b78b4a51422ef241d3461f0ed9466a6607c7f1a1c7eb5669de91c1c96"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gemma-3n-e2b/page.html.gz",
+      "sha256": "b64b54528a74979afc22bc2190ea4630000b353e9abd1750dda9681fd7e7bfe0"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/glm-4-5/declarations.json",
+      "sha256": "f0a10199c685bd3876c1406dc988bb4c9944e6b94cffe51d96b086eb0bbef74c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/glm-4-5/ir-before-render.json.gz",
+      "sha256": "faf312099fed9e602599c8613bf970aa84754df75d5eeb71b65e09d4fb71ffec"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/glm-4-5/ir-after-render.json.gz",
+      "sha256": "faf312099fed9e602599c8613bf970aa84754df75d5eeb71b65e09d4fb71ffec"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/glm-4-5/page.html.gz",
+      "sha256": "7c9fb54baa470b101b3b7203c1c37ebec22169bec967c8522b5c78a6a58ea67d"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gpt-oss-20b/declarations.json",
+      "sha256": "e3aeed848cc1ae37a717a457d0631e50a506e2677a94577d3815a7a9ddc0b69a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gpt-oss-20b/ir-before-render.json.gz",
+      "sha256": "265275f5aee0783aaf7f14c1ae827db293b3e5f38ab986f3ba2a3a977bd7265b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gpt-oss-20b/ir-after-render.json.gz",
+      "sha256": "265275f5aee0783aaf7f14c1ae827db293b3e5f38ab986f3ba2a3a977bd7265b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/gpt-oss-20b/page.html.gz",
+      "sha256": "512bf23de42223b17ccb99d22fda5a764a1a451f3b951e166db571147b0fa293"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/granite-3-0-8b-instruct/declarations.json",
+      "sha256": "6a74428e4ad2cf84a9eb18327484ead7fbae7412fb6fe860dddb5e100a98a69c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/granite-3-0-8b-instruct/ir-before-render.json.gz",
+      "sha256": "ca29f6760c6a28d11c2f495a70f0bd6d793b80812cb8bbe3f7666bab531f1620"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/granite-3-0-8b-instruct/ir-after-render.json.gz",
+      "sha256": "ca29f6760c6a28d11c2f495a70f0bd6d793b80812cb8bbe3f7666bab531f1620"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/granite-3-0-8b-instruct/page.html.gz",
+      "sha256": "ff20fdfb211a6a406724148a3ec558730a61d4fd921bd25f508e2927ddaae26d"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/hunyuanvideo/declarations.json",
+      "sha256": "664d1c07a32c574fd312f5cc4bed845f2a6e440ec4a51cf32fa934356f6b511c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/hunyuanvideo/ir-before-render.json.gz",
+      "sha256": "be783c7c5ba96f2d6262525e081da7e3d8ac7c6c22764eb9462e69574f54a894"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/hunyuanvideo/ir-after-render.json.gz",
+      "sha256": "9e241028866744323b3017a306a54e2fb1595f3dd854702e4375a68de32257d4"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/hunyuanvideo/page.html.gz",
+      "sha256": "ebd5320ff0fa45422e81e60273de37a17a4ae1421ed099f53dda8f915a351351"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/jamba-v0-1/declarations.json",
+      "sha256": "10cce84c3aad1d80d5866398707a02ad2b6c7b4e4dc9a6f9c4f9f1256f03c11d"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/jamba-v0-1/ir-before-render.json.gz",
+      "sha256": "036974cf4d5ba90a2090b661075cddbe9bbaefe820c7cbc5d39719cbe9dcc75b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/jamba-v0-1/ir-after-render.json.gz",
+      "sha256": "036974cf4d5ba90a2090b661075cddbe9bbaefe820c7cbc5d39719cbe9dcc75b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/jamba-v0-1/page.html.gz",
+      "sha256": "2f54805cc17e4d52b2bad3c9f3aaac87a8bbaad2cd26b86d68910ad8b5193cb8"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lfm2-1-2b/declarations.json",
+      "sha256": "4a7a71d5ef7bfec5c9e2702acad377acdbcce8af5ebbbc9ca1aba9179ba4670a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lfm2-1-2b/ir-before-render.json.gz",
+      "sha256": "8541d6ff1628cd4db6d981b0ac7680adef180a935a41c84aa2fc84c6e17ec336"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lfm2-1-2b/ir-after-render.json.gz",
+      "sha256": "8541d6ff1628cd4db6d981b0ac7680adef180a935a41c84aa2fc84c6e17ec336"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lfm2-1-2b/page.html.gz",
+      "sha256": "f03df88d1f15e78221bdfb9c1555eadf5a4a5e25814a294072e9337eea238f53"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/llama-7b/declarations.json",
+      "sha256": "29dcadabd701b8c11ae57e41de037da2409a56917f017382a3bab7df50447282"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/llama-7b/ir-before-render.json.gz",
+      "sha256": "6c2dccf899f984fb368a7d112fd13f44d1eca7b5c498c7b00fd20e550f7fbc91"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/llama-7b/ir-after-render.json.gz",
+      "sha256": "6c2dccf899f984fb368a7d112fd13f44d1eca7b5c498c7b00fd20e550f7fbc91"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/llama-7b/page.html.gz",
+      "sha256": "b6ea9959b3ac154bd079f8ed30af3458e644a629dccf3dc617b074fd206888fd"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/ltx-video/declarations.json",
+      "sha256": "2546196aa284ca75d17892a1ce23a0b8bd61c11c35a7ea65640142ddad1a0065"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/ltx-video/ir-before-render.json.gz",
+      "sha256": "6e9e56651c959076ca29a789a76cc48e07d2cd35933cbcb93997a18e704dc98e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/ltx-video/ir-after-render.json.gz",
+      "sha256": "6e9e56651c959076ca29a789a76cc48e07d2cd35933cbcb93997a18e704dc98e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/ltx-video/page.html.gz",
+      "sha256": "19d9f9cbb535c4147f01fb2a53643b414541518fae194a0dda381c5789a22942"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lumina-image-2-0/declarations.json",
+      "sha256": "68b7e8075daccd8fc87b2b8f4b10f5b1a94baf42f9d22c4832142c47478c90fd"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lumina-image-2-0/ir-before-render.json.gz",
+      "sha256": "779ca9619be62043694c9eba6f2a25984ca5959965c2ffc981a94576b75f94c1"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lumina-image-2-0/ir-after-render.json.gz",
+      "sha256": "2d4855fa585f6e18432bc3df4abb626319939d68123f3b66a028c0f9859593b0"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/lumina-image-2-0/page.html.gz",
+      "sha256": "dcdccdf16f5fd044eaf7b8579fe4bc3a15c418c7d62eb5ac3e98845c9b37d2cc"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/mochi-1-preview/declarations.json",
+      "sha256": "303ae78ec87618867add7ccf0cc243705b55a90b2186aa8268474ae397f56169"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/mochi-1-preview/ir-before-render.json.gz",
+      "sha256": "e31e18fd1e4dfd691c80f1243e0c3166f20b4908841334149ec4bf939ec950b2"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/mochi-1-preview/ir-after-render.json.gz",
+      "sha256": "e31e18fd1e4dfd691c80f1243e0c3166f20b4908841334149ec4bf939ec950b2"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/mochi-1-preview/page.html.gz",
+      "sha256": "be75068f31336e84a1876f30f96f5d9679c1faafdf8295d8d524dc96ec81d78b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/musicgen-small/declarations.json",
+      "sha256": "1aa97abe5c5a319ca5f716c17e16ec8af2bca813d2164b4aba4552c95132d443"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/musicgen-small/ir-before-render.json.gz",
+      "sha256": "42286461144019341f0b22c288ed572149f8692ff962f19e6b8b979737bc097a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/musicgen-small/ir-after-render.json.gz",
+      "sha256": "42286461144019341f0b22c288ed572149f8692ff962f19e6b8b979737bc097a"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/musicgen-small/page.html.gz",
+      "sha256": "7d3cf8a624f1585bebe32e7c6aeddfcd19798e7025fb4c23274cb485ca14e272"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/nemotron-h-8b/declarations.json",
+      "sha256": "4b415dcb91c8b7575c46535857e98c60606e5c50a9ffa69622add32aa20e0fa5"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/nemotron-h-8b/ir-before-render.json.gz",
+      "sha256": "c3bd4a1264a79d5ade6e9f7beb3ed8ef1ded5afd6fac0e32320429634d8c7d98"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/nemotron-h-8b/ir-after-render.json.gz",
+      "sha256": "c3bd4a1264a79d5ade6e9f7beb3ed8ef1ded5afd6fac0e32320429634d8c7d98"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/nemotron-h-8b/page.html.gz",
+      "sha256": "5410824bcf79d614c4635e534b000ecaa1b548ea46340cce8d122fbb1c3ddb99"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/olmo-2-1124-7b/declarations.json",
+      "sha256": "f769ab3d693f31c3b1c64cbf0ca85e5e816135bf5bc8b08486df33684fc5f4ba"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/olmo-2-1124-7b/ir-before-render.json.gz",
+      "sha256": "b2e29524095cb279f37d95ba974f20fd3a6f7eaf163af190306c3a074ae5763b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/olmo-2-1124-7b/ir-after-render.json.gz",
+      "sha256": "b2e29524095cb279f37d95ba974f20fd3a6f7eaf163af190306c3a074ae5763b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/olmo-2-1124-7b/page.html.gz",
+      "sha256": "68cf52fb5f3d215020c69d20710761901f2d3ee05c29fc1c50a8c3fbf7d6bbec"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/pixart-sigma-xl-2-1024-ms/declarations.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-before-render.json.gz",
+      "sha256": "1e6e1b7d47dadf2563eb33017a09b7afd53975d2fe16b8f94a665fe5a8735b43"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/pixart-sigma-xl-2-1024-ms/ir-after-render.json.gz",
+      "sha256": "1e6e1b7d47dadf2563eb33017a09b7afd53975d2fe16b8f94a665fe5a8735b43"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/pixart-sigma-xl-2-1024-ms/page.html.gz",
+      "sha256": "474e7f13acbaf7c6c94f003c88355df02cdba9f6b3788a6042a57fc9751d8935"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/prxpixel-t2i/declarations.json",
+      "sha256": "fd5110c1bc55a25af0213b35a5a6179c9b53648ef4064eee3c245c30504398eb"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/prxpixel-t2i/ir-before-render.json.gz",
+      "sha256": "5a175b58ceaf3f75e5921546882fa89a0c221b6a7f6fffd912e737833c77f780"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/prxpixel-t2i/ir-after-render.json.gz",
+      "sha256": "5a175b58ceaf3f75e5921546882fa89a0c221b6a7f6fffd912e737833c77f780"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/prxpixel-t2i/page.html.gz",
+      "sha256": "03834d9ac9d636d9fdb20e8e45417e417fcbd71e3f156268e6eecfaa68128367"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen-image/declarations.json",
+      "sha256": "64f79971f27a7fd69651177ec93f0d966b9691cfacf69ddf28bccadb0ffe8c62"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen-image/ir-before-render.json.gz",
+      "sha256": "8a6030948ad5873faf460246953c36ff05c4a0df04d556c290587fbed56cec1f"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen-image/ir-after-render.json.gz",
+      "sha256": "8a6030948ad5873faf460246953c36ff05c4a0df04d556c290587fbed56cec1f"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen-image/page.html.gz",
+      "sha256": "5d066d494c1151d8fca2d1946ff8f09d4c5a0103900af7c5da2d65c8f28c127f"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen2-vl-7b-instruct/declarations.json",
+      "sha256": "ede8499cf05ad4eab73117ba36a00bb1e1201e1fa085f9337685ace6d8ead993"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen2-vl-7b-instruct/ir-before-render.json.gz",
+      "sha256": "f1e8eb23f8f88df27caf62803ba36977314c17192e4c621670afec5714425c9b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen2-vl-7b-instruct/ir-after-render.json.gz",
+      "sha256": "f1e8eb23f8f88df27caf62803ba36977314c17192e4c621670afec5714425c9b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen2-vl-7b-instruct/page.html.gz",
+      "sha256": "dd2b2f53bf6c1d6aecc24061d9d170683eca11d175c43b1cf927a67bd4c9f3de"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b-text/declarations.json",
+      "sha256": "46c2f7681f37979d2da10bc0f0f7e2ab79da1129d27763f1ae99f48d2b778410"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b-text/ir-before-render.json.gz",
+      "sha256": "7eddb50be5a62376b5314fd7e58ac0dce1b4f1c6795d201ee6ba75f15bab874c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b-text/ir-after-render.json.gz",
+      "sha256": "7eddb50be5a62376b5314fd7e58ac0dce1b4f1c6795d201ee6ba75f15bab874c"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b-text/page.html.gz",
+      "sha256": "2b73a7d692193a4ad4cd37f037fd209f84299acf56db402afe1f966f44116ecc"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b/declarations.json",
+      "sha256": "3bad5e9dbbb2fe5fa17ec90c6a911ab05d879397b4559ca1ed881f500a4c1d82"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b/ir-before-render.json.gz",
+      "sha256": "c263c1c78a31736bd927c70fbdd7000c4cb061b298018316aba72e0a36f7325e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b/ir-after-render.json.gz",
+      "sha256": "c263c1c78a31736bd927c70fbdd7000c4cb061b298018316aba72e0a36f7325e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-5-27b/page.html.gz",
+      "sha256": "171c3cb055ee54bbe04bd4cedc6283d3b10c33ac0f38b8424750d3c8813077c1"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-8b/declarations.json",
+      "sha256": "92554ca4dfac34f91b2d337f6d0089eeb353bea4b5d8767bfb808e6645de5d56"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-8b/ir-before-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-8b/ir-after-render.json.gz",
+      "sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-8b/page.html.gz",
+      "sha256": "df4ee3ca75e7660a6e3d39cb1022d74691337da7e5a85c51a0e01b6eb93fbb29"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-omni-30b/declarations.json",
+      "sha256": "96c125a022196295d2fe986c60bc10598a9501bde5b7e9d8c546ce93363cdb5b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-omni-30b/ir-before-render.json.gz",
+      "sha256": "896120d9ced10bcae2fe8a4f921e9d1ee1e1c3930b57b1b97becec72e6dd5710"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-omni-30b/ir-after-render.json.gz",
+      "sha256": "896120d9ced10bcae2fe8a4f921e9d1ee1e1c3930b57b1b97becec72e6dd5710"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-omni-30b/page.html.gz",
+      "sha256": "5dd258cf91302b08d583297e499b479963f558f184f78c7df6691600802fed2e"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-vl-235b/declarations.json",
+      "sha256": "f6516601e38b37c8fe8ac5a0415f7a9ba9d366f18464f8b69b8c985b30903015"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-vl-235b/ir-before-render.json.gz",
+      "sha256": "cd0a1ef1be471e2dcc58ce38007314ce8cee624ce9054020ca8dba23ed25a1d5"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-vl-235b/ir-after-render.json.gz",
+      "sha256": "cd0a1ef1be471e2dcc58ce38007314ce8cee624ce9054020ca8dba23ed25a1d5"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/qwen3-vl-235b/page.html.gz",
+      "sha256": "9163eabebdeab2e2f939c871be6462304523f43e06a46f7aa9b36c03ae5d7c86"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/sana-1600m-1024px-diffusers/declarations.json",
+      "sha256": "0ddf97bbfa0c90dcc3aaab9a89105086a55796e52986f255730ae4517ba39b94"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/sana-1600m-1024px-diffusers/ir-before-render.json.gz",
+      "sha256": "35d5aaee8737b48f5fcf74a7c470fe2d727b9ab36fd7b23aa83471e0c5543c9b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/sana-1600m-1024px-diffusers/ir-after-render.json.gz",
+      "sha256": "35d5aaee8737b48f5fcf74a7c470fe2d727b9ab36fd7b23aa83471e0c5543c9b"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/sana-1600m-1024px-diffusers/page.html.gz",
+      "sha256": "93db90f63f40942992ae28204f7640fface6fc8668c373821da82cd84e2df3ff"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-3-5-large/declarations.json",
+      "sha256": "fecb9c9da848fcdd9233adfae28ae7cac40508020131db974f57b23170a428db"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-3-5-large/ir-before-render.json.gz",
+      "sha256": "d2bf5388d42685b3a95acc95519965a6b72283b2f3bd169fd2cdd4405bd31eac"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-3-5-large/ir-after-render.json.gz",
+      "sha256": "96197d1084a1070b89bee01ff937c5d23517839b52ca0c5a119fee796fcbcdc9"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-3-5-large/page.html.gz",
+      "sha256": "d0a506dbece6b7ce0f052a8596a8d12560261312c26e205bb91a301394c58715"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-xl-base-1-0/declarations.json",
+      "sha256": "23bfddfa38883c9b6f3cb4d509d165bd1218554bec29f00f3b4c9de1c98245fd"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-xl-base-1-0/ir-before-render.json.gz",
+      "sha256": "b5d64ed6b5ccc41d3e2dbf6c9da539e22cef4067c2b39a2f137f2e8897e61fea"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-xl-base-1-0/ir-after-render.json.gz",
+      "sha256": "b5d64ed6b5ccc41d3e2dbf6c9da539e22cef4067c2b39a2f137f2e8897e61fea"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stable-diffusion-xl-base-1-0/page.html.gz",
+      "sha256": "df64b6cb4e3c2c907e62da971ae35cc3f3b42c1b764979e2b8b21354a160f193"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stablelm-2-1-6b/declarations.json",
+      "sha256": "aecc6f7b2d56f4f83a47a1588a5e6820f9f8a35ec6c5a386e182183718883b05"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stablelm-2-1-6b/ir-before-render.json.gz",
+      "sha256": "c6329103a2f324d6c4df33625a27525822ccc99011cf6c5e3b6fe1a98b626f73"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stablelm-2-1-6b/ir-after-render.json.gz",
+      "sha256": "c6329103a2f324d6c4df33625a27525822ccc99011cf6c5e3b6fe1a98b626f73"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/stablelm-2-1-6b/page.html.gz",
+      "sha256": "890fec3fc75160b0a4f608548329f524fef63444919125af88f8797a4fb7d0e7"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/wan2-2-t2v-a14b-diffusers/declarations.json",
+      "sha256": "feb47f3e4d561372f0fa54a230d83ae0ec96022abcf8d505a6e65a4d893b9dbf"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-before-render.json.gz",
+      "sha256": "7f38ef83ae61b43e94e71b45f5841bcfed315293cdcf3e0d7125c1ff1cffa315"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/wan2-2-t2v-a14b-diffusers/ir-after-render.json.gz",
+      "sha256": "7f38ef83ae61b43e94e71b45f5841bcfed315293cdcf3e0d7125c1ff1cffa315"
+    },
+    {
+      "path": "/private/tmp/unfold-s9a-twentysixth/current-pages/capture/wan2-2-t2v-a14b-diffusers/page.html.gz",
+      "sha256": "3f327a280493c0b7f5150b759478250775257fcc03bc35636722352d4727c61d"
+    }
+  ]
+}

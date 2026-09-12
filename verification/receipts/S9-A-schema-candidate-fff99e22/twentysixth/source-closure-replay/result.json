@@ -1,0 +1,40 @@
+{
+  "scope": "Two serial 39-target closure captures with clean baseline HTML/IR; no architecture acceptance.",
+  "pins_before": {
+    "targets.json": "f1ab7e81b21941aff84cc360d0121e2de749fbfd7eedf291365603ef6adab5f7",
+    "capture.py": "9507a96d3bde54015e31310b4a9be9275bd6ef4c73e0007d61f4e54555c7d602",
+    "run-capture.py": "bc61e25fb0f18b0908afb070f639fdcdd28d96a66d7b4691179211fa8a3339e7"
+  },
+  "pins_after": {
+    "targets.json": "f1ab7e81b21941aff84cc360d0121e2de749fbfd7eedf291365603ef6adab5f7",
+    "capture.py": "9507a96d3bde54015e31310b4a9be9275bd6ef4c73e0007d61f4e54555c7d602",
+    "run-capture.py": "bc61e25fb0f18b0908afb070f639fdcdd28d96a66d7b4691179211fa8a3339e7"
+  },
+  "lanes": [
+    {
+      "name": "portable-source-closure",
+      "returncode": 0,
+      "duration": 166.43084791699948,
+      "before": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+      "after": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s9a-twentysixth/source-closure-replay/before/portable-source-closure.log",
+      "phase": "before",
+      "passed": true
+    },
+    {
+      "name": "portable-source-closure",
+      "returncode": 0,
+      "duration": 125.06056241599981,
+      "before": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+      "after": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+      "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+      "log_path": "/private/tmp/unfold-s9a-twentysixth/source-closure-replay/after/portable-source-closure.log",
+      "phase": "after",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+  "baseline_output": {
+    "ir_after_sha256": "03c1d55f46d25ae284d912d8008fa4f692ef4cc517e9cf9a12e876a982881487",
+    "ir_before_sha256": "03c1d55f46d25ae284d912d8008fa4f692ef4cc517e9cf9a12e876a982881487",
+    "page_bytes": 104676,
+    "page_sha256": "259d19b561bdde078b5e40fbfbec1170af8f80e8ff382ad05912e48c9f37efb9",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+  "seconds": 0.39370387499911885,
+  "slug": "gemma-2-2b-it",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "d81e5abd688436da573ae299a65598d01ea871a8874d0cabeb5149967855ca07",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

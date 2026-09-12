@@ -1,0 +1,54 @@
+{
+  "architecture": "Qwen2VLForConditionalGeneration",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "Qwen2VLForConditionalGeneration",
+    "text_config": "Qwen2VLTextModel",
+    "vision_config": "Qwen2VisionTransformerPretrainedModel"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/modeling_qwen2_vl.py"
+    ],
+    "text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/modeling_qwen2_vl.py"
+    ],
+    "vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/modeling_qwen2_vl.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "qwen2_vl",
+    "text_config": "qwen2_vl_text",
+    "vision_config": "qwen2_vl_vision"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/modeling_qwen2_vl.py"
+  ],
+  "import_roots": {},
+  "model_id": "Qwen/Qwen2-VL-7B-Instruct",
+  "model_type": "qwen2_vl",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/configuration_qwen2_vl.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ],
+    "text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/configuration_qwen2_vl.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ],
+    "vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen2_vl/configuration_qwen2_vl.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

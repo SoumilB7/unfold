@@ -1,0 +1,1948 @@
+{
+  "decoder.attention.bias": {
+    "claim_kind": "existence",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "bias",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.kv_sharing_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.kv_sharing_schedule:95b8fe71cbe81b38",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1132:19:1132:66",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1142:19:1142:83",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1144:18:1144:58",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1175:8:1175:34",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1186:36:1186:65",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1186:68:1186:100",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1187:8:1187:76",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1188:22:1188:40",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1189:8:1198:13",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1191:12:1191:118",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1191:88:1191:106",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1192:12:1192:45",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1194:12:1194:45",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1196:12:1198:13",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1197:16:1197:34",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1241:8:1254:55",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1242:12:1242:83",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1258:8:1259:71",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1259:12:1259:71",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1265:36:1275:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1288:25:1288:64",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1321:18:1329:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:12:1631:105",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:13:1631:55",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:45:1631:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:60:1631:69",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:73:1631:104",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:79:1631:103",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:27:0:27:12",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:28:0:28:21"
+      ],
+      "fact_id": "decoder.attention.kv_sharing_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.kv_sharing_schedule.decoder_kv_sharing_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.kv_sharing_schedule.decoder_kv_sharing_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers",
+      "text_config.num_kv_shared_layers",
+      "text_config.layer_types"
+    ],
+    "key": "kv_sharing_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1631,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1321,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1265,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1142,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1144,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1288,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1242,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1259,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1241,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1258,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1187,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1186,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1194,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1189,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1191,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1188,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1196,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1192,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1175,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      18,
+      18,
+      18,
+      18,
+      19,
+      18,
+      18,
+      18,
+      18,
+      19
+    ]
+  },
+  "decoder.attention.mask": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "mask",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "mechanism",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.mixer_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:5959fa9ded8ca791",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1132:19:1132:66",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1142:19:1142:83",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1144:18:1144:58",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1265:36:1275:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1288:25:1288:64",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1321:18:1329:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:12:1631:105",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:13:1631:55",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:45:1631:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:60:1631:69",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:73:1631:104",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:79:1631:103",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:27:0:27:12",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:28:0:28:21"
+      ],
+      "fact_id": "decoder.attention.mixer_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "mixer_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1631,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1321,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1265,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1142,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1144,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1288,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.attention",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.scores_scale": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "scores_scale",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1265,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1142,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1144,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1135,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1136,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1137,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1139,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "activation",
+    "owner": "decoder.ffn",
+    "source_spans": [],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "gelu_pytorch_tanh"
+  },
+  "decoder.ffn.ffn_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.ffn_schedule:2ca47e14d153d186",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1289:19:1289:62",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1336:19:1336:38",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:12:1631:105",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:13:1631:55",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:45:1631:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:60:1631:69",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:73:1631:104",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1631:79:1631:103",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:965:25:965:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:966:23:966:86",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:967:25:967:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:968:22:968:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:972:20:972:49",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:975:22:975:44",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:976:18:976:45",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:20:977:57",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:35:977:56",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:978:8:978:24"
+      ],
+      "fact_id": "decoder.ffn.ffn_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "ffn_schedule",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1631,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1289,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1336,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 965,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 966,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 967,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 976,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 977,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 975,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 968,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 978,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense"
+    ]
+  },
+  "decoder.ffn.gated": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:965:25:965:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:966:23:966:86",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:967:25:967:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:968:22:968:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:972:20:972:49",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:975:22:975:44",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:976:18:976:45",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:20:977:57",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:35:977:56",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:978:8:978:24"
+      ],
+      "fact_id": "decoder.ffn.gated",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "gated",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 965,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 966,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 967,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 976,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 977,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 975,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 968,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 978,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.ffn.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:965:25:965:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:966:23:966:86",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:967:25:967:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:968:22:968:54",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:972:20:972:49",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:975:22:975:44",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:976:18:976:45",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:20:977:57",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:977:35:977:56",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:978:8:978:24"
+      ],
+      "fact_id": "decoder.ffn.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 965,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 966,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 967,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 976,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 977,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 975,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 968,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 978,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split"
+  },
+  "decoder.layer.norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:d23812867aded33c",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:51:0:51:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:25:182:43",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:182:9:182:23",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1290:31:1290:88",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1291:40:1291:97",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1292:41:1292:98",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1293:42:1293:99",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1302:41:1302:98",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1318:35:1318:74",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1330:15:1330:50",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1335:20:1335:63",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1337:24:1337:65",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1352:27:1352:75",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:141:23:141:66"
+      ],
+      "fact_id": "decoder.layer.norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "norm_kind",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 182,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1318,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 141,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1330,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1291,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1335,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1292,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1337,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1293,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1352,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1302,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "decoder.layer.norm_placement": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "norm_placement",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "parallel_norm_count",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "residual_topology",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.per_layer_embedding_pathway": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "projection:decoder.per_layer_embedding_pathway:a82f9088dcdd3066",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1972:25:1972:73",
+        "source:root:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1973:8:1973:44",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1346:27:1346:70",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1348:27:1348:76",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1351:27:1351:70",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1352:27:1352:75",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1641:38:1646:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1648:42:1652:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1654:41:1654:116",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1756:8:1769:13",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1760:28:1769:13",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1763:16:1763:31",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1793:15:1793:53",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1793:15:1797:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1804:45:1804:91",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1805:32:1807:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1808:31:1812:9",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1813:31:1813:83",
+        "source:text_config:6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed:1822:59:1824:9"
+      ],
+      "fact_id": "decoder.per_layer_embedding_pathway",
+      "fact_status": "",
+      "index_fingerprints": [
+        "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.per_layer_side_input.decoder_per_layer_side_input_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.per_layer_side_input.decoder_per_layer_side_input_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.hidden_size_per_layer_input",
+      "text_config.vocab_size_per_layer_input"
+    ],
+    "key": "per_layer_embedding_pathway",
+    "owner": "decoder",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1972,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1973,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1760,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1756,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1763,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1346,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1348,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1352,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1793,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1641,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1804,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1805,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1808,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1813,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1822,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1648,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1654,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "hidden": 256,
+      "vocab": 262144
+    }
+  },
+  "model.final_norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "final_norm_kind",
+    "owner": "model",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "e9a37ee96de09a28c13b70e4ef9476d4c8a2a7bd0e3874308917cbcdb85e2021"
+      ],
+      "evidence_refs": [
+        "root||text_config.hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|a55dcd6a0b9401c4|a55dcd6a0b9401c4"
+      ],
+      "fact_id": "model.hidden_size",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.hidden_size"
+    ],
+    "key": "hidden_size",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": 2048
+  },
+  "model.tie_word_embeddings": {
+    "claim_kind": "value",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "tie_word_embeddings",
+    "owner": "model",
+    "source_spans": [],
+    "status": "class_default",
+    "unknown_reason": null,
+    "value": true
+  },
+  "root.vision.projector_in_features": {
+    "claim_kind": "value",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.projector.projector_result"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "vision_config.hidden_size"
+    ],
+    "key": "projector_in_features",
+    "owner": "root.vision",
+    "source_spans": [
+      {
+        "class_name": "Linear",
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1953,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 2048
+  },
+  "root.vision.projector_out_features": {
+    "claim_kind": "value",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.projector.projector_result"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.hidden_size"
+    ],
+    "key": "projector_out_features",
+    "owner": "root.vision",
+    "source_spans": [
+      {
+        "class_name": "Linear",
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py",
+        "line": 1953,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 2048
+  }
+}

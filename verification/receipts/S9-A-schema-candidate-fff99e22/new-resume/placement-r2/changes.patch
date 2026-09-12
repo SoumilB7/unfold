@@ -1,0 +1,20 @@
+--- placement/tests/test_s9_reader_placement.py
++++ placement-r2/tests/test_s9_reader_placement.py
+@@ -41,7 +41,8 @@
+     with bound_document(DocumentBinding('root', (), document)):
+         result = decoder_norm_kind_for_path(index, bundle, (), allow_root_stage=False)
+         assert result.status == 'resolved', result.failures
+-        raw = replace(_native_fact(result, owner='decoder.layer', key='norm_kind'),
++        raw = replace(_native_fact(result, owner='decoder.layer', key='norm_kind',
++                                   value=result.value),
+                       completeness='presence_only')
+         fact = qualify_reader_fact(raw, result, index, document)
+     return bundle, index, root, document, result, fact
+@@ -129,6 +130,7 @@
+ def test_external_norm_has_no_internal_targets_and_never_uses_class_span_fallback(tmp_path):
+     _bundle, index, root, _document, _result, fact = _fixture(
+         tmp_path, constructor='nn.LayerNorm(config.hidden)')
++    assert fact.value == _result.value == 'layernorm'
+     addresses = fact.occurrence_citation.addresses(fact, index)
+     assert addresses.callers and addresses.targets == ()
+     assert _fact_static_claims(index, fact, static_claims_from_owner_graph(root.graph)) == ()

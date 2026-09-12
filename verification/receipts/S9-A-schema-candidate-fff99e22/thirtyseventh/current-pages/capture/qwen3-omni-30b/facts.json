@@ -1,0 +1,248 @@
+{
+  "decoder.attention.bias": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.mask": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.projection_mode": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.attention.scores_scale": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.ffn.activation": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.norm_kind": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "source": "decoder_norm_kind_for_path:failed",
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.norm_placement": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "model.final_norm_kind": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "0709e2234b19a90995e8eca4ee07af541255103897b45e3236b7206870d3ab1a"
+        ],
+        "evidence_refs": [
+          "root||thinker_config.text_config.hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|a55dcd6a0b9401c4|a55dcd6a0b9401c4"
+        ],
+        "fact_id": "model.hidden_size",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.hidden_size",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a55dcd6a0b9401c4"
+    },
+    "source": "adapters.transformer.parser.parse",
+    "status": "config_declared",
+    "value": 2048
+  },
+  "model.tie_word_embeddings": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "0709e2234b19a90995e8eca4ee07af541255103897b45e3236b7206870d3ab1a"
+        ],
+        "evidence_refs": [
+          "root||thinker_config.text_config.tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+        ],
+        "fact_id": "model.tie_word_embeddings",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "model_unfolder.adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    },
+    "source": "tie_word_embeddings",
+    "status": "config_declared",
+    "value": false
+  }
+}

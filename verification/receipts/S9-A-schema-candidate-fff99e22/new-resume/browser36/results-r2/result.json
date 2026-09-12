@@ -1,0 +1,68 @@
+{
+  "status": "FINDINGS",
+  "findings": [
+    {
+      "case": "sdxl",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 2267,
+      "clientWidth": 644
+    },
+    {
+      "case": "bloom-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 1419,
+      "clientWidth": 644
+    },
+    {
+      "case": "musicgen-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 3161,
+      "clientWidth": 644
+    }
+  ],
+  "cases": {
+    "llama": {
+      "load_ms": 68.99266699474538,
+      "click_to_card_ms": 78.90212500205962,
+      "page_errors": [],
+      "initial_cards": 28,
+      "final_cards": 28
+    },
+    "sdxl": {
+      "load_ms": 232.053707994055,
+      "click_to_card_ms": 76.61124999867752,
+      "page_errors": [],
+      "initial_cards": 1,
+      "final_cards": 2
+    },
+    "bloom-ordinary": {
+      "load_ms": 42.09487500338582,
+      "click_to_card_ms": 75.47329200315289,
+      "page_errors": [],
+      "initial_cards": 29,
+      "final_cards": 29
+    },
+    "bloom-sparse": {
+      "load_ms": 40.68149999511661,
+      "click_to_card_ms": 75.68399999581743,
+      "page_errors": [],
+      "initial_cards": 27,
+      "final_cards": 27
+    },
+    "musicgen-ordinary": {
+      "load_ms": 48.498249998374376,
+      "click_to_card_ms": 75.83625000552274,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    },
+    "musicgen-sparse": {
+      "load_ms": 40.34512499492848,
+      "click_to_card_ms": 75.47920800425345,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    }
+  },
+  "limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection."
+}

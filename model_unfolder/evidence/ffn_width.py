@@ -30,6 +30,8 @@ from .ffn_mechanism import (
 from .models import SourceBundle
 from .program_index import ProgramIndex, SourceSpan, SymbolId
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, reader_operand, retained_claim_reader,
+                            retained_reader_attempt, validate_reader_operands)
 
 
 _LINEAR = frozenset({"torch.nn.Linear", "torch.nn.modules.linear.Linear"})
@@ -72,6 +74,43 @@ class FFNIntermediateWidth:
             raise ValueError("FFN width source spans belong to its owner file")
 
 
+@dataclass(frozen=True)
+class FFNWidthClaimWitness:
+    index: ProgramIndex
+    width: FFNIntermediateWidth
+    mechanism_result: ReaderResult
+    reader_symbol = "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+
+    def validate_result(self, result):
+        if type(self.width) is not FFNIntermediateWidth:
+            raise TypeError("FFN width claim needs its exact arithmetic evidence")
+        self.width.__post_init__()
+        if result.status != "resolved" or result.value is not self.width \
+                or result.owner != self.mechanism_result.owner \
+                or self.width.owner_occurrence != self.mechanism_result.value.owner_occurrence:
+            raise ValueError("FFN width claim belongs to another exact mechanism")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.ffn", "intermediate_size"):
+            raise ValueError("FFN width cannot author this fact")
+        symbol, index, supplying, _occurrence = retained_reader_attempt(self.mechanism_result)
+        if symbol != "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path" \
+                or index is not self.index or supplying is not document:
+            raise ValueError("FFN width requires its actual source-bound upstream mechanism")
+        # This also validates a selected branch's exact deciding operand.
+        self.mechanism_result.claim_witness.project("decoder.ffn", "gated", document)
+        operands = tuple(reader_operand(document, path) for path, _value in self.width.premises)
+        validate_reader_operands(document, tuple((path, operand.source_kind, value)
+            for (path, value), operand in zip(self.width.premises, operands)))
+        status = ("class_default" if any(item.source_kind == "class_default" for item in operands)
+                  else "code_and_config" if operands else "code_proven")
+        return ReaderFactProjection(owner, key, "value", self.width.value, status,
+            tuple(dict.fromkeys(item.checkpoint_path for item in operands if item.checkpoint_path)))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn', 'intermediate_size', 'value'),
+))
 def decoder_ffn_intermediate_width_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -142,6 +181,7 @@ def decoder_ffn_intermediate_width_for_path(
             "the exact output-projection input width is not evaluable"),))
     return ReaderResult.resolved(
         mechanism.owner, evidence,
+        claim_witness=FFNWidthClaimWitness(index, evidence, mechanism),
         provenance=(*block.provenance, *mechanism.provenance,
                     ReaderProvenance(
                         "code_and_config" if evidence.premises else "source",

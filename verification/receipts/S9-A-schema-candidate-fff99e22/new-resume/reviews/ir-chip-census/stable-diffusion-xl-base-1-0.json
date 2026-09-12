@@ -1,0 +1,444 @@
+{
+  "slug": "stable-diffusion-xl-base-1-0",
+  "inputs": [
+    {
+      "path": "capture/stable-diffusion-xl-base-1-0/ir-before-render.json.gz",
+      "sha256": "b5d64ed6b5ccc41d3e2dbf6c9da539e22cef4067c2b39a2f137f2e8897e61fea"
+    },
+    {
+      "path": "capture/stable-diffusion-xl-base-1-0/ir-after-render.json.gz",
+      "sha256": "b5d64ed6b5ccc41d3e2dbf6c9da539e22cef4067c2b39a2f137f2e8897e61fea"
+    },
+    {
+      "path": "capture/stable-diffusion-xl-base-1-0/page.html.gz",
+      "sha256": "df64b6cb4e3c2c907e62da971ae35cc3f3b42c1b764979e2b8b21354a160f193"
+    }
+  ],
+  "phases": {
+    "ir-before-render.json.gz": {
+      "schema_unknown_count": 2,
+      "architectural_unknown_envelope_count": 6862,
+      "serialized_annotation_count": 6864,
+      "annotation_reason_counts": {
+        "investigation_missing": 6864
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {
+        "class_default": 1
+      },
+      "chip_distinct_canonical_declarations": {
+        "class_default": 1
+      },
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        }
+      ]
+    },
+    "ir-after-render.json.gz": {
+      "schema_unknown_count": 2,
+      "architectural_unknown_envelope_count": 6862,
+      "serialized_annotation_count": 6864,
+      "annotation_reason_counts": {
+        "investigation_missing": 6864
+      },
+      "unknown_fact_count": 0,
+      "unknown_fact_reason_counts": {},
+      "chip_serialized_occurrences": {
+        "class_default": 1
+      },
+      "chip_distinct_canonical_declarations": {
+        "class_default": 1
+      },
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": [
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            3,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "children",
+            1,
+            "detail",
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "mask"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_application"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        },
+        {
+          "path": [
+            "extras",
+            "render",
+            "loop_blocks",
+            4,
+            "detail",
+            "sub_model",
+            "groups",
+            0,
+            "attention",
+            "position_kind"
+          ],
+          "markers": [
+            "literal_unknown_outside_declared_slots"
+          ],
+          "reason_issue": "outside_finite_schema_annotation"
+        }
+      ]
+    }
+  },
+  "html": {
+    "chip_emissions_by_kind": {
+      "class_default": 1
+    },
+    "inline_chip_emissions": {},
+    "packed_card_chip_emissions": {
+      "class_default": 1
+    },
+    "packed_payloads": [
+      {
+        "card_count": 11717,
+        "template_count": 957,
+        "canonical_and_container_card_indices_complete": true
+      }
+    ],
+    "unknown_group_count": 2,
+    "unique_rendered_unknown_paths": 6864,
+    "missing_annotation_paths": [],
+    "unexpected_annotation_paths": [],
+    "findings": [],
+    "chip_style_rules": {
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;",
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;"
+    },
+    "four_styles_present_and_distinct": true
+  },
+  "before_after_metadata_counts_equal": {
+    "schema_unknown_count": true,
+    "architectural_unknown_envelope_count": true,
+    "serialized_annotation_count": true,
+    "chip_distinct_canonical_declarations": true,
+    "unknown_fact_count": true
+  }
+}

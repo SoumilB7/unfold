@@ -1,0 +1,65 @@
+{
+  "scope": "Changed-source pyflakes corrections: remove dead/duplicate imports, type-checking-only annotations, preserve uncertainty constant facade explicitly. No mechanism or output-authority change.",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "8f312c68d47451df9b297bcb231743daee10662a649ce00e742f22ae04e19d98",
+      "after_sha256": "3af5ad5b56d7b53ba9acac6f97217b556abc4d64fafde62ecbc76e485a166502"
+    },
+    {
+      "path": "model_unfolder/evidence/cross_attention_schedule.py",
+      "before_sha256": "8f4ac2858d6f096cf75606f451be1a649322376c0abe5182cece089c1f564c5b",
+      "after_sha256": "a9d5b7d8322034bd6b96fe21df67792a1721a294fcb91f211f451b12e288926d"
+    },
+    {
+      "path": "model_unfolder/evidence/position_linear_bias.py",
+      "before_sha256": "3551597eb9d8ab66996bb44bef53e26553e6b00f84c72fc70ea1b601df12f96d",
+      "after_sha256": "e56f69808c0e6b1c11a6640bd789f2535aa529abd30da634e1980b2dae034bb6"
+    },
+    {
+      "path": "model_unfolder/evidence/decoder_norm.py",
+      "before_sha256": "5631d108109806371684d8f66c8f3b9f644e159e619862a196e54803621fdef9",
+      "after_sha256": "49c08fbac556158b63b7a7b854f16502476f2ba5d2853504d10054a27fb7ec9c"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py",
+      "before_sha256": "9420b3aa5f107826847129792b51901a9c3f9622329c7a16c5608066660b23c7",
+      "after_sha256": "5a53d6e6e9e4fddd4f9d2037583374b53e74d22080fc2ec47efb1820b3031d09"
+    },
+    {
+      "path": "model_unfolder/evidence/diffusion_stream.py",
+      "before_sha256": "d09ddc7151705038675cd00e8e31f2877ec8a2346c45b9da5ebe0d5fddc50775",
+      "after_sha256": "81c8d29cf64321cec50961ad01c2b15095151c3fa1ccad4db10789be1b5c9eb6"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "before_sha256": "3a90fc4e55df5c666615e72ce020a751d7ca3de558e6f9e59e7379312e929387",
+      "after_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "before_sha256": "3790b963bd1f433dfa592d3adaef0eb52a43eb477c17c68c3770f437e3ab9d1d",
+      "after_sha256": "cefb98c7736972c3a6453589745e6715fb80206c69d9eceec2907fabef12d8a1"
+    },
+    {
+      "path": "model_unfolder/uncertainty.py",
+      "before_sha256": "9618e67124068c24419e10393004bfb3ce3892e968ac408360b41e86b505bb16",
+      "after_sha256": "f29d5fba5f33b4f4a969759dd06a2202cec0c3a258957355f227bd00616afab6"
+    },
+    {
+      "path": "tests/test_s9_fact_unknowns.py",
+      "before_sha256": "535f6e2196066e877fd114a5b79d29030f0b9dc9df2d523a5d6f518b443cd0cf",
+      "after_sha256": "c00a3c3e657eba664ce47b772bba8f759ba25205401606c158beff40d4604df5"
+    },
+    {
+      "path": "tests/test_s9_presentation_chips.py",
+      "before_sha256": "ed45009048d17bd15d88360b7ea80e77be67474d2c4066c179fbee31bbe479df",
+      "after_sha256": "840b6812a063d3717dfd3067d1b4703dafcc77e75663d689020cb9082520a220"
+    },
+    {
+      "path": "tests/test_s9_projection_claim_requirements.py",
+      "before_sha256": "134773bc586a952235e3aee0d22d9d2ee44de8c27fc9ffd0028b761dfe746f7c",
+      "after_sha256": "d0a49d7fb37a7850c168dcf383fd88f91321b3b2b483a0dc94b7ffe7bee93cc6"
+    }
+  ]
+}

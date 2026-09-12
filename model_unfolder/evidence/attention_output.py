@@ -33,6 +33,7 @@ from .program_index import (
     SourceSpan,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import ReaderFactProjection, retained_claim_reader
 
 
 _LINEAR_PROTOCOLS = frozenset({
@@ -120,6 +121,29 @@ class AttentionOutputProjectionEvidence:
             raise ValueError("output provenance includes construction and dataflow")
 
 
+@dataclass(frozen=True)
+class AttentionOutputClaimWitness:
+    index: ProgramIndex
+    output: AttentionOutputProjectionEvidence
+    reader_symbol = "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+
+    def validate_result(self, result):
+        if type(self.output) is not AttentionOutputProjectionEvidence:
+            raise TypeError("output claim needs the attention-terminal def-use proof")
+        self.output.__post_init__()
+        if result.status != "resolved" or result.value is not self.output \
+                or result.owner != self.output.attention.compute_occurrence:
+            raise ValueError("output claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "output_projection"):
+            raise ValueError("attention output cannot author this projection")
+        return ReaderFactProjection(owner, key, "connection", True, "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'output_projection', 'connection'),
+))
 def decoder_attention_output_projection_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -161,6 +185,7 @@ def decoder_attention_output_projection_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionOutputClaimWitness(index, result.value),
         provenance=(*block.provenance, *input_provenance, *result.provenance))
 
 

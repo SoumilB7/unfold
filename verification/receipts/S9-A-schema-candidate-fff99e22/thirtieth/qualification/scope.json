@@ -1,0 +1,27 @@
+{
+  "tests": [
+    "tests/test_s9_child_class_default.py",
+    "tests/test_s9_width_banner_receipts.py",
+    "tests/test_u2_r2_raw_consume_debt.py::test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow",
+    "tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config",
+    "tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference",
+    "tests/test_conformance.py::test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved[unet]",
+    "tests/test_smoke.py::test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure",
+    "tests/test_smoke.py::test_qwen2_audio_code_evidence_does_not_mark_config_partial",
+    "tests/test_smoke.py::test_modality_host_looks_through_declared_wrappers",
+    "tests/test_qk_norm.py::test_parser_records_and_receipts_uniform_gated_false",
+    "tests/test_position_initialization.py::test_real_llama_parser_projects_only_the_proved_frequency_base",
+    "tests/test_receipts.py::test_qwen2vl_positive_one_exact_chain",
+    "tests/test_receipts.py::test_u8_layer_schedules_are_receipted_by_the_real_layer_map",
+    "tests/test_isolation.py::test_no_module_imports_another_test_module",
+    "tests/test_fact_ledger.py::test_tie_code_channel_order",
+    "tests/test_sable.py::test_u2_projection_and_census_nets_are_wired_blocking_and_clean",
+    "tests/test_sable.py::test_sable_mechanical_pass_on_corpus[LLAMA-cfg2]",
+    "tests/test_sable.py::test_sable_regression_corpus",
+    "tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent",
+    "tests/test_projection_audit.py::test_projection_audit_is_wired_into_sable_as_blocking_and_clean",
+    "tests/test_attention_storage.py::test_parser_and_conformance_share_one_exact_storage_result",
+    "tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn"
+  ],
+  "scope": "All20 non-stale full28 failures plus exact child/banner corrections; stale artifacts remain pending"
+}

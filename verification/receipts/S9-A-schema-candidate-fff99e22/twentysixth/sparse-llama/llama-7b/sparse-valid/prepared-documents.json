@@ -1,0 +1,146 @@
+{
+  "root": {
+    "component": "root",
+    "path": [],
+    "document": {
+      "_name_or_path": "huggyllama/llama-7b",
+      "architectures": [
+        "LlamaForCausalLM"
+      ],
+      "attention_bias": false,
+      "attention_dropout": 0.0,
+      "bos_token_id": 1,
+      "chunk_size_feed_forward": 0,
+      "dtype": "float16",
+      "eos_token_id": 2,
+      "head_dim": 128,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "initializer_range": 0.02,
+      "intermediate_size": 11008,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "max_position_embeddings": 2048,
+      "max_sequence_length": 2048,
+      "mlp_bias": false,
+      "model_type": "llama",
+      "num_hidden_layers": 32,
+      "num_key_value_heads": 32,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "pad_token_id": 0,
+      "pretraining_tp": 1,
+      "problem_type": null,
+      "return_dict": true,
+      "rms_norm_eps": 1e-06,
+      "rope_parameters": {
+        "rope_theta": 10000.0,
+        "rope_type": "default"
+      },
+      "tie_word_embeddings": false,
+      "transformers_version": "5.12.1",
+      "use_cache": true,
+      "vocab_size": 32000
+    },
+    "checkpoint": {
+      "_name_or_path": "huggyllama/llama-7b",
+      "architectures": [
+        "LlamaForCausalLM"
+      ],
+      "attention_bias": false,
+      "attention_dropout": 0.0,
+      "bos_token_id": 1,
+      "chunk_size_feed_forward": 0,
+      "dtype": "float16",
+      "eos_token_id": 2,
+      "head_dim": 128,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "initializer_range": 0.02,
+      "intermediate_size": 11008,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "max_position_embeddings": 2048,
+      "max_sequence_length": 2048,
+      "mlp_bias": false,
+      "model_type": "llama",
+      "num_hidden_layers": 32,
+      "num_key_value_heads": 32,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "pad_token_id": 0,
+      "pretraining_tp": 1,
+      "problem_type": null,
+      "return_dict": true,
+      "rms_norm_eps": 1e-06,
+      "rope_parameters": {
+        "rope_theta": 10000.0,
+        "rope_type": "default"
+      },
+      "tie_word_embeddings": false,
+      "transformers_version": "5.12.1",
+      "use_cache": true,
+      "vocab_size": 32000
+    },
+    "class_overlay": {
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "hidden_size": 4096,
+      "num_attention_heads": 32,
+      "hidden_act": "silu"
+    },
+    "provenance": {
+      "_name_or_path": "checkpoint_declared",
+      "architectures": "checkpoint_declared",
+      "attention_bias": "checkpoint_declared",
+      "attention_dropout": "checkpoint_declared",
+      "bos_token_id": "checkpoint_declared",
+      "chunk_size_feed_forward": "checkpoint_declared",
+      "dtype": "checkpoint_declared",
+      "eos_token_id": "checkpoint_declared",
+      "head_dim": "checkpoint_declared",
+      "id2label": "checkpoint_declared",
+      "id2label.0": "checkpoint_declared",
+      "id2label.1": "checkpoint_declared",
+      "initializer_range": "checkpoint_declared",
+      "intermediate_size": "checkpoint_declared",
+      "is_encoder_decoder": "checkpoint_declared",
+      "label2id": "checkpoint_declared",
+      "label2id.LABEL_0": "checkpoint_declared",
+      "label2id.LABEL_1": "checkpoint_declared",
+      "max_position_embeddings": "checkpoint_declared",
+      "max_sequence_length": "checkpoint_declared",
+      "mlp_bias": "checkpoint_declared",
+      "model_type": "checkpoint_declared",
+      "num_hidden_layers": "checkpoint_declared",
+      "num_key_value_heads": "checkpoint_declared",
+      "output_attentions": "checkpoint_declared",
+      "output_hidden_states": "checkpoint_declared",
+      "pad_token_id": "checkpoint_declared",
+      "pretraining_tp": "checkpoint_declared",
+      "problem_type": "checkpoint_declared",
+      "return_dict": "checkpoint_declared",
+      "rms_norm_eps": "checkpoint_declared",
+      "rope_parameters": "checkpoint_declared",
+      "rope_parameters.rope_theta": "checkpoint_declared",
+      "rope_parameters.rope_type": "checkpoint_declared",
+      "tie_word_embeddings": "checkpoint_declared",
+      "transformers_version": "checkpoint_declared",
+      "use_cache": "checkpoint_declared",
+      "vocab_size": "checkpoint_declared"
+    },
+    "failure": null
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "scope": "Enumerated new nonvisual marker, not approved output; existing scalar/text/order/layout retained by source",
+  "marker": "data-uf-receipt-node=\"stats_hidden_size\"",
+  "rows": [
+    {
+      "slug": "auraflow-v0-3",
+      "reference_ir_sha256": "f9534f5923ea2c4c3720557f9087e1a3a5f5f5877bc5edef23bfc0f22ecaccf7",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "bloom",
+      "reference_ir_sha256": "849831c0549f6ace01bf0de3cbeedee55b1aa8d330daebe6d78a004eceb7f899",
+      "reference_width": 14336,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "cogvideox-5b",
+      "reference_ir_sha256": "e93512a4fc148184c7d008465ce0945c2d5bc5e18d5d2fa3b51a712233d63dca",
+      "reference_width": 3072,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "command-a-03-2025",
+      "reference_ir_sha256": "abc908507269d2e84caeee48f87a9e9ad235564b5f877dc7735ea15d2d07588c",
+      "reference_width": 12288,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "dbrx-base",
+      "reference_ir_sha256": "3c6c3c398b3de329a88fb024167403f4d95898a8d8d10d8d83424e6f575064ee",
+      "reference_width": 6144,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "reference_ir_sha256": "aea7bf1a7f328db1c87d43ef842cf60fda8d0bab09f99f744291e7c4d59a71d5",
+      "reference_width": 2048,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "deepseek-v3",
+      "reference_ir_sha256": "464e43f16c8cdb365b6dce42978f026374fd419cc4263c90ad94f19d00866f59",
+      "reference_width": 7168,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "reference_ir_sha256": "e6d655989e4c1af6fe4eb9d2922298446c3b67beadfe8e61341c1808d666c585",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "flux-2-dev",
+      "reference_ir_sha256": "d78d3ee95301480879cc34a538a852e1dcc17730d04ec1717165859dfabf2253",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "reference_ir_sha256": "bec8f50c951a669954f605e22506cc3cca3227e68e66805aab4f7a5b33189f81",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "reference_ir_sha256": "729aa2364dddf98b0ddefd11e686b47904d55bb5853e61c3024a1adc521b86d6",
+      "reference_width": 2304,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "reference_ir_sha256": "855e208b78b4a51422ef241d3461f0ed9466a6607c7f1a1c7eb5669de91c1c96",
+      "reference_width": 2048,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "glm-4-5",
+      "reference_ir_sha256": "faf312099fed9e602599c8613bf970aa84754df75d5eeb71b65e09d4fb71ffec",
+      "reference_width": 5120,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "reference_ir_sha256": "265275f5aee0783aaf7f14c1ae827db293b3e5f38ab986f3ba2a3a977bd7265b",
+      "reference_width": 2880,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "reference_ir_sha256": "ca29f6760c6a28d11c2f495a70f0bd6d793b80812cb8bbe3f7666bab531f1620",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "hunyuanvideo",
+      "reference_ir_sha256": "be783c7c5ba96f2d6262525e081da7e3d8ac7c6c22764eb9462e69574f54a894",
+      "reference_width": 3072,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "jamba-v0-1",
+      "reference_ir_sha256": "036974cf4d5ba90a2090b661075cddbe9bbaefe820c7cbc5d39719cbe9dcc75b",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "reference_ir_sha256": "8541d6ff1628cd4db6d981b0ac7680adef180a935a41c84aa2fc84c6e17ec336",
+      "reference_width": 2048,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "llama-7b",
+      "reference_ir_sha256": "6c2dccf899f984fb368a7d112fd13f44d1eca7b5c498c7b00fd20e550f7fbc91",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "ltx-video",
+      "reference_ir_sha256": "6e9e56651c959076ca29a789a76cc48e07d2cd35933cbcb93997a18e704dc98e",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "reference_ir_sha256": "779ca9619be62043694c9eba6f2a25984ca5959965c2ffc981a94576b75f94c1",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "mochi-1-preview",
+      "reference_ir_sha256": "e31e18fd1e4dfd691c80f1243e0c3166f20b4908841334149ec4bf939ec950b2",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "musicgen-small",
+      "reference_ir_sha256": "42286461144019341f0b22c288ed572149f8692ff962f19e6b8b979737bc097a",
+      "reference_width": 1024,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "reference_ir_sha256": "c3bd4a1264a79d5ade6e9f7beb3ed8ef1ded5afd6fac0e32320429634d8c7d98",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "reference_ir_sha256": "b2e29524095cb279f37d95ba974f20fd3a6f7eaf163af190306c3a074ae5763b",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "reference_ir_sha256": "1e6e1b7d47dadf2563eb33017a09b7afd53975d2fe16b8f94a665fe5a8735b43",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "reference_ir_sha256": "5a175b58ceaf3f75e5921546882fa89a0c221b6a7f6fffd912e737833c77f780",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen-image",
+      "reference_ir_sha256": "8a6030948ad5873faf460246953c36ff05c4a0df04d556c290587fbed56cec1f",
+      "reference_width": 3072,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "reference_ir_sha256": "f1e8eb23f8f88df27caf62803ba36977314c17192e4c621670afec5714425c9b",
+      "reference_width": 3584,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "reference_ir_sha256": "c263c1c78a31736bd927c70fbdd7000c4cb061b298018316aba72e0a36f7325e",
+      "reference_width": 5120,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "reference_ir_sha256": "7eddb50be5a62376b5314fd7e58ac0dce1b4f1c6795d201ee6ba75f15bab874c",
+      "reference_width": 5120,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen3-8b",
+      "reference_ir_sha256": "7bee7e27338770d99ce52c296ca6b7623cce28a966951675988d336066a602fa",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "reference_ir_sha256": "896120d9ced10bcae2fe8a4f921e9d1ee1e1c3930b57b1b97becec72e6dd5710",
+      "reference_width": 2048,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "reference_ir_sha256": "cd0a1ef1be471e2dcc58ce38007314ce8cee624ce9054020ca8dba23ed25a1d5",
+      "reference_width": 4096,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "reference_ir_sha256": "35d5aaee8737b48f5fcf74a7c470fe2d727b9ab36fd7b23aa83471e0c5543c9b",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "reference_ir_sha256": "d2bf5388d42685b3a95acc95519965a6b72283b2f3bd169fd2cdd4405bd31eac",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "reference_ir_sha256": "b5d64ed6b5ccc41d3e2dbf6c9da539e22cef4067c2b39a2f137f2e8897e61fea",
+      "reference_width": null,
+      "expected_new_exact_cell_marker_count": 0,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "reference_ir_sha256": "c6329103a2f324d6c4df33625a27525822ccc99011cf6c5e3b6fe1a98b626f73",
+      "reference_width": 2048,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "reference_ir_sha256": "7f38ef83ae61b43e94e71b45f5841bcfed315293cdcf3e0d7125c1ff1cffa315",
+      "reference_width": 0,
+      "expected_new_exact_cell_marker_count": 1,
+      "basis": "Source inference against saved26 IR; current actual render must verify. Existing banner branches unchanged."
+    }
+  ]
+}

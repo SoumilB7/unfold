@@ -1,0 +1,31 @@
+{
+  "architecture": "NemotronHForCausalLM",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "NemotronHForCausalLM"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/nemotron_h/modeling_nemotron_h.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "nemotron_h"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/nemotron_h/modeling_nemotron_h.py"
+  ],
+  "import_roots": {},
+  "model_id": null,
+  "model_type": "nemotron_h",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/nemotron_h/configuration_nemotron_h.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

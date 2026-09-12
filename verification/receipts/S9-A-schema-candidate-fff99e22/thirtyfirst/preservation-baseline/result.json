@@ -1,0 +1,14 @@
+{
+  "name": "preservation-baseline",
+  "returncode": 0,
+  "duration": 792.9932943749991,
+  "before": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+  "after": "eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtyfirst/preservation-baseline/preservation-baseline.log",
+  "pins_equal": true,
+  "packet_complete": true,
+  "preservation_passed": true,
+  "authority": "Original test failures preserved. A complete packet does not mean preservation passed or approval."
+}

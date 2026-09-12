@@ -1,0 +1,216 @@
+{
+  "directories": [
+    {
+      "archived": "fifteenth/qualification",
+      "original": "/private/tmp/unfold-s9a-fifteenth/qualification"
+    },
+    {
+      "archived": "fifteenth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters/transformer",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters/transformer"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters/transformer/special_parts",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters/transformer/special_parts"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters/transformer/special_parts/modalities",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters/transformer/special_parts/modalities"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "fifteenth/qualification/result.json",
+      "bytes": 539,
+      "original": "/private/tmp/unfold-s9a-fifteenth/qualification/result.json",
+      "sha256": "4bb083384f90727f3feb269c409aa9e582eb8bf383102890cc7dda28101198e6"
+    },
+    {
+      "archived": "fifteenth/qualification/schema-proof-metadata.log",
+      "bytes": 2568,
+      "original": "/private/tmp/unfold-s9a-fifteenth/qualification/schema-proof-metadata.log",
+      "sha256": "88628e5d72cc04d4223acc0ee94e5c074bbc1ad1b4e576b23d92e4453a6fc4df"
+    },
+    {
+      "archived": "fifteenth/run-sparse.py",
+      "bytes": 1610,
+      "original": "/private/tmp/unfold-s9a-fifteenth/run-sparse.py",
+      "sha256": "02f8bdf8e7354b9fcafe12ed7d2ce36b1c79790a05d20edad4117a58eb1586dd"
+    },
+    {
+      "archived": "fifteenth/run.py",
+      "bytes": 1258,
+      "original": "/private/tmp/unfold-s9a-fifteenth/run.py",
+      "sha256": "eecf03bc5f82d76d633b297d452294d0cd0e8c1ad3cd7df75420593fd24080b7"
+    },
+    {
+      "archived": "fifteenth/source-manifest.json",
+      "bytes": 15567,
+      "original": "/private/tmp/unfold-s9a-fifteenth/source-manifest.json",
+      "sha256": "b5cc36b171ac9ca5a1efc7623877dfa4e20432e9dbf5f6ff7ad4e943e5ede1a7"
+    },
+    {
+      "archived": "fifteenth/sparse-plan.json",
+      "bytes": 821,
+      "original": "/private/tmp/unfold-s9a-fifteenth/sparse-plan.json",
+      "sha256": "c7e009fbb8ad2caff9cb380a2c2ea31340dcbb03fd2fafa60df69c40e6c37a7e"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters/transformer/parser.py",
+      "bytes": 258007,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters/transformer/parser.py",
+      "sha256": "6b572c873b607615e325606545a3f18ad02c6635339f3eb4bf005b8c05f9ec24"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "bytes": 17362,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
+      "sha256": "afed6604117511c662c9dec2830cd41b0473debf1ac568ab741b3102cd67d5b5"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/activation_registry.py",
+      "bytes": 35197,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/activation_registry.py",
+      "sha256": "eb523946a0262b4a610d72cd1fdf9e38be5a223428af93e88a872f79ac1ec636"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/attention.py",
+      "bytes": 248926,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/attention.py",
+      "sha256": "693603ce2a72aeb3dc81c6ef2d7480121627bf74a15418b61831846a0b29f216"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/construction_calls.py",
+      "bytes": 20348,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/construction_calls.py",
+      "sha256": "692fadfd39a8ddf47181b0c37649e72d66166253bb5289acc2266ac428ae097b"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/context.py",
+      "bytes": 25732,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/context.py",
+      "sha256": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/execution_flow.py",
+      "bytes": 59084,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/execution_flow.py",
+      "sha256": "1acfb475787fb1809656f24b91e0ed2175972ba0d971afeacf6caaf0c2928c1e"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/expert_width.py",
+      "bytes": 30210,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/expert_width.py",
+      "sha256": "248f2843ec9f21628f5e7c128a34430aada67a518235b36511e94fb864d44222"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/model_state_width.py",
+      "bytes": 14237,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/model_state_width.py",
+      "sha256": "b5bb90bbb52a46f330999eac01560a9e4d60485befbf6e7c886f832bc077d32b"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/program_index.py",
+      "bytes": 156229,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/program_index.py",
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/projector.py",
+      "bytes": 22475,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/projector.py",
+      "sha256": "706454d6d927cdf19b5dc58a356cf98addf150acb0477aee014d3b6b6ae195ca"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/reader_claims.py",
+      "bytes": 29916,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/reader_claims.py",
+      "sha256": "206dadd03f3d4381d5c50c904e9a9fd842b74452989d466df264b4ecb60ecc84"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80034,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/registry.py",
+      "sha256": "fda7f23134e869bbc16fc0d3502aa1ce338d98282d503360887802d86d02081b"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/model_unfolder/evidence/router.py",
+      "bytes": 82094,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/model_unfolder/evidence/router.py",
+      "sha256": "e903de1384206e4292d1598b5159d51eb049745dfe7fccb50624565d86a00b13"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/tests/test_s9_model_state_width.py",
+      "bytes": 8241,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/tests/test_s9_model_state_width.py",
+      "sha256": "e696864c7ee96a003d34d199a0e24bdd72e8873b9a9c3f2843ddf93da381ed06"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 6647,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/tests/test_s9_reader_declarations.py",
+      "sha256": "70b57262085500c312520d75f0a002584f6777eed0156ecb8401bfa90d1ec2b4"
+    },
+    {
+      "archived": "fifteenth-independent-review/source/tests/test_weight_tying.py",
+      "bytes": 9979,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/source/tests/test_weight_tying.py",
+      "sha256": "de365f3efdf1f113ffc30283f697241d996561c4cfbc40f23471808ef199b36a"
+    },
+    {
+      "archived": "fifteenth-independent-review/verdict.json",
+      "bytes": 5467,
+      "original": "/private/tmp/unfold-s9a-independent-fifteenth-review/verdict.json",
+      "sha256": "fa1372594e23ce3d312a5164e076092310664d8b3e7643b34c6339501a57e1b5"
+    }
+  ],
+  "scope": "Released fifteenth candidate and fifteenth independent RETURN only",
+  "source_archives": [
+    {
+      "archive": "fifteenth/changed-sources.tar.gz",
+      "archive_sha256": "0701234960ec76dcdf46af87f39163df5a7edc3a4bd09f490bbeb39f6e0cbb4b",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 106,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-fifteenth",
+      "manifest_sha256": "b5cc36b171ac9ca5a1efc7623877dfa4e20432e9dbf5f6ff7ad4e943e5ede1a7",
+      "phase": "fifteenth",
+      "uncompressed_bytes": 3725426
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 1132548,
+    "copied_files": 24,
+    "source_files": 106
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

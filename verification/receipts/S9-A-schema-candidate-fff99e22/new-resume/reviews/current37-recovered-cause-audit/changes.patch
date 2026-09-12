@@ -1,0 +1,99 @@
+--- prepared36/audit.py
++++ prepared37/audit.py
+@@ -1,4 +1,4 @@
+-"""Saved-data cause inventory; exact recovered baseline versus frozen36, stdlib only."""
++"""Saved-data cause inventory; exact recovered baseline versus frozen37, stdlib only."""
+ from pathlib import Path
+ import argparse
+ from collections import Counter
+@@ -12,14 +12,14 @@
+ ROOT = Path(__file__).resolve().parents[6]
+ RECEIPT = ROOT / 'verification/receipts/S9-A-schema-candidate-fff99e22'
+ HERE = Path(__file__).resolve().parent
+-CURRENT = Path('/private/tmp/unfold-s9a-thirtysixth/preservation-current36')
++CURRENT = Path('/private/tmp/unfold-s9a-thirtyseventh/preservation-current37')
+ BASELINE = Path('/private/tmp/unfold-s9a-thirtyfirst/preservation-baseline')
+-TREE = ROOT / '.claude/worktrees/verify-s9-a-thirtysixth'
+-SOURCE = '88c235ca5e1cde3ca9b20aa9f6f133bd4ced546e8ea26757d57bb972e5d6edbe'
+-SOURCE_MANIFEST = 'c430c68de927c1ac1fecfc641fc9ad9e6f733bacdadbb2e636bd4102048a4ddc'
++TREE = ROOT / '.claude/worktrees/verify-s9-a-thirtyseventh'
++SOURCE = 'c5414063aa77a7fb24c6b2369e2ba170c1177ed188e5b4cc785740f913f7f747'
++SOURCE_MANIFEST = 'ea7b4cde20d1dbaa2322175cc54a7fdc56bf10d1cedeb5bfb501ce10fe298c99'
+ PROTECTED = '5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e'
+ HARNESSES = {
+-    'current36': ('current36-preservation-capture', 'eec499944e9ffc1cf73b98f422933e7ff5ab3afe31f2b988792729f4a9157087'),
++    'current37': ('current37-preservation-capture', 'd1bcadd24e9a98ccf2b7f4dac00dbe3b0241aec4ce3be79b87c63a86c4398f19'),
+     'baseline': ('current31-preservation-capture', '3c0e3d4a45ac4303c0f13369ca3a73a04c649f19712d1778ab16160120ea23cf'),
+ }
+ PINS = {}
+@@ -124,10 +124,10 @@
+     result = load(path / 'result.json')
+     assert result['pins_equal'] and result['packet_complete']
+     assert result['before'] == result['after'] and result['artifacts_before'] == result['artifacts_after'] == PROTECTED
+-    if name == 'current36':
++    if name == 'current37':
+         assert outer['source_manifest_sha256'] == SOURCE_MANIFEST
+         assert result['before'] == SOURCE
+-        assert outer['changed_source_rows'] == {row['path']: row['sha256'] for row in load(RECEIPT / 'thirtysixth/source-manifest.json')}
++        assert outer['changed_source_rows'] == {row['path']: row['sha256'] for row in load(RECEIPT / 'thirtyseventh/source-manifest.json')}
+     else:
+         assert outer['source_manifest_sha256'] == '153982d5541dbd6aa50c2bdfe3dee2fa9c4b92b93f7c26d11c203de1dc1d1a01'
+         assert result['before'] == 'eada52b749ad1d2b0b53d22fd5f528db7107588d70ed0e187ba41cd2c3dd6ac9'
+@@ -281,8 +281,13 @@
+         rows.append({'tag': tag, 'before_lines': [i+1,j], 'after_lines': [k+1,l], 'before': old, 'after': new, 'cause': cause,
+                      'findings': [] if cause else ['HTML_hunk_requires_evidence_level_review']})
+     pattern = r'<script type="application/json" data-uf-card-payload="([^"]+)" data-uf-card-mount="[^"]*">(.*?)</script>'
+-    payloads = [re.search(pattern, p) for p in (left, right)]
+-    payload = {'before_present': payloads[0] is not None, 'after_present': payloads[1] is not None}
++    matches = [list(re.finditer(pattern, p)) for p in (left, right)]
++    if any(len(items) > 1 for items in matches):
++        raise ValueError('deferred payload scope exceeds the reviewed zero-or-one block contract')
++    payloads = [items[0] if items else None for items in matches]
++    payload = {'before_present': payloads[0] is not None, 'after_present': payloads[1] is not None,
++               'blocks_before': len(matches[0]), 'blocks_after': len(matches[1]),
++               'findings': [] if len(matches[0]) == len(matches[1]) else ['deferred_payload_presence_changed']}
+     if all(payloads):
+         payload['digest_before'] = payloads[0].group(1); payload['digest_after'] = payloads[1].group(1)
+         payload['exact_json_deltas'] = delta(json.loads(payloads[0].group(2)), json.loads(payloads[1].group(2)))
+@@ -295,7 +300,7 @@
+     held = load(HERE / 'manifest.json')
+     for row in held['files']:
+         assert sha(raw(HERE / row['path'])) == row['sha256']
+-    manifest = RECEIPT / 'thirtysixth/source-manifest.json'
++    manifest = RECEIPT / 'thirtyseventh/source-manifest.json'
+     assert sha(raw(manifest)) == SOURCE_MANIFEST
+     source_rows = load(manifest)
+     for row in source_rows:
+@@ -306,7 +311,7 @@
+     for row in source_causes.values():
+         assert sha(raw(TREE / row['path'])) == row['sha256']
+     baseline_files = archive_baseline()
+-    baseline, current = packet('baseline', BASELINE), packet('current36', CURRENT)
++    baseline, current = packet('baseline', BASELINE), packet('current37', CURRENT)
+     assert baseline['expected_raw_sha256'] == current['expected_raw_sha256']
+     recovered = load(CURRENT / 'recovered-deltas/summary.json')
+     assert recovered['all_surfaces_recovered'] and set(recovered['witnesses']) == set(current['cases'])
+@@ -353,11 +358,13 @@
+                 row['status'] = 'no_expected_hash_recorded'
+             associations.append(row); scope_totals[row['status']] += 1
+         html = html_delta(old['page'], new['page'])
++        if html['deferred_payload']['findings']:
++            all_findings.append({'slug': slug, 'surface': 'deferred_payload', 'findings': html['deferred_payload']['findings']})
+         for row in html['hunks']:
+             if row['findings']: all_findings.append({'slug': slug, 'surface': 'html', 'before_lines': row['before_lines'], 'findings': row['findings']})
+         out.mkdir(); save(out / 'canonical-delta-causes.json.gz', rows); save(out / 'native-fact-deltas.json.gz', fact_rows)
+         save(out / 'consumption-associations.json.gz', associations); save(out / 'html-hunks-and-payload.json.gz', html)
+-        raw_html_diff = ''.join(difflib.unified_diff(old['page'].splitlines(True), new['page'].splitlines(True), fromfile='baseline/raw.html', tofile='current36/raw.html'))
++        raw_html_diff = ''.join(difflib.unified_diff(old['page'].splitlines(True), new['page'].splitlines(True), fromfile='baseline/raw.html', tofile='current37/raw.html'))
+         (out / 'html.raw.diff.gz').write_bytes(gzip.compress(raw_html_diff.encode(), mtime=0))
+         view_deltas = delta(old['case']['views'], new['case']['views'])
+         assert view_deltas == load(CURRENT / 'recovered-deltas' / slug / 'views.json')
+@@ -367,7 +374,7 @@
+     for path, expected in PINS.items():
+         assert sha(Path(path).read_bytes()) == expected, path
+     save(args.output / 'inputs.json', PINS)
+-    save(args.output / 'summary.json', {'status': 'COMPLETE_CAUSE_INVENTORY_NOT_ACCEPTANCE', 'source36': SOURCE, 'source_manifest36': SOURCE_MANIFEST,
++    save(args.output / 'summary.json', {'status': 'COMPLETE_CAUSE_INVENTORY_NOT_ACCEPTANCE', 'source37': SOURCE, 'source_manifest37': SOURCE_MANIFEST,
+         'recovered_baseline_files_rehashed': baseline_files, 'baseline_test_outcomes': baseline['outcomes'], 'current_test_outcomes': current['outcomes'],
+         'preservation_passed': current['result']['preservation_passed'], 'packet_complete': current['result']['packet_complete'],
+         'witnesses': summary, 'cause_counts': dict(totals), 'association_counts': dict(scope_totals), 'findings': all_findings,

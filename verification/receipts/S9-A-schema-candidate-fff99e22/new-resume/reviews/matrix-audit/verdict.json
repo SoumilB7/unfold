@@ -1,0 +1,31 @@
+{
+  "decision": "ACCEPT independent saved-data integrity and delta enumeration only; S9-A remains incomplete and unblessed",
+  "reviewer": "resume_review",
+  "matrix_sha256": {
+    "active": "47f372e4629711fd51676d3005a522cdd10d6ad2f31a0dd4d12c1360490014d1",
+    "twentysecond": "923c27290b38de38e79fb3e1f81378f025b42cd3d31fb8528e07582b4383bca2",
+    "candidate": "277b00b119b966e11689c76b6123d0e756878bdfbf790c188ffb8b4a1ba98022"
+  },
+  "audit_script_sha256": "aa8c87d636299e283dd53014827f8627b354a277f9356c146cb337ecf1680a35",
+  "report_gzip_sha256": "56e42efac39f7eb39af179efc29e0f26dd10e9ee2be0f5c1cca572873d7c261c",
+  "report_uncompressed_sha256": "495601786658a9a93bb405324dae82dba8e4c5e23857214ed1102c377cab5bfc",
+  "provenance_additions_sha256": "b8f3fb872b82045cca6ce859d03112da34f2aff2e1fe4afd20c06e832010b516",
+  "verified_results": [
+    "All three matrices have exact39 membership/order/cohort denominator and39 model+39 observation+39 relation artifact keys. Every published byte hash was checked. All saved input pins remained equal during the independent audit.",
+    "All44,088 occurrences retain membership/order, construction and execution axes, runtime class/config identity, exact static occurrence identity, framework primitive identity, construction schedules and product layer schedules. All39 observation companions are unchanged.",
+    "No active-S7 fact citation disappears. Original16,324 unstamped citations split into16,182 qualified in the same occurrence and142 still unqualified. The latter remain141 Bloom position_schedule plus1 MusicGen cross_attention_schedule, pending the existing owner decision.",
+    "There are623 actual remaining fact findings:142 retained original citations plus481 added score-scaling citations without qualified proof. All1,412 citations removed relative to the unaccepted22 interim are decoder.layer.norm_kind; they are enumerated per occurrence and never counted as stamping successes.",
+    "Of22s original274 placement-kind changes,188 return to activeS7 kinds:130 DeepSeek,6 Gemma3n,52 NemotronH. The remaining86 are DeepSeek input_layernorm/post_attention_layernorm, exactly two per43 layers: active unresolved ->22 grouped ->26 rendered. Each candidate row cites an applied_function retained-reader norm proof. These are explicit re-proofs, not stamping-only changes.",
+    "All1,954 provenance changes add evidence metadata only:2,722 fact citations across eight named keys;871 source-span entries on211 rows;66 config paths on66 rows (40 Granite attention_multiplier,26 Gemma query_pre_attn_scalar). No prior fact key, span or config path is removed and all retained ordering stays identical. Runtime/static identity fields are unchanged.",
+    "Five relation rows differ only by config_paths [] -> [tie_word_embeddings]: Bloom,Gemma2,Granite,CommandA,LFM2. Relation IDs/order/endpoints/kinds/object-identity evidence and all other fields are identical.",
+    "Source-index seals change in36 model payloads. Nineteen models contain46 changed relation plans with92 metadata leaf changes total: the index_fingerprint and dependent receipt.plan_sha256. All49 plan receipts independently recompute and match their payload index seals; no recipe, member order, observation, container or relation result changes. Companion relation changes are the same probe-plan metadata only."
+  ],
+  "required_remaining_actions": [
+    "Do not mark original unstamped findings zero while142 remain. Do not count the1,412 removed interim norm citations as stamping.",
+    "Submit86 DeepSeek placement re-proofs and2,722 additional citations with exact per-witness causes; actual family pages and owner approval are still required before renewing outputs. This saved-data review does not independently inspect their HTML/DOM.",
+    "Explicitly enumerate source closure seal renewals and dependent relation-plan receipts. sources.py now includes imported transformer activation support in discovery, but the complete per-model closure is not reconstructible from matrix payloads alone; keep that source-level explanation distinct from this data-integrity verdict.",
+    "Keep481 stronger score-scaling proof gaps visible, alongside the sparse activation proof gap. Existing raw sparse FAIL remains; successful event association does not qualify application.",
+    "No active matrix, example, preservation row or output was modified by this review. No Soumil approval, unit acceptance or release is implied."
+  ],
+  "scope_limit": "Reviewer ran saved-JSON/gzip audits only. Root reports completed generation1303.297052s with stable source/artifact bracket; reviewer did not rerun models, source readers or HTML rendering."
+}

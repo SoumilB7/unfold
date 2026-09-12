@@ -1,0 +1,73 @@
+{
+  "coordination": "Placement acknowledged stale labels and is carrying descriptive correction into the next held generation because33 was never executed and34 is being prepared. Preserve original33 manifests; no in-place correction or relabelled actual result.",
+  "historical_baseline": "All203 historical input file hashes unchanged. This does not qualify118 stale canonical documents; only original31 recoveredfff canonical hashes matching authoritative expectation enter comparison.",
+  "labels_to_fix": {
+    "current33-capture-template/census.py": [
+      "Remaining Actual32/Actual frozen32 result and closure prose"
+    ],
+    "current33-capture-template/contract.json": [
+      "command_template says exact32",
+      "Freeze32 instruction",
+      "new32 matrix payload instruction",
+      "No source32/no32 result limitation"
+    ],
+    "reviews/current33-saved-audit/plan.json": [
+      "SOURCE_ONLY_PREPARED_BEFORE_ACTUAL32_CAPTURE_NO_FINDINGS",
+      "execute only on complete saved32 capture"
+    ]
+  },
+  "output_approval": false,
+  "page_and_saved_audit_verdict": "BEHAVIOR_PRESERVED_BUT_DESCRIPTIVE_GENERATION_LABELS_REQUIRE_CORRECTION_BEFORE_SHIPPING",
+  "page_controls": "All four executable files are exact accepted32 source after only generation-coordinate substitution. Exact39 target/input/inventory/class rows and active matrix unchanged. Required explicit source pin, exact negative deletion checks, actual native proof validation/DocumentBinding, actual HTML publication and full RenderContext snapshot preserved. No live proof reconstruction or output blessing.",
+  "preservation_controls": "All five executable files are exact accepted32 source after only coordinate substitution. Original31 baseline origin and complete baseline lane identical; actual canonical expected-hash gate and original verifier assertions unchanged. Current33 full import source census and all195 manifest rows rehashed, including negative deletion checks. Only four schedule production source files changed; two test rows complete six-file freeze delta.",
+  "preservation_verdict": "PASS_SOURCE_ONLY_RUNTIME_PENDING",
+  "reviewed": {
+    "current33-capture-template": {
+      "all_file_pins_verified": {
+        "capture_contract.py": "8184e4ede70f010035432e64aa8e0a6e30d2b4d71c16601dee75eb80dfd5c2b8",
+        "census.py": "877abb31aea358a98fbbce0938c2165cb765b9d9be22c4a6750da4f38c4beded",
+        "contract.json": "0e78d044c9a45f3381e376b72adca85669eed682b77ff4358635a47c7528b54b",
+        "plan.json": "b2b23f416ff23e578866c92e865884d1a4bcde5380f9826255be875c7b567cee",
+        "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+        "run-census.py": "4844dc5017cd01c7bbbc605a617edcd4a46b21b86878a9c88322d5e9d00ef3da"
+      },
+      "manifest_sha256": "d4b4bf06fd52bf8f92040002016517df71a7430d14243dfc361e1c18d803993c",
+      "python_source_parsed_without_execution": true
+    },
+    "current33-preservation-capture": {
+      "all_file_pins_verified": {
+        "capture_contract.py": "6ab23694e33d1500d2cd60b039660ef6dd0f9bb160a60e86bf3c878f5faa4650",
+        "capture_preservation.py": "dd1fdb8c339679fc76b4985eb0ccb5975cbc5ea1029a63d0c8b359ed77d63e68",
+        "compare-recovered.py": "bff29bdeb778465a52c0d043ba8e98f6e460aa4457c7e7ee36f72adf6f3cdfcd",
+        "composition-audit.json": "f6bed43a078eddb5cb962a85b0fb5dacf548e16728f910acf635da8e87179b3a",
+        "contract.json": "0885a881d724f4c8cf109775fe3ec67ee7f5e10d464e0486155ce46445271570",
+        "harness.diff": "77dbfbe8ef669fda2eeb68e22c32b8fec54c92a2c3ee42d20b440c161ee5bcac",
+        "plan.json": "fa1c66f0be305b8f506045d40491255d0a52fbb0315b9431ba14cc9d153618c4",
+        "run-capture.py": "60f62351c1667de7c73cc4017d0cec11d85d3295c5b1f4a96b6e2da3e1aef154",
+        "run-tests.py": "6bd45224b12b2c70c6bde68ee0bfccd0e67d4719e6fc4852972582b4752b96c0",
+        "saved-baseline-inventory.json": "63394b2d904c3fed1aa13ca78bf8e50fabf17c6561d1311bc1aac5937ff385ee"
+      },
+      "manifest_sha256": "b6317bc40788e34a840dc06e0920f868de8b557b6bb9bff62fd2b25ccb517da7",
+      "python_source_parsed_without_execution": true
+    },
+    "reviews/current33-saved-audit": {
+      "all_file_pins_verified": {
+        "README.md": "16181ee290928805dc6626cc3028fabd5d6ee994347cc230a8567eee52dacf1c",
+        "audit.py": "5324dd0d6cb05d3b4f114a7ebcebe63a765a790e8bd23f70d2c94f4ec5bbb3a7",
+        "plan.json": "5fa12a2f88ebd12378edc1680bbebd07d5a6f24955cc56ea45e71beda8344eb2"
+      },
+      "manifest_sha256": "b2a7972efe7968a8efdba3ea2768ce9535ea5767866fe0a726f44eb5d5f747ab",
+      "python_source_parsed_without_execution": true
+    }
+  },
+  "saved_audit_controls": "Executable differs only actual32\u2192actual33 matrix label. Saved comparison legitimately advances from executed30 to executed32. Exact33 pin and33 output paths present. No normalization or runtime outcome inferred.",
+  "scope": "Independent SOURCE_ONLY review. No model/test/capture/audit harness execution; no source/product edits. Exact33 is not current34 and is not authorized as a substitute after another freeze.",
+  "source_delta_paths": [
+    "model_unfolder/adapters/transformer/parser.py",
+    "model_unfolder/evidence/cross_attention_schedule.py",
+    "model_unfolder/evidence/position_linear_bias.py",
+    "model_unfolder/evidence/reader_claims.py",
+    "tests/test_reader_claims.py",
+    "tests/test_s9_repeated_schedule_qualification.py"
+  ]
+}

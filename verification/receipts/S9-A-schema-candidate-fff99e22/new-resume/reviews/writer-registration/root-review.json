@@ -1,0 +1,14 @@
+{
+  "decision": "ACCEPT finite writer registration source correction; runtime pending",
+  "manifest_sha256": "107069cd1aa3d0154080b003044d8acda65cf564fe2717b6d94e3830605d0403",
+  "checks": [
+    "Exactly two writer identities added; _note_fact existing identity count updated",
+    "Existing scanner, ledger target normalization and FactLedger schema/proof enforcement unchanged",
+    "Exact callsite counts2/1/3 correspond to alreadyexisting frozen26 publication sites",
+    "Poison tests target extra call, renamed author and moved module with stale identity detection"
+  ],
+  "limits": [
+    "This updates structural writer census, not proof authority or a model-name exception",
+    "No test/model run by this review; existing failed lane retained"
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/bloom-default-diagnostic.log",
+      "archive": "thirtysixth/bloom-default-diagnostic/bloom-default-diagnostic.log",
+      "sha256": "dbc360671a141170996944728ae133aef42d96d8a729d43a074d693d44003c74",
+      "bytes": 147
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/context-defaults.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/context-defaults.json",
+      "sha256": "b6e9cd6cbb8d27fd33b125dbd3b4c74a768e617eb005defd3916df8ee94e5f18",
+      "bytes": 79
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/count-resolution-traces.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/count-resolution-traces.json",
+      "sha256": "839564e35312e51022db88b3fe7f1d6c87d23ea97efc075dfa8aef6a984b566a",
+      "bytes": 1551
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/events.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/events.json",
+      "sha256": "1c227f58ff7e0d17a1e888f1b3cf1955fe7d280b2993a13fedadf264b0c34de9",
+      "bytes": 2618
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/input.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/input.json",
+      "sha256": "1cbe0bd0a14a770f90a98beaf1ac7e49376ef7733ebc91db7cf28ee6a263424d",
+      "bytes": 924
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/ir.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/ir.json",
+      "sha256": "b2c112bd9e8d26e313a4a094dd2d0e67e9e7283924f652ecf84c69a75b1a0a9c",
+      "bytes": 88718
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/native-facts.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/native-facts.json",
+      "sha256": "dc82eab4f17a622251d444c215e6d4cfb1c76124d76a7ed10f70bf9c5ee836dd",
+      "bytes": 35410
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/page.html",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/page.html",
+      "sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035",
+      "bytes": 54278
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/prepared-documents.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/prepared-documents.json",
+      "sha256": "5edaf405e82c7382fa9cbe4766ac5a783c5e65396f2c6ddd518ba2bb31b5bdba",
+      "bytes": 2953
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/missing_root_count/result.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/missing_root_count/result.json",
+      "sha256": "96208d84621fc9e6f9b4a5374e2f147f8924c8222c5d52f2c9d7594518f4892c",
+      "bytes": 88
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/context-defaults.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/context-defaults.json",
+      "sha256": "e1b07b5ad9b84f56d2cf8859859fbf952af3219190e8852f6a6626b68516c6de",
+      "bytes": 63
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "sha256": "af23245d7e3de444cb7c6e20c175ae0032a313b5e8d7250629502aae38d057d0",
+      "bytes": 6359
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/events.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/events.json",
+      "sha256": "cf79a81fac2d771598133160d747a3a2b1a6ffeb57f9ab89fcca411a07a1af6b",
+      "bytes": 8431
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/input.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/input.json",
+      "sha256": "23f84920adfc10e68115959e32a32b5bd2a03d4a566984f1fbe66c5182289d26",
+      "bytes": 941
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/ir.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/ir.json",
+      "sha256": "c96f9a05dca4b16cef94b27b664905b66c81f1638e2f2fb451c5becc71336ee8",
+      "bytes": 891497
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/native-facts.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/native-facts.json",
+      "sha256": "082b94e077e4914c58a571c1da672ef714b1691d58f214068adefd1632a4c893",
+      "bytes": 60188
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/page.html",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/page.html",
+      "sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba",
+      "bytes": 63372
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "sha256": "73e1961cc88fa8ac8a026302162a7019dad5938a4cb52e305555c90996ecc6ce",
+      "bytes": 2994
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/ordinary/result.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/ordinary/result.json",
+      "sha256": "683519153d99f17f5f76ec351e0badd483155287d69bc680df6dd36d2f528617",
+      "bytes": 79
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/capture/result.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/capture/result.json",
+      "sha256": "48d87cfb88355d340286deaac184ee4b1652ad59659257aac32e20dfb94cadc0",
+      "bytes": 338
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic/result.json",
+      "archive": "thirtysixth/bloom-default-diagnostic/result.json",
+      "sha256": "e56f0513c94e9a1a373740ef674b6d01560d9286ca08993026750a552d5c02e2",
+      "bytes": 555
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/bloom-default-diagnostic.py",
+      "archive": "thirtysixth/bloom-default-diagnostic/bloom-default-diagnostic.py",
+      "sha256": "19de2c0133f1fecfafc8a2ba9227e6cc900f694b6fcc87215f7044b7577781f3",
+      "bytes": 3587
+    },
+    {
+      "source": "/private/tmp/unfold-s9a-thirtysixth/run-bloom-default-diagnostic.py",
+      "archive": "thirtysixth/bloom-default-diagnostic/run-bloom-default-diagnostic.py",
+      "sha256": "074a86fb0e4d0e477520720aa4ab57288ed34c306080ae5b1d3f4a63847ca52d",
+      "bytes": 1085
+    }
+  ],
+  "authority": "Exact saved root diagnostic bytes; no regeneration or approval."
+}

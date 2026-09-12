@@ -1,0 +1,32 @@
+[
+  {
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "before_sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d",
+    "proposed_sha256": "6587eaa504c6ffbc0b28b8654a6f6b6424c2fbdab91506c447010a1c80c8c890"
+  },
+  {
+    "path": "model_unfolder/evidence/cross_attention_schedule.py",
+    "before_sha256": "a9d5b7d8322034bd6b96fe21df67792a1721a294fcb91f211f451b12e288926d",
+    "proposed_sha256": "e9588904fccdafdfe73415edae5262cfaf30fcd0d73cc9d6d6a137e59856400b"
+  },
+  {
+    "path": "model_unfolder/evidence/position_linear_bias.py",
+    "before_sha256": "e56f69808c0e6b1c11a6640bd789f2535aa529abd30da634e1980b2dae034bb6",
+    "proposed_sha256": "7ed45313345eb6d89485b4db357b79f30ec15f48968aa70b8b5fbe3bc38c25ec"
+  },
+  {
+    "path": "model_unfolder/evidence/reader_claims.py",
+    "before_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "proposed_sha256": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68"
+  },
+  {
+    "path": "tests/test_reader_claims.py",
+    "before_sha256": "b959371b1d112e6c65489d1cc916db2a38065aad3bc6b5a6523551b2fcd3165f",
+    "proposed_sha256": "7927b3412fa6334b5cfbf1536caa12ae0c7b4eedcab0c472416ad1907151abb3"
+  },
+  {
+    "path": "tests/test_s9_repeated_schedule_qualification.py",
+    "before_sha256": null,
+    "proposed_sha256": "3fdf4c8937470c88244102f2bcc0b969544ff074272bf6da2fe9aaf539a3024d"
+  }
+]

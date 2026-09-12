@@ -37,6 +37,7 @@ from .component_owner import (
 from .construction_calls import resolve_import_reference
 from .decoder_block import decoder_block_path_for_config
 from .models import SourceBundle
+from .reader_claims import ReaderClaimUnavailable, ReaderFactProjection, retained_claim_reader
 from .program_index import (
     ConstructionSite,
     ConstructionSiteId,
@@ -320,6 +321,49 @@ def _routed_expert_candidates(index, root, block_occurrence, block_symbol):
     return ordered
 
 
+@dataclass(frozen=True)
+class ExpertStorageClaimWitness:
+    index: ProgramIndex
+    storage: RoutedExpertStorage
+    reader_symbol = "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+
+    def validate_result(self, result):
+        if type(self.storage) is not RoutedExpertStorage:
+            raise TypeError("expert storage requires exact routed parameter/dataflow evidence")
+        self.storage.__post_init__()
+        if result.status != "resolved" or result.value is not self.storage \
+                or result.owner != self.storage.block_occurrence:
+            raise ValueError("expert storage claim belongs to another block")
+
+    def declared_kind(self, owner, key):
+        if owner != "decoder.ffn.expert" or key not in {
+                "expert_projection_mode", "expert_activation_formula"}:
+            raise ValueError("expert storage has no such intended projection")
+        return ("relation" if key == "expert_projection_mode" else "applied_function")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.ffn.expert":
+            raise ValueError("expert storage cannot author this owner")
+        if key == "expert_projection_mode":
+            return ReaderFactProjection(owner, key, "relation", self.storage.projection_mode,
+                                       "code_proven")
+        if key != "expert_activation_formula":
+            raise ValueError("expert storage cannot author this fact")
+        activation = self.storage.activation
+        if activation is None or activation.kind is None or activation.config_path:
+            raise ReaderClaimUnavailable("expert dispatch has no exact selected callable proof")
+        activation.__post_init__()
+        value = {"kind": activation.kind,
+                 **{name: getattr(activation, name) for name in
+                    ("alpha", "gate_clip", "up_clip", "up_offset")
+                    if getattr(activation, name) is not None}}
+        return ReaderFactProjection(owner, key, "applied_function", value, "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn.expert', 'expert_projection_mode', 'relation'),
+    ('decoder.ffn.expert', 'expert_activation_formula', 'applied_function'),
+))
 def decoder_routed_expert_storage_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -345,6 +389,7 @@ def decoder_routed_expert_storage_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=ExpertStorageClaimWitness(index, result.value),
         provenance=(*block.provenance, *result.provenance))
 
 
@@ -775,6 +820,27 @@ def _swish_formula_evidence(
     if len(alpha_values) != 1:
         return None
     alpha, alpha_span = alpha_values[0]
+    gate_operands = tuple(child for child in argument.children
+                          if _numeric_expression(index, owner, child) is None)
+    if len(gate_operands) != 1 or gate_operands[0].kind != "name":
+        return None
+    gate = gate_operands[0]
+    # x * sigmoid(alpha*x) requires the SAME local operand on both sides.
+    # A two-lane dependency set alone also accepts gate*sigmoid(alpha*up).
+    # Restrict this capability to an exact direct product; alias transports
+    # need a separate reaching-definition proof before expanding support.
+    gate_products = tuple(expression
+        for binding in index.bindings_in(callable_symbol)
+        if binding.value is not None and binding.guard == sigmoid_call.guard
+        for expression in _expressions(binding.value)
+        if expression.kind == "binop" and expression.operator == "*"
+        and len(expression.children) == 2
+        and any(child.span == sigmoid_call.span for child in expression.children)
+        and any(child.kind == "name" and child.name == gate.name
+                for child in expression.children))
+    if len(gate_products) != 1 or not _call_reaches_expression(
+            index, callable_symbol, sigmoid_call, product):
+        return None
 
     gate_clips = []
     up_clips = []
@@ -834,7 +900,7 @@ def _swish_formula_evidence(
         kind="swish", alpha=alpha,
         gate_clip=gate_clip, up_clip=up_clip, up_offset=offset,
         spans=_typed_spans((
-            sigmoid_call.span, alpha_span, *clip_spans, *offset_spans)))
+            sigmoid_call.span, gate_products[0].span, alpha_span, *clip_spans, *offset_spans)))
 
 
 def _call_reaches_expression(index, callable_symbol, call, expression):
@@ -1373,18 +1439,25 @@ def _lane_product_feeds_down(
     index, callable_symbol, lane_names, down_field, *,
     start_span, loop_spans,
 ):
-    product = _lane_product_binding(
-        index, callable_symbol, lane_names, start_span=start_span)
-    if not product:
-        return ()
-    product_target, product_spans = product[0], product[1:]
-    for binding in index.bindings_in(callable_symbol):
-        if binding.value is None or _span_key(binding.span) <= _span_key(start_span):
+    products = _lane_product_binding(
+        index, callable_symbol, lane_names, start_span=start_span, all_products=True)
+    bindings = index.bindings_in(callable_symbol)
+    for binding in bindings:
+        if binding.value is None or _span_key(binding.span) <= _span_key(start_span) \
+                or not _contains_self_field(binding.value, down_field) \
+                or not any(_span_within(binding.span, span) for span in loop_spans):
             continue
-        if _contains_self_field(binding.value, down_field) \
-                and product_target in _names(binding.value) \
-                and any(_span_within(binding.span, span) for span in loop_spans):
-            return (*product_spans, binding.span)
+        for product_target, product_span in products:
+            if product_target not in _names(binding.value):
+                continue
+            definitions = tuple(previous for previous in bindings
+                if product_target in _target_names(previous.targets)
+                and _span_key(previous.span) < _span_key(binding.span))
+            if not definitions:
+                continue
+            latest = max(definitions, key=lambda previous: _span_key(previous.span))
+            if latest.span == product_span and latest.guard == binding.guard:
+                return (product_span, binding.span)
     return ()
 
 
@@ -1409,8 +1482,9 @@ def _name_result_feeds_down(
     return ()
 
 
-def _lane_product_binding(index, callable_symbol, lane_names, *, start_span):
+def _lane_product_binding(index, callable_symbol, lane_names, *, start_span, all_products=False):
     state = {lane_names[0]: {_LANE_0}, lane_names[1]: {_LANE_1}}
+    products = []
     for binding in index.bindings_in(callable_symbol):
         if binding.value is None or _span_key(binding.span) <= _span_key(start_span):
             continue
@@ -1427,8 +1501,10 @@ def _lane_product_binding(index, callable_symbol, lane_names, *, start_span):
         if dependencies == {_LANE_0, _LANE_1} and any(
                 expression.kind == "binop" and expression.operator == "*"
                 for expression in _expressions(binding.value)):
-            return (target, binding.span)
-    return ()
+            products.append((target, binding.span))
+            if not all_products:
+                return products[0]
+    return tuple(products) if all_products else ()
 
 
 def _complementary_stride_two_slices(expressions, parameter):

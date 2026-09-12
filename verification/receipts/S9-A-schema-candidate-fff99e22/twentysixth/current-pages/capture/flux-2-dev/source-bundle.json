@@ -1,0 +1,70 @@
+{
+  "architecture": "Flux2Transformer2DModel",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "Flux2Transformer2DModel",
+    "text_encoder": "Mistral3ForConditionalGeneration",
+    "text_encoder.text_config": "MistralModel",
+    "text_encoder.vision_config": "PixtralVisionModel"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_flux2.py"
+    ],
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral3/modeling_mistral3.py"
+    ],
+    "text_encoder.text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral/modeling_mistral.py"
+    ],
+    "text_encoder.vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/pixtral/modeling_pixtral.py"
+    ]
+  },
+  "component_model_types": {
+    "text_encoder": "mistral3",
+    "text_encoder.text_config": "mistral",
+    "text_encoder.vision_config": "pixtral"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_flux2.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral3/modeling_mistral3.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral/modeling_mistral.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/pixtral/modeling_pixtral.py"
+  ],
+  "import_roots": {
+    "root": [
+      {
+        "package": "diffusers",
+        "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+      }
+    ]
+  },
+  "model_id": "black-forest-labs/FLUX.2-dev",
+  "model_type": null,
+  "pipeline_components": [
+    "text_encoder"
+  ],
+  "source": "local",
+  "supporting_files": {
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral3/configuration_mistral3.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+    ],
+    "text_encoder.text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/mistral/configuration_mistral.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ],
+    "text_encoder.vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/pixtral/configuration_pixtral.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

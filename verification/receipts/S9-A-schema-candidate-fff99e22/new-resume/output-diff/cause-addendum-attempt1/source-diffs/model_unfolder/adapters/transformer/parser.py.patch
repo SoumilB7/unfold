@@ -1,0 +1,1283 @@
+--- fff99e22/model_unfolder/adapters/transformer/parser.py
++++ frozen26/model_unfolder/adapters/transformer/parser.py
+@@ -203,17 +203,6 @@
+             guard_config_selector=_select_guard,
+         )
+         if result.status == "resolved":
+-            dependencies = tuple(dict.fromkeys((
+-                *result.value.norm_config_paths,
+-                *result.value.residual_config_paths)))
+-            fact_source_kinds = tuple(
+-                (dependency,
+-                 source_kinds.get(dependency, "config_declared"))
+-                for dependency in dependencies)
+-            result = replace(
+-                result,
+-                value=replace(
+-                    result.value, config_source_kinds=fact_source_kinds))
+             for fact_key, dependencies in (
+                     ("norm_placement", result.value.norm_config_paths),
+                     ("residual_topology",
+@@ -261,19 +250,14 @@
+         """Supply one exact boolean only after the source reader names it."""
+         if config_root is None or not exact_path:
+             return None
+-        parent = config_root
+-        for part in exact_path[:-1]:
+-            parent = (parent.get(part) if isinstance(parent, dict)
+-                      else getattr(parent, part, None))
+-            if parent is None:
+-                return None
+-        resolution = _config_access.resolve(
+-            parent, exact_path[-1], path=tuple(exact_path[:-1]))
+-        expected = ".".join(exact_path)
+-        if resolution.ambiguous or not resolution.present \
+-                or resolution.selected_path != expected \
++        from ...evidence.reader_claims import resolve_reader_operand
++        resolution = resolve_reader_operand(config_root, exact_path)
++        if resolution is None or resolution.ambiguous \
++                or not (resolution.present or resolution.source_kind == "class_default") \
+                 or not isinstance(resolution.value, bool):
+             return None
++        status = ("class_default" if resolution.source_kind == "class_default"
++                  or resolution.provenance == "class_default" else "code_and_config")
+         resolution.bind(
+             reader="decoder_ffn_mechanism_for_path",
+             fact_owner="decoder.ffn", fact_key="gated")
+@@ -281,7 +265,7 @@
+             mechanism="ffn_mechanism",
+             fact_owner="decoder.ffn", fact_key="gated",
+             reader="decoder_ffn_mechanism_for_path",
+-            status="code_and_config")
++            status=status)
+         return decision.value
+ 
+     return context.cached_reader_result(
+@@ -303,13 +287,20 @@
+     This is the U3 owner-qualified reader, not a whole-file role/name scan.
+     Unresolved evidence stays ``None`` and therefore cannot fabricate a block.
+     """
++    evidence = _embedding_norm_result(context)
++    return (evidence.value if evidence is not None
++            and evidence.status == "resolved" else None)
++
++
++def _embedding_norm_result(context):
+     if context is None:
+         return None
+     from ...evidence.embedding_bookend import embedding_stage_norm_evidence
+-    evidence = embedding_stage_norm_evidence(
+-        context.program_index(), context.source_bundle,
+-        allow_root_stage=True)
+-    return evidence.value if evidence.status == "resolved" else None
++    return context.cached_reader_result(
++        "model.embedding_norm_kind", (),
++        lambda: embedding_stage_norm_evidence(
++            context.program_index(), context.source_bundle,
++            allow_root_stage=True))
+ 
+ 
+ def _code_final_norm(context=None):
+@@ -716,20 +707,24 @@
+         if result is not None and result.status == "resolved" else None
+ 
+ 
++def _manual_weight_tying_result(context=None, *, config_path=()):
++    """Retain the exact original manual-assignment reader for its scalar fact."""
++    if context is None:
++        return None
++    from ...evidence.weight_tying import manual_weight_tying_for_path
++    path = tuple(config_path)
++    return context.cached_reader_result(
++        "model.manual_weight_tying", path,
++        lambda: manual_weight_tying_for_path(
++            context.program_index(), context.source_bundle, path))
++
++
+ def _code_lm_head_tying(
+     cfg: Any, context=None, *, config_path=(),
+ ) -> bool | None:
+-    """Exact returned-head ↔ stack-feeding-embedding assignment proof.
+-
+-    ``_tied_weights_keys`` remains capability only.  Missing/ambiguous source
+-    evidence stays unknown and falls through to the class-default tier.
+-    """
+-    if context is None:
+-        return None
+-    from ...evidence.weight_tying import manual_weight_tying_for_path
+-    result = manual_weight_tying_for_path(
+-        context.program_index(), context.source_bundle, tuple(config_path))
+-    return True if result.status == "resolved" else None
++    """Exact returned-head ↔ stack-feeding-embedding assignment proof."""
++    result = _manual_weight_tying_result(context, config_path=config_path)
++    return True if result is not None and result.status == "resolved" else None
+ 
+ 
+ from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
+@@ -896,25 +891,20 @@
+     _source_present = bool(getattr(getattr(context, "source_bundle", None),
+                                    "files", ()) or ())
+ 
+-    def _note_fact(owner: str, name: str, value, status: str, source=None):
++    def _note_fact(owner: str, name: str, value, status: str, source=None, *, reader_result=None):
+         if _facts is not None:
+             _facts.record(owner, name, value, status, source)
++            if reader_result is not None:
++                from ...evidence.reader_claims import declare_reader_fact
++                from ...evidence.config_access import current_prepared_document
++                fact = _facts.typed_records()[f"{owner}.{name}"]
++                _facts.record_typed(declare_reader_fact(
++                    fact, reader_result, context.program_index(),
++                    current_prepared_document.get()))
+ 
+     def _note_bound_attention_fact(
+             bound, reader_result, actual_config_paths, operand_resolutions):
+         """Publish the U6 mechanism with its exact typed evidence channels."""
+-        if _facts is None:
+-            return
+-        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
+-
+-        spans = tuple(dict.fromkeys(
+-            span for provenance in reader_result.provenance
+-            for span in provenance.spans))
+-        fact_spans = tuple(dict.fromkeys(FactSourceSpan(
+-            component=span.source.component_key or "root",
+-            file=span.source.canonical_path,
+-            line=span.line,
+-        ) for span in spans))
+         premise_paths = tuple(path for path, _value in bound.premises)
+         resolutions = tuple(
+             operand_resolutions[path]
+@@ -925,13 +915,31 @@
+                    or item.source_kind == "class_default"
+                    for item in resolutions)
+             else "code_and_config")
++        for resolution in resolutions:
++            resolution.consume_decision(
++                reader="decoder_attention_mechanism_for_path",
++                fact_owner="decoder.attention", fact_key="mechanism",
++                mechanism="attention_mechanism", status=status,
++                expected_value=bound.kind)
++        if _facts is None:
++            return
++        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
++
++        spans = tuple(dict.fromkeys(
++            span for provenance in reader_result.provenance
++            for span in provenance.spans))
++        fact_spans = tuple(dict.fromkeys(FactSourceSpan(
++            component=span.source.component_key or "root",
++            file=span.source.canonical_path,
++            line=span.line,
++        ) for span in spans))
+         config_paths = tuple(
+             ".".join(selected)
+             for path in premise_paths
+             if (selected := (
+                 actual_config_paths[path]
+                 if path in actual_config_paths else path)) is not None)
+-        _facts.record_typed(EvidenceFact(
++        fact = EvidenceFact(
+             key="mechanism",
+             owner="decoder.attention",
+             value=bound.kind,
+@@ -943,7 +951,61 @@
+             reason=(
+                 "exact owner source protocol joined to the exact selected "
+                 "checkpoint occurrences"),
+-        ))
++        )
++        from ...evidence.reader_claims import qualify_reader_fact
++        from ...evidence.config_access import current_prepared_document
++        _facts.record_typed(qualify_reader_fact(
++            fact, reader_result, context.program_index(),
++            current_prepared_document.get()))
++
++    def _ffn_status_with_selector_default(value, status):
++        from ...evidence.config_access import current_prepared_document
++        from ...evidence.ffn_mechanism import ConfigSelectedFFNMechanism
++        from ...evidence.reader_claims import reader_operand
++        if isinstance(getattr(_ffn_mechanism, "value", None), ConfigSelectedFFNMechanism) \
++                and value is not None and current_prepared_document.get() is not None:
++            selector = reader_operand(current_prepared_document.get(),
++                                      _ffn_mechanism.value.selector_config_path,
++                                      allow_aliases=False)
++            if selector.source_kind == "class_default":
++                # The branch is established by source; this exact omitted
++                # boolean supplies its choice. Every dependent fact retains
++                # that weaker tier, even when the chosen branch is literal.
++                status = "class_default"
++        return status
++
++    def _note_ffn_mechanism_fact(key, value, status, source):
++        from ...evidence.config_access import current_prepared_document
++        from ...evidence.reader_claims import ReaderClaimUnavailable
++        status = _ffn_status_with_selector_default(value, status)
++        witness = getattr(_ffn_mechanism, "claim_witness", None)
++        if witness is not None and value is not None:
++            try:
++                projection = witness.project(
++                    "decoder.ffn", key, current_prepared_document.get())
++            except ReaderClaimUnavailable:
++                # Keep the existing row intact, but retain the actual reader's
++                # intended semantic kind without manufacturing a proof.
++                _note_fact("decoder.ffn", key, value, status, source, reader_result=_ffn_mechanism)
++                if _facts is not None:
++                    from ...evidence.reader_claims import qualify_reader_fact
++                    fact = _facts.typed_records()[f"decoder.ffn.{key}"]
++                    _facts.record_typed(qualify_reader_fact(
++                        fact, _ffn_mechanism, context.program_index(),
++                        current_prepared_document.get()))
++                return
++            # A source-selected branch can expose a pre-existing provenance
++            # error. Keep that fact unstamped until its separately enumerated
++            # correction is approved; qualification must not bless the error.
++            if projection.status == status:
++                _note_typed_fact(
++                    key=key, owner="decoder.ffn", value=value, status=status,
++                    reader_result=_ffn_mechanism,
++                    config_paths=projection.config_paths,
++                    reader=source,
++                    reason="exact ordinary FFN construction and applied dataflow")
++                return
++        _note_fact("decoder.ffn", key, value, status, source, reader_result=_ffn_mechanism)
+ 
+     def _note_typed_fact(
+             *, key, owner, value, status, reader_result, config_paths, reader,
+@@ -963,7 +1025,7 @@
+         spans = tuple(dict.fromkeys(
+             span for provenance in reader_result.provenance
+             for span in provenance.spans))
+-        _facts.record_typed(EvidenceFact(
++        fact = EvidenceFact(
+             key=key,
+             owner=owner,
+             value=value,
+@@ -979,7 +1041,18 @@
+             reason=reason,
+             claim_kind=claim_kind,
+             claim_readers=tuple(claim_readers),
+-        ))
++        )
++        from ...evidence.reader_claims import qualify_reader_fact, ReaderClaimUnavailable
++        from ...evidence.config_access import current_prepared_document
++        try:
++            qualified = qualify_reader_fact(
++                fact, reader_result, context.program_index(),
++                current_prepared_document.get())
++        except ReaderClaimUnavailable:
++            # A finite reader may lack one projection's semantic premise.
++            # Preserve its unqualified fact; malformed proofs still raise.
++            qualified = fact
++        _facts.record_typed(qualified)
+ 
+     _unknown_status = "ambiguous" if _source_present else "oracle_missing"
+     model_type = (_g(cfg, "model_type") or "unknown").lower()
+@@ -1214,8 +1287,8 @@
+             fact_owner="decoder.attention",
+             mechanism="attention_mechanism", status=None,
+             expected_value=_config_access.MISSING,
+-            reader="adapters.transformer.parser.parse"):
+-        """Consume only when U1 selected the exact path proven by source code."""
++            reader="adapters.transformer.parser.parse", defer_consumption=False):
++        """Resolve exact source operands; defer only until their mechanism is bound."""
+         exact = tuple(exact_path)
+         # The source may read an audited input spelling directly (BLOOM's
+         # ``n_head``) while the config class also exposes an equal canonical
+@@ -1268,6 +1341,9 @@
+                 not class_default and selected != exact and not same_property):
+             return None
+         _attention_operand_resolutions[exact] = res
++        if defer_consumption:
++            _attention_actual_config_paths[exact] = None if class_default else selected
++            return res.value
+         decision = res.consume_decision(
+             reader=reader,
+             fact_owner=fact_owner,
+@@ -1280,8 +1356,8 @@
+             None if class_default else selected)
+         return decision.value
+ 
+-    def _resolve_exact_config_path(exact_path):
+-        """Resolve one source-proven spelling without alias search.
++    def _resolve_exact_config_path(exact_path, *, allow_aliases=True):
++        """Resolve a source-proven value through its exact default channel.
+ 
+         Width formulas may cite several independently meaningful operands
+         (for example explicit ``n_inner=None`` plus ``n_embd``).  Each must
+@@ -1311,11 +1387,11 @@
+         # occurrence without widening its authority.
+         _source_aliases = (
+             _ALIASES.get(exact[-1], ())
+-            if exact[-1] in _ALIASES else ())
++            if allow_aliases and exact[-1] in _ALIASES else ())
+         resolution = _config_access.resolve(
+             container, exact[-1], _source_aliases, path=exact[:-1])
+         if resolution.state == "absent":
+-            defaults = _defaults_by_path.get(exact[:-1], {})
++            defaults = _defaults_by_path.get(exact[:-1])
+             if not isinstance(defaults, dict) and exact[:-1] == _text_path:
+                 defaults = _fact_class_defaults
+             if isinstance(defaults, dict) and exact[-1] in defaults:
+@@ -1344,7 +1420,58 @@
+         return tuple(source_path)
+ 
+     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
+-    hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
++    _model_width_resolution = _scoped("hidden_size")
++    _model_width_reader = "adapters.transformer.parser.parse"
++    hidden_size = None if _model_width_resolution.ambiguous else _model_width_resolution.consume(
++        fact_owner="model", fact_key="hidden_size", reader=_model_width_reader,
++        mechanism="model_hidden_size_value",
++        status="config_declared" if _model_width_resolution.present else "")
++    if _model_width_resolution.source_kind == "class_default":
++        hidden_size = None  # Provisional defaults require the exact scalar proof below.
++    # An explicit scalar retains the existing ConfigValueClaimProof boundary:
++    # exact checkpoint occurrence and actual consumption, not a source-flow claim.
++    if (_facts is not None and type(hidden_size) is int
++            and _model_width_resolution.present and _model_width_resolution.selected_path
++            and _model_width_resolution.source_kind != "class_default"):
++        from ...evidence.facts import EvidenceFact
++        from ...evidence.claim_evidence import qualify_config_value_fact
++        _declared_width = EvidenceFact(
++            owner="model", key="hidden_size", value=hidden_size,
++            status="config_declared", completeness="complete",
++            config_paths=(_model_width_resolution.selected_path,),
++            legacy_source=_model_width_reader,
++            reason="exact checkpoint scalar declaration; not a state-flow connection",
++            claim_kind="value", claim_readers=(_model_width_reader,))
++        _facts.record_typed(qualify_config_value_fact(
++            _declared_width, context.config_access.events,
++            _config_access.current_prepared_document.get()))
++    # A missing operand may use an exact source-bound config CLASS value. No
++    # default-reader work is needed for an ordinary explicit width, and this
++    # does not enable the broad shape overlay or prove embedding execution.
++    if hidden_size is None or _model_width_resolution.source_kind == "class_default":
++        from ...evidence.class_default_value import model_hidden_size_class_default
++        _model_width_result = context.cached_reader_result(
++            "model.hidden_size_class_default", _text_path,
++            lambda: model_hidden_size_class_default(context.program_index(), context.source_bundle, _text_path))
++        if _model_width_result.status == "resolved":
++            _width_projection = _model_width_result.claim_witness.project(
++                "model", "hidden_size", _config_access.current_prepared_document.get())
++            _width_resolution = _resolve_exact_config_path((*_text_path, "hidden_size"))
++            if _width_resolution is not None and _width_resolution.source_kind == "class_default" \
++                    and type(_width_resolution.value) is int and _width_resolution.value == _width_projection.value:
++                _width_resolution.consume_decision(
++                    reader=_model_width_result.claim_witness.reader_symbol,
++                    fact_owner="model", fact_key="hidden_size", mechanism="model_hidden_size_value",
++                    status="class_default", expected_value=_width_projection.value)
++                _note_typed_fact(
++                    key="hidden_size", owner="model", value=_width_projection.value,
++                    status="class_default", reader_result=_model_width_result,
++                    config_paths=(), reader=_model_width_result.claim_witness.reader_symbol,
++                    reason="exact source-bound config class scalar default; checkpoint operand absent",
++                    completeness="complete")
++                _qualified_width = _facts.typed_records().get("model.hidden_size") if _facts is not None else None
++                if _qualified_width is not None and _qualified_width.claim_evidence is not None:
++                    hidden_size = _qualified_width.value
+     # U6 qualification law: numeric declarations do not select attention
+     # geometry.  The exact mechanism reader below identifies which config
+     # occurrences are count operands; the exact head-geometry reader evaluates
+@@ -1525,22 +1652,16 @@
+         # alias arbitration must not choose an equal sibling spelling and then
+         # reject the path the callable actually reads (Gemma configs commonly
+         # carry both hidden_act and hidden_activation).
+-        _dispatch_parent = cfg
+-        for _part in dispatch_path[:-1]:
+-            _dispatch_parent = (
+-                _dispatch_parent.get(_part)
+-                if isinstance(_dispatch_parent, dict)
+-                else getattr(_dispatch_parent, _part, None))
+-            if _dispatch_parent is None:
+-                break
+-        _dispatch_res = (
+-            _config_access.resolve(
+-                _dispatch_parent, dispatch_path[-1], (),
+-                path=dispatch_path[:-1])
+-            if _dispatch_parent is not None else None)
++        # Use the same source-addressed value ladder as geometry and width.
++        # The default supplies the value only after this mechanism has proved
++        # the dispatch path; it cannot establish an activation on its own.
++        _dispatch_res = _resolve_exact_config_path(
++            dispatch_path, allow_aliases=False)
+         _dispatch_value = (
+             _dispatch_res.value
+-            if _dispatch_res is not None and _dispatch_res.present
++            if _dispatch_res is not None
++            and (_dispatch_res.present
++                 or _dispatch_res.source_kind == "class_default")
+             and not _dispatch_res.ambiguous else None)
+         if isinstance(_dispatch_value, dict):
+             _dispatch_value = _dispatch_value.get("name")
+@@ -1556,8 +1677,10 @@
+             _activation_decision_res = _dispatch_res
+             _activation_status = (
+                 "class_default"
+-                if _dispatch_res.provenance == "class_default"
+-                else "config_declared")
++                if (_dispatch_res.provenance == "class_default"
++                    or _dispatch_res.source_kind == "class_default")
++                else "code_and_config")
++            _activation_event_status = _ffn_status_with_selector_default(activation_raw, _activation_status)
+             # Consume only the exact occurrence the source dispatch names.
+             # Equal aliases remain visible inspections, never alternate proof.
+             _dispatch_res.consume_decision(
+@@ -1565,10 +1688,9 @@
+                 fact_owner="decoder.ffn",
+                 fact_key="activation",
+                 reader="adapters.transformer.parser.parse",
+-                status=_activation_status,
++                status=_activation_event_status,
++                expected_value=activation_raw,
+             )
+-            if _activation_status == "config_declared":
+-                _activation_status = "code_and_config"
+             _activation_src = (
+                 "decoder_ffn_mechanism_for_path:"
+                 + ".".join(dispatch_path))
+@@ -1580,8 +1702,8 @@
+     activation = activation_raw.lower() if isinstance(activation_raw, str) else None
+     if activation_defaulted:
+         _activation_status, _activation_src = _unknown_status, None
+-    _note_fact("decoder.ffn", "activation", activation,
+-               _activation_status, _activation_src)
++    _note_ffn_mechanism_fact("activation", activation,
++                             _activation_status, _activation_src)
+     if _nested_activation_res is not None \
+             and _nested_activation_res.present \
+             and not (
+@@ -1703,6 +1825,11 @@
+                    "position_application": "embedding_add"},
+             status="code_proven", reader_result=_stage_position_result,
+             config_paths=(),
++            completeness=(
++                "presence_only"
++                if _position_stage_kind == "fixed_absolute"
++                and _stage_position_result.claim_witness is not None
++                else "complete"),
+             reader=(
+                 "decoder_learned_absolute_position_for_path"
+                 if _position_stage_kind == "learned_absolute" else
+@@ -2266,8 +2393,17 @@
+     # U2 default-kill: no channel → typed "unknown" (generic Normalization
+     # label + honest card prose), never a silent modern-LM rmsnorm.
+     norm_kind    = _norm_kind_ev or "unknown"
+-    _note_fact("decoder.layer", "norm_kind", norm_kind,
+-               *( _norm_kind_prov if _norm_kind_prov else (_unknown_status, None)))
++    if _norm_kind_ev is not None:
++        _note_typed_fact(
++            key="norm_kind", owner="decoder.layer", value=norm_kind,
++            status="code_proven", completeness="presence_only",
++            reader_result=_decoder_norm_result(context, config_path=_text_path),
++            config_paths=(), reader="decoder_norm_kind_for_path",
++            reason="exact invoked normalization primitive; opaque calls remain unresolved")
++    else:
++        _note_fact("decoder.layer", "norm_kind", norm_kind,
++                   *(_norm_kind_prov or (_unknown_status, None)),
++                   reader_result=_decoder_norm_result(context, config_path=_text_path))
+     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
+     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
+     # structure), the general replacement for the model_type identity table.
+@@ -2310,7 +2446,7 @@
+     # block has no ordinary gate fact to record.  The exact reader result
+     # remains in ``context.reader_results`` as the typed abstention.
+     if ffn_gated is not None:
+-        _note_fact("decoder.ffn", "gated", ffn_gated,
++        _note_ffn_mechanism_fact("gated", ffn_gated,
+                    ("code_and_config" if _ffn_selected_by_config
+                     else "code_proven"),
+                    source=(
+@@ -2328,7 +2464,7 @@
+     # Projection storage is mechanism-scoped too.  Do not manufacture an
+     # ordinary ``split`` fact when only a routed-expert mechanism exists.
+     if _code_storage_mode is not None:
+-        _note_fact("decoder.ffn", "projection_mode",
++        _note_ffn_mechanism_fact("projection_mode",
+                    _code_storage_mode,
+                    ("code_and_config" if _ffn_selected_by_config
+                     else "code_proven"),
+@@ -2338,13 +2474,16 @@
+                            _ffn_mechanism_value.selector_config_path)
+                        if _ffn_selected_by_config else
+                        "decoder_ffn_mechanism_for_path"))
+-    _note_fact(
+-        "decoder.attention", "projection_mode",
+-        _code_attention_storage,
+-        "code_proven" if _code_attention_storage is not None else _unknown_status,
+-        source=("decoder_attention_projection_storage_for_path"
+-                if _code_attention_storage is not None else None),
+-    )
++    if _code_attention_storage is not None:
++        _note_typed_fact(
++            key="projection_mode", owner="decoder.attention",
++            value=_code_attention_storage, status="code_proven",
++            reader_result=_attention_storage_result(context, _text_path),
++            config_paths=(), reader="decoder_attention_projection_storage_for_path",
++            reason="exact projection constructions and compute-entry lineage")
++    else:
++        _note_fact("decoder.attention", "projection_mode", None, _unknown_status,
++                   reader_result=_attention_storage_result(context, _text_path))
+     _output_projection_result = _attention_output_projection_result(
+         context, config_path=_text_path)
+     attention_output_projection = (
+@@ -2403,7 +2542,8 @@
+         )
+     else:
+         _note_fact(
+-            "decoder.layer", "norm_placement", "unknown", _unknown_status)
++            "decoder.layer", "norm_placement", "unknown", _unknown_status,
++            reader_result=_cell_topology_result_value)
+     if not norm_placement:
+         norm_placement = "unknown"
+     # U8-B owns position below, after the checkpoint-only selector exists.
+@@ -2457,13 +2597,13 @@
+             _bound_values[_binding.query_heads_path] = \
+                 _consume_code_bound_path(
+                     "num_attention_heads", _binding.query_heads_path,
+-                    fact_key="num_heads")
++                    fact_key="num_heads", defer_consumption=True)
+             if _binding.protocol == "grouped_kv":
+                 _bound_values[_binding.key_value_heads_path] = \
+                     _consume_code_bound_path(
+                         "num_key_value_heads",
+                         _binding.key_value_heads_path,
+-                        fact_key="num_kv_heads")
++                        fact_key="num_kv_heads", defer_consumption=True)
+             for _path, _expected in _binding.selection_premises:
+                 _resolution = _resolve_exact_config_path(_path)
+                 if _resolution is None or _resolution.value != _expected:
+@@ -2474,12 +2614,7 @@
+                     None if _resolution.source_kind == "class_default"
+                     else tuple(_resolution.selected_path.split("."))
+                     if _resolution.selected_path else None)
+-                _decision = _resolution.consume_decision(
+-                    reader="decoder_attention_mechanism_for_path",
+-                    fact_owner="decoder.attention",
+-                    fact_key="mechanism",
+-                    mechanism="attention_mechanism")
+-                _bound_values[_path] = _decision.value
++                _bound_values[_path] = _resolution.value
+         elif isinstance(_binding, LatentAttentionBinding):
+             _latent_fields = [
+                 ("num_attention_heads", _binding.num_heads_path, "num_heads"),
+@@ -2496,7 +2631,7 @@
+                     "q_lora_rank"))
+             for _field, _path, _fact_key in _latent_fields:
+                 _bound_values[_path] = _consume_code_bound_path(
+-                    _field, _path, fact_key=_fact_key)
++                    _field, _path, fact_key=_fact_key, defer_consumption=True)
+         elif isinstance(
+                 _binding,
+                 (MultiQueryAttentionBinding,
+@@ -2504,17 +2639,17 @@
+             _bound_values[_binding.num_heads_path] = \
+                 _consume_code_bound_path(
+                     "num_attention_heads", _binding.num_heads_path,
+-                    fact_key="num_heads")
++                    fact_key="num_heads", defer_consumption=True)
+             _bound_values[_binding.selector_path] = \
+                 _consume_code_bound_path(
+                     "multi_query", _binding.selector_path,
+-                    fact_key="mechanism")
++                    fact_key="mechanism", defer_consumption=True)
+             if isinstance(_binding, EquivalentDispatchMultiQueryBinding):
+                 _bound_values[_binding.alternate_architecture_path] = \
+                     _consume_code_bound_path(
+                         "new_decoder_architecture",
+                         _binding.alternate_architecture_path,
+-                        fact_key="mechanism")
++                        fact_key="mechanism", defer_consumption=True)
+         _bound_attention = bind_attention_mechanism(
+             _binding, _bound_values)
+     if _bound_attention is not None:
+@@ -2604,27 +2739,29 @@
+                        for item in _head_fact_resolutions)
+                 else "code_and_config"
+                 if _head_fact_resolutions else "code_proven")
++            head_dim = _head_geometry_value.head_dim
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": head_dim,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _head_fact_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_head_geometry_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_head_geometry_status)
+-            head_dim = _head_geometry_value.head_dim
++                    status=_head_geometry_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": head_dim,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_head_geometry_status,
+                 reader_result=_head_geometry_result,
+                 config_paths=tuple(
+@@ -2656,26 +2793,28 @@
+                     or item.source_kind == "class_default"
+                     for item in _mla_head_resolutions)
+                 else "code_and_config")
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": head_dim,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _mla_head_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_mechanism_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_mla_head_status)
++                    status=_mla_head_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": head_dim,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_mla_head_status,
+                 reader_result=_attention_mechanism_evidence,
+                 config_paths=tuple(
+@@ -2706,26 +2845,28 @@
+                     or item.source_kind == "class_default"
+                     for item in _partial_head_resolutions)
+                 else "code_and_config")
++            _head_fact_value = {
++                "kind": _bound_attention.kind,
++                "num_heads": _bound_attention.num_heads,
++                "num_kv_heads": _bound_attention.num_kv_heads,
++                "head_dim": None,
++                "q_lora_rank": q_lora_rank,
++                "kv_lora_rank": kv_lora_rank,
++                "qk_nope_head_dim": qk_nope_head_dim,
++                "qk_rope_head_dim": qk_rope_head_dim,
++                "v_head_dim": v_head_dim_cfg,
++            }
+             for _resolution in _partial_head_resolutions:
+                 _resolution.consume_decision(
+                     reader="decoder_attention_mechanism_for_path",
+                     fact_owner="decoder.attention",
+                     fact_key="head_geometry",
+                     mechanism="attention_head_geometry",
+-                    status=_partial_head_status)
++                    status=_partial_head_status,
++                    expected_value=_head_fact_value)
+             _note_typed_fact(
+                 key="head_geometry", owner="decoder.attention",
+-                value={
+-                    "kind": _bound_attention.kind,
+-                    "num_heads": _bound_attention.num_heads,
+-                    "num_kv_heads": _bound_attention.num_kv_heads,
+-                    "head_dim": None,
+-                    "q_lora_rank": q_lora_rank,
+-                    "kv_lora_rank": kv_lora_rank,
+-                    "qk_nope_head_dim": qk_nope_head_dim,
+-                    "qk_rope_head_dim": qk_rope_head_dim,
+-                    "v_head_dim": v_head_dim_cfg,
+-                },
++                value=_head_fact_value,
+                 status=_partial_head_status,
+                 reader_result=_attention_mechanism_evidence,
+                 config_paths=tuple(
+@@ -2762,7 +2903,7 @@
+         attn_output_gate = None
+         _note_fact(
+             "decoder.attention", "mechanism", None,
+-            _unknown_status, None)
++            _unknown_status, None, reader_result=_attention_mechanism_evidence)
+ 
+     # U8-E per-layer geometry is a fallback only when the stronger homogeneous
+     # U6 mechanism/head binding abstains.  This preserves every already-proven
+@@ -3070,17 +3211,18 @@
+         # only after source has identified every exact construction; the raw
+         # config value never authors the projection layout by itself.
+         decisions = {}
++        _bias_resolutions = {}
+         for _bound_path in _code_bias.value.config_paths:
+             _prefix = tuple(_text_path)
+             if len(_bound_path) != len(_prefix) + 1 \
+                     or _bound_path[:len(_prefix)] != _prefix:
+                 continue
+-            _resolution = _config_access.resolve(
+-                text_cfg, _bound_path[-1], (), path=_text_path)
+-            if _resolution.ambiguous or not _resolution.present \
+-                    or _resolution.selected_path != ".".join(_bound_path) \
++            _resolution = _resolve_exact_config_path(
++                _bound_path, allow_aliases=False)
++            if _resolution is None or _resolution.ambiguous \
+                     or not isinstance(_resolution.value, bool):
+                 continue
++            _bias_resolutions[_bound_path] = _resolution
+             _resolution.bind(
+                 "decoder_attention_bias_for_path",
+                 fact_owner="decoder.attention", fact_key="bias")
+@@ -3088,7 +3230,9 @@
+                 mechanism="projection_bias",
+                 fact_owner="decoder.attention", fact_key="bias",
+                 reader="decoder_attention_bias_for_path",
+-                status="code_and_config")
++                status=("class_default"
++                        if _resolution.source_kind == "class_default"
++                        else "code_and_config"))
+         if len(decisions) == len(_code_bias.value.config_paths):
+             _bias_values = {
+                 term.value if term.config_path is None
+@@ -3099,6 +3243,9 @@
+                 next(iter(_bias_values))
+                 if len(_bias_values) == 1 else "mixed")
+             _bias_status = (
++                "class_default"
++                if any(res.source_kind == "class_default"
++                       for res in _bias_resolutions.values()) else
+                 "code_and_config"
+                 if _code_bias.value.config_paths else "code_proven")
+             _note_typed_fact(
+@@ -3107,7 +3254,10 @@
+                 value=use_attention_bias,
+                 status=_bias_status,
+                 reader_result=_code_bias,
+-                config_paths=_code_bias.value.config_paths,
++                config_paths=tuple(path for bound_path, resolution
++                                   in _bias_resolutions.items()
++                                   if (path := _actual_checkpoint_path(
++                                       bound_path, resolution)) is not None),
+                 reader="decoder_attention_bias_for_path",
+                 reason=(
+                     "every exact attention affine construction contributes its "
+@@ -3119,25 +3269,31 @@
+         else:
+             use_attention_bias = None
+             _note_fact("decoder.attention", "bias", None,
+-                       _unknown_status, None)
++                       _unknown_status, None, reader_result=_projection_bias_result(
++                           context, "attention", _text_path,
++                           geometry_schedule_result=_geometry_schedule_result))
+     elif _code_bias is not None and _code_bias.value.value is not None:
+         use_attention_bias = _code_bias.value.value
+-        _note_fact("decoder.attention", "bias", use_attention_bias,
+-                   "code_proven", "decoder_attention_bias_for_path")
++        _note_typed_fact(
++            key="bias", owner="decoder.attention", value=use_attention_bias,
++            status="code_proven", reader_result=_code_bias, config_paths=(),
++            reader="decoder_attention_bias_for_path",
++            reason="the complete exact projection construction set binds its literal bias operand",
++        )
+     elif _code_bias is not None and _code_bias.value.config_path is not None:
+         _bound_path = _code_bias.value.config_path
+         _prefix = tuple(_text_path)
+         if len(_bound_path) == len(_prefix) + 1 \
+                 and _bound_path[:len(_prefix)] == _prefix:
+-            _bound_leaf = _bound_path[-1]
+-            _declared_bias_resolution = _config_access.resolve(
+-                text_cfg, _bound_leaf, (), path=_text_path)
++            _declared_bias_resolution = _resolve_exact_config_path(
++                _bound_path, allow_aliases=False)
+         if _declared_bias_resolution is not None \
+                 and not _declared_bias_resolution.ambiguous \
+-                and _declared_bias_resolution.present \
+-                and _declared_bias_resolution.selected_path \
+-                == ".".join(_bound_path) \
+                 and isinstance(_declared_bias_resolution.value, bool):
++            _bias_status = (
++                "class_default"
++                if _declared_bias_resolution.source_kind == "class_default"
++                else "code_and_config")
+             _declared_bias_resolution.bind(
+                 "decoder_attention_bias_for_path",
+                 fact_owner="decoder.attention", fact_key="bias")
+@@ -3145,15 +3301,17 @@
+                 mechanism="projection_bias",
+                 fact_owner="decoder.attention", fact_key="bias",
+                 reader="decoder_attention_bias_for_path",
+-                status="code_and_config")
++                status=_bias_status)
+             use_attention_bias = _bias_decision.value
+             _note_typed_fact(
+                 key="bias",
+                 owner="decoder.attention",
+                 value=use_attention_bias,
+-                status="code_and_config",
++                status=_bias_status,
+                 reader_result=_code_bias,
+-                config_paths=(_bound_path,),
++                config_paths=tuple(path for path in (
++                    _actual_checkpoint_path(_bound_path, _declared_bias_resolution),)
++                    if path is not None),
+                 reader="decoder_attention_bias_for_path",
+                 reason=(
+                     "exact Q/K/V/O projection constructors bind their bias "
+@@ -3162,12 +3320,16 @@
+         else:
+             use_attention_bias = None
+             _note_fact("decoder.attention", "bias", None,
+-                       _unknown_status, None)
++                       _unknown_status, None, reader_result=_projection_bias_result(
++                           context, "attention", _text_path,
++                           geometry_schedule_result=_geometry_schedule_result))
+     else:
+         # Reader failure/absence stays unknown.  Looking up a conventional
+         # alias here would turn config presence back into architectural input.
+         use_attention_bias = None
+-        _note_fact("decoder.attention", "bias", None, _unknown_status, None)
++        _note_fact("decoder.attention", "bias", None, _unknown_status, None, reader_result=_projection_bias_result(
++                           context, "attention", _text_path,
++                           geometry_schedule_result=_geometry_schedule_result))
+     # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).
+     # A declared constant supplies the OPERAND only after code has proved that
+     # this exact attention path applies a scale.  A number in config cannot,
+@@ -3185,23 +3347,66 @@
+         else (_score_scaling_evidence.value,)
+         if code_scores_scaled is not None else ())
+ 
+-    def _scale_resolution_is_proven(resolution):
+-        if resolution is None or resolution.ambiguous \
+-                or resolution.selected_path is None or not _score_variants:
++    def _source_score_operand(resolution, source_leaf):
++        exact = (*_text_path, source_leaf)
++        if resolution is not None and not resolution.present and not resolution.ambiguous \
++                and _score_variants and all(
++                    exact in variant.config_paths for variant in _score_variants):
++            from ...evidence.reader_claims import resolve_reader_operand
++            bound = resolve_reader_operand(cfg, exact)
++            return bound if bound is not None else resolution
++        return resolution
++
++    _attention_multiplier_res = _source_score_operand(
++        _attention_multiplier_res, "attention_multiplier")
++    _query_pre_attn_scalar_res = _source_score_operand(
++        _query_pre_attn_scalar_res, "query_pre_attn_scalar")
++    attention_multiplier = (_attention_multiplier_res.value
++                            if _attention_multiplier_res is not None else None)
++    query_pre_attn_scalar = (_query_pre_attn_scalar_res.value
++                            if _query_pre_attn_scalar_res is not None else None)
++
++    def _scale_resolution_is_proven(resolution, source_leaf):
++        if resolution is None or resolution.ambiguous or not _score_variants:
+             return False
+-        exact = tuple(resolution.selected_path.split("."))
+-        return all(exact in variant.config_paths for variant in _score_variants)
++        class_default = (resolution.source_kind == "class_default"
++                         or resolution.provenance == "class_default")
++        if not class_default and resolution.selected_path is None:
++            return False
++        exact = ((*_text_path, source_leaf) if class_default else
++                 tuple(resolution.selected_path.split(".")))
++        if not all(exact in variant.config_paths for variant in _score_variants):
++            return False
++        # Re-read only the exact source-addressed operand through the same
++        # prepared channel; a foreign default dictionary cannot select it.
++        from ...evidence.reader_claims import resolve_reader_operand
++        bound = resolve_reader_operand(cfg, exact)
++        if bound is None or bound.ambiguous:
++            return False
++        from ...evidence.receipts import value_status_hash
++        bound_default = (bound.source_kind == "class_default"
++                         or bound.provenance == "class_default")
++        if bound_default != class_default or value_status_hash(
++                bound.value, "operand") != value_status_hash(resolution.value, "operand"):
++            raise ValueError("score operand differs from its prepared supplying channel")
++        return True
+ 
+     _attention_multiplier_proven = _scale_resolution_is_proven(
+-        _attention_multiplier_res)
++        _attention_multiplier_res, "attention_multiplier")
+     _query_pre_attn_scalar_proven = _scale_resolution_is_proven(
+-        _query_pre_attn_scalar_res)
++        _query_pre_attn_scalar_res, "query_pre_attn_scalar")
+     _declared_score_scale = (
+         (_attention_multiplier_proven and attention_multiplier is not None)
+         or (_query_pre_attn_scalar_proven and bool(query_pre_attn_scalar)))
+     _applied_declared_scale = bool(
+         _declared_score_scale and code_scores_scaled is True
+     )
++    _score_default_operand = any(
++        proven and (resolution.source_kind == "class_default"
++                    or resolution.provenance == "class_default")
++        for resolution, proven in (
++            (_attention_multiplier_res, _attention_multiplier_proven),
++            (_query_pre_attn_scalar_res, _query_pre_attn_scalar_proven)))
+     if _applied_declared_scale:
+         for _scale_res, _scale_proven in (
+                 (_attention_multiplier_res, _attention_multiplier_proven),
+@@ -3212,7 +3417,7 @@
+                 mechanism="attention_score_scaling",
+                 fact_owner="decoder.attention", fact_key="scores_scale",
+                 reader="decoder_attention_score_scaling_for_path",
+-                status="code_and_config")
++                status=("class_default" if _score_default_operand else "code_and_config"))
+     for _scale_res, _scale_proven in (
+             (_attention_multiplier_res, _attention_multiplier_proven),
+             (_query_pre_attn_scalar_res, _query_pre_attn_scalar_proven)):
+@@ -3221,18 +3426,37 @@
+             _scale_res.ignore(
+                 "a candidate attention-scale declaration is not the exact "
+                 "config occurrence used by the proved score transform")
+-    _note_fact("decoder.attention", "scores_scale",
+-               "declared" if _applied_declared_scale else
+-               "unscaled (raw QK^T)" if code_scores_scaled is False else
+-               "sqrt(head_dim)" if code_scores_scaled is True else None,
+-               "code_and_config" if _applied_declared_scale
+-               else "code_proven" if code_scores_scaled is not None
+-               else _unknown_status,
+-               source=("attention_multiplier/query_pre_attn_scalar"
+-                       if _applied_declared_scale
+-                       else "decoder_attention_score_scaling_for_path"
+-                       if code_scores_scaled is not None
+-                       else None))
++    _score_fact_value = (
++        "declared" if _applied_declared_scale else
++        "unscaled (raw QK^T)" if code_scores_scaled is False else
++        "sqrt(head_dim)" if code_scores_scaled is True else None)
++    _score_fact_status = (
++        "class_default" if _applied_declared_scale and _score_default_operand else
++        "code_and_config" if _applied_declared_scale else
++        "code_proven" if code_scores_scaled is not None else _unknown_status)
++    _score_fact_source = (
++        "attention_multiplier/query_pre_attn_scalar" if _applied_declared_scale
++        else "decoder_attention_score_scaling_for_path"
++        if code_scores_scaled is not None else None)
++    if code_scores_scaled is not None:
++        _note_typed_fact(
++            key="scores_scale", owner="decoder.attention",
++            value=_score_fact_value, status=_score_fact_status,
++            reader_result=_score_scaling_evidence,
++            config_paths=tuple(
++                tuple(resolution.selected_path.split("."))
++                for resolution, proven in (
++                    (_attention_multiplier_res, _attention_multiplier_proven),
++                    (_query_pre_attn_scalar_res, _query_pre_attn_scalar_proven))
++                if _applied_declared_scale and proven
++                and resolution.source_kind != "class_default"
++                and resolution.provenance != "class_default"),
++            reader=_score_fact_source,
++            reason="exact score path; a scaling-presence verdict cannot prove its formula")
++    else:
++        _note_fact("decoder.attention", "scores_scale", _score_fact_value,
++                   _score_fact_status, _score_fact_source,
++                   reader_result=_score_scaling_evidence)
+     # Learned sink logits in the softmax — config-silent, code-only.
+     code_attention_sinks = _code_attention_sinks(
+         text_cfg, context, config_path=_text_path)
+@@ -3241,8 +3465,13 @@
+     # only when True (no negative-proof obligation); its drawn witness is the
+     # attention drill's sink column, so the projection-audit is satisfied.
+     if code_attention_sinks:
+-        _note_fact("decoder.attention", "sinks", True, "code_proven",
+-                   "decoder_attention_sinks_for_path")
++        _note_typed_fact(
++            key="sinks", owner="decoder.attention", value=True,
++            status="code_proven",
++            reader_result=_attention_sinks_result(
++                context, config_path=_text_path),
++            config_paths=(), reader="decoder_attention_sinks_for_path",
++            reason="learned parameter joins the exact scores before softmax")
+     # U6: a softcap node is authored only when the exact selected attention
+     # callable proves scores/cap -> tanh -> *cap before softmax AND binds that
+     # same cap operand to this exact checkpoint occurrence.  A familiar key or
+@@ -3256,14 +3485,19 @@
+         _prefix = tuple(_text_path)
+         if len(_bound_path) == len(_prefix) + 1 \
+                 and _bound_path[:len(_prefix)] == _prefix:
+-            _softcap_resolution = _config_access.resolve(
+-                text_cfg, _bound_path[-1], (), path=_text_path)
++            _softcap_resolution = _resolve_exact_config_path(
++                _bound_path, allow_aliases=False)
+         if _softcap_resolution is not None \
+                 and not _softcap_resolution.ambiguous \
+-                and _softcap_resolution.present \
+-                and _softcap_resolution.selected_path == ".".join(_bound_path) \
++                and (_softcap_resolution.source_kind == "class_default" \
++                     or (_softcap_resolution.present \
++                         and _softcap_resolution.selected_path == ".".join(_bound_path))) \
+                 and isinstance(_softcap_resolution.value, (int, float)) \
+                 and not isinstance(_softcap_resolution.value, bool):
++            _softcap_status = (
++                "class_default"
++                if _softcap_resolution.source_kind == "class_default"
++                else "code_and_config")
+             _softcap_resolution.bind(
+                 "decoder_attention_logit_softcap_for_path",
+                 fact_owner="decoder.attention", fact_key="logit_softcap")
+@@ -3271,15 +3505,17 @@
+                 mechanism="attention_logit_softcap",
+                 fact_owner="decoder.attention", fact_key="logit_softcap",
+                 reader="decoder_attention_logit_softcap_for_path",
+-                status="code_and_config")
++                status=_softcap_status)
+             attn_logit_softcap = _softcap_decision.value
+             _note_typed_fact(
+                 key="logit_softcap",
+                 owner="decoder.attention",
+                 value=attn_logit_softcap,
+-                status="code_and_config",
++                status=_softcap_status,
+                 reader_result=_softcap_code,
+-                config_paths=(_bound_path,),
++                config_paths=tuple(path for path in (
++                    _actual_checkpoint_path(_bound_path, _softcap_resolution),)
++                    if path is not None),
+                 reader="decoder_attention_logit_softcap_for_path",
+                 reason=(
+                     "the exact attention score path divides by, tanh-clamps, "
+@@ -3377,7 +3613,8 @@
+             reason="summary of the exact enacted per-layer mask schedule",
+         )
+     else:
+-        _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None)
++        _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None,
++                   reader_result=_mask_execution_result)
+     # The exact cell equations above now own the residual tap.  This historical
+     # declaration is still audited when present, but it cannot corroborate,
+     # override, or manufacture the topology and therefore has a permanent
+@@ -3441,7 +3678,8 @@
+         )
+     else:
+         _note_fact(
+-            "decoder.layer", "residual_topology", "unknown", _unknown_status)
++            "decoder.layer", "residual_topology", "unknown", _unknown_status,
++            reader_result=_cell_topology_result_value)
+     if parallel_norm_count is not None:
+         _note_typed_fact(
+             key="parallel_norm_count", owner="decoder.layer",
+@@ -3455,7 +3693,8 @@
+         )
+     else:
+         _note_fact(
+-            "decoder.layer", "parallel_norm_count", None, _unknown_status)
++            "decoder.layer", "parallel_norm_count", None, _unknown_status,
++            reader_result=_cell_topology_result_value)
+     _residual_scale_path = (
+         _cell_topology.residual_scale_path
+         if _cell_topology is not None else None)
+@@ -3603,9 +3842,12 @@
+         _expert_storage_value.projection_mode
+         if _expert_storage_value is not None else None)
+     if _code_expert_fused is not None:
+-        _note_fact("decoder.ffn.expert", "expert_projection_mode",
+-                   _code_expert_fused, "code_proven",
+-                   source="decoder_routed_expert_storage_for_path")
++        _note_typed_fact(
++            key="expert_projection_mode", owner="decoder.ffn.expert",
++            value=_code_expert_fused, status="code_proven",
++            reader_result=_expert_storage_result_value, config_paths=(),
++            reader="decoder_routed_expert_storage_for_path",
++            reason="exact routed expert parameter construction and application")
+     expert_activation_formula = None
+     _expert_activation = (
+         _expert_storage_value.activation
+@@ -3616,38 +3858,32 @@
+         _expert_activation_paths = ()
+         if _expert_activation.config_path:
+             _expert_dispatch_path = tuple(_expert_activation.config_path)
+-            _expert_dispatch_parent = cfg
+-            for _part in _expert_dispatch_path[:-1]:
+-                _expert_dispatch_parent = (
+-                    _expert_dispatch_parent.get(_part)
+-                    if isinstance(_expert_dispatch_parent, dict)
+-                    else getattr(_expert_dispatch_parent, _part, None))
+-                if _expert_dispatch_parent is None:
+-                    break
+-            _expert_dispatch_res = (
+-                _config_access.resolve(
+-                    _expert_dispatch_parent, _expert_dispatch_path[-1], (),
+-                    path=_expert_dispatch_path[:-1])
+-                if _expert_dispatch_parent is not None else None)
++            from ...evidence.reader_claims import resolve_reader_operand
++            _expert_dispatch_res = resolve_reader_operand(cfg, _expert_dispatch_path)
+             _expert_dispatch_value = (
+                 _expert_dispatch_res.value
+                 if _expert_dispatch_res is not None
+-                and _expert_dispatch_res.present
++                and (_expert_dispatch_res.present
++                     or _expert_dispatch_res.source_kind == "class_default")
+                 and not _expert_dispatch_res.ambiguous else None)
+             if not isinstance(_expert_dispatch_value, str) \
+                     and _expert_activation.config_default is not None \
+                     and _expert_dispatch_res is not None \
+-                    and not _expert_dispatch_res.present:
++                    and not _expert_dispatch_res.present \
++                    and _expert_dispatch_res.source_kind != "class_default":
+                 # The indexed source itself supplies this literal fallback;
+                 # absence in the checkpoint is not a config declaration.
+                 _expert_dispatch_value = _expert_activation.config_default
+             if isinstance(_expert_dispatch_value, str) \
+                     and _expert_dispatch_value:
+                 _expert_activation_kind = _expert_dispatch_value.lower()
+-                if _expert_dispatch_res.present:
++                if _expert_dispatch_res is not None and (
++                        _expert_dispatch_res.present
++                        or _expert_dispatch_res.source_kind == "class_default"):
+                     _expert_activation_status = (
+                         "class_default"
+-                        if _expert_dispatch_res.provenance == "class_default"
++                        if (_expert_dispatch_res.source_kind == "class_default"
++                            or _expert_dispatch_res.provenance == "class_default")
+                         else "code_and_config")
+                     _expert_dispatch_res.consume_decision(
+                         mechanism="expert_activation",
+@@ -3656,10 +3892,13 @@
+                         reader="adapters.transformer.parser.parse",
+                         status=(
+                             "class_default"
+-                            if _expert_dispatch_res.provenance == "class_default"
++                            if (_expert_dispatch_res.source_kind == "class_default"
++                            or _expert_dispatch_res.provenance == "class_default")
+                             else "config_declared"),
+                     )
+-                    _expert_activation_paths = (_expert_dispatch_path,)
++                    _expert_activation_paths = (
++                        () if _expert_activation_status == "class_default"
++                        else (_expert_dispatch_path,))
+             else:
+                 _expert_activation_kind = None
+         if _expert_activation_kind:
+@@ -4259,7 +4498,12 @@
+     # remote-code channel; ``_tied_weights_keys`` is capability, never proof)
+     # → class default (context.class_defaults, resolved once at context
+     # build) → typed unknown (param count annotates, never picks).
+-    _tie_raw = consume("tie_word_embeddings", fact_owner="model", fact_key="tie_word_embeddings")
++    _tie_resolution = _scoped("tie_word_embeddings")
++    _tie_reader = "model_unfolder.adapters.transformer.parser.parse"
++    _tie_raw = (
++        None if _tie_resolution.ambiguous else _tie_resolution.consume(
++            fact_owner="model", fact_key="tie_word_embeddings",
++            reader=_tie_reader, status="config_declared"))
+     if _tie_raw is None and text_cfg is not cfg:
+         # U1 (unmasked by the exact resolver): a multimodal WRAPPER declares the
+         # text head's tying at WRAPPER level (qwen2-vl: top-level
+@@ -4270,16 +4514,40 @@
+         _wrap_tie = _config_access.resolve(
+             cfg, "tie_word_embeddings", _ALIASES.get("tie_word_embeddings", ()))
+         if _wrap_tie.state == "present":
+-            _tie_raw = _wrap_tie.consume(fact_key="tie_word_embeddings")
++            _tie_resolution = _wrap_tie
++            _tie_raw = _wrap_tie.consume(
++                fact_owner="model", fact_key="tie_word_embeddings",
++                reader=_tie_reader, status="config_declared")
+     if _tie_raw is not None:
+         tie_word_embeddings = bool(_tie_raw)
+         _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
+                    "config_declared", "tie_word_embeddings")
++        if (_facts is not None and type(_tie_raw) is bool
++                and _tie_resolution.present
++                and _tie_resolution.selected_path):
++            from ...evidence.facts import EvidenceFact
++            from ...evidence.claim_evidence import qualify_config_value_fact
++            from ...evidence.config_access import current_prepared_document
++
++            # This proves the declared flag value only. A weight-sharing
++            # relation still needs its separate source/instance proof.
++            _declared_tie = EvidenceFact(
++                owner="model", key="tie_word_embeddings",
++                value=tie_word_embeddings, status="config_declared",
++                completeness="complete",
++                config_paths=(_tie_resolution.selected_path,),
++                legacy_source="tie_word_embeddings",
++                reason="exact checkpoint boolean declaration; not a weight-sharing relation",
++                claim_kind="value", claim_readers=(_tie_reader,))
++            _facts.record_typed(qualify_config_value_fact(
++                _declared_tie, context.config_access.events,
++                current_prepared_document.get()))
+     elif _code_lm_head_tying(
+             text_cfg, context, config_path=_text_path):
+         tie_word_embeddings = True
+         _note_fact("model", "tie_word_embeddings", True,
+-                   "code_proven", "manual_weight_tying_for_path")
++                   "code_proven", "manual_weight_tying_for_path",
++                   reader_result=_manual_weight_tying_result(context, config_path=_text_path))
+     else:
+         _tie_cls = _fact_class_defaults.get("tie_word_embeddings")
+         if _tie_cls is not None:
+@@ -4287,6 +4555,15 @@
+             _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
+                        "class_default",
+                        "installed config-class default (AutoConfig.for_model)")
++            if _facts is not None:
++                from dataclasses import replace
++
++                # Declare the reader's scalar claim even while its default
++                # provenance awaits a dedicated proof. This does not prove
++                # that embedding and output weights share storage.
++                _facts.record_typed(replace(
++                    _facts.typed_records()["model.tie_word_embeddings"],
++                    claim_kind="value", claim_readers=(_tie_reader,)))
+         else:
+             tie_word_embeddings = None
+             _note_fact("model", "tie_word_embeddings", None, _unknown_status, None)
+@@ -4500,10 +4777,11 @@
+     embedding_norm_kind = canonical_norm_kind(
+         _code_embedding_norm(text_cfg, context))
+     if embedding_norm_kind is not None:
+-        _note_fact(
+-            "model", "embedding_norm_kind", embedding_norm_kind,
+-            "code_proven", source="embedding_stage_norm_evidence",
+-        )
++        _note_typed_fact(
++            key="embedding_norm_kind", owner="model", value=embedding_norm_kind,
++            status="code_proven", reader_result=_embedding_norm_result(context),
++            config_paths=(), reader="embedding_stage_norm_evidence",
++            reason="exact normalization output feeds the repeated-child invocation")
+     # The final bookend is a distinct positive source relation: exact repeated
+     # child -> exact norm -> every exact primary model-stage return. A layer norm or
+     # a config/class spelling cannot stand in for it.
+@@ -4526,6 +4804,7 @@
+     else:
+         _note_fact(
+             "model", "final_norm_kind", None, _unknown_status, source=None,
++            reader_result=_final_norm_result,
+         )
+     extras = decoder_extras(
+         vocab_size,
+@@ -4541,6 +4820,15 @@
+         codebooks=codebooks,
+         mtp=mtp,
+     )
++    # The existing token-embedding card displays the model width scalar.
++    # Citation adds no occurrence and lets the shared producer attach the
++    # qualified class-default chip before the renderer consumes the document.
++    _model_width_fact = _facts.typed_records().get("model.hidden_size") if _facts is not None else None
++    if _model_width_fact is not None and _model_width_fact.claim_evidence is not None:
++        for _width_block in extras["render"]["model_blocks"]:
++            if _width_block.get("id") == "embed" and _width_block.get("kind") == "embedding":
++                _width_block["source_fact_keys"] = list(dict.fromkeys((
++                    *(_width_block.get("source_fact_keys") or ()), "model.hidden_size")))
+     if _scale_embedding:
+         for block in extras["render"]["model_blocks"]:
+             if block.get("id") == "embed":

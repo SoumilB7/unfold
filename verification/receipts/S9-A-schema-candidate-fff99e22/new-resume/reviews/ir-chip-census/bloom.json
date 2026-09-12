@@ -1,0 +1,78 @@
+{
+  "slug": "bloom",
+  "inputs": [
+    {
+      "path": "capture/bloom/ir-before-render.json.gz",
+      "sha256": "849831c0549f6ace01bf0de3cbeedee55b1aa8d330daebe6d78a004eceb7f899"
+    },
+    {
+      "path": "capture/bloom/ir-after-render.json.gz",
+      "sha256": "849831c0549f6ace01bf0de3cbeedee55b1aa8d330daebe6d78a004eceb7f899"
+    },
+    {
+      "path": "capture/bloom/page.html.gz",
+      "sha256": "bac5595343f04d6974a7eea2353f67df4072eef7014b794158bec26d1fa328a1"
+    }
+  ],
+  "phases": {
+    "ir-before-render.json.gz": {
+      "schema_unknown_count": 70,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 70,
+      "annotation_reason_counts": {
+        "investigation_missing": 70
+      },
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    },
+    "ir-after-render.json.gz": {
+      "schema_unknown_count": 70,
+      "architectural_unknown_envelope_count": 0,
+      "serialized_annotation_count": 70,
+      "annotation_reason_counts": {
+        "investigation_missing": 70
+      },
+      "unknown_fact_count": 1,
+      "unknown_fact_reason_counts": {
+        "investigation_missing": 1
+      },
+      "chip_serialized_occurrences": {},
+      "chip_distinct_canonical_declarations": {},
+      "class3_records": [],
+      "findings": [],
+      "outside_finite_coverage_markers": []
+    }
+  },
+  "html": {
+    "chip_emissions_by_kind": {},
+    "inline_chip_emissions": {},
+    "packed_card_chip_emissions": {},
+    "packed_payloads": [],
+    "unknown_group_count": 1,
+    "unique_rendered_unknown_paths": 70,
+    "missing_annotation_paths": [],
+    "unexpected_annotation_paths": [],
+    "findings": [],
+    "chip_style_rules": {
+      "pending_design": "background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;",
+      "symbolic": "background:#FAF5FF; color:#581C87; border:3px double #A855F7;",
+      "class_default": "background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;",
+      "unresolved": "background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;"
+    },
+    "four_styles_present_and_distinct": true
+  },
+  "before_after_metadata_counts_equal": {
+    "schema_unknown_count": true,
+    "architectural_unknown_envelope_count": true,
+    "serialized_annotation_count": true,
+    "chip_distinct_canonical_declarations": true,
+    "unknown_fact_count": true
+  }
+}

@@ -1,0 +1,26 @@
+{
+ "class_default": {
+  "decoder.attention.bias": false,
+  "decoder.attention.head_geometry": {
+   "kind": "mha",
+   "num_heads": 32,
+   "num_kv_heads": 32,
+   "head_dim": 128,
+   "q_lora_rank": null,
+   "kv_lora_rank": null,
+   "qk_nope_head_dim": null,
+   "qk_rope_head_dim": null,
+   "v_head_dim": null
+  },
+  "decoder.attention.mechanism": "mha",
+  "decoder.ffn.activation": "silu",
+  "decoder.ffn.intermediate_size": 11008,
+  "model.tie_word_embeddings": false
+ },
+ "ambiguous": {
+  "decoder.layer.parallel_norm_count": null
+ },
+ "warnings": [
+  "Unresolved code-defined facts (drawn honestly, never asserted): parallel norm count \u2014 modeling source is present but unresolved."
+ ]
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "67ccd19edd95d4aa9db20e037150f2b07211e547bc43f3465ea646cb98d9fe15",
+  "input": "tests/sable_test_corpus/llama-7b.json",
+  "input_sha256": "41a9bb408dce7c2227a9d9070cb74327df1bf4e1967fa331967000c963ab1931",
+  "resolved_class": {
+    "module": "transformers.models.llama.modeling_llama",
+    "qualname": "LlamaForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

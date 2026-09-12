@@ -1,0 +1,4659 @@
+{
+  "status": "unblessed actual matrix census; all findings retained",
+  "models": [
+    {
+      "slug": "auraflow-v0-3",
+      "sha256": "df7f93f585b92351eb68dd895de031c7b42992b1d33ea537ff2ad220f1acd076",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "bloom",
+      "sha256": "2086164aae9ee3706fa8fbb35c40a16711842a50f9a598048c6ac72d1e5aae03",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 141
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "transformer",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.0",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.1",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.10",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.11",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.12",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.13",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.14",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.15",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.16",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.17",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.18",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.19",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.2",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.20",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.21",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.22",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.23",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.24",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.25",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.26",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.27",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.28",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.29",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.3",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.30",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.31",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.32",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.33",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.34",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.35",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.36",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.37",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.38",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.39",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.4",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.40",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.41",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.42",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.43",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.44",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.45",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.46",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.47",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.48",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.49",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.5",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.50",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.51",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.52",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.53",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.54",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.55",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.56",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.57",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.58",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.59",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.6",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.60",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.61",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.62",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.63",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.64",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.65",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.66",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.67",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.68",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.69",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.7",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.8",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.9",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.0.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.1.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.10.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.11.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.12.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.13.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.14.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.15.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.16.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.17.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.18.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.19.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.2.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.20.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.21.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.22.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.23.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.24.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.25.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.26.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.27.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.28.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.29.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.3.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.30.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.31.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.32.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.33.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.34.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.35.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.36.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.37.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.38.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.39.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.4.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.40.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.41.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.42.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.43.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.44.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.45.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.46.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.47.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.48.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.49.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.5.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.50.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.51.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.52.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.53.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.54.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.55.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.56.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.57.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.58.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.59.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.6.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.60.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.61.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.62.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.63.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.64.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.65.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.66.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.67.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.68.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.69.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.7.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.8.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "transformer.h.9.self_attention",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.position_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "cogvideox-5b",
+      "sha256": "15203302d067cfae8c8dc193d2209059bf7a125fe81cb16149c6c2ad3fecdd40",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "dbrx-base",
+      "sha256": "91fe7e5491353ee15e576776f705a5ad11603d479923e2b9b5562676c74a1971",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "deepseek-v3",
+      "sha256": "a6545a0ad111db6d2aa8e220ac1858329c7826e7a665d9135beaf4fc96868a29",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 61
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.32.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.33.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.34.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.36.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.37.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.38.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.39.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.40.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.41.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.42.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.43.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.44.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.45.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.46.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.47.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.48.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.49.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.50.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.51.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.52.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.53.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.54.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.55.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.56.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.57.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.58.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.59.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.60.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "flux-2-dev",
+      "sha256": "a94344840822859e9965c0767fb4121c844e93efedfd8c0d2c299a802624d2c7",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "sha256": "e3f0abf0d51a9ffae6d6c7ed3f0c1e701498e856a9726bee73952e8fb11dba07",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "sha256": "5f9d92321eaf7b006175d3d15a671171a66204864576ad77ff5a399d1d33e23e",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 26
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "glm-4-5",
+      "sha256": "a84a0f679516fd80543d5f1d4b0a267733c63f055c2b72c1356cc66b83968877",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 92
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.32.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.33.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.34.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.36.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.37.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.38.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.39.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.40.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.41.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.42.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.43.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.44.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.45.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.46.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.47.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.48.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.49.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.50.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.51.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.52.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.53.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.54.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.55.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.56.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.57.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.58.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.59.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.60.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.61.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.62.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.63.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.64.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.65.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.66.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.67.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.68.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.69.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.70.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.71.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.72.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.73.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.74.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.75.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.76.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.77.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.78.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.79.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.80.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.81.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.82.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.83.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.84.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.85.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.86.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.87.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.88.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.89.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.90.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.91.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "sha256": "139ebd1348cabe7cc4cfd8690e4097b2a24f9cbc7456f0f62b7a2c0b66731794",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 24
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "sha256": "e60fa43e5b937b603cc59e012e10b5f2996691e4bcee3ba495bd1e3db6972bd2",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 40
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.32.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.33.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.34.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.36.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.37.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.38.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.39.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "hunyuanvideo",
+      "sha256": "c63a20426d059764e9bdfc9b7c7ae606e60de2c6ccf50094cae87b62b4e7299e",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "llama-7b",
+      "sha256": "e064b81cde0dbebb58f1fdfe795925e7175c4b441d990ffd2047f1b7a5fb4482",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 32
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "ltx-video",
+      "sha256": "d2ab61e30bd5ba7469fa6f2d1923182df47408540fca4cf88d0caa65bcc86dc1",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "sha256": "886c11c266a381d3a098d256b38b1f68d1a0d7e32645798eb7eca1c8ed03c13e",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "mochi-1-preview",
+      "sha256": "9e02d9feaac00419cfa2c182a38c472c4f08e3930639b7834611172207be54ab",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "musicgen-small",
+      "sha256": "601709e620cfba1a323131e412f8aeaba9ec1b999f388d367c8729c01d2ad906",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 1
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.cross_attention_schedule",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "sha256": "273e24b8f4caf46c0508057e10ab7924e6d89ae4adb82bb8226ccbf37540609a",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 32
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "sha256": "40349a88f3aaebab42d2096651f1808954e6c61a3f091e716482cf1557d79926",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "sha256": "dc0a280a1a10a6f8e4b28de76c13359145e7a130b5b7cb4af91717f6fc6ff254",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "qwen-image",
+      "sha256": "d1b7f502944ed8037f3ca7fbf9356bc3dd227c201fc2040366c2466292b6ae39",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "sha256": "f6a0e27a1a14c2606a33f12e2902b173bb1e86970e286ec2068f454294555320",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 28
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.language_model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.language_model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "sha256": "409fba1b8c3a1719101af1640eeee09769f425ded3d11df1d9209a3ea03dcd57",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 16
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.39.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.43.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.47.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.51.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.55.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.59.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.63.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "qwen3-8b",
+      "sha256": "4a29ecbf66396de40ed267af823bc641d99b3f8f41282d89d1a8875fb54a4488",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 36
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.32.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.33.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.34.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "sha256": "efba4a8695370011dc360e11c6e7981e71913d68bf2960a49cef9af1ed7580a3",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "sha256": "be0f216ffcadf98be279d9f34e44383a782f4da5773e191512660787bf04b6b5",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "sha256": "1dd2680d701f13ff05b4e4484ce6e99ea3245f01b59ff08c4a972fdad6ac9d39",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "sha256": "db331fefb8d807df2abdb774c2f38aecd27af7d7652436ea12635342c371f021",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 24
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "sha256": "a92f8309b276c2c27830da4abde00295f032bdf6c2b8046e78734ff6a2baf71e",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "command-a-03-2025",
+      "sha256": "ae5672a8b70395ebfdd5edfcbdddf11cf991e6119a86043590eb2ec1652afc7f",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 64
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.0.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.1.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.11.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.13.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.15.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.16.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.17.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.18.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.19.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.20.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.21.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.22.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.23.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.24.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.25.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.26.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.27.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.28.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.29.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.3.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.30.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.31.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.32.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.33.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.34.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.35.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.36.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.37.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.38.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.39.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.4.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.40.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.41.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.42.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.43.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.44.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.45.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.46.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.47.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.48.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.49.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.50.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.51.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.52.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.53.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.54.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.55.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.56.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.57.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.58.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.59.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.6.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.60.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.61.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.62.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.63.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.7.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.9.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "sha256": "bafca5800bd84812936941a81dc4273a3d7fa690617442a3edc851f6b3c266ea",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "sha256": "9c33880709290a285e3f9d418d182eabe0fbd6d3da9479c3f08bdec723353df6",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "sha256": "143a02673468988225c2037bfcc42bd43a9148ab47332d73d6c69ca3166502e6",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "jamba-v0-1",
+      "sha256": "451a95082068ec674bc948b6e118d24d33ed73ffa8e355c9f8e07a81c5553341",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "sha256": "43129e6a883cf0be388833c3db95184bb6720c8de1878f5fabe1e3c537fa36ff",
+      "fact_finding_counts": {
+        "claim_proof_unstamped": 6
+      },
+      "unstamped_fact_findings": [
+        {
+          "instance_path": "model.layers.10.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.12.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.14.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.2.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.5.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        },
+        {
+          "instance_path": "model.layers.8.self_attn",
+          "concrete_reason": "claim_proof_unstamped",
+          "fact_key": "decoder.attention.scores_scale",
+          "owner": "S9 reader migration",
+          "reason_class": "investigation_missing"
+        }
+      ]
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "sha256": "6721447e5de6064ebae6295ed474722eab32471718b0712897c069392df59257",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "sha256": "25cafae8ed7ae63a9c6143bf5e810c91c2f510d8ad1a3fd348b539ce6c6cf475",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "sha256": "942b79a3755a990c2bc32f40d9c050c2f54a13811e2760dad296813b38a56bc9",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "sha256": "29f030c410c283a708bdd5492b1fcf7a9e728e0600bfc571fd506b22a31bddad",
+      "fact_finding_counts": {},
+      "unstamped_fact_findings": []
+    }
+  ],
+  "fact_finding_counts": {
+    "claim_proof_unstamped": 623
+  },
+  "unstamped_by_fact": {
+    "decoder.attention.position_schedule": 141,
+    "decoder.attention.scores_scale": 481,
+    "decoder.attention.cross_attention_schedule": 1
+  },
+  "projection_counts": {
+    "rendered": 5065,
+    "projection_unresolved": 32820,
+    "non_architectural": 1463,
+    "grouped": 4740
+  }
+}

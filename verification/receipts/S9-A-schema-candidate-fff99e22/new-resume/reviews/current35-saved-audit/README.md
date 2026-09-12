@@ -1,0 +1,1 @@
+Independent35 saved-data audit, prepared before capture. Immediate reference actual34; historical matrix32 cannot prove current35 placement. Same finite schema/native/HTML checks. Differences enumerated without equality assertion, normalization or blessing. No product/model/test/browser imports.

@@ -1,0 +1,18 @@
+{
+  "scope": "D1 correction only over returned seventeenth; operand-channel and FFN caller returns remain unchanged",
+  "base_manifest": "274d01f65bf2540efa8a1396ecf019a34a3190bd9c563f90e7401f9bb8cbf1d8",
+  "changed_files": [
+    {
+      "path": "model_unfolder/evidence/class_default_value.py",
+      "sha256": "09eb3b634d30f50e0aecfca154b5b6fd8541c28c3a78bfdc71b82a00a80c7e51",
+      "bytes": 13631,
+      "seventeenth_sha256": "185da84a994915ae3cafbbe4bbba0c8d38bb970a5c2efc42442181139ecf2764"
+    },
+    {
+      "path": "tests/test_s9_class_default_value.py",
+      "sha256": "862e144aa656e682fcb95457c9c2b7d3a650878433c43f68c37edc682dd51d25",
+      "bytes": 16021,
+      "seventeenth_sha256": "32b1d8c817aba12c1cae4f22ca228c03d2742bce7a597616a7c4c1cd7ea181ec"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "5b49c1c0067d8943724d814c4cf354145a5f5ddcc56bc6cd20aa34024aea886a",
+  "input": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+  "input_sha256": "c26ef8cb5dd27ff5eb915ebd092665f76ae6afbc4605fb5514b7a2c70ce62eb4",
+  "resolved_class": {
+    "module": "transformers.models.granite.modeling_granite",
+    "qualname": "GraniteForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

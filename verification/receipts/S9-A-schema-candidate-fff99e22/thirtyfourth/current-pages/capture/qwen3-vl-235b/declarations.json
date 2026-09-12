@@ -1,0 +1,3994 @@
+{
+  "decoder.attention.bias": {
+    "claim_kind": "existence",
+    "claim_proof": {
+      "claim_kind": "existence",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.bias:df40488d7e9f5dfc",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:202:4:202:36",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:246:22:248:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:255:22:257:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:35:276:61",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:8:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:302:22:302:46"
+      ],
+      "fact_id": "decoder.attention.bias",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.attention_bias"
+    ],
+    "key": "bias",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 255,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 302,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": false
+  },
+  "decoder.attention.cached": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cached:7f3e293636cd0a7c",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:283:8:284:103",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:284:12:284:103",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:284:39:284:103",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9"
+      ],
+      "fact_id": "decoder.attention.cached",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "cached",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 284,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 283,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.head_geometry": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.head_geometry:5ade086f3e6075df",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:240:24:240:101",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:246:22:248:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:247:32:247:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:247:61:247:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:250:32:250:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:253:32:253:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:35:276:61",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9"
+      ],
+      "fact_id": "decoder.attention.head_geometry",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_attention_heads",
+      "text_config.num_key_value_heads",
+      "text_config.head_dim"
+    ],
+    "key": "head_geometry",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 250,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 253,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 240,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "head_dim": 128,
+      "kind": "gqa",
+      "kv_lora_rank": null,
+      "num_heads": 64,
+      "num_kv_heads": 4,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    }
+  },
+  "decoder.attention.mask": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask:d633e0971d5d5f6d",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:195:38:195:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:195:8:195:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:295:12:295:26",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:349:27:357:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:351:27:351:41",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:369:32:369:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:51:0:51:70",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:832:26:832:51",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:837:25:837:31",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:837:8:837:32",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:900:25:906:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:900:8:906:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:915:28:922:13",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:917:31:917:45"
+      ],
+      "fact_id": "decoder.attention.mask",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "mask",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 900,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 915,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 917,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 295,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 837,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 369,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 832,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "causal"
+  },
+  "decoder.attention.mask_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask_schedule:9073f5fcacbb7a94",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:195:38:195:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:195:8:195:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:295:12:295:26",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:349:27:357:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:351:27:351:41",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:369:32:369:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:51:0:51:70",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:832:26:832:51",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:837:25:837:31",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:837:8:837:32",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:900:25:906:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:900:8:906:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:915:28:922:13",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:917:31:917:45"
+      ],
+      "fact_id": "decoder.attention.mask_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "mask_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 900,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 915,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 917,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 351,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 295,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 837,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 369,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 51,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 832,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ]
+  },
+  "decoder.attention.mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mechanism:5d420927d1e9f86a",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:246:22:248:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:247:32:247:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:247:61:247:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:250:32:250:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:253:32:253:74",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:35:276:61",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9"
+      ],
+      "fact_id": "decoder.attention.mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "text_config.num_attention_heads",
+      "text_config.num_key_value_heads"
+    ],
+    "key": "mechanism",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 250,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 253,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "gqa"
+  },
+  "decoder.attention.mixer_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:1b825ff6356e8f13",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:325:25:325:67",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:349:27:357:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:12:843:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:13:843:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:48:843:57",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:63:843:72",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:76:843:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106"
+      ],
+      "fact_id": "decoder.attention.mixer_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "mixer_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 325,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.output_projection": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:202:4:202:36",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:246:22:248:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:255:22:257:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:35:276:61",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:8:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:302:22:302:46"
+      ],
+      "fact_id": "decoder.attention.output_projection",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "output_projection",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 202,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 255,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 302,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:246:22:248:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:249:22:251:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:252:22:254:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:35:276:61",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:33:277:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:278:23:278:49",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9"
+      ],
+      "fact_id": "decoder.attention.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 249,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 252,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 278,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split_qkv"
+  },
+  "decoder.attention.qk_norm": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.qk_norm:7f3e293636cd0a7c",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:258:22:260:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:261:22:263:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:23:276:81",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:21:277:79",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:325:25:325:67",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:349:27:357:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:12:843:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:13:843:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:48:843:57",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:63:843:72",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:76:843:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106"
+      ],
+      "fact_id": "decoder.attention.qk_norm",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "qk_norm",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 258,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 261,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 325,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.qk_norm_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.qk_norm_schedule:4e26dbc5da48687d",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:193:19:193:66",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:197:19:197:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:199:18:199:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:258:22:260:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:261:22:263:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:276:23:276:81",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:277:21:277:79",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:27:0:27:12",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:28:0:28:21",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:290:36:299:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:325:25:325:67",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:349:27:357:9",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:12:843:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:13:843:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:48:843:57",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:63:843:72",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:76:843:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106"
+      ],
+      "fact_id": "decoder.attention.qk_norm_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers"
+    ],
+    "key": "qk_norm_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 276,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 277,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 258,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 261,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 349,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 325,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "decoder.attention.scores_scale": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "scores_scale",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 290,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 197,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 28,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 27,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 195,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "activation",
+    "owner": "decoder.ffn",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.ffn.expert.expert_intermediate_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.expert.expert_intermediate_size:1568bf84db290e1e",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:12:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:23:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:12:120:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:36:120:53",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:121:12:121:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:150:23:150:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:329:23:329:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:96:32:96:60",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:97:8:97:115",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:98:8:98:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:22:99:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:8:99:47"
+      ],
+      "fact_id": "decoder.ffn.expert.expert_intermediate_size",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.expert_width.decoder_expert_intermediate_width_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.expert_width.decoder_expert_intermediate_width_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.moe_intermediate_size"
+    ],
+    "key": "expert_intermediate_size",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 329,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 150,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 97,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 98,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 119,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 121,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 99,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 96,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 1536
+  },
+  "decoder.ffn.expert.expert_projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.expert.expert_projection_mode:ddd2b21557515ef4",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:12:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:23:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:12:120:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:36:120:53",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:121:12:121:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:150:23:150:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:329:23:329:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:97:8:97:115",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:98:8:98:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:22:99:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:8:99:47"
+      ],
+      "fact_id": "decoder.ffn.expert.expert_projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "expert_projection_mode",
+    "owner": "decoder.ffn.expert",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 329,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 150,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 97,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 98,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 119,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 121,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 99,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "fused_gate_up"
+  },
+  "decoder.ffn.ffn_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.ffn_schedule:c07e45074c6aa3ac",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:12:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:119:23:119:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:12:120:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:120:36:120:53",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:121:12:121:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:150:23:150:52",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:312:25:312:88",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:313:23:313:86",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:314:25:314:88",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:315:22:315:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:318:20:318:84",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:318:35:318:65",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:318:35:318:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:318:47:318:64",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:318:68:318:83",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:319:8:319:24",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:329:23:329:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:331:23:331:92",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:363:24:363:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:12:843:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:13:843:58",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:48:843:57",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:63:843:72",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:76:843:107",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:843:82:843:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:97:8:97:115",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:98:8:98:108",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:22:99:47",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:99:8:99:47"
+      ],
+      "fact_id": "decoder.ffn.ffn_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.num_hidden_layers",
+      "text_config.mlp_only_layers",
+      "text_config.num_experts",
+      "text_config.decoder_sparse_step"
+    ],
+    "key": "ffn_schedule",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 843,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 331,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 363,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 312,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 313,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 314,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 318,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 315,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 319,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 329,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 150,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 97,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 98,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 119,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 121,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 99,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe"
+    ]
+  },
+  "decoder.ffn.routing_policy": {
+    "claim_kind": "relation",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.router.decoder_router_selection_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "routing_policy",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 139,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 140,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 138,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 134,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 141,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 329,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 150,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 97,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 98,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 119,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 120,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 121,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 99,
+        "method": null
+      }
+    ],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:d23812867aded33c",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:1959:0:1959:75",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2102:0:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:2103:4:2103:34",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:21:0:26:1",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:30:415:51",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:415:9:415:28",
+        "source:root:82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f:41:0:541:1",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:63:0:63:42",
+        "source:root:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:987:30:987:71",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:332:31:332:97",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:333:40:333:106",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:347:24:347:59",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:362:24:362:68",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:80:19:80:62",
+        "source:text_config:94d1e8d42d436b015b544f85c34047ba6adbe687f7795e90c8a6c260e8cef777:81:40:81:85"
+      ],
+      "fact_id": "decoder.layer.norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "norm_kind",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 987,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2102,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 2103,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 1959,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 21,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 41,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 347,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 332,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 80,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 81,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 362,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "text_config",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl_moe/modeling_qwen3_vl_moe.py",
+        "line": 333,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "decoder.layer.norm_placement": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "norm_placement",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "parallel_norm_count",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "claim_kind": "connection",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "residual_topology",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "model.final_norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "final_norm_kind",
+    "owner": "model",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "model.hidden_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "root||text_config.hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731"
+      ],
+      "fact_id": "model.hidden_size",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.hidden_size"
+    ],
+    "key": "hidden_size",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": 4096
+  },
+  "model.tie_word_embeddings": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "3fa7984eb34cdfc656e232bac1b85930c13cf39759058f7b7a8718a0d7823aa3"
+      ],
+      "evidence_refs": [
+        "root||text_config.tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|34b451cd19670900|34b451cd19670900"
+      ],
+      "fact_id": "model.tie_word_embeddings",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "model_unfolder.adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "text_config.tie_word_embeddings"
+    ],
+    "key": "tie_word_embeddings",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": true
+  }
+}

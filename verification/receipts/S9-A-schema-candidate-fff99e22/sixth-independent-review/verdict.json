@@ -1,0 +1,14 @@
+{
+  "decision": "RETURN",
+  "scope": "Sixth frozen S9-A diffusion proof source and conservative R5",
+  "reviewer": "/root/independent_review",
+  "findings": [
+    "D1 authentic upstream selection lacks downstream input reconciliation",
+    "D2 mutable selector captures can change deciding evidence"
+  ],
+  "r5": "ACCEPT conservative typed unavailable only; later registry extension excluded",
+  "runtime_performed": false,
+  "output_approval": false,
+  "review_sha256": "e79af4914536d9059491d7301a0d52c30157cf03eff6933729ef61a6853aa59e",
+  "source_pins_sha256": "ae0391eefa329afca789f38826820ec2bc1fe781c8f57660a497f46ddc676c5a"
+}

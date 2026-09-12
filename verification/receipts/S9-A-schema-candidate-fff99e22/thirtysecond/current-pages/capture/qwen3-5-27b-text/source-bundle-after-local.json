@@ -1,0 +1,36 @@
+{
+  "bundle": {
+    "architecture": "Qwen3_5ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Qwen3_5ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "qwen3_5_text"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py"
+    ],
+    "import_roots": {},
+    "model_id": "Qwen/Qwen3.5-27B:text",
+    "model_type": "qwen3_5_text",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_5/configuration_qwen3_5.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY addresses, not portable identity"
+}

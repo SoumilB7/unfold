@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "25d06db6a19173e12e613727ffbad8338919aacdf30941abf6ec22cabc9b200c",
+  "input": "tests/sable_test_corpus/musicgen-small.json",
+  "input_sha256": "8c0d45644d5f300517a962ccff7c2c1a1ba1c3876d56404e695f427870cd469a",
+  "resolved_class": {
+    "module": "transformers.models.musicgen.modeling_musicgen",
+    "qualname": "MusicgenForConditionalGeneration"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

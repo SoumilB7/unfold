@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "f40512e18ca15391bbe2a47db88779ca6fd64065ccd78262be3a285c185a46ef",
+      "bytes": 1057
+    },
+    {
+      "path": "before/model_unfolder/evidence/class_default_value.py",
+      "sha256": "ffef68bc43a6e460794a8165c2bac3590b8445adcc39c8251ad9077febcb1305",
+      "bytes": 19007
+    },
+    {
+      "path": "before/tests/test_s9_child_class_default.py",
+      "sha256": "e6e4daa8d037788cc91f7d203bafcfea53a52069cbc59cc7c09fb718249f4a69",
+      "bytes": 7374
+    },
+    {
+      "path": "handoff.json",
+      "sha256": "7265bf05a0a3c840ad1087e55fa9c401ac53b4570d348b714457e6691a74adc6",
+      "bytes": 1656
+    },
+    {
+      "path": "held/model_unfolder/evidence/class_default_value.py",
+      "sha256": "20dfe12577200b57f9e83877772608d335333509f43d025a5cfea5e83aa09556",
+      "bytes": 19212
+    },
+    {
+      "path": "held/tests/test_s9_child_class_default.py",
+      "sha256": "d3a20bc57325562edd7709508873d51524cd03cdab4ab2561e4a403f05ecede1",
+      "bytes": 9260
+    },
+    {
+      "path": "source.diff",
+      "sha256": "8944480c1e83122b84d428742af4da0430cb280507f4dccb8d1d35782ba855c9",
+      "bytes": 4834
+    }
+  ]
+}

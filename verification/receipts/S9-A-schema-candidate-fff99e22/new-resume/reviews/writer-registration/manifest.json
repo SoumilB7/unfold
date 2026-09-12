@@ -1,0 +1,6 @@
+{
+  "changes.patch": "fae18935524078c253cfb1a1e134107ad22c23b1f8556f3d9ae5d692fd247053",
+  "handoff.json": "67cea30aef67231d72a91949f5d12cd4c999856e42d14db12f112740e780eba9",
+  "source/model_unfolder/evidence/structural_writes.py": "d3e89d6e1bc3752e9f3b0fcc0208f55b3ab27ff8fcb39ffc59d6eaeef81ace2b",
+  "source/tests/test_structural_writes.py": "6c87cc1faac4659caf15714a9bc25140c5d692b86e10e5bf54a5ea4f12feb98a"
+}

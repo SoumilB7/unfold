@@ -1,0 +1,97 @@
+{
+  "scope": "Independent stdlib saved-data confirmation; no model execution and no handoff/source modification",
+  "held_proposal_manifest_sha256": "fccb4d5f4f94843b25c7e731a2b3587c40f9e2b681d52d40adccce12a94b183f",
+  "verdict": "Source diagnosis confirmed: exact prepared nested count default exists, but existing shape gate omits it before schedule projection",
+  "cases": [
+    {
+      "case": "ordinary",
+      "selected_path": [
+        "decoder"
+      ],
+      "shape_completion_defaults": {},
+      "scoped_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": true,
+        "provenance": "checkpoint_declared",
+        "selected_path": "decoder.num_hidden_layers",
+        "source_kind": "checkpoint",
+        "state": "present",
+        "value": 24
+      },
+      "actual_preparation_failure": null,
+      "exact_flat_default": null,
+      "outcome": {
+        "case": "ordinary",
+        "count_traces": 1,
+        "error": null,
+        "layers": 24
+      }
+    },
+    {
+      "case": "missing_decoder_count",
+      "selected_path": [
+        "decoder"
+      ],
+      "shape_completion_defaults": {},
+      "scoped_resolution": {
+        "ambiguous": false,
+        "canonical": "num_hidden_layers",
+        "path": null,
+        "present": false,
+        "provenance": "",
+        "selected_path": null,
+        "source_kind": "checkpoint",
+        "state": "absent",
+        "value": null
+      },
+      "actual_preparation_failure": null,
+      "exact_flat_default": 24,
+      "outcome": {
+        "case": "missing_decoder_count",
+        "count_traces": 1,
+        "error": {
+          "message": "Loaded 'musicgen' but couldn't parse a usable model \u2014 no transformer layers were found (missing num_hidden_layers and all known aliases, or this isn't a decoder transformer config). If it's a brand-new architecture, updating transformers may help.",
+          "type": "ConfigParseError"
+        },
+        "layers": null
+      }
+    }
+  ],
+  "pins": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/ordinary/count-resolution-traces.json",
+      "sha256": "310f50fe76132f84ec7ea75487fc4e212647dca41e88492297661f997365b9e2"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/ordinary/prepared-documents.json",
+      "sha256": "1cc2f351bc652fefc2bb4c3e14e6f88fb3406c5c28a2b9e811d857727707a38c"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/ordinary/result.json",
+      "sha256": "7f6ff1b73aabfd288b04dcfc4d65ce665483bec007cd6fa72af61376e6dfd7de"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/missing_decoder_count/count-resolution-traces.json",
+      "sha256": "ab85839c14c61bccdf0c38fb017e55ce5fa760b221c7bd540ceeb344b41eb6b7"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/missing_decoder_count/prepared-documents.json",
+      "sha256": "d2ab9db44bd0ebcbb646161daac03fcc9db704e4c9581091302e5d2d218f54c1"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/capture/missing_decoder_count/result.json",
+      "sha256": "e0611f72ece6e9c5e152e5daeeba885879efc1e17f564ea15dd5886dc17834d1"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/result.json",
+      "sha256": "b028d521260f33dcb19c6147987e7148ca509dd88acf61e4e463e9434666713c"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/thirtythird/layer-default-diagnostic/archive-map.json",
+      "sha256": "5c578c97dc268c7d08db6624805af542171763cf2a235da61055c4632e62a383"
+    }
+  ],
+  "limits": "This confirms immutable33 defect only. Proposed source fix still needs independent review and root runtime."
+}

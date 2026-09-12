@@ -1,0 +1,68 @@
+{
+  "verdict": "RETURN_OCCURRENCE_PLACEMENT_INTEGRATION",
+  "reviewer": "placement_executor",
+  "reviewed_manifest_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+  "hash_checks": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "held_sha256": "ec4dd8dcd9a04bf8e244155f96f90bf79684f17ec82129cf75bf106cffb57e84",
+      "held_matches": true,
+      "live_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+      "live_matches_held": false
+    },
+    {
+      "path": "model_unfolder/renderers/html/sections.py",
+      "held_sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f",
+      "held_matches": true,
+      "live_sha256": "8c1e1fa2776d152fb3c1e9140aceea7b02391d15b8d1dd23009c10fb789dfa2f",
+      "live_matches_held": true
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "held_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "held_matches": true,
+      "live_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "live_matches_held": true
+    },
+    {
+      "path": "tests/test_projection_obligations.py",
+      "held_sha256": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390",
+      "held_matches": true,
+      "live_sha256": "a15569e51b2c4f7d90c66daa9b9f9e98799330e0edc878be9026593f64501390",
+      "live_matches_held": true
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "held_sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61",
+      "held_matches": true,
+      "live_sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61",
+      "live_matches_held": true
+    }
+  ],
+  "live_registry_composition_delta": "--- held/registry.py\n+++ live/registry.py\n@@ -1312,12 +1312,14 @@\n     FactDefinition(\n         key=\"tie_word_embeddings\",\n         value_types=frozenset({\"bool\"}),\n-        allowed_statuses=frozenset({\"config_declared\", \"class_default\"}),\n+        allowed_statuses=frozenset({\"config_declared\", \"code_proven\", \"class_default\"}),\n         owner_patterns=frozenset({\"model\"}),\n         projections=frozenset({\"architecture_view\", \"params_annotation\", \"json\"}),\n         unknown_policy=\"assumption_note\",\n-        negative_requires_complete=False,   # config/class tiers, not code claims\n+        negative_requires_complete=False,   # Boolean VALUE, not a negative sharing relation\n         parameter_consumer=True,\n+        notes=\"scalar tie value preserves the existing positive manual-source channel; \"\n+              \"a declaration alone never qualifies its evidence or proves a sharing relation\",\n     ),\n     FactDefinition(\n         key=\"embedding_norm_kind\",\n",
+  "accepted_local_checks": [
+    "The emitted Hidden item must agree with the canonical exact integer and formatted/escaped final numeric HTML before an event issues.",
+    "Receipt carries displayed value with the existing fact tier; value/tier/context/route mismatches remain findings in join_obligation_receipts.",
+    "Registry route is exact model.hidden_size/model_hidden_size_value, html/stats_banner.hidden_size, stats_hidden_size, field, and sections._stats_banner.",
+    "Missing/approximate/changed text, omitted item, missing fact/context cannot clear a real consumption.",
+    "No fact value, claim kind, evidence proof, IR geometry or architecture graph leaf is changed locally."
+  ],
+  "blocking_findings": [
+    {
+      "id": "R1",
+      "trigger": "Actual source-default model.hidden_size has source_spans inside its exact constructor classes; stats banner displays its scalar.",
+      "call_chain": [
+        "sections._stats_banner appends cell then calls RenderContext.note_facts_projected(\"stats_banner\", {\"model.hidden_size\"}).",
+        "note_facts_projected uses record_graph with facts_projected and empty root block_path (no drawn_ops).",
+        "reconciliation.projection_claims_from_product processes every render event without excluding scalar-only surfaces.",
+        "_fact_static_claims falls through to legacy source-span/class association for model.hidden_size; only migrated norm slots currently require exact occurrence citations.",
+        "The no-anchors and empty-block-path fallback promotes outermost candidate occurrences to rendered, descendants to grouped."
+      ],
+      "effect": "Displaying a scalar can manufacture module placement, contradicting the promised non-architectural stats-banner scope. Explicit checkpoint widths have no source spans and can mask the bug in ordinary controls.",
+      "correction_boundary": "Finite scalar/banner exclusion from occurrence placement, retaining the actual event and receipt for value consumption. Check missing cited fact keys before any exclusion. Keep independently explicit canonical-block R4 positives. Do not broaden a generic receipt or class-span join.",
+      "required_poison": "Actual qualified source-default fact + actual banner render event + source-derived static claims + matching inventory must clear scalar receipt obligations while producing zero new rendered/grouped occurrences. An independently explicit canonical block still places its occurrence."
+    }
+  ],
+  "scope": "Source and saved exact-file hash inspection only; no runtime, tests, models or browser. Root final-bracket registry composition is recorded separately and is already independently accepted.",
+  "output_approval": false
+}

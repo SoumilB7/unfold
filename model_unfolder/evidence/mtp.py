@@ -15,6 +15,7 @@ mechanism.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from .reader_claims import ReaderClaimUnavailable, retained_claim_reader
 
 from .construction_calls import resolve_import_reference
 from .container_inventory import ContainerAddress, resolve_container_inventory
@@ -99,6 +100,37 @@ class MTPConstructionEvidence:
         return self.modules.count_path
 
 
+@dataclass(frozen=True)
+class MTPClaimDeclaration:
+    """Producer-owned intended kind; the stronger projection remains unproved."""
+
+    index: ProgramIndex
+    value: MTPConstructionEvidence
+    reader_symbol = "model_unfolder.evidence.mtp.decoder_mtp_construction_for_path"
+
+    def validate_result(self, result):
+        if type(self.value) is not MTPConstructionEvidence:
+            raise TypeError("declaration requires the reader's actual typed aggregate")
+        self.value.__post_init__()
+        value = self.value
+        if result.status != "resolved" or result.value is not value \
+                or result.owner != value.stage.stage_occurrence:
+            raise ValueError("declaration belongs to another actual reader result or owner")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ('decoder', 'mtp_modules'):
+            raise ValueError("reader has no such intended projection")
+        return 'relation'
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "auxiliary predictor aggregate and repetition operand qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder', 'mtp_modules', 'relation'),
+))
 def decoder_mtp_construction_for_path(
     index: ProgramIndex, bundle, config_path: tuple[str, ...], *,
     allow_root_stage: bool,
@@ -148,6 +180,7 @@ def decoder_mtp_construction_for_path(
     spans = tuple(dict.fromkeys((*stage.address_spans, *proof.spans)))
     return ReaderResult.resolved(
         stage.stage_occurrence, value,
+        claim_witness=MTPClaimDeclaration(index, value),
         provenance=(ReaderProvenance(
             "source", spans=spans,
             detail=("exact repeated auxiliary module: two shared-input norms, "

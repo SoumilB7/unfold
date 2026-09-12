@@ -1,0 +1,211 @@
+{
+  "hidden_act": [],
+  "hidden_size": [
+    {
+      "fact": "model.hidden_size",
+      "operand": "hidden_size",
+      "old_operands": [
+        {
+          "source_path": [
+            "hidden_size"
+          ],
+          "value": 4096,
+          "source_kind": "config_declared",
+          "checkpoint_path": [
+            "hidden_size"
+          ]
+        }
+      ],
+      "new_operands": [
+        {
+          "source_path": [
+            "hidden_size"
+          ],
+          "value": 4096,
+          "source_kind": "class_default",
+          "checkpoint_path": null
+        }
+      ],
+      "old_events": [
+        {
+          "component": "root",
+          "config_path": "hidden_size",
+          "canonical": "hidden_size",
+          "alias": "hidden_size",
+          "present": true,
+          "intent": "consumed",
+          "fact_owner": "model",
+          "fact_key": "hidden_size",
+          "reader": "adapters.transformer.parser.parse",
+          "reason": "",
+          "value_state": "value",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "checkpoint_declared",
+          "mechanism": "model_hidden_size_value",
+          "value_status_hash": "67951bb3d9db1731",
+          "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        }
+      ],
+      "new_events": [
+        {
+          "component": "root",
+          "config_path": "hidden_size",
+          "canonical": "hidden_size",
+          "alias": null,
+          "present": false,
+          "intent": "absent_default",
+          "fact_owner": "model",
+          "fact_key": "hidden_size",
+          "reader": "model_unfolder.evidence.class_default_value.model_hidden_size_class_default",
+          "reason": "absent from checkpoint — installed class default 4096",
+          "value_state": "missing",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "class_default",
+          "mechanism": "model_hidden_size_value",
+          "value_status_hash": "4e51a9e148e3c210",
+          "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+        }
+      ]
+    }
+  ],
+  "num_attention_heads": [
+    {
+      "fact": "decoder.attention.mechanism",
+      "operand": "num_attention_heads",
+      "old_operands": [
+        {
+          "source_path": [
+            "num_attention_heads"
+          ],
+          "value": 32,
+          "source_kind": "config_declared",
+          "checkpoint_path": [
+            "num_attention_heads"
+          ]
+        }
+      ],
+      "new_operands": [
+        {
+          "source_path": [
+            "num_attention_heads"
+          ],
+          "value": 32,
+          "source_kind": "class_default",
+          "checkpoint_path": null
+        }
+      ],
+      "old_events": [
+        {
+          "component": "root",
+          "config_path": "num_attention_heads",
+          "canonical": "num_attention_heads",
+          "alias": "num_attention_heads",
+          "present": true,
+          "intent": "consumed",
+          "fact_owner": "decoder.attention",
+          "fact_key": "mechanism",
+          "reader": "decoder_attention_mechanism_for_path",
+          "reason": "",
+          "value_state": "value",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "checkpoint_declared",
+          "mechanism": "attention_mechanism",
+          "value_status_hash": "a615d6a9effdcd21",
+          "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        }
+      ],
+      "new_events": [
+        {
+          "component": "root",
+          "config_path": "num_attention_heads",
+          "canonical": "num_attention_heads",
+          "alias": null,
+          "present": false,
+          "intent": "absent_default",
+          "fact_owner": "decoder.attention",
+          "fact_key": "mechanism",
+          "reader": "decoder_attention_mechanism_for_path",
+          "reason": "absent from checkpoint — installed class default 32",
+          "value_state": "missing",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "class_default",
+          "mechanism": "attention_mechanism",
+          "value_status_hash": "7e943a2de3a9029e",
+          "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+        }
+      ]
+    },
+    {
+      "fact": "decoder.attention.head_geometry",
+      "operand": "num_attention_heads",
+      "old_operands": [
+        {
+          "source_path": [
+            "num_attention_heads"
+          ],
+          "value": 32,
+          "source_kind": "config_declared",
+          "checkpoint_path": [
+            "num_attention_heads"
+          ]
+        }
+      ],
+      "new_operands": [
+        {
+          "source_path": [
+            "num_attention_heads"
+          ],
+          "value": 32,
+          "source_kind": "class_default",
+          "checkpoint_path": null
+        }
+      ],
+      "old_events": [
+        {
+          "component": "root",
+          "config_path": "num_attention_heads",
+          "canonical": "num_attention_heads",
+          "alias": "num_attention_heads",
+          "present": true,
+          "intent": "consumed",
+          "fact_owner": "decoder.attention",
+          "fact_key": "head_geometry",
+          "reader": "decoder_attention_head_geometry_for_path",
+          "reason": "",
+          "value_state": "value",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "checkpoint_declared",
+          "mechanism": "attention_head_geometry",
+          "value_status_hash": "38a8326edd3aad06",
+          "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+        }
+      ],
+      "new_events": [
+        {
+          "component": "root",
+          "config_path": "num_attention_heads",
+          "canonical": "num_attention_heads",
+          "alias": null,
+          "present": false,
+          "intent": "absent_default",
+          "fact_owner": "decoder.attention",
+          "fact_key": "head_geometry",
+          "reader": "decoder_attention_head_geometry_for_path",
+          "reason": "absent from checkpoint — installed class default 32",
+          "value_state": "missing",
+          "path_exact": true,
+          "document_path": [],
+          "provenance": "class_default",
+          "mechanism": "attention_head_geometry",
+          "value_status_hash": "58e42c61f60ced05",
+          "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "bundle": {
+    "architecture": "Glm4MoeForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Glm4MoeForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/glm4_moe/modeling_glm4_moe.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "glm4_moe"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/glm4_moe/modeling_glm4_moe.py"
+    ],
+    "import_roots": {},
+    "model_id": "zai-org/GLM-4.5",
+    "model_type": "glm4_moe",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/glm4_moe/configuration_glm4_moe.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

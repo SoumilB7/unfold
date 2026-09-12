@@ -1,0 +1,20 @@
+{
+  "after_bytes": 119750,
+  "after_sha256": "3100a61c23062d472852af3d1cb315cbcc1844d8d6682adb5beeb5c10a04ab04",
+  "before_bytes": 119750,
+  "before_sha256": "a2b979b71e1717b70705fba82ac80a43d0715fba1c8c985b48217fab71d78dfc",
+  "exact_new_mount_occurrences": 251,
+  "exact_old_mount_occurrences": 251,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-f37b5f0120",
+  "mount_identity_before": "uf-b21957825a",
+  "payload_after_same_finite_mount_substitution_equal": true,
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 12,
+  "raw_ordered_svg_count_before": 12,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "wan2-2-t2v-a14b-diffusers",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

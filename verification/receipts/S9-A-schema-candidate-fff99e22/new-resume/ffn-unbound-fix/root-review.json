@@ -1,0 +1,10 @@
+{
+  "verdict": "source correction accepted; runtime pending",
+  "manifest_sha256": "ea687da8a167a355677cdb1a0aa0ea33cc17545f2d3e1b6534bc5017b82bfff2",
+  "bounds": [
+    "Only document-dependent FFN branch/dispatch projections abstain with ReaderClaimUnavailable.",
+    "Literal source projection stays available; positive qualification still needs authentic prepared document.",
+    "reader_operand and constructor proof contracts unchanged.",
+    "Direct parsing tests cover dispatch/literal and selected branches across all three kinds."
+  ]
+}

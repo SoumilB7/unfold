@@ -1,0 +1,1832 @@
+{
+  "inventory_config_sha256": "2988a8f6fb86166da7acd9635ac242f6a973d0597bc8407657737e4c46ed2891",
+  "checkpoint_header_sha256": [
+    "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+  ],
+  "compared_parameters": 1680,
+  "conflicts": [
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.0.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.0.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.1.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.1.attentions.1.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.0.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "down_blocks.2.attentions.1.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "mid_block.attentions.0.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.0.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.1.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.2.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.2.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.3.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.3.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.4.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.4.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.5.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.5.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.6.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.6.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.7.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.7.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.8.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.8.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.9.attn2.to_k.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.0.attentions.2.transformer_blocks.9.attn2.to_v.weight",
+      "constructed_shape": [
+        1280,
+        2049
+      ],
+      "checkpoint_shape": [
+        1280,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.0.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.0.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.0.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.0.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.1.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.1.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.1.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.1.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.2.transformer_blocks.0.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.2.transformer_blocks.0.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.2.transformer_blocks.1.attn2.to_k.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    },
+    {
+      "reason": "construction_conflict",
+      "parameter": "up_blocks.1.attentions.2.transformer_blocks.1.attn2.to_v.weight",
+      "constructed_shape": [
+        640,
+        2049
+      ],
+      "checkpoint_shape": [
+        640,
+        2048
+      ],
+      "checkpoint_header_sha256": "7ba5bf1409558e5f79d539e8127e0aaca67aef7a847fd8f095bfb05219b12c38"
+    }
+  ],
+  "unbound_checkpoint_parameters": [],
+  "parameters_without_checkpoint_metadata": [],
+  "unresolved_binding_reason": null
+}

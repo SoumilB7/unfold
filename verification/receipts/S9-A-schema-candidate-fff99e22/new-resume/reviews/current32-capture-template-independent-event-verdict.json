@@ -1,0 +1,38 @@
+{
+  "verdict": "PASS_SOURCE_REVIEW_COORDINATE_ONLY_RUNTIME_PENDING",
+  "reviewer": "event_executor",
+  "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current32-capture-template/manifest.json",
+  "manifest_sha256": "4ef2ede9abbd8333cb598381a389b751baf8af500d84f6da14f431a5b6594dea",
+  "base_manifest_sha256": "5b210cd332b55149ee1b11d1d7e8023c5c06c565e81ea8f9b2e240344b94e6e9",
+  "expected32_source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e",
+  "changed_plan_fields": {
+    "generation": {
+      "before": "thirtyfirst",
+      "after": "thirtysecond"
+    },
+    "tree": {
+      "before": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirtyfirst",
+      "after": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-thirtysecond"
+    },
+    "capture_output": {
+      "before": "/private/tmp/unfold-s9a-thirtyfirst/current-pages/capture",
+      "after": "/private/tmp/unfold-s9a-thirtysecond/current-pages/capture"
+    },
+    "output_root": {
+      "before": "/private/tmp/unfold-s9a-thirtyfirst/current-pages",
+      "after": "/private/tmp/unfold-s9a-thirtysecond/current-pages"
+    },
+    "source_manifest": {
+      "before": "/private/tmp/unfold-s9a-thirtyfirst/source-manifest.json",
+      "after": "/private/tmp/unfold-s9a-thirtysecond/source-manifest.json"
+    }
+  },
+  "checks": [
+    "All held file hashes verified. census/run-census/guard/contract differ only by31\u219232 labels and thirtyfirst\u2192thirtysecond paths.",
+    "Portable source helper is byte-identical; local RenderContext serializer and immediate publication order unchanged.",
+    "Exactly five plan coordinate fields changed; all39 target inputs/inventory hashes, activeS7 address matrix and source/reference expectations unchanged.",
+    "Explicit runtime pin requirement, deletion validation, complete source census, live proof/document binding, actual rendering and script/source/input brackets retain prior reviewed behavior."
+  ],
+  "runtime": "None; stdlib source/data and AST inspection only. This review establishes no32 page, matrix or preservation result.",
+  "approval": false
+}

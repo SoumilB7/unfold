@@ -1,0 +1,19 @@
+{
+  "slug": "bloom",
+  "status": "data-only survival of active cited fact keys, no acceptance inferred",
+  "rows_changed": [
+    {
+      "instance_path": "transformer",
+      "removed": [],
+      "added": [
+        "model.embedding_norm_kind"
+      ]
+    }
+  ],
+  "total_removed": 0,
+  "total_added": 1,
+  "removed_counts": {},
+  "added_counts": {
+    "model.embedding_norm_kind": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "correction-focus",
+  "returncode": 0,
+  "duration": 663.3197751249991,
+  "before": "2032765d0be2ceeedb90f008ad039190247f4630b717164e81fc00fdbdbcea19",
+  "after": "2032765d0be2ceeedb90f008ad039190247f4630b717164e81fc00fdbdbcea19",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtieth/qualification/correction-focus.log",
+  "passed": true
+}

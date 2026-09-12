@@ -1,0 +1,39 @@
+{
+  "actual_portable_seal": "f5e43d69e1d0dd2a172c9749faea8b3b636776d2e4c1e9201f62d6d742733a47",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "f5e43d69e1d0dd2a172c9749faea8b3b636776d2e4c1e9201f62d6d742733a47",
+  "reference26_seal": "f5e43d69e1d0dd2a172c9749faea8b3b636776d2e4c1e9201f62d6d742733a47",
+  "scope": "Actual34 source index;26 is a comparison reference, not a34 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "984ee4848d53a278038533c4e46d438527284983b49359b651f732820f842d78",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gpt_oss.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "7580d89563566bf982df2311029e8ebf028ee23f2371928544a8368b8d85bda2",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gpt_oss.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4
+}

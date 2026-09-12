@@ -49,6 +49,7 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderFactProjection, reader_operand, retained_claim_reader
 
 
 _LINEAR_PROTOCOLS = frozenset({
@@ -211,6 +212,43 @@ class EquivalentProjectionBiasEvidence:
             span for item in self.variants for span in item.spans))
 
 
+@dataclass(frozen=True)
+class AttentionBiasClaimWitness:
+    index: ProgramIndex
+    bias: ProjectionBiasEvidence | ProjectionBiasPatternEvidence
+    owner: object
+    reader_symbol = "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+
+    def validate_result(self, result):
+        if type(self.bias) not in (ProjectionBiasEvidence, ProjectionBiasPatternEvidence) \
+                or self.bias.mechanism != "attention":
+            raise TypeError("bias claim needs the complete exact attention projection set")
+        self.bias.__post_init__()
+        if result.status != "resolved" or result.value is not self.bias or result.owner != self.owner:
+            raise ValueError("bias claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "bias"):
+            raise ValueError("attention bias cannot author this projection")
+        if isinstance(self.bias, ProjectionBiasPatternEvidence):
+            terms = tuple((term.value, term.config_path) for term in self.bias.terms)
+        else:
+            terms = ((self.bias.value, self.bias.config_path),)
+        operands = {path: reader_operand(document, path, allow_aliases=False)
+                    for _value, path in terms if path is not None}
+        values = tuple(literal if path is None else operands[path].value for literal, path in terms)
+        if any(type(value) is not bool for value in values):
+            raise ValueError("each exact projection bias requires a boolean literal/default/operand")
+        projected = values[0] if len(set(values)) == 1 else "mixed"
+        status = ("class_default" if any(item.source_kind == "class_default" for item in operands.values())
+                  else "code_and_config" if operands else "code_proven")
+        paths = tuple(item.checkpoint_path for item in operands.values() if item.checkpoint_path)
+        return ReaderFactProjection(owner, key, "existence", projected, status, paths)
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'bias', 'existence'),
+))
 def decoder_attention_bias_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -284,6 +322,7 @@ def decoder_attention_bias_for_path(
         return value
     return ReaderResult.resolved(
         value.owner, value.value,
+        claim_witness=AttentionBiasClaimWitness(index, value.value, value.owner),
         provenance=(
             *block.provenance,
             *input_provenance,
@@ -292,6 +331,9 @@ def decoder_attention_bias_for_path(
         ))
 
 
+@retained_claim_reader(intended_claims=(
+    ("decoder.ffn", "bias", "existence"),
+))
 def decoder_ffn_bias_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,

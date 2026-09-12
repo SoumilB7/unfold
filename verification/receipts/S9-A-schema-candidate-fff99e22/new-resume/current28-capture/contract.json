@@ -1,0 +1,35 @@
+{
+  "scope": "Actual39 frozen28 product capture with independent input/script/source brackets. Root only execution after current tests; no normalized comparison or output blessing.",
+  "source_manifest_sha256": "54698677112bf65ed00c3e9406302f5d61c9ff6634febb6d1c8f9766578f4c35",
+  "lawful_read_apis": [
+    "config_to_ir + original ParseContext and resolved root address",
+    "validate_fact_claim on each original non-null proof",
+    "RenderContext/activate_render_context + Diagram.to_html exactly as Sable render_current uses them",
+    "presentation_census on the actual dictionary rendered, actual render context and original typed facts",
+    "portable_source_index_fingerprint compared to the full exact source multiset recomputation"
+  ],
+  "capture": [
+    "Original native declarations/proof summaries and fact snapshots",
+    "Both model IR and rendered Diagram IR before/after render",
+    "Unchanged actual standalone HTML, gzip and immediate new schema-twentyeighth family page",
+    "Presentation census full findings, actual chip counts by kind and unknown emission counts",
+    "Final source multiset with parse failures and recomputed/production seals; comparison with frozen26 reference only",
+    "Address bundle files explicitly LOCAL_ONLY, outside portable identity",
+    "Every target result and SHA256 for every emitted model artifact"
+  ],
+  "guards": [
+    "Exact39 ordered address matrix plus each checkpoint input/address inventory hash and resolved class equality; root prepared binding required",
+    "Fixed reviewed tree/output/publish roots in plan.json; new output directory and existing phase model page refused",
+    "External launcher/child/helper/plan/manifest pinned before and after; every frozen28 source manifest row and all78 address files checked before and after; standard verify_commit lane brackets retained",
+    "Every model attempted. Capture failures, any presentation findings or changed reference26 seal make final process nonzero; pages are still preserved and published for successful captures. No finding rewritten or repaired.",
+    "Frozen26 scripts and outputs untouched. Root executes the new launcher only after independent source review."
+  ],
+  "limits": [
+    "Presentation census covers its defined architectural envelopes, explicit unknown spec values, producer typed fact reasons and actual annotation emissions. It is not proof that every possible implementation property has a product obligation.",
+    "Emission counts/census are in-process renderer evidence. They do not establish CSS distinction, browser visibility, click behavior or visual acceptability; browser review remains separate.",
+    "Retained proof validation cannot qualify an absent proof. Native fact proof totals are not architecture completeness.",
+    "Saved26 reference source seals are comparison inputs, not a regenerated28 S7 matrix. Exact current matrix reconciliation remains separately generated/audited.",
+    "Generated UUID/context identities are saved as produced. The harness performs no normalization, baseline renewal, artifact blessing or no-drift acceptance.",
+    "No model runtime, project import, pyflakes or tests performed by executor; scripts pass stdlib ast.parse only."
+  ]
+}

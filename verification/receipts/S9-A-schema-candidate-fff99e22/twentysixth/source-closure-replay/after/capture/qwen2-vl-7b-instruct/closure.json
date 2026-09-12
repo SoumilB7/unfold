@@ -1,0 +1,120 @@
+{
+  "actual_portable_seal": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c",
+  "expected_matrix_seal": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "after",
+  "reason_kind": null,
+  "recomputed_from_rows": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c",
+  "seconds": 2.070956166999167,
+  "slug": "qwen2-vl-7b-instruct",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "ff4ed0e6045d9762d0432ca8db550933d09efba9ee888a6e2def11de7f035819",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_vl.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "44456d50dac66012c8994ed7335ece0a4444390da517dbb6ac7cc0ed9c1e1bfb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_vl.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 15,
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "alias": null,
+    "canonical": "num_hidden_layers",
+    "component": "root",
+    "config_path": "num_hidden_layers",
+    "document_fingerprint": "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93",
+    "document_path": [],
+    "document_token": "2500a617f1d8c774968645d2fb18ae515fac3453992ba72f2d4e9ad62fb77518",
+    "fact_key": "",
+    "fact_owner": "",
+    "intent": "absent_default",
+    "mechanism": "",
+    "path_exact": false,
+    "present": false,
+    "provenance": "",
+    "reader": "",
+    "reason": "field absent for this owner \u2014 a default premise",
+    "value_state": "missing",
+    "value_status_hash": ""
+  },
+  {
+    "alias": null,
+    "canonical": "num_hidden_layers",
+    "component": "root",
+    "config_path": "num_hidden_layers",
+    "document_fingerprint": "f743ab08c718086f59c91c634abc3defebb0ca6b1428168ff22e2ff201d38b93",
+    "document_path": [],
+    "document_token": "2500a617f1d8c774968645d2fb18ae515fac3453992ba72f2d4e9ad62fb77518",
+    "fact_key": "num_layers",
+    "fact_owner": "model",
+    "intent": "absent_default",
+    "mechanism": "",
+    "path_exact": false,
+    "present": false,
+    "provenance": "",
+    "reader": "",
+    "reason": "absent \u2014 a default/class-default premise",
+    "value_state": "missing",
+    "value_status_hash": ""
+  }
+]

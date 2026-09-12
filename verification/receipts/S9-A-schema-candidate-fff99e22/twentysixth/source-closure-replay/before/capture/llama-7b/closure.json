@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+  "baseline_output": {
+    "ir_after_sha256": "b8e1370517999c405915593957fae822bd75ec5c1a4f895845c407e9f88bf57d",
+    "ir_before_sha256": "b8e1370517999c405915593957fae822bd75ec5c1a4f895845c407e9f88bf57d",
+    "page_bytes": 56120,
+    "page_sha256": "8f27e344748c7dfbf15c54e40c5d7fdd183c96997d83df3729de682974f05213",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+  "seconds": 0.5458409169987135,
+  "slug": "llama-7b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_llama.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_llama.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

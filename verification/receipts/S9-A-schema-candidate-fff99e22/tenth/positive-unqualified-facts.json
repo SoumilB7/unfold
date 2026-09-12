@@ -1,0 +1,760 @@
+{
+  "total": 56,
+  "by_fact": {
+    "decoder.attention.scores_scale": [
+      {
+        "model": "llama-7b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "bloom",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "musicgen-small",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "command-a-03-2025",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "dbrx-base",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "deepseek-coder-v2-lite",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "deepseek-v3",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "deepseek-v4-flash",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "gemma-2-2b-it",
+        "value": "declared",
+        "status": "code_and_config"
+      },
+      {
+        "model": "gemma-3n-e2b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "glm-4-5",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "gpt-oss-20b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "granite-3-0-8b-instruct",
+        "value": "declared",
+        "status": "code_and_config"
+      },
+      {
+        "model": "lfm2-1-2b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "olmo-2-1124-7b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "qwen2-vl-7b-instruct",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "qwen3-5-27b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "qwen3-5-27b-text",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "qwen3-8b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "qwen3-vl-235b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      },
+      {
+        "model": "stablelm-2-1-6b",
+        "value": "sqrt(head_dim)",
+        "status": "code_proven"
+      }
+    ],
+    "decoder.ffn.activation": [
+      {
+        "model": "llama-7b",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "musicgen-small",
+        "value": "gelu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "command-a-03-2025",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "deepseek-coder-v2-lite",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "deepseek-v3",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "gemma-2-2b-it",
+        "value": "gelu_pytorch_tanh",
+        "status": "code_and_config"
+      },
+      {
+        "model": "gemma-3n-e2b",
+        "value": "gelu_pytorch_tanh",
+        "status": "code_and_config"
+      },
+      {
+        "model": "glm-4-5",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "granite-3-0-8b-instruct",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "olmo-2-1124-7b",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen2-vl-7b-instruct",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen3-5-27b",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen3-5-27b-text",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen3-8b",
+        "value": "silu",
+        "status": "code_and_config"
+      },
+      {
+        "model": "stablelm-2-1-6b",
+        "value": "silu",
+        "status": "code_and_config"
+      }
+    ],
+    "decoder.attention.position_schedule": [
+      {
+        "model": "bloom",
+        "value": [
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          },
+          {
+            "position_kind": "alibi",
+            "position_application": "attention_bias",
+            "rope_dim": null
+          }
+        ],
+        "status": "code_proven"
+      }
+    ],
+    "decoder.attention.cross_attention_schedule": [
+      {
+        "model": "musicgen-small",
+        "value": [
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross",
+          "additive_cross"
+        ],
+        "status": "code_proven"
+      }
+    ],
+    "decoder.ffn.expert.expert_activation_formula": [
+      {
+        "model": "dbrx-base",
+        "value": {
+          "kind": "silu"
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "deepseek-coder-v2-lite",
+        "value": {
+          "kind": "silu"
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "deepseek-v3",
+        "value": {
+          "kind": "silu"
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "glm-4-5",
+        "value": {
+          "kind": "silu"
+        },
+        "status": "code_and_config"
+      }
+    ],
+    "decoder.ffn.routing_policy": [
+      {
+        "model": "dbrx-base",
+        "value": {
+          "selection_kind": "topk",
+          "scoring_func": "softmax",
+          "scoring_before_topk": true,
+          "score_source_kind": "affine",
+          "bias_correction": false,
+          "num_experts": 16,
+          "selection_count": 4,
+          "num_experts_per_tok": 4,
+          "normalization_kind": "p_norm",
+          "normalization_value": 1.0
+        },
+        "status": "class_default"
+      },
+      {
+        "model": "deepseek-coder-v2-lite",
+        "value": {
+          "selection_kind": "topk",
+          "scoring_func": "softmax",
+          "scoring_before_topk": true,
+          "score_source_kind": "affine",
+          "bias_correction": false,
+          "selection_count": 6,
+          "num_experts_per_tok": 6,
+          "routed_scaling_factor": 1.0
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "deepseek-v3",
+        "value": {
+          "selection_kind": "topk",
+          "scoring_func": "sigmoid",
+          "scoring_before_topk": true,
+          "score_source_kind": "affine",
+          "bias_correction": true,
+          "num_experts": 256,
+          "selection_count": 8,
+          "num_experts_per_tok": 8,
+          "grouped": true,
+          "group_score_kind": "top2_sum",
+          "n_group": 8,
+          "topk_group": 4,
+          "normalization_kind": "sum",
+          "routed_scaling_factor": 2.5
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "glm-4-5",
+        "value": {
+          "selection_kind": "topk",
+          "scoring_func": "sigmoid",
+          "scoring_before_topk": true,
+          "score_source_kind": "affine",
+          "bias_correction": true,
+          "num_experts": 160,
+          "selection_count": 8,
+          "num_experts_per_tok": 8,
+          "normalization_kind": "sum",
+          "routed_scaling_factor": 2.5
+        },
+        "status": "code_and_config"
+      },
+      {
+        "model": "gpt-oss-20b",
+        "value": {
+          "selection_kind": "topk",
+          "scoring_func": "softmax",
+          "scoring_before_topk": false,
+          "score_source_kind": "affine",
+          "bias_correction": false,
+          "num_experts": 32,
+          "selection_count": 4,
+          "num_experts_per_tok": 4
+        },
+        "status": "code_and_config"
+      }
+    ],
+    "decoder.ffn.expert.shared_expert_count": [
+      {
+        "model": "deepseek-v3",
+        "value": 1,
+        "status": "code_and_config"
+      },
+      {
+        "model": "glm-4-5",
+        "value": 1,
+        "status": "code_and_config"
+      }
+    ],
+    "model.tie_word_embeddings": [
+      {
+        "model": "gemma-3n-e2b",
+        "value": true,
+        "status": "class_default"
+      }
+    ],
+    "root.vision.projector_in_features": [
+      {
+        "model": "gemma-3n-e2b",
+        "value": 2048,
+        "status": "code_and_config"
+      }
+    ],
+    "root.vision.projector_out_features": [
+      {
+        "model": "gemma-3n-e2b",
+        "value": 2048,
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen2-vl-7b-instruct",
+        "value": 3584,
+        "status": "code_and_config"
+      }
+    ],
+    "root.video.projector_out_features": [
+      {
+        "model": "qwen2-vl-7b-instruct",
+        "value": 3584,
+        "status": "code_and_config"
+      }
+    ],
+    "decoder.attention.gated_delta_geometry": [
+      {
+        "model": "qwen3-5-27b",
+        "value": [
+          16,
+          48,
+          128,
+          128,
+          4
+        ],
+        "status": "code_and_config"
+      },
+      {
+        "model": "qwen3-5-27b-text",
+        "value": [
+          16,
+          48,
+          128,
+          128,
+          4
+        ],
+        "status": "code_and_config"
+      }
+    ]
+  }
+}

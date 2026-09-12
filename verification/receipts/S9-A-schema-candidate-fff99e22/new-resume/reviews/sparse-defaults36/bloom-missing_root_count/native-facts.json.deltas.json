@@ -1,0 +1,62 @@
+[
+  {
+    "path": [
+      "decoder.attention.position_schedule"
+    ],
+    "added": {
+      "presentation_reference": {
+        "claim_proof": {
+          "claim_kind": "relation",
+          "document_fingerprints": [
+            "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+          ],
+          "evidence_refs": [
+            "projection:decoder.attention.position_schedule:84468bb7b893a8eb",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+            "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+          ],
+          "fact_id": "decoder.attention.position_schedule",
+          "fact_status": "",
+          "index_fingerprints": [
+            "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+          ],
+          "proof_kind": "retained_reader_projection",
+          "reader_symbols": [
+            "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+          ],
+          "recipe_ids": []
+        },
+        "completeness": "complete",
+        "fact_key": "decoder.attention.position_schedule",
+        "owner": "decoder.attention",
+        "status": "class_default",
+        "value_status_hash": "84468bb7b893a8eb"
+      },
+      "source": "decoder_alibi_score_bias_for_path",
+      "status": "class_default",
+      "value": [
+        {
+          "position_application": "attention_bias",
+          "position_kind": "alibi",
+          "rope_dim": null
+        },
+        {
+          "position_application": "attention_bias",
+          "position_kind": "alibi",
+          "rope_dim": null
+        }
+      ]
+    }
+  }
+]

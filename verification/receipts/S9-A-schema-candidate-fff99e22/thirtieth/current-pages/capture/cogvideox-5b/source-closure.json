@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "030ef1b30f980932f4fe0fda8856f492d5e3a82c6253b8f90f3134bba6494882",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "030ef1b30f980932f4fe0fda8856f492d5e3a82c6253b8f90f3134bba6494882",
+  "reference26_seal": "030ef1b30f980932f4fe0fda8856f492d5e3a82c6253b8f90f3134bba6494882",
+  "scope": "Actual30 source index;26 is a comparison reference, not a30 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "ff2b135e17543c7830a85d3d9b618f54060e1ee2522876b9e18f5025aa1977af",
+      "external": false,
+      "external_provenance": "",
+      "locator": "cogvideox_transformer_3d.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 5
+}

@@ -1,0 +1,19 @@
+{
+  "after_bytes": 139275,
+  "after_sha256": "50093ee03166027b785868abcdfe6e62f143ada2e70c23cc5d7ddc6b5248b147",
+  "before_bytes": 139275,
+  "before_sha256": "bdadde1e330c0a6b3954a404f4cae117cf471bf93875c52bbe364dbb33b6b27c",
+  "exact_new_mount_occurrences": 313,
+  "exact_old_mount_occurrences": 313,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-3da6a27438",
+  "mount_identity_before": "uf-8840a5407e",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 11,
+  "raw_ordered_svg_count_before": 11,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "gpt-oss-20b",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

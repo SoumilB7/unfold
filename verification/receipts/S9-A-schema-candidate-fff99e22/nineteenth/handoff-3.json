@@ -1,0 +1,22 @@
+{
+  "files": [
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "sha256": "9b946e37e2c2f2a4d302bffeec9a0766dd3cdd292d1fa4457ee76f0a8caf445e"
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "sha256": "6e35101fffe260665184c59bf2a51924d6e77ee8ebdcc99291c6b3b1998edb1d"
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "sha256": "f4258a8274e4456e143093996539ff381510128d87cce72067c06e982aecee54"
+    }
+  ],
+  "changes": [
+    "Add existing oracle_missing status to bias/scores_scale/projection_mode registry only.",
+    "Actual missing-source parse declaration control.",
+    "Score operand refresher preserves unresolved resolution if exact path has invalid ancestor; never dereferences a None result."
+  ],
+  "runtime": "not run"
+}

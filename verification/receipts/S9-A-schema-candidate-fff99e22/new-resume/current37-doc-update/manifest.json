@@ -1,0 +1,32 @@
+{
+  "scope": "Final37 handoff checkpoint, no acceptance/bless",
+  "before": [
+    {
+      "path": "before/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "9edb7209e4be814625ebd724b3be1a81dd26a5ce11c9ffce5c7910a236f390fe"
+    },
+    {
+      "path": "before/z-docs/11-execution/S9-A.md",
+      "sha256": "857b1764326bc6263520bc467698ffeca63b10eca5d6728e99379f6b88b7e728"
+    },
+    {
+      "path": "before/z-docs/READ_AFTER_COMPACTION.md",
+      "sha256": "f17741d06b8bc2ebe7a7956030b5274ee2d5a12a91a1c6be937ad4b358aa39c3"
+    }
+  ],
+  "after": [
+    {
+      "path": "z-docs/11-execution/S9-A.md",
+      "sha256": "65f57b6a1e1f80e6deb907505e79924c4cd7a5693c5d7b18ed31bb60cec3dc48"
+    },
+    {
+      "path": "unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "109f3c4ccdd0382c3766e60e82c5a3fbd9e0d7adf663c3366e5249f60254abf3"
+    },
+    {
+      "path": "z-docs/READ_AFTER_COMPACTION.md",
+      "sha256": "997251c45e1cf7e9485237604463ad13316d8c6be84acb6d4577878235324464"
+    }
+  ],
+  "script_sha256": "004577deda4881110762513033e4fd437e53769a013fddce8891e457ea6a857b"
+}

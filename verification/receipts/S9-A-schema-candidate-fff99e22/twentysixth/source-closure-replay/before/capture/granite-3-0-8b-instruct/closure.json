@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+  "baseline_output": {
+    "ir_after_sha256": "406a203772c871e87c624d50bbc4c537b9dc1fb6b9e210b06681546aa1d5d355",
+    "ir_before_sha256": "406a203772c871e87c624d50bbc4c537b9dc1fb6b9e210b06681546aa1d5d355",
+    "page_bytes": 62706,
+    "page_sha256": "3d1675e3f93b5d127fdd2e1299e18b5cc6f0c2d17ce78c79e268278994b97d1a",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+  "seconds": 0.3676776250013063,
+  "slug": "granite-3-0-8b-instruct",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "adcaee412def0dc6ff0da3b197b67433d4f2be07a1816ad111330a42466c7c7a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_granite.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "3808560b2280af12f3982176114107a43011105a93212ff9a152244fcb17c81e",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_granite.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

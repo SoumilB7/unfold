@@ -1,0 +1,455 @@
+--- before/model_unfolder/evidence/document.py
++++ after/model_unfolder/evidence/document.py
+@@ -36,6 +36,60 @@
+     LOADER_METADATA,
+ )
+ from .identity_roles import identity_address
++
++
++@dataclass(frozen=True)
++class ConfigClassAddress:
++    """An already-resolved registry address, never a default/value proof.
++
++    The current child is bound through its current parent, independently of
++    the original source/context address. No old checkpoint or overlay travels
++    on this capability. Preparation still examines every current value.
++    """
++
++    context: Any = field(repr=False, compare=False)
++    parent_document: Any = field(repr=False, compare=False)
++    document: Any = field(repr=False, compare=False)
++    component: str
++    document_path: tuple[str, ...]
++    registry_key: str
++    architecture: str | None
++    component_files: tuple[str, ...]
++    supporting_files: tuple[str, ...]
++
++    def validate(self, raw) -> None:
++        if raw is not self.document or not isinstance(raw, dict):
++            raise ValueError("config-class address describes another child document")
++        if not self.document_path or self.document_path[-1] != self.component:
++            raise ValueError("config-class address has a foreign slot path")
++        current = self.parent_document
++        for part in self.document_path:
++            if not isinstance(current, dict) or part not in current:
++                raise ValueError("config-class address has no current parent binding")
++            current = current[part]
++        if current is not raw:
++            raise ValueError("config-class address has a foreign parent binding")
++        bundle = getattr(self.context, "source_bundle", None)
++        keys = getattr(self.context, "config_class_keys_by_path", {})
++        if not self.registry_key or keys.get(self.document_path) != self.registry_key:
++            raise ValueError("config-class address differs from the original document address")
++        if (getattr(bundle, "component_model_types", {}) or {}).get(self.component) != self.registry_key:
++            raise ValueError("config-class address differs from the resolved source component")
++        if (getattr(bundle, "component_architectures", {}) or {}).get(self.component) != self.architecture:
++            raise ValueError("config-class address has a foreign model-class address")
++        if not self.component_files or tuple((getattr(bundle, "component_files", {}) or {}).get(self.component, ())) != self.component_files:
++            raise ValueError("config-class address has foreign modeling sources")
++        if tuple((getattr(bundle, "supporting_files", {}) or {}).get(self.component, ())) != self.supporting_files:
++            raise ValueError("config-class address has foreign supporting sources")
++
++    def cache_identity(self, raw) -> tuple:
++        self.validate(raw)
++        from hashlib import sha256
++        from pathlib import Path
++        sources = tuple((path, sha256(Path(path).read_bytes()).hexdigest())
++                        for path in dict.fromkeys((*self.component_files, *self.supporting_files)))
++        return ("AutoConfig.for_model", self.registry_key, self.component,
++                self.document_path, self.architecture, sources)
+ 
+ 
+ @dataclass(frozen=True)
+@@ -251,6 +305,7 @@
+ def prepare_document(raw: Any, *, loader_keys: frozenset = frozenset(),
+                      merge: bool = True,
+                      already_prepared: "PreparedDocument | None" = None,
++                     class_address: "ConfigClassAddress | None" = None,
+                      ) -> PreparedDocument:
+     """Prepare ONE document for parsing, and record where every field came from.
+ 
+@@ -269,6 +324,12 @@
+     that rejects the config, yields the raw document with a typed ``failure`` and
+     NO provenance claims. Failing to hydrate is a known unknown; guessing is not.
+     """
++    if class_address is not None:
++        if type(class_address) is not ConfigClassAddress:
++            raise TypeError("preparation requires an exact ConfigClassAddress")
++        class_address.validate(raw)
++        if already_prepared is not None:
++            raise ValueError("an addressed preparation must examine the current child anew")
+     if already_prepared is not None:
+         # IDEMPOTENT, but only about the document it actually describes:
+         # returning any handed-in preparation would let a caller pair one file's
+@@ -285,7 +346,7 @@
+             failure=PreparationFailure("no_mapping", "snapshot",
+                                        f"{type(raw).__name__} is not a mapping"))
+     checkpoint = _snapshot(raw)
+-    model_type = raw.get("model_type")
++    model_type = class_address.registry_key if class_address is not None else raw.get("model_type")
+     if not model_type:
+         # No address for a class, so nothing was hydrated: the document IS the
+         # checkpoint (minus whatever the loader declared it injected).
+--- before/model_unfolder/evidence/context.py
++++ after/model_unfolder/evidence/context.py
+@@ -206,6 +206,9 @@
+     # borrow one another's defaults.
+     class_defaults_by_path: dict[tuple[str, ...], dict] = field(
+         default_factory=dict)
++    # Original exact config-class registry addresses, separate from defaults.
++    # A renamed child re-prepares CURRENT values through this address only.
++    config_class_keys_by_path: dict[tuple[str, ...], str] = field(default_factory=dict)
+     # U2 mask family: the config's decoder-ness DECLARATION (is_decoder /
+     # architectures[] role suffix / decoder-only wrapper / composite decoder
+     # slot), resolved once here so the name-blind guard's scrubbed parse
+@@ -323,12 +326,15 @@
+         token: Any = None,
+     ) -> "ParseContext":
+         from .decoderness import declared_decoderness
+-        defaults_by_path = _installed_config_defaults_by_path(target)
++        config_class_keys = {}
++        defaults_by_path = _installed_config_defaults_by_path(
++            target, address_keys=config_class_keys)
+         return cls(
+             source_bundle=resolve_source_files(target, source=source, token=token),
+             source=source,
+             class_defaults=defaults_by_path.get(()),
+             class_defaults_by_path=defaults_by_path,
++            config_class_keys_by_path=config_class_keys,
+             declared_decoderness=declared_decoderness(target),
+         )
+ 
+@@ -360,6 +366,7 @@
+ 
+ def _installed_config_defaults_by_path(
+     target: Any,
++    *, address_keys: dict | None = None,
+ ) -> dict[tuple[str, ...], dict]:
+     """Resolve config-class address metadata once for every declared scope."""
+     out: dict[tuple[str, ...], dict] = {}
+@@ -373,6 +380,9 @@
+         defaults = _installed_config_defaults(value)
+         if isinstance(defaults, dict):
+             out[path] = defaults
++            if address_keys is not None and isinstance(value, dict) \
++                    and isinstance(value.get("model_type"), str):
++                address_keys[path] = value["model_type"]
+         if isinstance(value, dict):
+             children = value.items()
+         elif hasattr(value, "to_dict"):
+@@ -399,6 +409,25 @@
+ # derive-from-the-enclosing-resolution behavior; the name-blind law
+ # depends on it: a sub-parse must never re-resolve source/identity
+ # from its own, possibly scrubbed, sub-config).
++def slot_config_class_address(root_context, slot: str, parent_document, document_path, document):
++    """Join an original source address to the actual current child location."""
++    if root_context is None:
++        return None
++    from .document import ConfigClassAddress
++    path = tuple(document_path)
++    key = (getattr(root_context, "config_class_keys_by_path", {}) or {}).get(path)
++    bundle = getattr(root_context, "source_bundle", None)
++    files = tuple((getattr(bundle, "component_files", {}) or {}).get(slot, ()))
++    if key is None or not files:
++        return None
++    address = ConfigClassAddress(
++        root_context, parent_document, document, slot, path, key,
++        (getattr(bundle, "component_architectures", {}) or {}).get(slot), files,
++        tuple((getattr(bundle, "supporting_files", {}) or {}).get(slot, ())))
++    address.validate(document)
++    return address
++
++
+ def slot_parse_context(root_context, slot: str, *,
+                        namespace: str | None = None,
+                        document: Any = None,
+@@ -469,16 +498,10 @@
+     # had been fixed.  When the caller does not possess the slot document, no
+     # overlay is safer than a fabricated one; source/address resolution remains
+     # available through the pre-resolved bundle either way.
+-    # Reuse the exact class overlay resolved from the ORIGINAL root document.
+-    # A name-blind replay deliberately scrubs the child ``model_type``; asking
+-    # the scrubbed child to resolve its config class again would lose valid
+-    # class-default operands (for example T5 ``d_kv``) and make architecture
+-    # depend on an identity value whose address was already resolved.  The
+-    # exact DocumentBinding is the join authority—never a loose path or the
+-    # slot spelling alone.  It self-verifies object identity, and the final
+-    # address segment must be this exact source-bundle component.  A
+-    # standalone/direct caller without that bound root-path evidence retains
+-    # the ordinary local preparation path.
++    # The binding carries preparation of the CURRENT child. A retained class
++    # address may have supplied its constructor, but old default VALUES are
++    # never reused: calculated defaults must track changed current operands.
++    # Failed preparation remains failed rather than borrowing an old overlay.
+     _document_path: tuple[str, ...] = ()
+     if binding is not None:
+         from .document import DocumentBinding
+@@ -491,12 +514,9 @@
+         if not _document_path or _document_path[-1] != slot:
+             raise ValueError(
+                 "slot context binding path does not end at the requested slot")
+-    _root_defaults = (
+-        getattr(root_context, "class_defaults_by_path", None) or {})
+     _slot_defaults = (
+-        dict(_root_defaults[_document_path])
+-        if _document_path and _document_path in _root_defaults
+-        else _installed_config_defaults(document))
++        dict(binding.prepared.class_overlay) if binding.prepared.failure is None else None
++    ) if binding is not None else _installed_config_defaults(document)
+     return ParseContext(
+         source_bundle=sub_bundle, source=root_context.source,
+         # Ownership namespace: this slot's facts are owned under
+@@ -507,6 +527,10 @@
+         class_defaults=_slot_defaults,
+         class_defaults_by_path=(
+             {(): _slot_defaults} if isinstance(_slot_defaults, dict) else {}),
++        config_class_keys_by_path={
++            path[len(_document_path):]: key
++            for path, key in (getattr(root_context, "config_class_keys_by_path", {}) or {}).items()
++            if _document_path and path[:len(_document_path)] == _document_path},
+         declared_decoderness=declared_decoderness(_slot_identity),
+     )
+ 
+--- before/model_unfolder/adapters/diffusor/parser.py
++++ after/model_unfolder/adapters/diffusor/parser.py
+@@ -743,8 +743,11 @@
+             from ...evidence.document import (
+                 DocumentBinding, LOADER_STAMPS, prepare_document,
+             )
++            from ...evidence.context import slot_config_class_address
++            _class_address = slot_config_class_address(
++                context, key, cfg, ("_text_encoder_configs", key), sub)
+             _prepared = prepare_document(sub, loader_keys=LOADER_STAMPS,
+-                                         merge=False)
++                                         merge=False, class_address=_class_address)
+             _binding = DocumentBinding(f"root.{key}",
+                                        ("_text_encoder_configs", key),
+                                        _prepared)
+--- before/physics/result_cache.py
++++ after/physics/result_cache.py
+@@ -496,17 +496,29 @@
+ 
+ def cache_prepared_document(producer):
+     @wraps(producer)
+-    def observed(raw, *, loader_keys=frozenset(), merge=True, already_prepared=None):
++    def observed(raw, *, loader_keys=frozenset(), merge=True, already_prepared=None, class_address=None):
++        address_identity = None
++        if class_address is not None:
++            from model_unfolder.evidence.document import ConfigClassAddress
++            if type(class_address) is not ConfigClassAddress:
++                raise TypeError("preparation requires an exact ConfigClassAddress")
++            # Validate the current parent/child and resolved source binding
++            # BEFORE any historical replay. This imports no model framework.
++            address_identity = class_address.cache_identity(raw)
++        class_kwargs = {"class_address": class_address} if class_address is not None else {}
+         transaction = _ACTIVE.get()
+         if transaction is None or not transaction.supported or already_prepared is not None:
+-            return producer(raw, loader_keys=loader_keys, merge=merge, already_prepared=already_prepared)
+-        try:
+-            key = digest(canonical_bytes(_pack((raw, tuple(sorted(loader_keys)), merge))))
++            return producer(raw, loader_keys=loader_keys, merge=merge, already_prepared=already_prepared, **class_kwargs)
++        try:
++            address = (raw, tuple(sorted(loader_keys)), merge)
++            if address_identity is not None:
++                address = (*address, address_identity)
++            key = digest(canonical_bytes(_pack(address)))
+         except (ValueError, TypeError):
+             if transaction.entry is not None:
+                 raise _ReplayMismatch('unsupported preparation address')
+             transaction.supported = False
+-            return producer(raw, loader_keys=loader_keys, merge=merge)
++            return producer(raw, loader_keys=loader_keys, merge=merge, **class_kwargs)
+         if transaction.entry is not None:
+             if key not in transaction.entry['preparations']:
+                 raise _ReplayMismatch('unrecorded preparation address')
+@@ -533,13 +545,13 @@
+                 return result
+             except Exception as exc:
+                 raise _ReplayMismatch('malformed historical preparation') from exc
+-        result = producer(raw, loader_keys=loader_keys, merge=merge)
++        result = producer(raw, loader_keys=loader_keys, merge=merge, **class_kwargs)
+         try:
+             fields = {name: getattr(result, name) for name in
+                       ('document', 'checkpoint', 'class_overlay', 'provenance')}
+             fields['failure'] = result.failure.to_dict() if result.failure is not None else None
+             record = {'document_is_raw': result.document is raw, 'fields': _pack(fields),
+-                      'packages': {'transformers': _version('transformers')} if type(raw) is dict and raw.get('model_type') else {}}
++                      'packages': {'transformers': _version('transformers')} if class_address is not None or (type(raw) is dict and raw.get('model_type')) else {}}
+             if key in transaction.preparations and transaction.preparations[key] != record:
+                 transaction.supported = False
+             transaction.preparations[key] = record
+--- before/tests/test_s9_slot_config_class_address.py
++++ after/tests/test_s9_slot_config_class_address.py
+@@ -0,0 +1,146 @@
++"""An encoder retains its class ADDRESS while preparing current checkpoint values."""
++from dataclasses import replace
++from types import SimpleNamespace
++import builtins
++import sys
++
++import pytest
++
++from model_unfolder.evidence.context import slot_config_class_address, slot_parse_context
++from model_unfolder.evidence.document import DocumentBinding, prepare_document
++from model_unfolder.evidence.models import SourceBundle
++from physics import result_cache
++
++
++def _addressed(monkeypatch, tmp_path, child=None):
++    calls = []
++    class AutoConfig:
++        @classmethod
++        def for_model(cls, key, **values):
++            calls.append((key, dict(values)))
++            if key != 'fixture_config':
++                raise ValueError('unknown registry address')
++            width = values.get('width', 7)
++            if type(width) is not int:
++                raise ValueError('width rejected by actual class')
++            result = {**values, 'width': width, 'double_width': width * 2}
++            return SimpleNamespace(to_dict=lambda: result)
++    monkeypatch.setitem(sys.modules, 'transformers', SimpleNamespace(AutoConfig=AutoConfig))
++    source = tmp_path / 'modeling_fixture.py'
++    source.write_text('class FixtureModel: pass\n')
++    support = tmp_path / 'configuration_fixture.py'
++    support.write_text('class FixtureConfig: pass\n')
++    slot = 'text_encoder_2'
++    path = ('_text_encoder_configs', slot)
++    bundle = SourceBundle(source='local', component_files={slot: (str(source),)},
++        supporting_files={slot: (str(support),)},
++        component_model_types={slot: 'fixture_config'},
++        component_architectures={slot: 'FixtureModel'})
++    context = SimpleNamespace(source_bundle=bundle, source='local', component_namespace='root',
++        config_class_keys_by_path={path: 'fixture_config'},
++        class_defaults_by_path={path: {'width': 999, 'double_width': 1998}})
++    child = {'model_type': 'renamed_address', 'width': 9} if child is None else child
++    parent = {'_text_encoder_configs': {slot: child}}
++    address = slot_config_class_address(context, slot, parent, path, child)
++    return context, parent, child, address, calls, support
++
++
++def test_current_values_are_prepared_through_the_retained_address(monkeypatch, tmp_path):
++    context, parent, child, address, calls, _ = _addressed(monkeypatch, tmp_path)
++    failed = prepare_document(child, merge=False)
++    assert failed.failure.kind == 'class_rejected'
++    prepared = prepare_document(child, merge=False, class_address=address)
++    assert prepared.failure is None and prepared.document is child
++    assert prepared.checkpoint == child
++    assert prepared.provenance['width'] == 'checkpoint_declared'
++    assert prepared.class_overlay['double_width'] == 18
++    assert 'width' not in prepared.class_overlay
++    assert calls[-1] == ('fixture_config', {'width': 9})
++    # A CURRENT mutation must recalculate, never borrow old context defaults.
++    child['width'] = 11
++    current = prepare_document(child, merge=False, class_address=address)
++    assert current.checkpoint['width'] == 11
++    assert current.class_overlay['double_width'] == 22
++    assert prepared.checkpoint['width'] == 9
++    binding = DocumentBinding('root.text_encoder_2', address.document_path, current)
++    embedded = slot_parse_context(context, 'text_encoder_2', document=child, binding=binding)
++    assert embedded.class_defaults['double_width'] == 22
++    assert embedded.class_defaults != context.class_defaults_by_path[address.document_path]
++
++
++def test_renamed_config_key_remains_missing_and_class_default_stays_separate(monkeypatch, tmp_path):
++    _, _, child, address, _, _ = _addressed(monkeypatch, tmp_path,
++        {'model_type': 'another_name', 'width_outside_alias_vocabulary': 13})
++    prepared = prepare_document(child, merge=False, class_address=address)
++    assert 'width' not in prepared.document and 'width' not in prepared.checkpoint
++    assert prepared.class_overlay['width'] == 7
++    assert prepared.class_overlay['double_width'] == 14
++    assert prepared.provenance['width_outside_alias_vocabulary'] == 'checkpoint_declared'
++    assert 'width' not in prepared.provenance
++    # Explicit null remains a current rejected input, never absence/default.
++    child['width'] = None
++    rejected = prepare_document(child, merge=False, class_address=address)
++    assert rejected.failure.kind == 'class_rejected'
++    assert rejected.checkpoint['width'] is None and rejected.class_overlay == {}
++
++
++@pytest.mark.parametrize('poison', ['registry', 'slot', 'path', 'modeling', 'supporting', 'architecture', 'parent', 'child'])
++def test_foreign_address_or_binding_rejects_before_hydration(monkeypatch, tmp_path, poison):
++    _, parent, child, address, calls, _ = _addressed(monkeypatch, tmp_path)
++    replacements = {
++        'registry': {'registry_key': 'foreign'},
++        'slot': {'component': 'text_encoder'},
++        'path': {'document_path': ('foreign', 'text_encoder_2')},
++        'modeling': {'component_files': ('foreign.py',)},
++        'supporting': {'supporting_files': ('foreign_config.py',)},
++        'architecture': {'architecture': 'ForeignModel'},
++        'parent': {'parent_document': {'_text_encoder_configs': {'text_encoder_2': dict(child)}}},
++        'child': {'document': dict(child)},
++    }
++    with pytest.raises(ValueError):
++        prepare_document(child, merge=False, class_address=replace(address, **replacements[poison]))
++    assert calls == []
++    # Replacing a parent's object invalidates the retained current binding.
++    parent['_text_encoder_configs']['text_encoder_2'] = dict(child)
++    with pytest.raises(ValueError, match='parent binding'):
++        prepare_document(child, merge=False, class_address=address)
++
++
++def test_cache_keys_bind_class_sources_and_current_values_before_replay(monkeypatch, tmp_path):
++    _, _, child, address, calls, support = _addressed(monkeypatch, tmp_path)
++    monkeypatch.setattr(result_cache, '_version', lambda name: 'fixture-version')
++    transaction = SimpleNamespace(supported=True, entry=None, preparations={})
++    token = result_cache._ACTIVE.set(transaction)
++    try:
++        first = prepare_document(child, merge=False, class_address=address)
++        stored = dict(transaction.preparations)
++        assert len(stored) == 1
++        # Plain preparation cannot share an addressed preparation's key.
++        prepare_document(child, merge=False)
++        assert len(transaction.preparations) == 2
++        transaction.preparations = {}
++        transaction.entry = {'preparations': stored,
++            'dependencies': {'packages': {'transformers': 'fixture-version'}}}
++        real_import = builtins.__import__
++        def no_framework(name, *args, **kwargs):
++            if name.split('.')[0] in {'torch', 'transformers', 'diffusers'}:
++                raise AssertionError('historical preparation imported a heavy framework')
++            return real_import(name, *args, **kwargs)
++        monkeypatch.setattr(builtins, '__import__', no_framework)
++        replay = prepare_document(child, merge=False, class_address=address)
++        assert replay.document is child
++        assert replay.checkpoint == first.checkpoint
++        assert replay.class_overlay == first.class_overlay
++        assert replay.provenance == first.provenance
++        assert len(calls) == 2  # One actual addressed preparation, one plain failure.
++        with pytest.raises(ValueError):
++            prepare_document(child, merge=False, class_address=replace(address, registry_key='foreign'))
++        child['width'] = 10
++        with pytest.raises(result_cache._ReplayMismatch, match='unrecorded preparation'):
++            prepare_document(child, merge=False, class_address=address)
++        child['width'] = 9
++        support.write_text(support.read_text() + '# changed byte\n')
++        with pytest.raises(result_cache._ReplayMismatch, match='unrecorded preparation'):
++            prepare_document(child, merge=False, class_address=address)
++    finally:
++        result_cache._ACTIVE.reset(token)
+--- before/tests/test_config_access.py
++++ after/tests/test_config_access.py
+@@ -795,9 +795,9 @@
+     assert address_only.class_defaults is None
+ 
+ 
+-def test_embedded_slot_reuses_original_defaults_only_through_its_binding():
+-    """Name-blind replay may reuse an identity-as-address result, but a loose
+-    path/document pair cannot borrow a sibling component's class overlay."""
++def test_failed_embedded_preparation_cannot_borrow_old_defaults():
++    """Only current successful preparation supplies class-default values;
++    source addressing alone cannot repair a failed child document."""
+     from model_unfolder.evidence.context import ParseContext, slot_parse_context
+     from model_unfolder.evidence.document import DocumentBinding, prepare_document
+     from model_unfolder.evidence.models import SourceBundle
+@@ -819,7 +819,8 @@
+     embedded = slot_parse_context(
+         outer, "text_encoder_2", document=prepared.document,
+         binding=binding)
+-    assert embedded.class_defaults == {"d_kv": 64}
++    assert prepared.failure is not None
++    assert embedded.class_defaults is None
+ 
+     sibling_binding = DocumentBinding(
+         "root.text_encoder", ("_text_encoder_configs", "text_encoder"),

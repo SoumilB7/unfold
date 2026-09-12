@@ -1,0 +1,49 @@
+{
+  "bundle": {
+    "architecture": "PRXTransformer2DModel",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "PRXTransformer2DModel",
+      "text_encoder": "Qwen3VLTextModel"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py"
+      ],
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl/modeling_qwen3_vl.py"
+      ]
+    },
+    "component_model_types": {
+      "text_encoder": "qwen3_vl_text"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_prx.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl/modeling_qwen3_vl.py"
+    ],
+    "import_roots": {
+      "root": [
+        {
+          "package": "diffusers",
+          "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+        }
+      ]
+    },
+    "model_id": "Photoroom/prxpixel-t2i",
+    "model_type": null,
+    "pipeline_components": [
+      "text_encoder"
+    ],
+    "source": "local",
+    "supporting_files": {
+      "text_encoder": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/qwen3_vl/configuration_qwen3_vl.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

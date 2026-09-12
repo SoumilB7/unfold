@@ -1,0 +1,25 @@
+{
+  "status": "SOURCE_ONLY_PREPARED_BEFORE_ACTUAL32_CAPTURE_NO_FINDINGS",
+  "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e",
+  "capture_manifest_sha256": "4ef2ede9abbd8333cb598381a389b751baf8af500d84f6da14f431a5b6594dea",
+  "reference_capture": "/private/tmp/unfold-s9a-thirtieth/current-pages/capture",
+  "reference_choice": "Latest executed fleet actual30;31 fleet capture never ran. Exact raw native/value/proof/IR/HTML comparison. Historical26 audit and source-seal reference remain intact.",
+  "checks": [
+    "Exact39 target membership and source-manifest pin; each captured checkpoint hash and resolved-class address matches held capture plan.",
+    "Native declarations: count value/status/claim-kind/proof-presence; enumerate raw per-fact field differences vs actual30 including entire portable proof summaries without normalization.",
+    "Independently declared finite schema: root/layer fields, opaque envelopes and children, typed attention/FFN drill projections, submodel groups, canonical modality operations/fusion target. Diagnostic arbitrary unknown text excluded from expected schema.",
+    "Before and after both actual IR and rendered Diagram IR: closed reason records and exact unknown-address metadata; class3 summaries reported but never promoted into live authority.",
+    "Inline HTML plus deferred card JSON: exact unknown-path group membership, four distinct CSS rules, typed chip references, serialized element/card/template counts and raw byte weights. Deferred node counts are template multiplicity, not browser DOM measurements.",
+    "Preserve actual live capture presentation-census and event counts as supplied; distinguish source/data audit from live capture validation.",
+    "Scalar banner marker counted as scalar only. Matrixlater must prove it did not manufacture occurrence placement; this page capture alone cannot do so.",
+    "Validate full LOCAL_ONLY context snapshot against actual emission counts; local context-token equality only, never reconstruct live receipts. For any actual unknown softcap, require exact class1 reason, no proof/value/op receipt/graph fact event, actual chip emission and reason visible in full saved HTML including deferred payload accounting. Zero exercised cases will be reported as zero."
+  ],
+  "limits": [
+    "No project/model/test/browser imports; execute only on complete saved32 capture.",
+    "LOCAL_ONLY tokens are checked within the captured process record, never portable identity or authority.",
+    "Scalar/unknown chips do not prove occurrence placement; actual32 matrix join remains required.",
+    "No input/output normalization or blessing; all raw deltas retained."
+  ],
+  "run_command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/reviews/current32-saved-audit/audit.py --capture /private/tmp/unfold-s9a-thirtysecond/current-pages/capture --reference /private/tmp/unfold-s9a-thirtieth/current-pages/capture --plan verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current32-capture-template/plan.json --source-manifest /private/tmp/unfold-s9a-thirtysecond/source-manifest.json --source-manifest-sha256 d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e --output <new-empty-output-path>",
+  "feature_changes": 0
+}

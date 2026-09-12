@@ -1,0 +1,55 @@
+{
+  "decision": "RETURN D1 known root constructor override",
+  "scope": "Sixteenth frozen narrow hidden-size default VALUE proof, source-only",
+  "manifest_sha256": "2dbf716ddabec8307d63b8eb62cbb7ff6080fd53595565f83909ff53238146f0",
+  "source_pins": {
+    "model_unfolder/evidence/class_default_value.py": {
+      "sha256": "7cf8df55573131f47240fd0a4b9c856302da91d4ffd05be26327b5c12ec04d0b",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/framework_config.py": {
+      "sha256": "ef26900089e7d9be110a5c1b16eb331178f1e28475e5e6a46cdcd29ce1575061",
+      "matched_candidate_manifest": false
+    },
+    "model_unfolder/evidence/component_owner.py": {
+      "sha256": "1c6bc27735c9244e5220b19f79c55ae8bc02a44435448664deb59964dd0d39af",
+      "matched_candidate_manifest": false
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "sha256": "5711539808c45e0bd6a9a44d826ea2785e93c5dc7c4816241ffbfed6feb72a08",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/claim_evidence.py": {
+      "sha256": "18e844d35f3803aad60b0026811443e410dc560b80695d91ea65b680808c7f9a",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/document.py": {
+      "sha256": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7",
+      "matched_candidate_manifest": false
+    },
+    "model_unfolder/adapters/transformer/parser.py": {
+      "sha256": "6674beb64370376a4f52fed3b29bb409462b1ee564420fa76b788e22819e9e62",
+      "matched_candidate_manifest": true
+    },
+    "tests/test_s9_class_default_value.py": {
+      "sha256": "1588733610b55c995e6dc285354282de000ad5de5556121df3c184911a170ff0",
+      "matched_candidate_manifest": true
+    }
+  },
+  "finding": {
+    "id": "D1",
+    "falsifier": "In the exact test model Wrapper.__init__, add config.hidden_size = 32 before or after super().__init__(config), retaining ExactConfig.hidden_size=64 and sparse prepared overlay64.",
+    "producer": "class_default_value._declaration uses FrameworkConfigAlias.config_binding.resolved_prefix only.",
+    "trace": "ConfigBinding.resolved_prefix does reject retained invalidations, but root_bindings creates root_argument binding without them. _Resolver.build returns those original root bindings unchanged. Child-site normalization does not update the root binding used by framework_config_alias. The direct constructor write therefore leaves the default proof eligible.",
+    "semantic_boundary": "A source class default declaration64 remains true; it must not silently settle model.hidden_size against an explicit implementation override32. Refuse or expose conflict at this exact relevant root config path. No general forward/helper interpreter is requested."
+  },
+  "accepted_bounded_points": [
+    "Root-only actual annotation/import/source class plus own literal positive integer and equal sealed prepared/default operand; inherited/computed/missing source defaults unavailable.",
+    "Both checkpoint and reader document alias arbitration protect present values, explicit null and conflicting spellings; defaults do not become checkpoint occurrences.",
+    "Actual retained result/document/index and complete scalar/status/owner/kind projection bound by existing reader rail. Value cannot be relabelled connection/applied_function.",
+    "Ordinary explicit scalar uses existing ConfigValueClaimProof and does not need the default source reader.",
+    "Returned state-width producer/tests are absent. This removes that unnecessary proof; W1/W2 are not retrospectively accepted."
+  ],
+  "qualification_limit": "No independent execution of poisons or tests. Actual successful preparation provenance remains the existing prepared channel; source class/default matching does not assert a new live hydration or arbitrary class behavior theorem.",
+  "prior_scopes": "A5 and earlier declaration-only acceptances unchanged. No runtime or output blessing."
+}

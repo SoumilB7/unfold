@@ -1,0 +1,263 @@
+{
+  "bracket": {
+    "after": "3116ccc99fb0babac09c1cb1fb636b278cb443f9a91a343cbede4f0e3b5b69cf",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "3116ccc99fb0babac09c1cb1fb636b278cb443f9a91a343cbede4f0e3b5b69cf",
+    "duration": 10.511638333999144,
+    "passed": true,
+    "returncode": 0
+  },
+  "causal_chain": [
+    "Both child source bundles and original context default candidates survive the scrub exactly; only checkpoint identity values differ.",
+    "The existing single child preparation boundary re-resolves AutoConfig from scrubbed model_type. Both CLIP and T5 preparations change success\u2192class_rejected and lose their class overlays (21\u21920 and 27\u21920 keys).",
+    "T5 d_kv is absent from both checkpoints. Original preparation supplies 64 and retains the typed default premise twice; scrubbed preparation lacks that channel and rejects the one attempted premise despite the old context candidate remaining 64.",
+    "T5 attention head-geometry qualification calls reader_operand for the missing default channel; it raises ValueError before child IR returns. normalize_encoder_config catches the exception and returns an empty spec.",
+    "The named T5 encoder survives as encoder_1, but its actual grouped submodel is lost and fallback children replace the 24-layer/two-group description. This changes IDs, kinds, detail and facts. The rename test rightly fails; no metadata exemption would fix it.",
+    "CLIP still returns a 12-layer, width-768 child and all existing fact triples agree, even though its preparation failed. Its success does not excuse the lost T5 evidence channel."
+  ],
+  "children": [
+    {
+      "checkpoint_changes": [
+        {
+          "after": "__scrubbed__",
+          "before": "CLIPTextModel",
+          "kind": "value",
+          "path": [
+            "_class_name"
+          ]
+        },
+        {
+          "after": "__scrubbed__",
+          "before": "CLIPTextModel",
+          "kind": "value",
+          "path": [
+            "architectures",
+            0
+          ]
+        },
+        {
+          "after": "__scrubbed__",
+          "before": "clip_text_model",
+          "kind": "value",
+          "path": [
+            "model_type"
+          ]
+        }
+      ],
+      "class_overlay_key_counts": [
+        21,
+        0
+      ],
+      "context_default_candidates_exactly_equal": true,
+      "d_kv": {
+        "checkpoint_present_after": false,
+        "checkpoint_present_before": false,
+        "context_candidate_after": null,
+        "context_candidate_before": null,
+        "prepared_channel_after": null,
+        "prepared_channel_before": null
+      },
+      "exception": null,
+      "existing_fact_triple_differences": [],
+      "namespace": "root.text_encoder",
+      "original_preparation_failure": null,
+      "original_status": "ok",
+      "scrubbed_preparation_failure": {
+        "kind": "class_rejected",
+        "message": "ValueError: Unrecognized model identifier: __scrubbed__. Should contain one of gpt-sw3, afmoe, aimv2, aimv2_text_model, aimv2_vision_model, albert, align, align_text_model, align_vision_model, altclip",
+        "stage": "hydrate"
+      },
+      "scrubbed_status": "ok",
+      "source_bundle_exactly_equal": true
+    },
+    {
+      "checkpoint_changes": [
+        {
+          "after": "__scrubbed__",
+          "before": "T5EncoderModel",
+          "kind": "value",
+          "path": [
+            "_class_name"
+          ]
+        },
+        {
+          "after": "__scrubbed__",
+          "before": "T5EncoderModel",
+          "kind": "value",
+          "path": [
+            "architectures",
+            0
+          ]
+        },
+        {
+          "after": "__scrubbed__",
+          "before": "t5",
+          "kind": "value",
+          "path": [
+            "model_type"
+          ]
+        }
+      ],
+      "class_overlay_key_counts": [
+        27,
+        0
+      ],
+      "context_default_candidates_exactly_equal": true,
+      "d_kv": {
+        "checkpoint_present_after": false,
+        "checkpoint_present_before": false,
+        "context_candidate_after": 64,
+        "context_candidate_before": 64,
+        "prepared_channel_after": null,
+        "prepared_channel_before": 64
+      },
+      "exception": {
+        "message": "reader operand has no exact checkpoint or class-default evidence",
+        "type": "ValueError"
+      },
+      "existing_fact_triple_differences": null,
+      "namespace": "root.text_encoder_2",
+      "original_preparation_failure": null,
+      "original_status": "ok",
+      "scrubbed_preparation_failure": {
+        "kind": "class_rejected",
+        "message": "ValueError: Unrecognized model identifier: __scrubbed__. Should contain one of gpt-sw3, afmoe, aimv2, aimv2_text_model, aimv2_vision_model, albert, align, align_text_model, align_vision_model, altclip",
+        "stage": "hydrate"
+      },
+      "scrubbed_status": "exception",
+      "source_bundle_exactly_equal": true
+    }
+  ],
+  "default_premise_attempts": [
+    {
+      "component": "root.text_encoder_2",
+      "path": [
+        "d_kv"
+      ],
+      "phase": "original",
+      "premise_retained": true,
+      "prepared_failure": null,
+      "prepared_overlay_has_path": true,
+      "prepared_overlay_value": 64,
+      "spellings": [
+        "d_kv"
+      ],
+      "value": 64
+    },
+    {
+      "component": "root.text_encoder_2",
+      "path": [
+        "d_kv"
+      ],
+      "phase": "original",
+      "premise_retained": true,
+      "prepared_failure": null,
+      "prepared_overlay_has_path": true,
+      "prepared_overlay_value": 64,
+      "spellings": [
+        "d_kv"
+      ],
+      "value": 64
+    },
+    {
+      "component": "root.text_encoder_2",
+      "path": [
+        "d_kv"
+      ],
+      "phase": "scrubbed",
+      "premise_retained": false,
+      "prepared_failure": {
+        "kind": "class_rejected",
+        "message": "ValueError: Unrecognized model identifier: __scrubbed__. Should contain one of gpt-sw3, afmoe, aimv2, aimv2_text_model, aimv2_vision_model, albert, align, align_text_model, align_vision_model, altclip",
+        "stage": "hydrate"
+      },
+      "prepared_overlay_has_path": false,
+      "prepared_overlay_value": null,
+      "spellings": [
+        "d_kv"
+      ],
+      "value": 64
+    }
+  ],
+  "fix_comparison": {
+    "additional_poison_scope": "Changed current values, renamed mechanism keys/absence, explicit null, foreign bindings, source unavailability and cache identity are covered by held tests, not executed by this audit.",
+    "addresses_observed_gap": "R2 retains the original source/slot config-class address and prepares the CURRENT child through it, then supplies its CURRENT overlay to slot context. It preserves the strict default-premise check that exposed the failure.",
+    "not_proven_yet": "This old-tree capture does not prove r2 passes FLUX or preservation. Root must execute the held new tree and compare actual output.",
+    "r2_manifest_sha256": "9c499a6a07839e9c38e88b868bb5fb94f14219e3f960ba126cdd0db63432bef1"
+  },
+  "harness_changed_paths": [
+    "$.extras.render.loop_blocks[4].children[0].facts",
+    "$.extras.render.loop_blocks[4].children[1].children",
+    "$.extras.render.loop_blocks[4].children[1].detail",
+    "$.extras.render.loop_blocks[4].children[1].facts",
+    "$.extras.render.loop_blocks[4].children[1].id",
+    "$.extras.render.loop_blocks[4].children[1].kind",
+    "$.extras.render.loop_blocks[4].children[1].role",
+    "$.extras.render.loop_blocks[4].children[1].source_component",
+    "$.extras.render.loop_blocks[4].children[1].view",
+    "$.extras.render.loop_blocks[4].children[2].children",
+    "$.extras.render.loop_blocks[4].children[2].description",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.activation",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.activation_from_class",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.bias",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.expert_activation_formula",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.expert_intermediate_size",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.expert_projection_mode",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.gated",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.hidden",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.intermediate_size",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.num_experts",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.num_experts_per_tok",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.num_shared_experts",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.projection_mode",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.routing",
+    "$.extras.render.loop_blocks[4].children[2].detail.ffn.structure_status",
+    "$.extras.render.loop_blocks[4].children[2].detail.op_namespace",
+    "$.extras.render.loop_blocks[4].children[2].facts",
+    "$.extras.render.loop_blocks[4].children[2].id",
+    "$.extras.render.loop_blocks[4].children[2].source_component",
+    "$.extras.render.loop_blocks[4].children[2].source_file",
+    "$.extras.render.loop_blocks[4].children[2].source_owner",
+    "$.extras.render.loop_blocks[4].children[2].title",
+    "$.extras.render.loop_blocks[4].children[3].children",
+    "$.extras.render.loop_blocks[4].children[3].description",
+    "$.extras.render.loop_blocks[4].children[3].detail",
+    "$.extras.render.loop_blocks[4].children[3].facts",
+    "$.extras.render.loop_blocks[4].children[3].id",
+    "$.extras.render.loop_blocks[4].children[3].kind",
+    "$.extras.render.loop_blocks[4].children[3].role",
+    "$.extras.render.loop_blocks[4].children[3].source_component",
+    "$.extras.render.loop_blocks[4].children[3].title",
+    "$.extras.render.loop_blocks[4].children[3].view",
+    "$.extras.render.loop_blocks[4].children[4].children",
+    "$.extras.render.loop_blocks[4].children[4].description",
+    "$.extras.render.loop_blocks[4].children[4].detail",
+    "$.extras.render.loop_blocks[4].children[4].facts",
+    "$.extras.render.loop_blocks[4].children[4].id",
+    "$.extras.render.loop_blocks[4].children[4].kind",
+    "$.extras.render.loop_blocks[4].children[4].role",
+    "$.extras.render.loop_blocks[4].children[4].source_component",
+    "$.extras.render.loop_blocks[4].children[4].source_file",
+    "$.extras.render.loop_blocks[4].children[4].source_owner",
+    "$.extras.render.loop_blocks[4].children[4].title",
+    "$.extras.render.loop_blocks[4].children[4].view",
+    "$.extras.render.loop_blocks[4].detail.activation",
+    "$.extras.render.loop_blocks[4].detail.ffn",
+    "$.extras.render.loop_blocks[4].detail.gated",
+    "$.extras.render.loop_blocks[4].detail.hidden",
+    "$.extras.render.loop_blocks[4].detail.layers",
+    "$.extras.render.loop_blocks[4].detail.sub_model",
+    "$.extras.render.loop_blocks[4].detail.vocab"
+  ],
+  "harness_structural_equal": false,
+  "limitations": [
+    "Broad catch in encoder_panel is independently observed via captured child exception; the fix does not remove or weaken it.",
+    "Observer wrappers delegated unchanged; capture brackets prove unchanged files/artifacts, not equivalence to an uninstrumented run. The uninstrumented full28 failure separately reports the same first changed paths.",
+    "Exact raw diagnostic includes original source/log addresses; archived bytes were neither normalized nor redacted."
+  ],
+  "recursive_existing_normalization_delta_count": 86,
+  "recursive_raw_delta_count": 89,
+  "scope": "Independent saved-data inspection only; no model/test/product execution and no source edits.",
+  "status": "DIAGNOSIS_CONFIRMED_OLD_TREE_STILL_FAILS"
+}

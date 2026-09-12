@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "c9e06559d6c43013f2a8f87a28d9c8bb1f423f1dc8f3c64d68373eb41e6cf8ff",
+  "input": "tests/unseen_model_configs/qwen3-omni-30b.json",
+  "input_sha256": "5b1dc2c869c5fecabc90722393633bd789598b28a830bafba92f366a52d85973",
+  "resolved_class": {
+    "module": "transformers.models.qwen3_omni_moe.modeling_qwen3_omni_moe",
+    "qualname": "Qwen3OmniMoeForConditionalGeneration"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

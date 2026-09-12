@@ -1,0 +1,11 @@
+{
+  "name": "softcap-diagnostic",
+  "returncode": 0,
+  "duration": 9.199897041999066,
+  "before": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+  "after": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtysecond/softcap-diagnostic/softcap-diagnostic.log",
+  "passed": true
+}

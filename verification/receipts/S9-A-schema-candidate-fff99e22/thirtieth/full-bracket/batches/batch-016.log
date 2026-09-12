@@ -1,0 +1,89 @@
+........................................................................ [ 43%]
+..........................................F.F........................... [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_ test_derivation_parity_spec_facts_equal_standalone_serializers[llama_gqa_rope-cfg1] _
+
+name = 'llama_gqa_rope'
+cfg = {'_class_name': 'LlamaModel', 'architectures': ['LlamaForCausalLM'], 'hidden_act': 'silu', 'hidden_size': 2048, ...}
+
+    @pytest.mark.parametrize("name,cfg", sorted(ENCODER_CASES.items()))
+    def test_derivation_parity_spec_facts_equal_standalone_serializers(name, cfg):
+        """Hop 1: each group's attention fact equals the canonical serializer
+        applied to the standalone sub-parse's typed spec, plus ONLY the declared
+        altitude transforms and the evidence-resolved extras."""
+        from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+        from model_unfolder.adapters.transformer.blocks.feed_forward import ffn_detail
+        from model_unfolder.adapters.transformer.parser import parse as parse_transformer
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.ir import distinct_layer_groups
+    
+        standalone = parse_transformer(cfg, context=ParseContext.build(cfg, source="local"))
+        groups = distinct_layer_groups(standalone.layers)
+        spec = _direct_spec(cfg)
+        assert len(spec["groups"]) == len(groups)
+        tower = ALTITUDE_TRANSFORMS["tower"]["attention"]
+        for spec_group, typed_group in zip(spec["groups"], groups):
+            expected = attention_detail(typed_group["layer"].attention)
+            expected.update(tower)                       # the DECLARED transform
+            got = dict(spec_group["attention"])
+            # hidden is a tower-injected extra; everything else must match exactly
+            # — INCLUDING scores_scaled, which the standalone serializer now
+            # carries from the same code oracle the tower always had (B1: the
+            # unscaled-scores verdict wired onto the main path).  The old
+            # exemption here was the doc'd asymmetry, not a law.
+            assert got.pop("hidden") == standalone.hidden_size
+>           assert got == expected
+E           AssertionError: assert {'bias': Fals...e': None, ...} == {'bias': None...e': None, ...}
+E             
+E             Omitting 37 identical items, use -vv to show
+E             Differing items:
+E             {'bias': False} != {'bias': None}
+E             {'head_dim': 128} != {'head_dim': None}
+E             Use -v to get more diff
+
+tests/test_submodel_parity.py:119: AssertionError
+_ test_derivation_parity_spec_facts_equal_standalone_serializers[t5_gated_relbias_unscaled-cfg3] _
+
+name = 't5_gated_relbias_unscaled'
+cfg = {'_class_name': 'T5EncoderModel', 'architectures': ['T5EncoderModel'], 'd_ff': 10240, 'd_model': 4096, ...}
+
+    @pytest.mark.parametrize("name,cfg", sorted(ENCODER_CASES.items()))
+    def test_derivation_parity_spec_facts_equal_standalone_serializers(name, cfg):
+        """Hop 1: each group's attention fact equals the canonical serializer
+        applied to the standalone sub-parse's typed spec, plus ONLY the declared
+        altitude transforms and the evidence-resolved extras."""
+        from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+        from model_unfolder.adapters.transformer.blocks.feed_forward import ffn_detail
+        from model_unfolder.adapters.transformer.parser import parse as parse_transformer
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.ir import distinct_layer_groups
+    
+        standalone = parse_transformer(cfg, context=ParseContext.build(cfg, source="local"))
+        groups = distinct_layer_groups(standalone.layers)
+        spec = _direct_spec(cfg)
+        assert len(spec["groups"]) == len(groups)
+        tower = ALTITUDE_TRANSFORMS["tower"]["attention"]
+        for spec_group, typed_group in zip(spec["groups"], groups):
+            expected = attention_detail(typed_group["layer"].attention)
+            expected.update(tower)                       # the DECLARED transform
+            got = dict(spec_group["attention"])
+            # hidden is a tower-injected extra; everything else must match exactly
+            # — INCLUDING scores_scaled, which the standalone serializer now
+            # carries from the same code oracle the tower always had (B1: the
+            # unscaled-scores verdict wired onto the main path).  The old
+            # exemption here was the doc'd asymmetry, not a law.
+            assert got.pop("hidden") == standalone.hidden_size
+>           assert got == expected
+E           AssertionError: assert {'bias': None...e': None, ...} == {'bias': None...e': None, ...}
+E             
+E             Omitting 36 identical items, use -vv to show
+E             Differing items:
+E             {'head_dim': 64} != {'head_dim': None}
+E             Use -v to get more diff
+
+tests/test_submodel_parity.py:119: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_submodel_parity.py::test_derivation_parity_spec_facts_equal_standalone_serializers[llama_gqa_rope-cfg1]
+FAILED tests/test_submodel_parity.py::test_derivation_parity_spec_facts_equal_standalone_serializers[t5_gated_relbias_unscaled-cfg3]
+2 failed, 164 passed in 61.75s (0:01:01)

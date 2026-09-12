@@ -1,0 +1,27 @@
+{
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "root_owns_execution": true,
+  "generation": "thirtyfirst",
+  "scope": "29 committed preservation witnesses through the unchanged actual 52-test lane; one call of each original producer per original verifier call.",
+  "upstream_observer": {
+    "path": "verification/receipts/S8.1-output-deltas/capture_preservation.py",
+    "sha256": "e0b4310eff69252667953672b14ae8ea8d14ffb27173f641bf535087eb93e0f3"
+  },
+  "normalization": "Only existing test_support.preservation canonical_surfaces/_canon_bytes/_view_hashes/html_meta and gallery_witness. No inverse-packing HTML normalization, old-U0 baseline canonicalization, excluded hashes or modified assertions.",
+  "outputs": "Original pytest findings; all exact canonical surface docs/hashes, view sequences/deltas, returned HTML and raw SVG views; historical full recursive deltas explicitly distinguished from committed expected data.",
+  "baseline_recovery": "Separate optional serial --lane baseline uses exact fff99e22 worktree, same observer. Only per-surface hashes matching committed manifest permit use as recovered canonical baseline. Failure/mismatch remains typed gap.",
+  "no_write": "Only fresh scratch output roots; no guarded writer, active baseline/example/manifest artifact writes, approval or re-bless.",
+  "execution": [
+    "Root runs --lane current31 after current pages and no overlapping test campaign.",
+    "If exact saved baseline documents remain missing, run --lane baseline serially.",
+    "Both require explicit reviewed frozen31 source manifest SHA256.",
+    "Exit nonzero retains actual preservation/test failure; packet_complete has separate meaning."
+  ],
+  "review_limits": "Historical docs can be stale. Candidate versions copied expected metadata are explicitly not measured. Raw HTML retained but not automatically approved; no chips-only causation inferred.",
+  "saved_join": "After optional baseline lane, compare-recovered.py validates both saved brackets and original surface artifact hashes, permits each baseline surface only when its canonical hash matches the exact committed expected row, then writes full current-vs-recovered recursive deltas in fresh scratch. All unreproduced rows remain explicit failures.",
+  "predecessor": {
+    "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current30-preservation-capture/manifest.json",
+    "sha256": "7f192e9d5e7f167d3b77ef1137ea1f1de49aff9f2ef487747e9f015d0e51e622"
+  },
+  "baseline_authority_unchanged": true
+}

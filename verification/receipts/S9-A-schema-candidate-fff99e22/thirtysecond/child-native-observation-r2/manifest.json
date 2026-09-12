@@ -1,0 +1,14 @@
+{
+  "files": {
+    "all105-native-joins.json": "c0983f36535f724ee8e185323d2b80bca22cb5d052f751156af6fb202136ba61",
+    "all147-hash-limit-closures.json": "3231e9e1b23ee3bc41cacbd31d3d0df5c5184475592733e5420f0258ca6deb36",
+    "artifact-map.json": "2ab437c709b5c5f5133fedbb4c17149e43ca9ad6111ed0627d664bfb64fe1ad2",
+    "audit-attempt1-source.py": "d3617f4832f5342ac7fdd6d601971ab7d5b32be0b428b020fc6c528bb1ff6f53",
+    "audit-attempt1.json": "c6a3a697f215d5c0584184de3d7a97d68c65128835b9be5a1778f8a2d8c1b8fc",
+    "audit-source.py": "389617e789f452148fc060175e7e55fc76f19edf1e16ee6517864f65bc1cf370",
+    "child-serialization-type-deltas.json": "93e70dc2815423083e18bec0bc35aff0a8770cd294afe279b96905a7fa56332b",
+    "exact-capture.tar.gz": "bad712fa8811bab4942814944e13cda57a7e4a856b1b8ce5534963146ba357eb",
+    "root-live-vs-json-type-deltas.json": "a7649c08bf1526128420805d6a48d9f3d333d37cb9f9b062ea4e24dad60cf1c8",
+    "summary.json": "55153b783a09f8441b018068f44888011dcab4ea9d91aa85a46754a14dc2648d"
+  }
+}

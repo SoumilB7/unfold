@@ -1,0 +1,430 @@
+{
+  "scope": "Offline triage of saved frozen26 strict sparse Llama outputs. No source edits, product imports, model runs, observer edits, or blessing.",
+  "raw_result": "FAIL retained; this triage does not turn the strict observer green.",
+  "counts": {
+    "unexplained_fact_deltas": 1,
+    "unexplained_ir_deltas": 225,
+    "census_list_leaf_deltas": 97,
+    "projection_obligation_leaf_deltas": 122,
+    "activation_metadata_leaf_deltas": 3,
+    "hidden_size_chip_leaf_deltas": 3
+  },
+  "remaining_fact": {
+    "raw_delta": {
+      "path": [
+        "decoder.ffn.activation",
+        "status"
+      ],
+      "before_present": true,
+      "after_present": true,
+      "before": "code_and_config",
+      "after": "class_default",
+      "cause": "UNEXPLAINED",
+      "diagnostic_cause": "unexplained value/structure or unsupported metadata delta",
+      "admitted": false
+    },
+    "classification": "Unqualified activation provenance transition; exact consumption event now agrees with existing fact. The observer requires qualified root-bound proof operands and cannot establish this transition from a declaration-only applied-function fact.",
+    "actual": [
+      {
+        "condition": "ordinary",
+        "native_fact": {
+          "owner": "decoder.ffn",
+          "key": "activation",
+          "value": "silu",
+          "status": "code_and_config",
+          "completeness": "uninspected",
+          "claim_kind": "applied_function",
+          "claim_readers": [
+            "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+          ],
+          "config_paths": [],
+          "source_spans": [],
+          "claim_proof": null,
+          "unknown_reason": null
+        },
+        "event": {
+          "config_path": "hidden_act",
+          "present": true,
+          "intent": "consumed",
+          "provenance": "checkpoint_declared",
+          "reader": "adapters.transformer.parser.parse",
+          "mechanism": "ffn_activation",
+          "value_status_hash": "b9c82d4207301835"
+        },
+        "original_proof_scope": {
+          "root_bound": false,
+          "qualification": "not_proved"
+        },
+        "original_proof_operands": []
+      },
+      {
+        "condition": "sparse-valid",
+        "native_fact": {
+          "owner": "decoder.ffn",
+          "key": "activation",
+          "value": "silu",
+          "status": "class_default",
+          "completeness": "uninspected",
+          "claim_kind": "applied_function",
+          "claim_readers": [
+            "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+          ],
+          "config_paths": [],
+          "source_spans": [],
+          "claim_proof": null,
+          "unknown_reason": null
+        },
+        "event": {
+          "config_path": "hidden_act",
+          "present": false,
+          "intent": "absent_default",
+          "provenance": "class_default",
+          "reader": "adapters.transformer.parser.parse",
+          "mechanism": "ffn_activation",
+          "value_status_hash": "47322c7513880114"
+        },
+        "original_proof_scope": {
+          "root_bound": false,
+          "qualification": "not_proved"
+        },
+        "original_proof_operands": []
+      }
+    ],
+    "limit": "The unchanged silu string, same drawings, and matching event hash do not prove activation application. Both inputs retain applied_function/uninspected/null proof; keep S9-C stronger proof debt. No inaccurate event producer found in this bounded follow-up."
+  },
+  "ir_groups": {
+    "census_lists": [
+      {
+        "path": [
+          "extras",
+          "config_access",
+          "absent_default"
+        ],
+        "before_count": 29,
+        "after_count": 32,
+        "removed": [],
+        "added": [
+          "root:hidden_act",
+          "root:hidden_size",
+          "root:num_attention_heads"
+        ],
+        "raw_leaf_deltas": 24
+      },
+      {
+        "path": [
+          "extras",
+          "config_access",
+          "accessed"
+        ],
+        "before_count": 20,
+        "after_count": 17,
+        "removed": [
+          "root:hidden_act",
+          "root:hidden_size",
+          "root:num_attention_heads"
+        ],
+        "added": [],
+        "raw_leaf_deltas": 16
+      },
+      {
+        "path": [
+          "extras",
+          "config_access",
+          "consumed"
+        ],
+        "before_count": 16,
+        "after_count": 13,
+        "removed": [
+          "root:hidden_act",
+          "root:hidden_size",
+          "root:num_attention_heads"
+        ],
+        "added": [],
+        "raw_leaf_deltas": 14
+      },
+      {
+        "path": [
+          "extras",
+          "config_access",
+          "consumed_unprojected"
+        ],
+        "before_count": 14,
+        "after_count": 11,
+        "removed": [
+          "root:hidden_act",
+          "root:hidden_size",
+          "root:num_attention_heads"
+        ],
+        "added": [],
+        "raw_leaf_deltas": 12
+      },
+      {
+        "path": [
+          "extras",
+          "config_audit",
+          "accessed"
+        ],
+        "before_count": 21,
+        "after_count": 18,
+        "removed": [
+          "hidden_act",
+          "hidden_size",
+          "num_attention_heads"
+        ],
+        "added": [],
+        "raw_leaf_deltas": 17
+      },
+      {
+        "path": [
+          "extras",
+          "config_consumed"
+        ],
+        "before_count": 16,
+        "after_count": 13,
+        "removed": [
+          "hidden_act",
+          "hidden_size",
+          "num_attention_heads"
+        ],
+        "added": [],
+        "raw_leaf_deltas": 14
+      }
+    ],
+    "projection_obligations": {
+      "comparison_key": [
+        "source",
+        "target",
+        "mechanism"
+      ],
+      "before": 22,
+      "after": 18,
+      "retained_byte_identical": 15,
+      "removed": [
+        {
+          "source": {
+            "component": "root",
+            "path": "num_attention_heads",
+            "spelling": "num_attention_heads",
+            "canonical": "num_attention_heads"
+          },
+          "target": {
+            "owner": "decoder.attention",
+            "key": "head_geometry",
+            "kind": "fact"
+          },
+          "state": "unreceipted",
+          "reason": "no projection receipt exists yet",
+          "mechanism": "attention_head_geometry",
+          "expected_value_status_hash": "38a8326edd3aad06"
+        },
+        {
+          "source": {
+            "component": "root",
+            "path": "num_attention_heads",
+            "spelling": "num_attention_heads",
+            "canonical": "num_attention_heads"
+          },
+          "target": {
+            "owner": "decoder.attention",
+            "key": "mechanism",
+            "kind": "fact"
+          },
+          "state": "unreceipted",
+          "reason": "no projection receipt exists yet",
+          "mechanism": "attention_mechanism",
+          "expected_value_status_hash": "a615d6a9effdcd21"
+        },
+        {
+          "source": {
+            "component": "root",
+            "path": "hidden_act",
+            "spelling": "hidden_act",
+            "canonical": "hidden_act"
+          },
+          "target": {
+            "owner": "decoder.ffn",
+            "key": "activation",
+            "kind": "fact"
+          },
+          "state": "unreceipted",
+          "reason": "no projection receipt exists yet",
+          "mechanism": "ffn_activation",
+          "expected_value_status_hash": "b9c82d4207301835"
+        },
+        {
+          "source": {
+            "component": "root",
+            "path": "hidden_size",
+            "spelling": "hidden_size",
+            "canonical": "hidden_size"
+          },
+          "target": {
+            "owner": "model",
+            "key": "hidden_size",
+            "kind": "fact"
+          },
+          "state": "unreceipted",
+          "reason": "no projection receipt exists yet",
+          "mechanism": "model_hidden_size_value",
+          "expected_value_status_hash": "67951bb3d9db1731"
+        }
+      ],
+      "added": [],
+      "retained_hash_only_changes": [
+        {
+          "before": {
+            "source": {
+              "component": "root",
+              "path": "head_dim",
+              "spelling": "head_dim",
+              "canonical": "head_dim"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "head_geometry",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_head_geometry",
+            "expected_value_status_hash": "38a8326edd3aad06"
+          },
+          "after": {
+            "source": {
+              "component": "root",
+              "path": "head_dim",
+              "spelling": "head_dim",
+              "canonical": "head_dim"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "head_geometry",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_head_geometry",
+            "expected_value_status_hash": "58e42c61f60ced05"
+          }
+        },
+        {
+          "before": {
+            "source": {
+              "component": "root",
+              "path": "num_key_value_heads",
+              "spelling": "num_key_value_heads",
+              "canonical": "num_key_value_heads"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "head_geometry",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_head_geometry",
+            "expected_value_status_hash": "38a8326edd3aad06"
+          },
+          "after": {
+            "source": {
+              "component": "root",
+              "path": "num_key_value_heads",
+              "spelling": "num_key_value_heads",
+              "canonical": "num_key_value_heads"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "head_geometry",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_head_geometry",
+            "expected_value_status_hash": "58e42c61f60ced05"
+          }
+        },
+        {
+          "before": {
+            "source": {
+              "component": "root",
+              "path": "num_key_value_heads",
+              "spelling": "num_key_value_heads",
+              "canonical": "num_key_value_heads"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "mechanism",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_mechanism",
+            "expected_value_status_hash": "a615d6a9effdcd21"
+          },
+          "after": {
+            "source": {
+              "component": "root",
+              "path": "num_key_value_heads",
+              "spelling": "num_key_value_heads",
+              "canonical": "num_key_value_heads"
+            },
+            "target": {
+              "owner": "decoder.attention",
+              "key": "mechanism",
+              "kind": "fact"
+            },
+            "state": "unreceipted",
+            "reason": "no projection receipt exists yet",
+            "mechanism": "attention_mechanism",
+            "expected_value_status_hash": "7e943a2de3a9029e"
+          }
+        }
+      ],
+      "cause": "Four omitted-checkpoint obligations disappear because defaults have no checkpoint occurrence; retained mechanisms now carry class_default-tier expected hashes. No unrelated obligation removed; no state/reason change on retained identities."
+    },
+    "activation_transport": {
+      "fields": [
+        "extras.fact_provenance.decoder.ffn.activation.status",
+        "extras.fact_provenance.decoder.ffn.activation.presentation_reference.status",
+        "extras.fact_provenance.decoder.ffn.activation.presentation_reference.value_status_hash"
+      ],
+      "cause": "Same single unresolved activation status transition; declaration-only proof remains absent."
+    },
+    "width_chip": {
+      "fields": [
+        "presentation_aliases",
+        "presentation_chips",
+        "presentation_path"
+      ],
+      "path": [
+        "extras",
+        "render",
+        "model_blocks",
+        1
+      ],
+      "cause": "Existing model.hidden_size fact gains class_default status and its lawful chip is projected on the embedding block. Chip reference equals the saved qualified fact presentation_reference exactly; empty aliases and location are accompanying presentation addressing.",
+      "reference_exact_match": true
+    }
+  },
+  "recommendation": "Add a bounded observer accounting distinction between evidence for a provenance/default transition and evidence qualifying the applied-function claim. Require exact saved events/default channel, stable value/kind/completeness, and retain proof debt. Compare census/obligation identities before attributing list-index shifts. Do not expand activation proof, discard unreceipted debt, or bless outputs on this triage alone.",
+  "input_artifact_sha256": {
+    "all-fact-deltas.json": "0811be87e2067dca823d7d9407c0d42261ae60aa9642891ff127050e4348143e",
+    "all-ir-deltas.json": "15f2fc21d55aef615bd5b72561266dd4e7bf28971cdf8ad895d3b8946ba1e987",
+    "actual-omitted-default-premises.json": "16aa325e6138c1b54fd7c14dbcc008dad61051664158431ba52807e457b5d353",
+    "provenance-transition-bindings.json": "b3175296884a6f5eb9a82c37c0a7ec761e55f5e02d1acb002eac72bdf468f4ed",
+    "ordinary/ir-before-render.json.gz": "d7536e0dd2c5579b0b1cd55ff30b67ac36b5cfb5421f2fcc05c6364e0a8be379",
+    "ordinary/facts.json": "e2124f7c65b9945cefaf879721e0646752888e61ec942290cbef04570007f88e",
+    "ordinary/native-facts.json": "346bcf7814bdf1295516311f392fba8b71ff69f80272d72d006eae5cdeac313f",
+    "ordinary/config-access-events.json": "624fd35b8bde577e4d42de0127aa1238ab47bed07c6d9f8271db23ac7aaeca91",
+    "ordinary/original-proof-scopes.json": "92f5a65d78d70731598538ad66dde32ae715d3b353b479f727c6ee04e0bd01ec",
+    "ordinary/original-proof-operands.json": "9e3144152a2ffa7fa42aca5f1f6f90e58d0e64db870027cd4c45335b38b5dd90",
+    "ordinary/actual-condition-defaults.json": "e1b07b5ad9b84f56d2cf8859859fbf952af3219190e8852f6a6626b68516c6de",
+    "sparse-valid/ir-before-render.json.gz": "ea40785d0197998d9f0b635b0864e9fd22f5a87c2aa833cc8b820746ad5e0aff",
+    "sparse-valid/facts.json": "55600fd9ce93c0112dcac07d1efad8c116a79eb2c344a184e886d83152eb79b3",
+    "sparse-valid/native-facts.json": "88d14b20e8dba5edddf52f6ab1b5c949435b74aa6ee0cb06818ee9d75d80b296",
+    "sparse-valid/config-access-events.json": "59a72583809c94a69bf0eb19bc4c4aca28b4fd7c98a27fb42a91c71f7857da78",
+    "sparse-valid/original-proof-scopes.json": "1d861f905e256d8d9f5b035c1ef753072aa76e245b5de4434f63538cb36a5a06",
+    "sparse-valid/original-proof-operands.json": "005b81a17971e5395b2464526b046acebc574700ad2eba374d2e594c5fd8c17e",
+    "sparse-valid/actual-condition-defaults.json": "a7c21e0c1e56f2ce6735f42d2cc9b3e72134fe9426c4d07e0f3754b32cca93fc"
+  }
+}

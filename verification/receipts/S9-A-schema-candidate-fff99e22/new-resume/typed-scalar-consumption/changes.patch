@@ -1,0 +1,49 @@
+--- frozen28/model_unfolder/adapters/transformer/parser.py
++++ candidate/model_unfolder/adapters/transformer/parser.py
+@@ -1420,23 +1420,25 @@
+     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
+     _model_width_resolution = _scoped("hidden_size")
+     _model_width_reader = "adapters.transformer.parser.parse"
+-    hidden_size = None if _model_width_resolution.ambiguous else _model_width_resolution.consume(
+-        fact_owner="model", fact_key="hidden_size", reader=_model_width_reader,
+-        mechanism="model_hidden_size_value",
+-        status="config_declared" if _model_width_resolution.present else "")
++    _model_width_decision = (
++        None if _model_width_resolution.ambiguous else _model_width_resolution.consume_decision(
++            fact_owner="model", fact_key="hidden_size", reader=_model_width_reader,
++            mechanism="model_hidden_size_value",
++            status="config_declared" if _model_width_resolution.present else ""))
++    hidden_size = _model_width_decision.value if _model_width_decision is not None else None
+     if _model_width_resolution.source_kind == "class_default":
+         hidden_size = None  # Provisional defaults require the exact scalar proof below.
+     # An explicit scalar retains the existing ConfigValueClaimProof boundary:
+     # exact checkpoint occurrence and actual consumption, not a source-flow claim.
+     if (_facts is not None and type(hidden_size) is int
+-            and _model_width_resolution.present and _model_width_resolution.selected_path
++            and _model_width_decision.present and _model_width_decision.selected_path
+             and _model_width_resolution.source_kind != "class_default"):
+         from ...evidence.facts import EvidenceFact
+         from ...evidence.claim_evidence import qualify_config_value_fact
+         _declared_width = EvidenceFact(
+             owner="model", key="hidden_size", value=hidden_size,
+             status="config_declared", completeness="complete",
+-            config_paths=(_model_width_resolution.selected_path,),
++            config_paths=(_model_width_decision.selected_path,),
+             legacy_source=_model_width_reader,
+             reason="exact checkpoint scalar declaration; not a state-flow connection",
+             claim_kind="value", claim_readers=(_model_width_reader,))
+@@ -4502,10 +4504,11 @@
+     # build) → typed unknown (param count annotates, never picks).
+     _tie_resolution = _scoped("tie_word_embeddings")
+     _tie_reader = "model_unfolder.adapters.transformer.parser.parse"
+-    _tie_raw = (
+-        None if _tie_resolution.ambiguous else _tie_resolution.consume(
+-            fact_owner="model", fact_key="tie_word_embeddings",
++    _tie_decision = (
++        None if _tie_resolution.ambiguous else _tie_resolution.consume_decision(
++            fact_owner="model", fact_key="tie_word_embeddings", mechanism="",
+             reader=_tie_reader, status="config_declared"))
++    _tie_raw = _tie_decision.value if _tie_decision is not None else None
+     if _tie_raw is None and text_cfg is not cfg:
+         # U1 (unmasked by the exact resolver): a multimodal WRAPPER declares the
+         # text head's tying at WRAPPER level (qwen2-vl: top-level

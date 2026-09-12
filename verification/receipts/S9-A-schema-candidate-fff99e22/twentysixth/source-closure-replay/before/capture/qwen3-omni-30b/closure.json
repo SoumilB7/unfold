@@ -1,0 +1,218 @@
+{
+  "actual_portable_seal": "ffebeef60dc928d00d5ef327bd3f6f3ccf1f174da60efa639e33435d556cd5c2",
+  "baseline_output": {
+    "ir_after_sha256": "4501c19dde34332485967229caf3b8f7bc0cb31428993a562031af9ccc21e601",
+    "ir_before_sha256": "4501c19dde34332485967229caf3b8f7bc0cb31428993a562031af9ccc21e601",
+    "page_bytes": 87714,
+    "page_sha256": "8d9b94173b7ddae1ae4c30c160363f4a3eae3f5157b4e8f026cd201f8138e9bf",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "ffebeef60dc928d00d5ef327bd3f6f3ccf1f174da60efa639e33435d556cd5c2",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "ffebeef60dc928d00d5ef327bd3f6f3ccf1f174da60efa639e33435d556cd5c2",
+  "seconds": 3.767588708000403,
+  "slug": "qwen3-omni-30b",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.code_predictor_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "talker_config.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.audio_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "ef7d12552beaf47d6422e2edae1f4722ce48557d16df43073cd2b5f7dc142a86",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "acd1c136a1e404a293428196368f339e6e5166bee1378d809536b5930c66eb1f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen3_omni_moe.py"
+    },
+    {
+      "component": "thinker_config.vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 28,
+  "status": "REPRODUCED"
+}

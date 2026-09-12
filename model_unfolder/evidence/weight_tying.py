@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .reader_claims import retained_claim_reader
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
@@ -165,6 +166,9 @@ class ManualWeightTyingEvidence:
             raise TypeError("manual tying spans are SourceSpan values")
 
 
+@retained_claim_reader(intended_claims=(
+    ("model", "tie_word_embeddings", "value"),
+))
 def manual_weight_tying_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,

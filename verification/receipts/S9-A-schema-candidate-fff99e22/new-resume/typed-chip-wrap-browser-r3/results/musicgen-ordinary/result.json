@@ -1,0 +1,90 @@
+{
+  "input": "S9-schema/defaults-thirtysixth/musicgen/ordinary.html",
+  "sha256": "01e5614e8f632c80affe69412d143f6c199078617d7e92c9ed6d02b090f534a3",
+  "bytes": 109091,
+  "load_ms": 159.72862500348128,
+  "initial_dom": {
+    "elements": 618,
+    "cards": 36,
+    "op_nodes": 37,
+    "visible_cards": [
+      "default"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1170
+    }
+  },
+  "interactions": [
+    {
+      "clicked_node": "cross_attn",
+      "click_to_card_ms": 76.10245799878612,
+      "card": {
+        "id": "cross_attn",
+        "text": "Multi-head cross-attention\nCross-attention \u2014 decoder hidden states produce the queries; the projected image states produce K and V.\n16 Q heads\n16 KV heads\nhead dim 64\nposition scheme unresolved\nbias unresolved\nQK norm unresolved\ncache unresolved\nQKV storage unresolved\nscore scaling unresolved\nposition application unresolved\nsource modeling_musicgen.py:1440\nin/out 1,024\nin (1,024)\nQ/K/V projections (storage unresolved)\nAttention scores (scaling unresolved)\nSoftmax\nConcat heads\nAttention output path unresolved\nEncoded text",
+        "rect": {
+          "x": 348,
+          "y": 325.0625,
+          "width": 644,
+          "height": 673,
+          "top": 325.0625,
+          "right": 992,
+          "bottom": 998.0625,
+          "left": 348
+        },
+        "scrollWidth": 644,
+        "clientWidth": 644,
+        "chip_nodes": []
+      },
+      "dom": {
+        "elements": 618,
+        "cards": 36,
+        "op_nodes": 37,
+        "visible_cards": [
+          "cross_attn"
+        ],
+        "chip_kinds": [],
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "document": {
+          "width": 1440,
+          "height": 1793
+        }
+      }
+    }
+  ],
+  "page_errors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "blocked_requests": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
+  ],
+  "final_dom": {
+    "elements": 618,
+    "cards": 36,
+    "op_nodes": 37,
+    "visible_cards": [
+      "cross_attn"
+    ],
+    "chip_kinds": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "width": 1440,
+      "height": 1793
+    }
+  }
+}

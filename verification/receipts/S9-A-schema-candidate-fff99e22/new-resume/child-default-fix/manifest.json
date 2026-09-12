@@ -1,0 +1,49 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d05b162071243335f2a7fb976cbf4c7e755f035ab98d20391ba0e496e7afa59f",
+      "bytes": 3662
+    },
+    {
+      "path": "before/model_unfolder/adapters/transformer/parser.py",
+      "sha256": "c3377e0a603b49c1a5baad0c676f316512b764c4701af9ab851db237b4c167a3",
+      "bytes": 266595
+    },
+    {
+      "path": "before/model_unfolder/evidence/class_default_value.py",
+      "sha256": "9b3311740467832884d440fc217e5b7cf5cded7132d29b8fe46ca35ba2fb95b2",
+      "bytes": 13691
+    },
+    {
+      "path": "handoff.json",
+      "sha256": "1be6fc633c7f6c881d3637c75648bb74fe9aec86078f4d935942fd6e8eaecb63",
+      "bytes": 1866
+    },
+    {
+      "path": "held/model_unfolder/adapters/transformer/parser.py",
+      "sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+      "bytes": 265481
+    },
+    {
+      "path": "held/model_unfolder/evidence/class_default_value.py",
+      "sha256": "ffef68bc43a6e460794a8165c2bac3590b8445adcc39c8251ad9077febcb1305",
+      "bytes": 19007
+    },
+    {
+      "path": "held/tests/test_s9_child_class_default.py",
+      "sha256": "e6e4daa8d037788cc91f7d203bafcfea53a52069cbc59cc7c09fb718249f4a69",
+      "bytes": 7374
+    },
+    {
+      "path": "installed-source-pins.json",
+      "sha256": "eed161d521f51eaf9c36913c00bfefe48bc2fb51ba126824902fa31c9b2e002d",
+      "bytes": 884
+    },
+    {
+      "path": "source.diff",
+      "sha256": "3f4c0a33b3d1125cfd4780e9c4888f9409ee9af0f96fc35416ec41f5439e2f36",
+      "bytes": 24805
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "model_unfolder/adapters/transformer/parser.py",
+    "before_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+    "proposed_sha256": "bd3debdf8ecdeee7c4393a5279bf10b635c69c2a95984f9a03541876e74e76d0"
+  },
+  {
+    "path": "model_unfolder/evidence/registry.py",
+    "before_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+    "proposed_sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b"
+  },
+  {
+    "path": "model_unfolder/renderers/html/fact_projection.py",
+    "before_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+    "proposed_sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b"
+  },
+  {
+    "path": "tests/test_attention_softcap.py",
+    "before_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+    "proposed_sha256": "1722dae4605808fd3f3a3252fcf1fe5c0aff19aaa6f95e20b60b9b462a2820e9"
+  }
+]

@@ -1,0 +1,70 @@
+--- fff99e22/model_unfolder/evidence/context.py
++++ frozen26/model_unfolder/evidence/context.py
+@@ -93,7 +93,11 @@
+                source: str | None = None) -> None:
+         if status not in FACT_STATUSES:
+             raise ValueError(f"unknown fact status {status!r}")
+-        self.records[f"{owner}.{fact}"] = FactRecord(value, status, source)
++        key = f"{owner}.{fact}"
++        self.records[key] = FactRecord(value, status, source)
++        # A later legacy author replaces the entire fact, including its old
++        # typed proof/unknown metadata. Never retain a proof for the old value.
++        self.typed.pop(key, None)
+ 
+     def record_typed(self, fact: Any) -> None:
+         """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+@@ -136,11 +140,19 @@
+                             if r.status == "asserted"))
+ 
+     def to_dict(self) -> dict[str, dict]:
+-        return {
+-            key: {"value": rec.value, "status": rec.status,
+-                  **({"source": rec.source} if rec.source else {})}
+-            for key, rec in sorted(self.records.items())
+-        }
++        from ..presentation import ChipFactReference
++        typed = self.typed_records()
++        result = {}
++        for key, rec in sorted(self.records.items()):
++            fact = typed[key]
++            result[key] = {
++                "value": rec.value, "status": rec.status,
++                **({"source": rec.source} if rec.source else {}),
++                "presentation_reference": ChipFactReference.from_fact(fact).to_dict(),
++                **({"unknown_reason": fact.unknown_reason.to_dict()}
++                   if fact.unknown_reason is not None else {}),
++            }
++        return result
+ 
+ 
+ @dataclass
+@@ -214,6 +226,10 @@
+     # One-time S8 scratch demonstration capability. No product/config field
+     # selects an override; the static bundle and isolated builder must agree.
+     source_overrides: tuple[Any, ...] = ()
++    # Independent checkpoint evidence supplied by the header reader. This
++    # channel is separate from config hydration and from recipe observations.
++    checkpoint_headers: tuple[Any, ...] = ()
++    construction_inventory: Any = None
+     # U9-A: the ONE exact root/nested-component ownership inventory derived
+     # from this context's ProgramIndex.  It is address evidence only and stays
+     # lazy until a modality reader asks for it.
+@@ -282,6 +298,18 @@
+         if any(not isinstance(part, str) or not part for part in path):
+             raise TypeError("cached reader config paths are tuple[str, ...]")
+         key = (reader, path)
++        if key in self.reader_results:
++            from .config_access import current_prepared_document
++            from .reader_result import ReaderResult
++            prepared = current_prepared_document.get()
++            cached = self.reader_results[key]
++            if prepared is not None and isinstance(cached, ReaderResult):
++                from .reader_claims import reader_claim_scope_matches, reader_requires_claim_scope
++                if reader_requires_claim_scope(cached) and not reader_claim_scope_matches(
++                        cached, self.program_index(), prepared):
++                    # Rerun the actual producer under this invocation boundary;
++                    # a stale/unbound return must never gain post-hoc authority.
++                    self.reader_results[key] = factory()
+         if key not in self.reader_results:
+             self.reader_results[key] = factory()
+         return self.reader_results[key]

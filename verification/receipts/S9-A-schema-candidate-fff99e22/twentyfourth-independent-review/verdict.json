@@ -1,0 +1,20 @@
+{
+  "decision": "ACCEPT bounded consumer schema source; runtime unrun",
+  "manifest_sha256": "229c700e5bea38e8877bd505da4e8ca35d1c280d1c6b3263c85b3b72dad2288e",
+  "scope": "Exact two copied files; 18 added finite required-kind entries and two existing-kind corrections. No source proof producer, placement join, kind inference, or artifact writes.",
+  "findings": [
+    "Consumer kind requirements are constants independent of whatever proof happens to exist. Existing _claim_gap_partition and ProjectionFactCitation require both exact matching kind and non-null evidence.",
+    "Structured bookend geometry is the existing exact per-role/operation/slot constructor VALUE question; bookend operations separately prove connections. Stack variant is the existing exact selected rival branch CONNECTION.",
+    "Added keys align with the reviewed finite reader projections. They cannot turn a declaration-only result into proof. The actual481 score formula gaps and142 held legacy provenance rows remain gaps under these predicates.",
+    "Tests obtain real parsed typed facts and preserve original fact/proof identity; score declaration without proof remains refused; changing required kind to connection rejects an actual applied-function fact."
+  ],
+  "limitations": [
+    "No runtime by reviewer; tests awaiting root. Actual diagnostic3656/623 split is executor evidence, not re-executed here.",
+    "This change does not fix independently returned274 placement associations.",
+    "Minor lint: unused dataclasses.replace import in new test reported to executor; final removal pin pending."
+  ],
+  "evidence": {
+    "placement_review": "/private/tmp/unfold-s9a-independent-s7-projection-delta-review/verdict.json",
+    "source_snapshot": "source/"
+  }
+}

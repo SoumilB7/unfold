@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "80dade997ec9a0d1c4a7a8b7bc5784eebcab23476be4891779b342aff92343d3",
+  "baseline_output": {
+    "ir_after_sha256": "6291c25b3331323aa8dd8123ff4ae1afcae98af0254b2bd9a7cc102ec1205d08",
+    "ir_before_sha256": "6291c25b3331323aa8dd8123ff4ae1afcae98af0254b2bd9a7cc102ec1205d08",
+    "page_bytes": 121051,
+    "page_sha256": "fa34f19133c2072f639be65fa2d42fdc2bf36b61af2aba3ebcfc54e31b436a2c",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "80dade997ec9a0d1c4a7a8b7bc5784eebcab23476be4891779b342aff92343d3",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "80dade997ec9a0d1c4a7a8b7bc5784eebcab23476be4891779b342aff92343d3",
+  "seconds": 1.8661523749997286,
+  "slug": "pixart-sigma-xl-2-1024-ms",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "74282409d3da265bb999a5cf52746b3dcb3dd955b740fed48aa200e1da142c36",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_2d.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

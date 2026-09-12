@@ -1,0 +1,11 @@
+{
+  "base_manifest": "f846a46c1c4942dcb9d5b17f450585a173035ee75daf193abaa268a7453fe788",
+  "handoffs": [
+    {
+      "original": "/private/tmp/unfold-s9a-diffusion-default-preparation-v2/manifest.json",
+      "sha256": "e41cb9d27f99edcaf591dbcdd6bb24cb12b76a6bb05176a1567d8d8a1c3c8af2"
+    }
+  ],
+  "diffusion_default_v2_included": true,
+  "new_default_declarations_and_MRO_included": true
+}

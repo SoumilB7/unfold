@@ -1,0 +1,19 @@
+{
+  "scope": "Independent source30 growth/authority/debt accounting only",
+  "artifacts": {
+    "audit.py": "eed8fb35eed04ca4bea0eaf2b2e0c0def0d380ef765cf261937e2b99f50f7daf",
+    "authority-bridges-debt.json": "64b0290b4793883303d8573502bf1b3e3ecf89ed2b058372c03d9e1ac6949b28",
+    "baseline-source-inventory.json": "ec3a0f5741676e76171c3b89d47abb9e398e992b0f9ac5ea7a7c4fcc93db2dc9",
+    "candidate-source-inventory.json": "54ee6dda8f5c5511c80cfee23f0ea808d4e4d1b4083f3c13f85aca7295a14eac",
+    "debt-rows.json": "cd8e9207f44909565a3d4545d442564b06776f8ed0b576ab6be66f8f62df75e7",
+    "fixture-relocation.json": "1c5de3b4f41778b29be85059bffcf38b4673e211c8f15eb852cd1561cdac94c5",
+    "latency-metadata-deltas.json": "a3aa9c13988d78ba6eb8d2344886e1355919e58469a3a369770430ef1119ec13",
+    "line-growth.json": "4bf7b3d0b34f979dc209ec82e48ef29240428d023d7077c0be273948480b772b",
+    "retained-producers.json": "762bc052b754cc8e57ebe119d510e57978c66ce912c352100c5eb5102b77eb2a",
+    "sheet-ready.md": "ba6f68cd5ab6d60f8a352fc09e01edc66ac90634b1b95a1041a360de16fe1e43",
+    "summary.json": "85cee07ad08d44545d4abd5762913165959c754f3c2ce6b350a0738a7394cb39"
+  },
+  "source_manifest_sha256": "e4636c47c40267792d6ab489818bcd1c02deeb7c52ffe8cc44f2e8d60e6b9d43",
+  "source_inputs_stable": true,
+  "runtime": "None; standard library saved-source reads/AST/hashes only"
+}

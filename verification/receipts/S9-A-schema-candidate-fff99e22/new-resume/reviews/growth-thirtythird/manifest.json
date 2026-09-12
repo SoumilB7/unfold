@@ -1,0 +1,65 @@
+{
+  "scope": "Frozen33 stdlib composition/growth; source and runtime authority distinguished",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "712f964243eb46ea247232ff3da2514893f1902dca05028a0cc5d3eddd733677",
+      "bytes": 11224
+    },
+    {
+      "path": "authority-bridges-debt.json",
+      "sha256": "895e86be1e711921ac8eb28a6f0cf98559379db49891f4ca4988256b16158cc3",
+      "bytes": 8507
+    },
+    {
+      "path": "baseline-source-inventory.json",
+      "sha256": "ec3a0f5741676e76171c3b89d47abb9e398e992b0f9ac5ea7a7c4fcc93db2dc9",
+      "bytes": 62607
+    },
+    {
+      "path": "candidate-source-inventory.json",
+      "sha256": "cc7bf5a84df63b16ac273e6c2d5ae7be1446900f1d5c1f39fcfeef5e9d38f6fc",
+      "bytes": 69970
+    },
+    {
+      "path": "composition-review.json",
+      "sha256": "7c7c6bce3ccf1842f944214060fcd4109874b605440034d2763cbd8f69e3d914",
+      "bytes": 3664
+    },
+    {
+      "path": "debt-rows.json",
+      "sha256": "cd8e9207f44909565a3d4545d442564b06776f8ed0b576ab6be66f8f62df75e7",
+      "bytes": 35548
+    },
+    {
+      "path": "fixture-relocation.json",
+      "sha256": "1c5de3b4f41778b29be85059bffcf38b4673e211c8f15eb852cd1561cdac94c5",
+      "bytes": 14165
+    },
+    {
+      "path": "latency-metadata-deltas.json",
+      "sha256": "a3aa9c13988d78ba6eb8d2344886e1355919e58469a3a369770430ef1119ec13",
+      "bytes": 272
+    },
+    {
+      "path": "line-growth.json",
+      "sha256": "5655f2628a750c8aca32a13723924d2e70aba09308ab5b409ac714771dc806c0",
+      "bytes": 48870
+    },
+    {
+      "path": "retained-producers.json",
+      "sha256": "d9a144a4165b9c05d4e1eac8f01b590a6e12ba4afc71f3a36601fbf8b5a0328a",
+      "bytes": 12980
+    },
+    {
+      "path": "sheet-ready.md",
+      "sha256": "555aff7b80c1526fd3da37d50e1e0e528204904b7664d2514a20d6bc013b7999",
+      "bytes": 1439
+    },
+    {
+      "path": "summary.json",
+      "sha256": "853d942cc6b9197f770658327ec978a2a1a590f321374f5ef5b7d2605688715a",
+      "bytes": 3724
+    }
+  ]
+}

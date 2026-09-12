@@ -1,0 +1,10 @@
+{
+  "scope": "Preserve exact frequency scalar/status/source expectation while explicitly validating the added presentation reference against this actual native reader fact. No production change or permissive extra-key assertion.",
+  "files": [
+    {
+      "path": "tests/test_position_initialization.py",
+      "before_sha256": "b2406f4a8804b79893ed5b8352fb1d48aa3080d00233f59e78c44abdf531b301",
+      "sha256": "b3a34ebf3d46e54f27c0d7145f91a040e376d4ac057202514d264b5374c400db"
+    }
+  ]
+}

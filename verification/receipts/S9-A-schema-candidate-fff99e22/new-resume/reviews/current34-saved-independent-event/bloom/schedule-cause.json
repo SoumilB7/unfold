@@ -1,0 +1,1128 @@
+{
+  "exact_added_consumption": {
+    "expected_value_status_hash": "73daf2ce797c8576",
+    "mechanism": "position_schedule",
+    "reason": "no projection receipt exists yet",
+    "source": {
+      "canonical": "num_hidden_layers",
+      "component": "root",
+      "path": "n_layer",
+      "spelling": "n_layer"
+    },
+    "state": "unreceipted",
+    "target": {
+      "key": "position_schedule",
+      "kind": "fact",
+      "owner": "decoder.attention"
+    }
+  },
+  "exact_added_consumption_index": 3,
+  "existing_consumptions_identical_after_removing_exact_one_insertion": true,
+  "existing_layer_map_field_receipt_hash_now_matches_new_native_tier": true,
+  "graph_or_schedule_values_changed": false,
+  "key": "decoder.attention.position_schedule",
+  "native_after": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+      ],
+      "fact_id": "decoder.attention.position_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "n_layer"
+    ],
+    "key": "position_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 267,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 378,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 383,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 519,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 507,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 68,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 76,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 84,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 85,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 86,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      }
+    ]
+  },
+  "native_before": {
+    "claim_kind": null,
+    "claim_proof": null,
+    "claim_readers": [],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "position_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 267,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 378,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 383,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 519,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 525,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 507,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 436,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 68,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 76,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 84,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 85,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/bloom/modeling_bloom.py",
+        "line": 86,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": [
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      },
+      {
+        "position_application": "attention_bias",
+        "position_kind": "alibi",
+        "rope_dim": null
+      }
+    ]
+  },
+  "new_operation_receipt_count": 0,
+  "ordinary_checkpoint_class_default_chip_count": 0,
+  "render_events_after": [
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cached",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mask_schedule",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.output_projection",
+          "decoder.attention.position_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "alibi_bias",
+          "alibi_offsets",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "hidden",
+          "k_split",
+          "kv_cache",
+          "o_proj",
+          "q_split",
+          "qkv_proj",
+          "region_out",
+          "scaled_scores",
+          "score_bias_add",
+          "v_split"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.mask_schedule",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.position_schedule",
+          "decoder.ffn.ffn_schedule"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "layer_map"
+        ]
+      },
+      "receipts": [
+        {
+          "context_token": "5814c2948a724c5db38dfe46d5a9dc8e",
+          "fact_id": "decoder.attention.position_schedule",
+          "fact_key": "position_schedule",
+          "fact_value_status_hash": "73daf2ce797c8576",
+          "mechanism": "position_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "position_schedule",
+          "surface": "html"
+        }
+      ],
+      "view": "layer_map"
+    }
+  ],
+  "render_events_before": [
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cached",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mask_schedule",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.output_projection",
+          "decoder.attention.position_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "alibi_bias",
+          "alibi_offsets",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "hidden",
+          "k_split",
+          "kv_cache",
+          "o_proj",
+          "q_split",
+          "qkv_proj",
+          "region_out",
+          "scaled_scores",
+          "score_bias_add",
+          "v_split"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.mask_schedule",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.position_schedule",
+          "decoder.ffn.ffn_schedule"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "layer_map"
+        ]
+      },
+      "receipts": [
+        {
+          "context_token": "4b8f95e5c2634ad689467bb215971af4",
+          "fact_id": "decoder.attention.position_schedule",
+          "fact_key": "position_schedule",
+          "fact_value_status_hash": "7d50e6e457de4bbd",
+          "mechanism": "position_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "position_schedule",
+          "surface": "html"
+        }
+      ],
+      "view": "layer_map"
+    }
+  ],
+  "source_cause": "Existing all-layer mechanism is retained; exact repeated constructor count now contributes its located checkpoint operand and relation proof. No new architectural value or card drawing."
+}

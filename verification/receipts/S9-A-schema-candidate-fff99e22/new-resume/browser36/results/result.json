@@ -1,0 +1,74 @@
+{
+  "status": "FINDINGS",
+  "findings": [
+    {
+      "case": "sdxl",
+      "kind": "unexpected_visible_default_chip",
+      "expected": false,
+      "count": 1
+    },
+    {
+      "case": "sdxl",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 2267,
+      "clientWidth": 644
+    },
+    {
+      "case": "bloom-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 1419,
+      "clientWidth": 644
+    },
+    {
+      "case": "musicgen-sparse",
+      "kind": "card_horizontal_overflow",
+      "scrollWidth": 3161,
+      "clientWidth": 644
+    }
+  ],
+  "cases": {
+    "llama": {
+      "load_ms": 174.30433299887227,
+      "click_to_card_ms": 174.3812499989872,
+      "page_errors": [],
+      "initial_cards": 28,
+      "final_cards": 28
+    },
+    "sdxl": {
+      "load_ms": 172.60041699773865,
+      "click_to_card_ms": 80.8005829967442,
+      "page_errors": [],
+      "initial_cards": 1,
+      "final_cards": 2
+    },
+    "bloom-ordinary": {
+      "load_ms": 37.08962499513291,
+      "click_to_card_ms": 76.57808299700264,
+      "page_errors": [],
+      "initial_cards": 29,
+      "final_cards": 29
+    },
+    "bloom-sparse": {
+      "load_ms": 32.339208002667874,
+      "click_to_card_ms": 74.9809590051882,
+      "page_errors": [],
+      "initial_cards": 27,
+      "final_cards": 27
+    },
+    "musicgen-ordinary": {
+      "load_ms": 40.778958005830646,
+      "click_to_card_ms": 76.02041599602671,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    },
+    "musicgen-sparse": {
+      "load_ms": 39.83375000098022,
+      "click_to_card_ms": 75.34008399670711,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    }
+  },
+  "limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection."
+}

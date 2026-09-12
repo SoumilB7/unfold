@@ -1,0 +1,91 @@
+[
+  {
+    "after": "relation",
+    "after_present": true,
+    "after_type": "str",
+    "before": null,
+    "before_present": true,
+    "before_type": "NoneType",
+    "path": [
+      "decoder.attention.position_schedule",
+      "claim_kind"
+    ]
+  },
+  {
+    "after": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "a7d23f2415c43f90d8e2c0dc9962614bee4c3dba5bfcbf61067ec2913bea0b42"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.position_schedule:73daf2ce797c8576",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:267:27:272:9",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:383:18:383:23",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:436:8:436:67",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:16:507:98",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:507:8:507:98",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:525:22:525:27",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:68:4:68:36",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:76:8:76:80",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:84:4:84:86",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:85:4:85:45",
+        "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:86:4:86:73"
+      ],
+      "fact_id": "decoder.attention.position_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "after_present": true,
+    "after_type": "dict",
+    "before": null,
+    "before_present": true,
+    "before_type": "NoneType",
+    "path": [
+      "decoder.attention.position_schedule",
+      "claim_proof"
+    ]
+  },
+  {
+    "after": "model_unfolder.evidence.position_linear_bias.decoder_alibi_score_bias_for_path",
+    "after_present": true,
+    "before": null,
+    "before_present": false,
+    "path": [
+      "decoder.attention.position_schedule",
+      "claim_readers",
+      0
+    ]
+  },
+  {
+    "after": "n_layer",
+    "after_present": true,
+    "before": null,
+    "before_present": false,
+    "path": [
+      "decoder.attention.position_schedule",
+      "config_paths",
+      0
+    ]
+  },
+  {
+    "after": "code_and_config",
+    "after_present": true,
+    "after_type": "str",
+    "before": "code_proven",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      "decoder.attention.position_schedule",
+      "status"
+    ]
+  }
+]

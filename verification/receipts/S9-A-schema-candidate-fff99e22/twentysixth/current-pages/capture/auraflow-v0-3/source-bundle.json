@@ -1,0 +1,45 @@
+{
+  "architecture": "AuraFlowTransformer2DModel",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "AuraFlowTransformer2DModel",
+    "text_encoder": "UMT5EncoderModel"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py"
+    ],
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/umt5/modeling_umt5.py"
+    ]
+  },
+  "component_model_types": {
+    "text_encoder": "umt5"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/auraflow_transformer_2d.py",
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/umt5/modeling_umt5.py"
+  ],
+  "import_roots": {
+    "root": [
+      {
+        "package": "diffusers",
+        "path": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers"
+      }
+    ]
+  },
+  "model_id": "fal/AuraFlow-v0.3",
+  "model_type": null,
+  "pipeline_components": [
+    "text_encoder"
+  ],
+  "source": "local",
+  "supporting_files": {
+    "text_encoder": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/umt5/configuration_umt5.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

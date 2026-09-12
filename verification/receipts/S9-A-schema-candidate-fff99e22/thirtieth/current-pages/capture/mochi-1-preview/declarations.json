@@ -1,0 +1,180 @@
+{
+  "root.denoiser.diffusion_bookend_operations": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "916b2eb8d4c0938cc023aca24906db158334b9dbf31125ffba44681bd3b66f9a"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_bookend_operations:64c60c2918b7e9fb",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:430:24:430:60",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:430:24:430:74",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:432:24:432:82",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:454:55:460:17",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:455:34:455:47",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:462:24:462:52",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:470:8:470:54"
+      ],
+      "fact_id": "root.denoiser.diffusion_bookend_operations",
+      "fact_status": "",
+      "index_fingerprints": [
+        "69cc793761b4051d09773450aee42ae0545c7be2295a270125dc3415f7f58190"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_bookend_operations",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 430,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 454,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 455,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 432,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 462,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 470,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": {
+      "conditioning_input": [],
+      "state_input": [
+        "reshape"
+      ],
+      "state_output": [
+        "linear"
+      ],
+      "temporal_operations": []
+    }
+  },
+  "root.denoiser.diffusion_root_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "916b2eb8d4c0938cc023aca24906db158334b9dbf31125ffba44681bd3b66f9a"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.diffusion_root_topology:f54c9aeda5f113e8",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:443:8:460:17"
+      ],
+      "fact_id": "root.denoiser.diffusion_root_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "69cc793761b4051d09773450aee42ae0545c7be2295a270125dc3415f7f58190"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "diffusion_root_topology",
+    "owner": "root.denoiser",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 443,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "repeated_stack"
+  },
+  "root.denoiser.stacks[0].diffusion_stack_depth": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "916b2eb8d4c0938cc023aca24906db158334b9dbf31125ffba44681bd3b66f9a"
+      ],
+      "evidence_refs": [
+        "projection:root.denoiser.stacks[0].diffusion_stack_depth:6f05f50be2865626",
+        "source:root:99bd49d853e67d9cba6319d19733d211f64838e84e144c362246422657b6415e:392:31:392:41"
+      ],
+      "fact_id": "root.denoiser.stacks[0].diffusion_stack_depth",
+      "fact_status": "",
+      "index_fingerprints": [
+        "69cc793761b4051d09773450aee42ae0545c7be2295a270125dc3415f7f58190"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_layers"
+    ],
+    "key": "diffusion_stack_depth",
+    "owner": "root.denoiser.stacks[0]",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/diffusers/models/transformers/transformer_mochi.py",
+        "line": 392,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 48
+  }
+}

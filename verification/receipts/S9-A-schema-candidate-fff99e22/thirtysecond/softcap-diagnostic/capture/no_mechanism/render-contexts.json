@@ -1,0 +1,108 @@
+{
+  "True": [
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "decoder.layer.norm_kind",
+        "decoder.layer.norm_placement",
+        "decoder.layer.parallel_norm_count",
+        "decoder.layer.residual_topology",
+        "model.final_norm_kind",
+        "model.tie_word_embeddings"
+      ],
+      "node_ids": [],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "architecture"
+    },
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "opaque",
+        "port"
+      ],
+      "facts_projected": [
+        "decoder.attention.bias",
+        "decoder.attention.mask",
+        "decoder.attention.mechanism",
+        "decoder.attention.projection_mode",
+        "decoder.attention.scores_scale"
+      ],
+      "node_ids": [
+        "block",
+        "region_out"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Wrapper",
+      "variant": "(('attention', (('kind', None), ('num_heads', None), ('mixer_state', None), ('num_kv_heads', None), ('head_dim', None), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', None), ('rope_initialization', None), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'unknown'), ('window_size', None), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', None), ('qkv_clip', None), ('rope', None), ('position_kind', 'unknown'), ('position_application', 'unknown'), ('bias', None), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', None), ('output_projection', None), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', False), ('projection_mode', None), ('variant', None))), ('ffn', (('kind', None), ('activation', None), ('intermediate_size', None), ('gated', None), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', None), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'unknown'), ('norm_placement', 'unknown'), ('residual_topology', 'unknown'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'opaque_mixer'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', False)), ()),)), ((('id', 'wiring_unresolved'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', False)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'dense_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'block'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()),)))))",
+      "view": "attn"
+    },
+    {
+      "block_path": [
+        "ffn"
+      ],
+      "component": "root",
+      "drawn_ops": [
+        "opaque",
+        "port"
+      ],
+      "facts_projected": [
+        "decoder.ffn.activation"
+      ],
+      "node_ids": [
+        "block",
+        "region_out"
+      ],
+      "receipts": [],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "Wrapper",
+      "variant": "(('attention', (('kind', None), ('num_heads', None), ('mixer_state', None), ('num_kv_heads', None), ('head_dim', None), ('kv_lora_rank', None), ('q_lora_rank', None), ('rope_dim', None), ('rope_theta', None), ('rope_initialization', None), ('qk_nope_head_dim', None), ('qk_rope_head_dim', None), ('v_head_dim', None), ('mask', 'unknown'), ('window_size', None), ('kv_source_layer', False), ('qk_norm', None), ('sinks', False), ('logit_softcap', None), ('qkv_clip', None), ('rope', None), ('position_kind', 'unknown'), ('position_application', 'unknown'), ('bias', None), ('shared', False), ('no_rope', False), ('rope_3d', False), ('cached', None), ('output_projection', None), ('cross_attention', False), ('cross_kv_source', None), ('cross_kv_source_kind', None), ('compress_ratio', None), ('index_topk', None), ('index_n_heads', None), ('index_head_dim', None), ('mrope_section', None), ('conv_kernel_size', None), ('output_gate', None), ('scores_scale', None), ('scores_scaled', False), ('projection_mode', None), ('variant', None))), ('ffn', (('kind', None), ('activation', None), ('intermediate_size', None), ('gated', None), ('activation_assumed', False), ('activation_from_class', False), ('bias', False), ('projection_mode', None), ('expert_projection_mode', None), ('expert_activation_formula', None), ('num_experts', None), ('num_experts_per_tok', None), ('num_shared_experts', None), ('expert_intermediate_size', None), ('routing', None))), ('norm_kind', 'unknown'), ('norm_placement', 'unknown'), ('residual_topology', 'unknown'), ('parallel_norm_count', None), ('residual_scale', None), ('cross_attention', ()), ('blocks', (((('id', 'attn'), ('role', 'attention'), ('kind', 'attention'), ('view', 'attention'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'opaque_mixer'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', False)), ()),)), ((('id', 'wiring_unresolved'), ('role', 'norm'), ('kind', 'norm'), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', False)), ()), ((('id', 'ffn'), ('role', 'ffn'), ('kind', 'ffn'), ('view', 'dense_ffn'), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), (((('id', 'block'), ('role', None), ('kind', None), ('view', None), ('lane', None), ('branch_side', None), ('residual_from', None), ('diffusion_stage', None), ('feeds', None), ('also_feeds', None), ('target', None), ('resolved', None)), ()),)))))",
+      "view": "ffn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "drawn_ops": [],
+      "facts_projected": [
+        "model.hidden_size"
+      ],
+      "node_ids": [
+        "stats_hidden_size"
+      ],
+      "receipts": [
+        {
+          "context_token": "6da53f7eb2e94f7c95b62b2ba62437ef",
+          "fact_id": "model.hidden_size",
+          "fact_key": "hidden_size",
+          "fact_value_status_hash": "67951bb3d9db1731",
+          "mechanism": "model_hidden_size_value",
+          "node_ids": [
+            "stats_hidden_size"
+          ],
+          "output_hash": null,
+          "owner": "model",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.sections._stats_banner",
+          "structural_target": "stats_banner.hidden_size",
+          "surface": "html"
+        }
+      ],
+      "source_file": "",
+      "source_line": null,
+      "source_owner": "",
+      "variant": "",
+      "view": "stats_banner"
+    }
+  ]
+}

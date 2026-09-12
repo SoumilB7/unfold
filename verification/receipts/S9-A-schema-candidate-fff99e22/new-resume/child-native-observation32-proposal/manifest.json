@@ -1,0 +1,11 @@
+{
+  "files": {
+    "README.md": "7ff650bf79db80eaa7095b1303c919ff870ad4093de661a2fc6b08770fe9cfe4",
+    "obligations.json": "50812e8578fe3a64e91fbe36f486d578e2c25419cc3f613dd89524ca0c03e200",
+    "observation_contract.py": "8b7ee1bd89934db72dff5a5504a706ff83249bd50a1248881db5a25b146e03ef",
+    "observe.py": "25875d0869689456dd061f5b7dde64cf458e20beab0d0d9fa505589c853838ec",
+    "plan.json": "387cf4f0c12024e4805643f7df03ec5a6a82bd72c415b25087d04d075f87d287",
+    "run-observation.py": "14a011c4f623c244bb20390389e70b59d6b061faa919efbe5646555135045f8d"
+  },
+  "scope": "SOURCE_ONLY_NOT_EXECUTED"
+}

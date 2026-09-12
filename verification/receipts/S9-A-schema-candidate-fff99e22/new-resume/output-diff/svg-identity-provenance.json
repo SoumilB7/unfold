@@ -1,0 +1,667 @@
+{
+  "verdict": "EXHAUSTIVELY_ATTRIBUTED_SVG_UUID_DIFFERENCES_NOT_OUTPUT_ACCEPTANCE",
+  "correction": {
+    "supersedes_inference_only": {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/output-diff/execution-inspection.json",
+      "sha256": "ab9e20279f34dd310d3c1521b22bdd311843286907e1d9ec463326a38f455878",
+      "field": "output_limits.root_id_change_observed"
+    },
+    "correct_cause": "Diagram.__init__ assigns uf- plus uuid.uuid4().hex[:10], independently per Diagram; not an IR-derived hash."
+  },
+  "source": {
+    "path": "model_unfolder/diagram.py",
+    "line": 22,
+    "sha256": "cca1667b7d0f92b4d68d58b50dae55902d0357f2ce249f8a4dfb6c25490f8f95",
+    "byte_equal_to_clean_fff99e22": true
+  },
+  "counts": {
+    "models": 39,
+    "eager_svg_pairs": 419,
+    "canonical_svg_pairs": 4940,
+    "canonical_uuid_substitutions": 33795,
+    "attributes": {
+      "id": 9918,
+      "filter": 13928,
+      "marker-end": 9938,
+      "fill": 11
+    },
+    "attribute_forms": {
+      "direct_mount_prefix": 33746,
+      "additional_uf_hatch_prefix": 49
+    },
+    "leftovers": 0
+  },
+  "method": "Only exact observed before mount ID replaced by paired observed after mount ID in scratch bytes; every resulting SVG byte compared. All raw hashes, substitution offsets and original output diffs retained. No acceptance normalization. SVG geometry/text bytes have no remaining differences after this exact identity-only diagnostic.",
+  "limits": [
+    "Full HTML and IR deltas remain and require their own evidence-level review; no chips-only verdict.",
+    "Deferred SDXL reconstruction is a finite saved JSON payload audit, with payload digest and slot/card checks; not execution of product inverse/renderer or browser, nor complete shell/interaction script validation.",
+    "UUID attributes include 49 additional uf- prefixed hatch definition/reference occurrences, which retain the same paired mount ID substitution."
+  ],
+  "script_sha256": "c46ab5cb28df4af5a652f7b18ca3f55dfbca6e2554f38915490812d25908cd71",
+  "models": [
+    {
+      "slug": "auraflow-v0-3",
+      "before_root": "uf-b7573ddecc",
+      "after_root": "uf-739047579c",
+      "eager_svg_counts": [
+        17,
+        17
+      ],
+      "canonical_svg_counts": [
+        17,
+        17
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 204
+    },
+    {
+      "slug": "bloom",
+      "before_root": "uf-1b716bae2c",
+      "after_root": "uf-f34dbb6f66",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 70
+    },
+    {
+      "slug": "cogvideox-5b",
+      "before_root": "uf-afaa036eb4",
+      "after_root": "uf-633839b505",
+      "eager_svg_counts": [
+        16,
+        16
+      ],
+      "canonical_svg_counts": [
+        16,
+        16
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 228
+    },
+    {
+      "slug": "dbrx-base",
+      "before_root": "uf-1438728436",
+      "after_root": "uf-2907a530c1",
+      "eager_svg_counts": [
+        6,
+        6
+      ],
+      "canonical_svg_counts": [
+        6,
+        6
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 93
+    },
+    {
+      "slug": "deepseek-v3",
+      "before_root": "uf-5c5d4abe75",
+      "after_root": "uf-26f57a654d",
+      "eager_svg_counts": [
+        14,
+        14
+      ],
+      "canonical_svg_counts": [
+        14,
+        14
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 227
+    },
+    {
+      "slug": "flux-2-dev",
+      "before_root": "uf-2f76aca88b",
+      "after_root": "uf-85d96430e6",
+      "eager_svg_counts": [
+        18,
+        18
+      ],
+      "canonical_svg_counts": [
+        18,
+        18
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 238
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "before_root": "uf-70a269bac5",
+      "after_root": "uf-1025675b85",
+      "eager_svg_counts": [
+        22,
+        22
+      ],
+      "canonical_svg_counts": [
+        22,
+        22
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 306
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "before_root": "uf-c145e2e66f",
+      "after_root": "uf-4a62fdbe37",
+      "eager_svg_counts": [
+        7,
+        7
+      ],
+      "canonical_svg_counts": [
+        7,
+        7
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 148
+    },
+    {
+      "slug": "glm-4-5",
+      "before_root": "uf-0118176aca",
+      "after_root": "uf-230f43160e",
+      "eager_svg_counts": [
+        10,
+        10
+      ],
+      "canonical_svg_counts": [
+        10,
+        10
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 177
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "before_root": "uf-8e8446fe22",
+      "after_root": "uf-8a5602bf26",
+      "eager_svg_counts": [
+        11,
+        11
+      ],
+      "canonical_svg_counts": [
+        11,
+        11
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 188
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "before_root": "uf-781f2f65e9",
+      "after_root": "uf-23a80fb8bc",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 73
+    },
+    {
+      "slug": "hunyuanvideo",
+      "before_root": "uf-1c81728cb7",
+      "after_root": "uf-f58125c862",
+      "eager_svg_counts": [
+        21,
+        21
+      ],
+      "canonical_svg_counts": [
+        21,
+        21
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 291
+    },
+    {
+      "slug": "llama-7b",
+      "before_root": "uf-ab9d8d2ab3",
+      "after_root": "uf-8392c0745d",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 69
+    },
+    {
+      "slug": "ltx-video",
+      "before_root": "uf-c8540e7fc4",
+      "after_root": "uf-cc609bdce9",
+      "eager_svg_counts": [
+        13,
+        13
+      ],
+      "canonical_svg_counts": [
+        13,
+        13
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 176
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "before_root": "uf-a51bedc9a4",
+      "after_root": "uf-15c7989d4f",
+      "eager_svg_counts": [
+        17,
+        17
+      ],
+      "canonical_svg_counts": [
+        17,
+        17
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 274
+    },
+    {
+      "slug": "mochi-1-preview",
+      "before_root": "uf-d43cfd0aa2",
+      "after_root": "uf-d570259509",
+      "eager_svg_counts": [
+        10,
+        10
+      ],
+      "canonical_svg_counts": [
+        10,
+        10
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 150
+    },
+    {
+      "slug": "musicgen-small",
+      "before_root": "uf-a116604cfd",
+      "after_root": "uf-86597e5f42",
+      "eager_svg_counts": [
+        9,
+        9
+      ],
+      "canonical_svg_counts": [
+        9,
+        9
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 94
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "before_root": "uf-34ab531076",
+      "after_root": "uf-2702f25c32",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 73
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "before_root": "uf-4605dcfb0e",
+      "after_root": "uf-6741bb9b86",
+      "eager_svg_counts": [
+        14,
+        14
+      ],
+      "canonical_svg_counts": [
+        14,
+        14
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 207
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "before_root": "uf-19e565568f",
+      "after_root": "uf-1d019855c4",
+      "eager_svg_counts": [
+        9,
+        9
+      ],
+      "canonical_svg_counts": [
+        9,
+        9
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 125
+    },
+    {
+      "slug": "qwen-image",
+      "before_root": "uf-7e0719b5b7",
+      "after_root": "uf-c2e929854c",
+      "eager_svg_counts": [
+        14,
+        14
+      ],
+      "canonical_svg_counts": [
+        14,
+        14
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 175
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "before_root": "uf-1afead2ab5",
+      "after_root": "uf-8b235833eb",
+      "eager_svg_counts": [
+        13,
+        13
+      ],
+      "canonical_svg_counts": [
+        13,
+        13
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 138
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "before_root": "uf-854be6391d",
+      "after_root": "uf-f32be4c80c",
+      "eager_svg_counts": [
+        7,
+        7
+      ],
+      "canonical_svg_counts": [
+        7,
+        7
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 142
+    },
+    {
+      "slug": "qwen3-8b",
+      "before_root": "uf-50f9c666ab",
+      "after_root": "uf-8cde65c8ae",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 73
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "before_root": "uf-deee837829",
+      "after_root": "uf-4979237062",
+      "eager_svg_counts": [
+        13,
+        13
+      ],
+      "canonical_svg_counts": [
+        13,
+        13
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 217
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "before_root": "uf-e20dfb78bf",
+      "after_root": "uf-c97b169d7c",
+      "eager_svg_counts": [
+        21,
+        21
+      ],
+      "canonical_svg_counts": [
+        21,
+        21
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 288
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "before_root": "uf-e6423ff416",
+      "after_root": "uf-4f25a5de12",
+      "eager_svg_counts": [
+        1,
+        1
+      ],
+      "canonical_svg_counts": [
+        4522,
+        4522
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 28013
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "before_root": "uf-989f265102",
+      "after_root": "uf-ecf5e0ca97",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 69
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "before_root": "uf-f870f20da3",
+      "after_root": "uf-dd3ac5bb8c",
+      "eager_svg_counts": [
+        12,
+        12
+      ],
+      "canonical_svg_counts": [
+        12,
+        12
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 148
+    },
+    {
+      "slug": "command-a-03-2025",
+      "before_root": "uf-6890bd9405",
+      "after_root": "uf-e7bca88795",
+      "eager_svg_counts": [
+        7,
+        7
+      ],
+      "canonical_svg_counts": [
+        7,
+        7
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 114
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "before_root": "uf-b6002cdf7a",
+      "after_root": "uf-affffa50d1",
+      "eager_svg_counts": [
+        9,
+        9
+      ],
+      "canonical_svg_counts": [
+        9,
+        9
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 105
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "before_root": "uf-5637e8ae61",
+      "after_root": "uf-66b5c8f871",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 27
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "before_root": "uf-bf1b1461ca",
+      "after_root": "uf-03673f24e8",
+      "eager_svg_counts": [
+        23,
+        23
+      ],
+      "canonical_svg_counts": [
+        23,
+        23
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 312
+    },
+    {
+      "slug": "jamba-v0-1",
+      "before_root": "uf-d0334526be",
+      "after_root": "uf-9241c9853d",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 27
+    },
+    {
+      "slug": "lfm2-1-2b",
+      "before_root": "uf-698e4fcf29",
+      "after_root": "uf-4690c061c0",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 61
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "before_root": "uf-4654265bf7",
+      "after_root": "uf-6e9ff18754",
+      "eager_svg_counts": [
+        4,
+        4
+      ],
+      "canonical_svg_counts": [
+        4,
+        4
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 27
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "before_root": "uf-31ffe180a5",
+      "after_root": "uf-6856114dfc",
+      "eager_svg_counts": [
+        21,
+        21
+      ],
+      "canonical_svg_counts": [
+        21,
+        21
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 246
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "before_root": "uf-43a0d7e3e7",
+      "after_root": "uf-27f8ad1e5f",
+      "eager_svg_counts": [
+        11,
+        11
+      ],
+      "canonical_svg_counts": [
+        11,
+        11
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 75
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "before_root": "uf-11dbc44e10",
+      "after_root": "uf-2d617b0144",
+      "eager_svg_counts": [
+        13,
+        13
+      ],
+      "canonical_svg_counts": [
+        13,
+        13
+      ],
+      "eager_leftovers": 0,
+      "canonical_leftovers": 0,
+      "canonical_substitutions": 127
+    }
+  ]
+}

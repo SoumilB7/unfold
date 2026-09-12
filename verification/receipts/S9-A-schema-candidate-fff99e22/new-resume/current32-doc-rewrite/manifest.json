@@ -1,0 +1,25 @@
+{
+  "scope": "Current-first documentation rewrite only; no source/output artifact changes",
+  "before": [
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S9-A.md",
+      "archived": "S9-A-before.md",
+      "sha256": "8d644378674c85ce1b356ab2a9a214dffba950be3bc17b536aabb25818db9761"
+    },
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "archived": "receipt-README-before.md",
+      "sha256": "02aca539884d33dbf1f458003900cc84e2ff891354af7c38be61a8eb101ea1bf"
+    }
+  ],
+  "after": [
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/11-execution/S9-A.md",
+      "sha256": "18fd229618b2977e75f776a9489f7ffcf54aeafa5835640fc4593ec4db0c1ffb"
+    },
+    {
+      "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/README.md",
+      "sha256": "cce4c84bcbb999ede4c363ab16d2f235740ef9e39fb8d3fcedd196c03f136150"
+    }
+  ]
+}

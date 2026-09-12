@@ -1,0 +1,24 @@
+{
+  "verdict": "ACCEPT bounded child-default R2 source correction; actual runtime remains pending",
+  "manifest_sha256": "a631cef57a3e43b7073dc7ef6878f572c8c1a4677b4832a6526a5c01b2a2057d",
+  "all_manifest_artifact_pins_verified": true,
+  "both_before_pins_equal_frozen29": true,
+  "both_held_pins_equal_live": true,
+  "source_findings": [
+    "The saved29 trace and ProgramIndex syntax establish that ConstructionSite.constructor.span is the full ast.Call span; CallObservation.callee.span is only its func expression. This mismatch caused lawful selected child relays to be rejected.",
+    "Both neutral observation paths now supply full call identity: parent ExprNode.span from the name-access census and CallObservation.span from calls_in. Framework super allowance uses its CallObservation.span; construction/factory allowances already used full call expressions.",
+    "SourceSpan comparison retains exact source identity and full start/end positions. No class, model, factory or callee-name exemption is added. Missing actual call span refuses even if None appears in an allowance.",
+    "Config prefix selection, exact selected factory, existing graph relay enumeration, direct/alias/namespace mutation, local replacement, store/delete/return/container/unknown-helper escape guards remain unchanged. No failed preparation or borrowed root/default overlay becomes eligible.",
+    "Existing positive and mutation/absence/foreign-path tests retain identical AST. New actual-index helper test distinguishes same-spelling calls at different addresses, full call versus shorter callee token, None-only allowance, and a missing actual CallObservation identity."
+  ],
+  "test_definition_ast_preserved": 6,
+  "runtime_requirements": [
+    "Run new exact-call poison, all existing child default positives/mutation negatives, and six original frozen29 positive failures including actual Qwen2-Audio.",
+    "Then complete exact composed candidate gate, matrix and pages; this source verdict does not predict all later masked conditions."
+  ],
+  "limits": [
+    "Reviewer ran only stdlib pin/AST checks and read saved traces; no tests or model imports.",
+    "The finite constructor syntax/implicit self-callback effect boundary remains as previously disclosed.",
+    "No output approval, claim stamping, baseline renewal or stage completion."
+  ]
+}

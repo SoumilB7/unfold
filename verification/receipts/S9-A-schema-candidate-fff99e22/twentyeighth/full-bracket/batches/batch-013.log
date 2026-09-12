@@ -1,0 +1,193 @@
+................................FF.....................F................ [ 43%]
+.................................................F...................... [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+____ test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure _____
+
+    def test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure():
+        d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
+        ir = d.to_ir()
+    
+        shipped = {
+            "Unresolved evidence — "
+            f"{row['check']} evidence unresolved: {row['message']}"
+            for row in ir["extras"].get("ship_findings", [])
+        }
+>       assert all(warning.startswith("Unresolved code-defined facts")
+                   or warning in shipped for warning in ir["warnings"])
+E       assert False
+E        +  where False = all(<generator object test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure.<locals>.<genexpr> at 0x17f8e2180>)
+
+tests/test_smoke.py:1448: AssertionError
+_________ test_qwen2_audio_code_evidence_does_not_mark_config_partial __________
+
+    def test_qwen2_audio_code_evidence_does_not_mark_config_partial():
+        d = unfold(QWEN2_AUDIO_SPARSE_CONFIG, inspect_code=True)
+        ir = d.to_ir()
+    
+        shipped = {
+            "Unresolved evidence — "
+            f"{row['check']} evidence unresolved: {row['message']}"
+            for row in ir["extras"].get("ship_findings", [])
+        }
+>       assert all(warning.startswith("Unresolved code-defined facts")
+                   or warning in shipped for warning in ir["warnings"])
+E       assert False
+E        +  where False = all(<generator object test_qwen2_audio_code_evidence_does_not_mark_config_partial.<locals>.<genexpr> at 0x1088b8040>)
+
+tests/test_smoke.py:1491: AssertionError
+______________ test_modality_host_looks_through_declared_wrappers ______________
+
+    def test_modality_host_looks_through_declared_wrappers():
+        """An Omni-style composite hides the WHOLE multimodal host one declared
+        wrapper down (thinker_config carries vision_config/audio_config AND the
+        modality token ids).  The host walk descends the SAME wrapper vocabulary
+        the LM unwrap uses — general, never a name for one family.  Flat
+        multimodal configs keep resolving at the root."""
+        nested = {
+            "model_type": "composite_xyz",
+            "architectures": ["CompositeForConditionalGeneration"],
+            "thinker_config": {
+                "model_type": "inner_xyz",
+                "audio_token_index": 151646,
+                "vision_config": {"model_type": "inner_vit", "depth": 4,
+                                  "hidden_size": 128, "num_heads": 4,
+                                  "patch_size": 14, "spatial_merge_size": 2},
+                "audio_config": {"model_type": "inner_audio", "d_model": 128,
+                                 "encoder_layers": 2, "encoder_attention_heads": 4,
+                                 "num_mel_bins": 128},
+                "text_config": {"model_type": "llama", "hidden_size": 256,
+                                "num_hidden_layers": 2, "num_attention_heads": 4,
+                                "intermediate_size": 512, "vocab_size": 1000},
+            },
+        }
+>       ir = unfold(nested).to_ir()
+             ^^^^^^^^^^^^^^
+
+tests/test_smoke.py:2086: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/__init__.py:95: in unfold
+    ir = config_to_ir(
+model_unfolder/parser.py:56: in config_to_ir
+    return run_cached_parse(
+physics/result_cache.py:415: in run_cached_parse
+    result = producer()
+             ^^^^^^^^^^
+model_unfolder/parser.py:59: in <lambda>
+    lambda: config_to_ir(cfg_or_id, token=token, inspect_code=inspect_code,
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:3308: in parse
+    _note_typed_fact(
+model_unfolder/adapters/transformer/parser.py:1046: in _note_typed_fact
+    qualified = qualify_reader_fact(
+model_unfolder/evidence/reader_claims.py:622: in qualify_reader_fact
+    proof = ReaderProjectionClaimProof(
+<string>:7: in __init__
+    ???
+model_unfolder/evidence/reader_claims.py:518: in __post_init__
+    projection = self.reader_result.claim_witness.project(
+model_unfolder/evidence/projection_bias.py:237: in project
+    operands = {path: reader_operand(document, path, allow_aliases=False)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = PreparedDocument(document={'model_type': 'composite_xyz', 'architectures': ['CompositeForConditionalGeneration'], 'thi...sw3, afmoe, aimv2, aimv2_text_model, aimv2_vision_model, albert, align, align_text_model, align_vision_model, altcli'))
+source_path = ('thinker_config', 'text_config', 'attention_bias')
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+        resolution = _source_operand_resolution(document.document, path, document,
+                                               allow_aliases=allow_aliases)
+        channel = _operand_channel(resolution)
+        if channel == "ambiguous":
+            raise ValueError("reader operand has conflicting checkpoint spellings")
+        if channel == "class_default":
+            return ReaderOperand(path, resolution.value, channel, None)
+        if channel == "config_declared" and resolution.selected_path is not None:
+            return ReaderOperand(path, resolution.value, channel,
+                                 tuple(resolution.selected_path.split(".")))
+>       raise ValueError("reader operand has no exact checkpoint or class-default evidence")
+E       ValueError: reader operand has no exact checkpoint or class-default evidence
+
+model_unfolder/evidence/reader_claims.py:149: ValueError
+_____________ test_parser_records_and_receipts_uniform_gated_false _____________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-20/test_parser_records_and_receip0')
+
+    def test_parser_records_and_receipts_uniform_gated_false(tmp_path):
+        import json
+        from pathlib import Path
+    
+        from model_unfolder import config_to_ir
+        from model_unfolder.diagram import Diagram
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.receipts import join_obligation_receipts
+        from model_unfolder.parser import _coerce
+    
+        bundle = _bundle(
+            tmp_path,
+            """
+            self.enabled = config.use_qk_norm
+            if self.enabled:
+                self.first = Norm(config.hidden)
+                self.second = Norm(config.hidden)
+            """,
+            """
+            if self.enabled:
+                q = self.first(q)
+                k = self.second(k)
+            """,
+        )
+        config = json.loads((Path(__file__).parent / "sable_test_corpus" /
+                             "llama-7b.json").read_text())["config"]
+        config.update({
+            "hidden": 128, "wide": 256, "layers": 2,
+            "num_hidden_layers": 2,
+            "use_qk_norm": False,
+        })
+        cfg = _coerce(config)
+        context = ParseContext(
+            source_bundle=bundle,
+            declared_decoderness="decoder_only_wrapper",
+        )
+        diagram = Diagram(config_to_ir(cfg, parse_context=context))
+        assert diagram.ir.layers and all(
+            layer.attention.qk_norm is False for layer in diagram.ir.layers)
+        fact = context.facts.typed["decoder.attention.qk_norm"]
+        assert fact.value is False
+        assert fact.status == "code_and_config"
+        assert fact.config_paths == ("use_qk_norm",)
+        diagram.to_html(standalone=True)
+        all_receipts = tuple(
+            receipt for event in diagram.render_events()
+            for receipt in event.receipts)
+        receipts = tuple(
+            receipt for receipt in all_receipts if receipt.fact_key == "qk_norm")
+        assert receipts
+        assert {receipt.node_ids for receipt in receipts} == {()}
+        assert {receipt.mechanism for receipt in receipts} == {"qk_norm_gate"}
+        serialized = diagram.to_ir()
+        joined = join_obligation_receipts(
+            serialized["extras"]["config_access"]["projection_obligations"],
+            all_receipts,
+            serialized["extras"]["fact_provenance"],
+            context_token=receipts[0].context_token,
+        )
+>       assert joined["findings"] == []
+E       AssertionError: assert ['root:hidden...es not draw)'] == []
+E         
+E         Left contains one more item: 'root:hidden_size -> model.hidden_size is in receipted scope model/model_hidden_size_value but no projector emitted a matching receipt (a consumed, ledgered fact the diagram does not draw)'
+E         Use -v to get more diff
+
+tests/test_qk_norm.py:359: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_smoke.py::test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure
+FAILED tests/test_smoke.py::test_qwen2_audio_code_evidence_does_not_mark_config_partial
+FAILED tests/test_smoke.py::test_modality_host_looks_through_declared_wrappers
+FAILED tests/test_qk_norm.py::test_parser_records_and_receipts_uniform_gated_false
+4 failed, 162 passed in 74.52s (0:01:14)

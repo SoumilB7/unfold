@@ -13,6 +13,8 @@ runs from the repeated child to the norm, not the reverse.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
@@ -32,6 +34,7 @@ from .execution_flow import (
 from .models import SourceBundle
 from .primitive_semantics import classify_primitive_call
 from .program_index import CallSiteId, ProgramIndex, SourceSpan
+from .reader_claims import ReaderFactProjection, retained_claim_reader
 from .reader_result import (
     Ambiguity,
     ReaderFailure,
@@ -45,6 +48,9 @@ from .repeated_child import (
 )
 
 
+@retained_claim_reader(intended_claims=(
+    ('model', 'embedding_norm_kind', 'applied_function'),
+))
 def embedding_stage_norm_evidence(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -196,7 +202,7 @@ def read_embedding_stage_norm(
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph", detail),))
 
-    edge, call, _construction, primitive = next(iter(by_site.values()))
+    edge, call, construction, primitive = next(iter(by_site.values()))
     spans = []
     for origin in primitive.provenance:
         spans.extend(origin.spans)
@@ -211,6 +217,8 @@ def read_embedding_stage_norm(
     return ReaderResult.resolved(
         owner,
         label,
+        claim_witness=EmbeddingNormClaimWitness(index, root, owner, inventory,
+            repeated, invocations, flow, edge, call, construction, primitive),
         provenance=(ReaderProvenance(
             "source",
             spans=exact_spans,
@@ -218,6 +226,72 @@ def read_embedding_stage_norm(
                 "exact primitive construction plus versioned def-use into "
                 "the exact repeated-child invocation")),),
     )
+
+
+
+@dataclass(frozen=True)
+class EmbeddingNormClaimWitness:
+    """One retained exact norm primitive feeding the repeated-child call."""
+    index: ProgramIndex
+    root: object
+    owner: object
+    inventory: ContainerInventory
+    repeated: RepeatedChildResolution
+    invocations: object
+    flow: object
+    edge: object
+    call: object
+    construction: object
+    primitive: ReaderResult
+    reader_symbol = 'model_unfolder.evidence.embedding_bookend.embedding_stage_norm_evidence'
+
+    def _kind(self):
+        from .decoder_norm import _validate_norm_primitive
+        root = require_resolved_component_root(self.root, caller='EmbeddingNormClaimWitness')
+        self.inventory.__post_init__()
+        self.invocations.__post_init__()
+        self.flow.__post_init__()
+        self.edge.__post_init__()
+        if (root.graph.node_for(self.owner) is None or
+                self.inventory.owner_occurrence != self.owner or
+                self.invocations.owner_occurrence != self.owner or
+                self.flow.owner_occurrence != self.owner or
+                self.repeated.status != 'resolved' or self.repeated.model_stage != self.owner):
+            raise ValueError('embedding norm requires one exact owned repeated-child proof')
+        if self.flow.status != 'partial' or self.call.guard or (
+                self.edge.proof_kind != 'versioned_def_use' or
+                not any(edge is self.edge for edge in (*self.flow.proven_edges, *self.flow.conditional_edges))):
+            raise ValueError('embedding norm requires its actual unguarded source call and def-use edge')
+        site = CallSiteId.of(self.call)
+        templates = {proof.template.call_site for proof in self.repeated.proofs}
+        addressed = {item.call_site for item in (*self.invocations.addressed, *self.invocations.external_addressed)}
+        if (self.edge.source.call_site != site or site not in addressed or
+                self.edge.target.call_site not in templates or
+                self.call.enclosing_callable != self.flow.callable_symbol):
+            raise ValueError('embedding norm edge must run from its primitive to the exact repeated child')
+        _validate_norm_primitive(self.index, root, self.owner, self.call, self.construction, self.primitive)
+        if self.primitive.status != 'resolved' or self.primitive.value not in {'layernorm', 'rmsnorm'}:
+            raise ValueError('embedding normalization requires a proven primitive mechanism')
+        return self.primitive.value
+
+    def validate_result(self, result):
+        kind = self._kind()
+        if result.status != 'resolved' or result.owner != self.owner or (
+                result.value != {'layernorm': 'LayerNorm', 'rmsnorm': 'RMSNorm'}[kind]):
+            raise ValueError('embedding norm scalar differs from its retained call/order proof')
+        required = {self.call.span, *self.edge.supporting_spans,
+                    *(span for origin in self.primitive.provenance for span in origin.spans),
+                    *(proof.template.call.span for proof in self.repeated.proofs
+                      if proof.template.call.span is not None)}
+        actual = {span for origin in result.provenance for span in origin.spans}
+        if not required <= actual:
+            raise ValueError('embedding norm result omitted its exact call/order/primitive provenance')
+
+    def project(self, owner, key, document):
+        if (owner, key) != ('model', 'embedding_norm_kind'):
+            raise ValueError('embedding norm cannot author another fact projection')
+        # Complete for this positive local edge, never a whole-CFG census.
+        return ReaderFactProjection(owner, key, 'applied_function', self._kind(), 'code_proven')
 
 
 def _dependency_failure(label, status, detail):

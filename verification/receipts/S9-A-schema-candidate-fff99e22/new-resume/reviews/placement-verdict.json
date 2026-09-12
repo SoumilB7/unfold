@@ -1,0 +1,61 @@
+{
+  "decision": "ACCEPT bounded reader occurrence-placement source; runtime pending",
+  "reviewer": "resume_review",
+  "manifest_sha256": "8c40467f25ee201159f4ac978f3d4db12123770dcde3f7b6b762705a976a8eb6",
+  "source_pins": [
+    {
+      "path": "model_unfolder/evidence/reader_placement.py",
+      "sha256": "8ba74fb63160f8b9591261e75262d5b2e2970e633e30a44f660441fc0655831e",
+      "bytes": 7032,
+      "twentyfourth_sha256": null
+    },
+    {
+      "path": "model_unfolder/evidence/facts.py",
+      "sha256": "63c8d617efe3b2306fb2b5d749e2007eed78726b3ba82b0d5638e426c153b928",
+      "bytes": 20633,
+      "twentyfourth_sha256": "b8ea135abf31cee5600d7b7c0d34ec8671f3866b555d3018aedddad86bd95684"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "aee930638b7b6287c9b1b0435096fcbda70de72f3d042c27f6e149ad85972db6",
+      "bytes": 37356,
+      "twentyfourth_sha256": "1f74aa090970ce9182d2a23f8eff837f3c733f5b2f77aa042866a9e9afed3918"
+    },
+    {
+      "path": "model_unfolder/evidence/decoder_norm.py",
+      "sha256": "5631d108109806371684d8f66c8f3b9f644e159e619862a196e54803621fdef9",
+      "bytes": 29733,
+      "twentyfourth_sha256": "051e3e2e6ab899cbcb8ceda5a4ba719bb6cfedc4baf3bb0d18a491ea35be0e28"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "3790b963bd1f433dfa592d3adaef0eb52a43eb477c17c68c3770f437e3ab9d1d",
+      "bytes": 95692,
+      "twentyfourth_sha256": "cd6246009d1b7be8753143fd351a84089ed022f892e06f9043cd75e42cd28dee"
+    },
+    {
+      "path": "tests/test_s9_reader_placement.py",
+      "sha256": "49c5d6c4578e867bd0c1edde459ecfeb65e77b92347e984102142fde38827b77",
+      "bytes": 11252,
+      "twentyfourth_sha256": null
+    }
+  ],
+  "scope": "Exact six-file placement handoff over immutable twentyfourth. Decoder norm only; no semantic proof migration or output blessing.",
+  "findings": [
+    "The exact retained decoder-norm result revalidates its source-selected caller owners and complete examined invocation census. Placement uses only positive internal callee construction occurrences; callers are contextual and cannot place the enclosing layer.",
+    "The live citation binds the actual retained result, witness identity, producer, ProgramIndex identity, exact prepared mapping/document scope, and exact fact owner/key. Substituted witness/address objects, foreign source/documents and copied results are refused.",
+    "ReaderProjectionClaimProof must share the original result/index/document when present. Semantic source spans and proof strength are unchanged; removing semantic qualification leaves valid placement independent, as required by R4.",
+    "Finite migrated slot/reader guards deny legacy class-span fallback when the citation is empty, missing or erased. This prevents a shared normalization implementation from placing unrelated embedding/final norms.",
+    "Config-object no_mapping inputs remain declared and unqualified without a citation; conversion to_dict is not used as checkpoint authority. Losing a previously sealed mapping is rejected.",
+    "Ordinary fact serialization omits the live receipt. asdict/deepcopy yields only portable diagnostic addresses; reconstructed dicts are rejected by native fact validation and by the placement join.",
+    "Explicit canonical block source_instance_path remains an independent positive placement authority even when a migrated fact has no live receipt and no semantic qualification. Its unstamped finding remains separate.",
+    "The fact-claim cache change avoids eager setdefault evaluation and does not alter keys or matched claims."
+  ],
+  "limitations": [
+    "Independent source review only; reviewer ran no tests, models, imports of product modules, or actual S7 generation.",
+    "Root must run all new placement poisons, existing norm/declaration/reconciliation controls, supported real object-input checks, and actual affected-model/full-matrix delta audit.",
+    "Other fact readers retain explicitly unmigrated legacy span placement. This bounded fix does not certify that legacy join.",
+    "External normalization primitives have no internal target in this bounded rail; they retain semantic proof but cannot recover placement from caller/class fallback. Any count change must be enumerated, never hidden or self-approved.",
+    "This verdict does not accept S9-A, any matrix/output renewal, or any preservation bless."
+  ]
+}

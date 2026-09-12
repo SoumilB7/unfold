@@ -1,0 +1,555 @@
+{
+  "exact_added_consumption": {
+    "expected_value_status_hash": "9a03252db7d72224",
+    "mechanism": "cross_attention_schedule",
+    "reason": "no projection receipt exists yet",
+    "source": {
+      "canonical": "num_hidden_layers",
+      "component": "root",
+      "path": "decoder.num_hidden_layers",
+      "spelling": "num_hidden_layers"
+    },
+    "state": "unreceipted",
+    "target": {
+      "key": "cross_attention_schedule",
+      "kind": "fact",
+      "owner": "decoder.attention"
+    }
+  },
+  "exact_added_consumption_index": 9,
+  "existing_consumptions_identical_after_removing_exact_one_insertion": true,
+  "existing_layer_map_field_receipt_hash_now_matches_new_native_tier": true,
+  "graph_or_schedule_values_changed": false,
+  "key": "decoder.attention.cross_attention_schedule",
+  "native_after": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "4359fdb66b34ecdc0654301ab3cf774b15299cb86735496867c811e4d0c7c20f"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cross_attention_schedule:9a03252db7d72224",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:165:19:165:59",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:170:19:170:62",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:173:18:173:51",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:24:0:24:12",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:25:0:25:21",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:273:36:283:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:296:25:305:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:311:28:319:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:350:27:355:9",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:364:31:370:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:544:28:552:13",
+        "source:decoder:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:621:69:630:9",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1179:22:1179:70",
+        "source:root:d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c:1183:8:1183:30"
+      ],
+      "fact_id": "decoder.attention.cross_attention_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cross_attention_schedule.decoder_cross_attention_all_layers_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "decoder.num_hidden_layers"
+    ],
+    "key": "cross_attention_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross"
+    ]
+  },
+  "native_before": {
+    "claim_kind": null,
+    "claim_proof": null,
+    "claim_readers": [],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "cross_attention_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1179,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 1183,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 621,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 544,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 350,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 273,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 170,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 25,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 165,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 24,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 364,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 296,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "decoder",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/musicgen/modeling_musicgen.py",
+        "line": 311,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": [
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross",
+      "additive_cross"
+    ]
+  },
+  "new_operation_receipt_count": 0,
+  "ordinary_checkpoint_class_default_chip_count": 0,
+  "render_events_after": [
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "attention_output_unresolved",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "hidden",
+          "k_proj",
+          "q_proj",
+          "region_out",
+          "scaled_scores",
+          "v_proj"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [
+        "cross_attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "attention_output_unresolved",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "cross_attention_states",
+          "hidden",
+          "qkv_projection_unresolved",
+          "region_out",
+          "scaled_scores"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.mixer_schedule"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "layer_map"
+        ]
+      },
+      "receipts": [
+        {
+          "context_token": "bc0e9e9fd09f430c81325bc24f16b49c",
+          "fact_id": "decoder.attention.cross_attention_schedule",
+          "fact_key": "cross_attention_schedule",
+          "fact_value_status_hash": "9a03252db7d72224",
+          "mechanism": "cross_attention_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "cross_attention_schedule",
+          "surface": "html"
+        }
+      ],
+      "view": "layer_map"
+    }
+  ],
+  "render_events_before": [
+    {
+      "block_path": [
+        "attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "attention_output_unresolved",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "hidden",
+          "k_proj",
+          "q_proj",
+          "region_out",
+          "scaled_scores",
+          "v_proj"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [
+        "cross_attn"
+      ],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.bias",
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.head_geometry",
+          "decoder.attention.mask",
+          "decoder.attention.mechanism",
+          "decoder.attention.mixer_schedule",
+          "decoder.attention.projection_mode",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "attention_output_unresolved",
+          "attn_apply_v",
+          "attn_softmax",
+          "concat_heads",
+          "cross_attention_states",
+          "hidden",
+          "qkv_projection_unresolved",
+          "region_out",
+          "scaled_scores"
+        ]
+      },
+      "receipts": [],
+      "view": "attn"
+    },
+    {
+      "block_path": [],
+      "component": "root",
+      "facts_projected": {
+        "local_set_type": "frozenset",
+        "members": [
+          "decoder.attention.cross_attention_schedule",
+          "decoder.attention.mixer_schedule"
+        ]
+      },
+      "node_ids": {
+        "local_set_type": "frozenset",
+        "members": [
+          "layer_map"
+        ]
+      },
+      "receipts": [
+        {
+          "context_token": "9281d505b3c34ef380000707042096c3",
+          "fact_id": "decoder.attention.cross_attention_schedule",
+          "fact_key": "cross_attention_schedule",
+          "fact_value_status_hash": "c463ac4e2460cd47",
+          "mechanism": "cross_attention_schedule",
+          "node_ids": [
+            "layer_map"
+          ],
+          "output_hash": null,
+          "owner": "decoder.attention",
+          "projection_kind": "field",
+          "projector_symbol": "renderers.html.views._build_layer_map",
+          "structural_target": "cross_attention_schedule",
+          "surface": "html"
+        }
+      ],
+      "view": "layer_map"
+    }
+  ],
+  "source_cause": "Existing all-layer mechanism is retained; exact repeated constructor count now contributes its located checkpoint operand and relation proof. No new architectural value or card drawing."
+}

@@ -1,0 +1,170 @@
+[
+  {
+    "batch": "batch-000",
+    "summary": "335 passed in 11.46s",
+    "failures": []
+  },
+  {
+    "batch": "batch-001",
+    "summary": "180 passed in 79.04s (0:01:19)",
+    "failures": []
+  },
+  {
+    "batch": "batch-002",
+    "summary": "171 passed in 608.29s (0:10:08)",
+    "failures": []
+  },
+  {
+    "batch": "batch-003",
+    "summary": "2 failed, 156 passed, 14 skipped in 350.99s (0:05:50)",
+    "failures": [
+      "tests/test_attention_softcap.py::test_injected_default_without_prepared_class_evidence_is_rejected",
+      "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer"
+    ]
+  },
+  {
+    "batch": "batch-004",
+    "summary": "168 passed in 54.90s",
+    "failures": []
+  },
+  {
+    "batch": "batch-005",
+    "summary": "168 passed in 141.57s (0:02:21)",
+    "failures": []
+  },
+  {
+    "batch": "batch-006",
+    "summary": "168 passed in 16.65s",
+    "failures": []
+  },
+  {
+    "batch": "batch-007",
+    "summary": "168 passed in 192.32s (0:03:12)",
+    "failures": []
+  },
+  {
+    "batch": "batch-008",
+    "summary": "168 passed in 32.18s",
+    "failures": []
+  },
+  {
+    "batch": "batch-009",
+    "summary": "165 passed in 80.88s (0:01:20)",
+    "failures": []
+  },
+  {
+    "batch": "batch-010",
+    "summary": "165 passed in 47.58s",
+    "failures": []
+  },
+  {
+    "batch": "batch-011",
+    "summary": "165 passed in 37.47s",
+    "failures": []
+  },
+  {
+    "batch": "batch-012",
+    "summary": "165 passed in 28.56s",
+    "failures": []
+  },
+  {
+    "batch": "batch-013",
+    "summary": "165 passed in 192.43s (0:03:12)",
+    "failures": []
+  },
+  {
+    "batch": "batch-014",
+    "summary": "166 passed in 301.53s (0:05:01)",
+    "failures": []
+  },
+  {
+    "batch": "batch-015",
+    "summary": "166 passed in 44.64s",
+    "failures": []
+  },
+  {
+    "batch": "batch-016",
+    "summary": "2 failed, 164 passed in 61.75s (0:01:01)",
+    "failures": [
+      "tests/test_submodel_parity.py::test_derivation_parity_spec_facts_equal_standalone_serializers[llama_gqa_rope-cfg1]",
+      "tests/test_submodel_parity.py::test_derivation_parity_spec_facts_equal_standalone_serializers[t5_gated_relbias_unscaled-cfg3]"
+    ]
+  },
+  {
+    "batch": "batch-017",
+    "summary": "164 passed, 2 xfailed in 280.04s (0:04:40)",
+    "failures": []
+  },
+  {
+    "batch": "batch-018",
+    "summary": "166 passed in 60.64s (0:01:00)",
+    "failures": []
+  },
+  {
+    "batch": "batch-019",
+    "summary": "166 passed in 27.36s",
+    "failures": []
+  },
+  {
+    "batch": "batch-020",
+    "summary": "166 passed in 114.59s (0:01:54)",
+    "failures": []
+  },
+  {
+    "batch": "batch-021",
+    "summary": "165 passed in 58.25s",
+    "failures": []
+  },
+  {
+    "batch": "batch-022",
+    "summary": "165 passed in 42.58s",
+    "failures": []
+  },
+  {
+    "batch": "batch-023",
+    "summary": "166 passed in 148.39s (0:02:28)",
+    "failures": []
+  },
+  {
+    "batch": "batch-024",
+    "summary": "166 passed in 1032.87s (0:17:12)",
+    "failures": []
+  },
+  {
+    "batch": "batch-025",
+    "summary": "165 passed in 299.04s (0:04:59)",
+    "failures": []
+  },
+  {
+    "batch": "batch-026",
+    "summary": "165 passed in 11.99s",
+    "failures": []
+  },
+  {
+    "batch": "batch-027",
+    "summary": "165 passed in 60.38s (0:01:00)",
+    "failures": []
+  },
+  {
+    "batch": "batch-028",
+    "summary": "165 passed in 320.27s (0:05:20)",
+    "failures": []
+  },
+  {
+    "batch": "batch-029",
+    "summary": "1 failed, 164 passed in 30.44s",
+    "failures": [
+      "tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current"
+    ]
+  },
+  {
+    "batch": "batch-030",
+    "summary": "165 passed in 68.88s (0:01:08)",
+    "failures": []
+  },
+  {
+    "batch": "batch-031",
+    "summary": "165 passed in 148.05s (0:02:28)",
+    "failures": []
+  }
+]

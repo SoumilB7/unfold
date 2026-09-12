@@ -1,0 +1,246 @@
+........................................................................ [ 31%]
+........................................................................ [ 62%]
+.........................................................FF............. [ 93%]
+...........FFFF                                                          [100%]
+=================================== FAILURES ===================================
+________________ test_norm_placement_defaults_two_unknown_tiers ________________
+
+    def test_norm_placement_defaults_two_unknown_tiers():
+        """B2 (U2 endpoint): placement has TWO unknown tiers.
+    
+        * source ABSENT (oracle_missing / zero evidence) → the pale
+          "code-defined wiring" block — no fabricated pre-norm cells, no
+          residual-tap claims (the tower_cell primitive on the main path);
+        * source PRESENT but the reader abstained on the idiom → the
+          conventional pre cell stays DRAWN (the op/nested-conformance oracle
+          still checks its norms/residual ops against the readable forward())
+          — recorded ambiguous + tagged asserted;
+        * a proven placement (real source) carries no tag at all.
+    
+        Diffusion cell placement is now owned by U10's exact source projection and
+        has its own tests; this remains the transformer two-tier regression."""
+        from model_unfolder.adapters.transformer.parser import parse as parse_transformer
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.models import SourceBundle
+    
+        cfg = {"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
+               "num_attention_heads": 8, "num_key_value_heads": 8,
+               "intermediate_size": 512, "vocab_size": 1000}
+        # Tier 1: no source at all → pale wiring block, nothing conventional.
+        ctx = ParseContext(source_bundle=SourceBundle(source="local", files=()),
+                           source="local")
+        ir = parse_transformer(cfg, context=ctx)
+        assert ir.layers[0].norm_placement == "unknown"
+        ids = [b.get("id") for b in ir.layers[0].blocks if isinstance(b, dict)]
+        assert "wiring_unresolved" in ids and "rms1" not in ids
+        assert ctx.facts.records["decoder.layer.norm_placement"].status == "oracle_missing"
+    
+        # Tier 2/proven: real source (llama's topology reader proves pre) → the
+        # concrete cell, no tag, code_proven ledger status.
+        ctx2 = ParseContext.build(cfg, source="local")
+>       ir2 = parse_transformer(cfg, context=ctx2)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_code_evidence.py:2043: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:1709: in parse
+    _note_ffn_mechanism_fact("activation", activation,
+model_unfolder/adapters/transformer/parser.py:984: in _note_ffn_mechanism_fact
+    projection = witness.project(
+model_unfolder/evidence/ffn_mechanism.py:794: in project
+    selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = None, source_path = ('hidden_act',)
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+>       resolution = _source_operand_resolution(document.document, path, document,
+                                                ^^^^^^^^^^^^^^^^^
+                                               allow_aliases=allow_aliases)
+E       AttributeError: 'NoneType' object has no attribute 'document'
+
+model_unfolder/evidence/reader_claims.py:139: AttributeError
+_____ test_config_tokens_do_not_change_typed_grouping_or_period_detection ______
+
+    def test_config_tokens_do_not_change_typed_grouping_or_period_detection():
+        """Typed grouping follows source-proven layer facts, not a config list."""
+        from model_unfolder.ir import detect_layer_period, distinct_layer_groups
+        from model_unfolder.evidence.context import ParseContext
+        sub = HYBRID_ENC["_text_encoder_configs"]["text_encoder"]
+>       ir = transformer.parse(sub, context=ParseContext.build(sub, source="local"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion.py:2023: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:1709: in parse
+    _note_ffn_mechanism_fact("activation", activation,
+model_unfolder/adapters/transformer/parser.py:984: in _note_ffn_mechanism_fact
+    projection = witness.project(
+model_unfolder/evidence/ffn_mechanism.py:794: in project
+    selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = None, source_path = ('hidden_act',)
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+>       resolution = _source_operand_resolution(document.document, path, document,
+                                                ^^^^^^^^^^^^^^^^^
+                                               allow_aliases=allow_aliases)
+E       AttributeError: 'NoneType' object has no attribute 'document'
+
+model_unfolder/evidence/reader_claims.py:139: AttributeError
+__ test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source ___
+
+    def test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source():
+        pixtral_style = {
+            "architectures": ["LlavaForConditionalGeneration"], "model_type": "llava",
+            "image_token_index": 10, "projector_hidden_act": "gelu",
+            "text_config": {
+                "model_type": "mistral", "hidden_size": 5120, "num_hidden_layers": 4,
+                "num_attention_heads": 32, "num_key_value_heads": 8,
+                "intermediate_size": 14336, "vocab_size": 131072,
+                "rms_norm_eps": 1e-5, "head_dim": 128,
+            },
+            "vision_config": {
+                "model_type": "pixtral", "hidden_size": 1024, "image_size": 1024,
+                "patch_size": 16, "num_hidden_layers": 24,
+                "num_attention_heads": 16, "intermediate_size": 4096,
+            },
+        }
+>       result = name_blind_diff(pixtral_style)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:417: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1709: in parse
+    _note_ffn_mechanism_fact("activation", activation,
+model_unfolder/adapters/transformer/parser.py:984: in _note_ffn_mechanism_fact
+    projection = witness.project(
+model_unfolder/evidence/ffn_mechanism.py:794: in project
+    selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = None, source_path = ('text_config', 'hidden_act')
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+>       resolution = _source_operand_resolution(document.document, path, document,
+                                                ^^^^^^^^^^^^^^^^^
+                                               allow_aliases=allow_aliases)
+E       AttributeError: 'NoneType' object has no attribute 'document'
+
+model_unfolder/evidence/reader_claims.py:139: AttributeError
+__ test_name_blind_guard_preserves_source_address_and_clean_decoder_structure __
+
+    def test_name_blind_guard_preserves_source_address_and_clean_decoder_structure():
+        from transformers import AutoConfig
+    
+>       result = name_blind_diff(AutoConfig.for_model("llama").to_dict())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1709: in parse
+    _note_ffn_mechanism_fact("activation", activation,
+model_unfolder/adapters/transformer/parser.py:984: in _note_ffn_mechanism_fact
+    projection = witness.project(
+model_unfolder/evidence/ffn_mechanism.py:794: in project
+    selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = None, source_path = ('hidden_act',)
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+>       resolution = _source_operand_resolution(document.document, path, document,
+                                                ^^^^^^^^^^^^^^^^^
+                                               allow_aliases=allow_aliases)
+E       AttributeError: 'NoneType' object has no attribute 'document'
+
+model_unfolder/evidence/reader_claims.py:139: AttributeError
+__________________ test_name_blind_guard_over_blessed_corpus ___________________
+
+    def test_name_blind_guard_over_blessed_corpus():
+        """BLOCKING corpus net, STRICT: every blessed fixture parses structurally
+        IDENTICAL with all semantic identity scrubbed."""
+        from model_unfolder.sable import load_corpus
+    
+        corpus = load_corpus()
+        assert corpus, "no blessed fixtures — the corpus lock is gone"
+        for fname, fix in corpus:
+>           result = name_blind_diff(fix["config"])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:438: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1709: in parse
+    _note_ffn_mechanism_fact("activation", activation,
+model_unfolder/adapters/transformer/parser.py:984: in _note_ffn_mechanism_fact
+    projection = witness.project(
+model_unfolder/evidence/ffn_mechanism.py:794: in project
+    selected = reader_operand(document, value.activation_config_path, allow_aliases=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = None, source_path = ('hidden_act',)
+
+    def reader_operand(document, source_path, *, allow_aliases=True):
+        """Dry revalidation through the same exact production value channels."""
+        path = tuple(source_path)
+        if not path:
+            raise ValueError("reader operand needs an exact source path")
+>       resolution = _source_operand_resolution(document.document, path, document,
+                                                ^^^^^^^^^^^^^^^^^
+                                               allow_aliases=allow_aliases)
+E       AttributeError: 'NoneType' object has no attribute 'document'
+
+model_unfolder/evidence/reader_claims.py:139: AttributeError
+_________ test_measured_baseline_rows_match_the_committed_sample_bytes _________
+
+    def test_measured_baseline_rows_match_the_committed_sample_bytes():
+        import gzip
+        section = _budgets()['unet_instance']
+        receipt = section['baseline_receipt']
+        map_path = Path(receipt['artifact_map'])
+>       assert sha(map_path.read_bytes()) == receipt['artifact_map_sha256']
+E       AssertionError: assert '269169de9845...715ee3abd0b6c' == 'a248be73be06...1d3f1c31eca04'
+E         
+E         - a248be73be0689f8dd42a2aaaabbaa8c29f3ef5e311c5a249fb1d3f1c31eca04
+E         + 269169de984506fda5770878e83271432d427339b018693fc1a715ee3abd0b6c
+
+tests/test_s81_latency.py:351: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_code_evidence.py::test_norm_placement_defaults_two_unknown_tiers
+FAILED tests/test_diffusion.py::test_config_tokens_do_not_change_typed_grouping_or_period_detection
+FAILED tests/test_identity_guard.py::test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source
+FAILED tests/test_identity_guard.py::test_name_blind_guard_preserves_source_address_and_clean_decoder_structure
+FAILED tests/test_identity_guard.py::test_name_blind_guard_over_blessed_corpus
+FAILED tests/test_s81_latency.py::test_measured_baseline_rows_match_the_committed_sample_bytes
+6 failed, 225 passed in 179.84s (0:02:59)

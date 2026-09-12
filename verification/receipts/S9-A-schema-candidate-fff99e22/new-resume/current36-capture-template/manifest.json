@@ -1,0 +1,15 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN36_PIN",
+  "base": "Held source-reviewed35 template;35 fleet never executed. Coordinate-only36 successor. Latest executed fleet34/matrix32 remain separate historical references.",
+  "base_manifest_sha256": "1e214d9b4b641f8153a73a32ae8c129b5c8bf3af61db97809576f8714a6336c8",
+  "files": {
+    "census.py": "72b0b540ee4e564a2593ca5fc655218bf875f64cc809adc60888253512d7f154",
+    "run-census.py": "55732125d89f5dc9987029d71ed30a49067a6c078d37c9f4099edb313efd3d88",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "757569dc17ee1f8baaf2a6e7ef4e5a82428c12f9ab750cf4b98a15e08e2b8af0",
+    "plan.json": "bf464518d923cb5d2e648bf965a4ce0c0b80229a832a53a58f24ea700d7d02ff",
+    "contract.json": "309e46eee04deaaab74ef9959af8300e6f500dc4b9bb5aa0743e3cb5d00c5255"
+  },
+  "feature_changes": 0,
+  "no_execution": "Stdlib source/AST/hash preparation only."
+}

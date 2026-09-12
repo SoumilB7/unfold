@@ -1,0 +1,34 @@
+[
+  {
+    "path": [
+      0,
+      "document_token"
+    ],
+    "before": "3c51de4ff07433e265fdcb04024d5f00ff664136bc8952136ae0fcfd7aa550ba",
+    "after": "92943bb7bd02064d81660e8604d8cdf7c63ae2884ce98d264659f0d6485cb597"
+  },
+  {
+    "path": [
+      1,
+      "document_token"
+    ],
+    "before": "3c51de4ff07433e265fdcb04024d5f00ff664136bc8952136ae0fcfd7aa550ba",
+    "after": "92943bb7bd02064d81660e8604d8cdf7c63ae2884ce98d264659f0d6485cb597"
+  },
+  {
+    "path": [
+      2,
+      "document_token"
+    ],
+    "before": "3c51de4ff07433e265fdcb04024d5f00ff664136bc8952136ae0fcfd7aa550ba",
+    "after": "92943bb7bd02064d81660e8604d8cdf7c63ae2884ce98d264659f0d6485cb597"
+  },
+  {
+    "path": [
+      3,
+      "document_token"
+    ],
+    "before": "3c51de4ff07433e265fdcb04024d5f00ff664136bc8952136ae0fcfd7aa550ba",
+    "after": "92943bb7bd02064d81660e8604d8cdf7c63ae2884ce98d264659f0d6485cb597"
+  }
+]

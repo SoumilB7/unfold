@@ -1,0 +1,65 @@
+{
+  "status": "SOURCE_AND_SAVED_INPUT_INSPECTION_ONLY",
+  "source_manifest_sha256": "153982d5541dbd6aa50c2bdfe3dee2fa9c4b92b93f7c26d11c203de1dc1d1a01",
+  "source_manifest_rows": 193,
+  "prior_source_manifest_rows": 192,
+  "prior_manifest_sha256": "e4636c47c40267792d6ab489818bcd1c02deeb7c52ffe8cc44f2e8d60e6b9d43",
+  "exact_delta_paths": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_manifest_present": true,
+      "before_manifest_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+      "after_sha256": "af20006f65b3369241ef5c2efb62c1bf247231df1701d0d909c7d25a487a6d8d",
+      "before_actual_sha256": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5"
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py",
+      "before_manifest_present": true,
+      "before_manifest_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+      "after_sha256": "061f7ceb09a1fcfd7db5b8da4e0e41ff0653e6bb6818fad59e27cbb852bee24b",
+      "before_actual_sha256": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69"
+    },
+    {
+      "path": "model_unfolder/renderers/html/fact_projection.py",
+      "before_manifest_present": true,
+      "before_manifest_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c",
+      "after_sha256": "e8a4177048b9d24161b657e1efab1a90dbd5e4e3f477dbdc76757e7ab33e815b",
+      "before_actual_sha256": "6b26690b715cf78b4758312e03cd72bfc2e8b3f36f20189c97c0ff135e39731c"
+    },
+    {
+      "path": "tests/test_attention_softcap.py",
+      "before_manifest_present": true,
+      "before_manifest_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+      "after_sha256": "48905055e2bbad8a53017a6a8f7c395604f9f0d5b4767df0a29de7ecff106204",
+      "before_actual_sha256": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088"
+    },
+    {
+      "path": "tests/test_submodel_parity.py",
+      "before_manifest_present": false,
+      "before_manifest_sha256": null,
+      "after_sha256": "1f4aea881d5b35b9a3aae638421a4142a666fc4172ab61c976385601b241d1a1",
+      "before_actual_sha256": "c61214436b02ff2e2e242719f08ad926967fa2bbbddcd3ac82a364fdc7439d12"
+    }
+  ],
+  "complete_importable_source_diff_matches_approved_five_files": true,
+  "full_python_census_counts": {
+    "before": 622,
+    "after": 622
+  },
+  "source_corrections": {
+    "softcap_r2_manifest_sha256": "712afa6c247d9bc3ee05d236b4ecea81b36060aa34b2b2d19e28adb25ea1083f",
+    "parity_r2_manifest_sha256": "829c86b6ecabcf967eb862828e45e92a3db6e7e635c497c63fe3d77d6ca2e075"
+  },
+  "unchanged_pins": [
+    "all29 executable corpus fixtures and existing gallery files",
+    "historical baseline documents",
+    "committed preservation expected manifest",
+    "original52-test preservation source",
+    "clean fff99e22 optional recovery source/input/artifact pins"
+  ],
+  "issues": [
+    "Historical baseline documents still have118 canonical surface hash mismatches; these remain explicitly non-authoritative until recovered hash matches committed expectation.",
+    "Neither predecessor nor exact31 observer has been executed by this agent; runtime capture and tests remain root-owned."
+  ],
+  "authority": "Snapshot composition and source pins only; no output acceptance, test verdict or model behavior inference."
+}

@@ -1,0 +1,45 @@
+{
+  "scope": "Prepared source only: actual parse-based SourceBundle/ProgramIndex closure replay for all39 witnesses, including36 changed seals and3 unchanged controls. Before side also captures actual clean baseline IR/HTML. No product imports, models, tests or execution by executor.",
+  "files": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/capture.py",
+      "sha256": "9507a96d3bde54015e31310b4a9be9275bd6ef4c73e0007d61f4e54555c7d602",
+      "bytes": 8465
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/run-capture.py",
+      "sha256": "bc61e25fb0f18b0908afb070f639fdcdd28d96a66d7b4691179211fa8a3339e7",
+      "bytes": 3427
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/targets.json",
+      "sha256": "f1ab7e81b21941aff84cc360d0121e2de749fbfd7eedf291365603ef6adab5f7",
+      "bytes": 40803
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/portable-law-source.json",
+      "sha256": "51dc1775f3abedbde1bd2266f442c39c2fc06c9d964985fc386459f594187bdf",
+      "bytes": 4347
+    }
+  ],
+  "before": "Clean fff99e22 .claude/worktrees/verify-s9-a-closure-baseline; launcher checks exact commit and clean tracked/untracked status.",
+  "after": "Immutable .claude/worktrees/verify-s9-a-twentysixth; existing current-pages HTML is not rerendered or overwritten.",
+  "address_setup": "Read actual target config, ParseContext.build, replace root component_architectures with respective actual inventory resolved_class.qualname, config_to_ir, then context.program_index. No fake inventory object or explicit inventory/observation worker.",
+  "portable_law": "Exact _compute_portable_source_index_fingerprint source is byte-identical in before/after trees and retained. Multiset includes healthy source nodes and parse-failure sources without deduplication. Each row retains component, external flag/provenance, shortest unique trailing locator and content hash; separator/encoding/order identical. Recomputed row seal must equal real public portable function and corresponding actual matrix payload seal.",
+  "failure_policy": "A nonreproduced baseline is MISMATCH / actual_matrix_seal_not_reproduced with complete captured rows; never normalized. Source parse failures remain explicit. Actual parse/render exceptions are FAILED with stage/type/traceback. After capture still runs following a returned before mismatch. Overall launcher fails if either phase fails/mismatches or script/source/artifact brackets differ.",
+  "outputs": [
+    "per-model complete portable multiset + exact source parse failures + expected/actual/recomputed seals",
+    "per-model before/after SourceBundle descriptions explicitly LOCAL_ONLY; not portable identities",
+    "IR before render for each phase",
+    "before phase standalone HTML and IR after render with hashes",
+    "phase summaries and per-lane source/artifact fingerprints; plan/script pin brackets"
+  ],
+  "mutation_scope": "Only a new scratch output root; no product edits, current-pages overwrite, S7 write, architecture acceptance or re-bless.",
+  "suggested_command": "python3 verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/closure-capture/run-capture.py --before-tree .claude/worktrees/verify-s9-a-closure-baseline --after-tree .claude/worktrees/verify-s9-a-twentysixth --output-root /private/tmp/unfold-s9a-twentysixth/source-closure-replay",
+  "root_prerequisites": [
+    "Stage protected external verification artifacts in both trees using established procedure; clean baseline remains at exactfff99e22",
+    "Review this source and run only in the root serial lane after current tests",
+    "Archive resulting failures as well as successes; a reproduced source seal is not architectural approval"
+  ],
+  "validation": "Both scripts parsed using stdlib AST only; exact39/36/3 target extraction checked against saved payload bytes. No runtime."
+}

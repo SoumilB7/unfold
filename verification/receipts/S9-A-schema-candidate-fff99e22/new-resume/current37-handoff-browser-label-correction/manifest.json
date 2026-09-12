@@ -1,0 +1,6 @@
+{
+  "scope": "Checkpoint label correction only; no runtime/source/artifact changes",
+  "before_sha256": "38728723c056ca1cfbb8c4863086a007708d994c9432ff7615be68594db76ec1",
+  "after_sha256": "535c967c56f89acadeeeff87cfbee3e2e2b70ffa467ed42a42228e14f69d69d5",
+  "path": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/READ_AFTER_COMPACTION.md"
+}

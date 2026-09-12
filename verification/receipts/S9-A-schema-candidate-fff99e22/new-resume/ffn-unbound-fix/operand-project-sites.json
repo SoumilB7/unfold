@@ -1,0 +1,212 @@
+[
+  {
+    "file": "model_unfolder/adapters/diffusor/projection_ir.py",
+    "source_sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494",
+    "line": 1294,
+    "symbol": "project_diffusion_ir",
+    "call": "consumer.project('denoiser', mechanism='diffusion_bookend_geometry', actual_value=geometry_value)"
+  },
+  {
+    "file": "model_unfolder/adapters/diffusor/projection_ir.py",
+    "source_sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494",
+    "line": 1353,
+    "symbol": "project_diffusion_ir",
+    "call": "consumer.project(owner, mechanism='diffusion_root_stack_depth' if root_stage else 'diffusion_nested_stack_depth', actual_value=count)"
+  },
+  {
+    "file": "model_unfolder/adapters/diffusor/projection_ir.py",
+    "source_sha256": "27fb622246af60b6442989b7cd9d30cf6aea8816de859625e315f29b0842b494",
+    "line": 617,
+    "symbol": "_OperandConsumer.project_fact",
+    "call": "self.project(owner, mechanism=mechanism, actual_value=value)"
+  },
+  {
+    "file": "model_unfolder/adapters/transformer/parser.py",
+    "source_sha256": "3af5ad5b56d7b53ba9acac6f97217b556abc4d64fafde62ecbc76e485a166502",
+    "line": 965,
+    "symbol": "parse._ffn_status_with_selector_default",
+    "call": "reader_operand(current_prepared_document.get(), _ffn_mechanism.value.selector_config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/adapters/transformer/parser.py",
+    "source_sha256": "3af5ad5b56d7b53ba9acac6f97217b556abc4d64fafde62ecbc76e485a166502",
+    "line": 1459,
+    "symbol": "parse",
+    "call": "_model_width_result.claim_witness.project('model', 'hidden_size', _config_access.current_prepared_document.get())"
+  },
+  {
+    "file": "model_unfolder/adapters/transformer/parser.py",
+    "source_sha256": "3af5ad5b56d7b53ba9acac6f97217b556abc4d64fafde62ecbc76e485a166502",
+    "line": 982,
+    "symbol": "parse._note_ffn_mechanism_fact",
+    "call": "witness.project('decoder.ffn', key, current_prepared_document.get())"
+  },
+  {
+    "file": "model_unfolder/evidence/attention.py",
+    "source_sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2",
+    "line": 1071,
+    "symbol": "AttentionSoftcapClaimWitness.project",
+    "call": "reader_operand(document, self.binding.config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/attention.py",
+    "source_sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2",
+    "line": 1129,
+    "symbol": "AttentionClipClaimWitness.project",
+    "call": "reader_operand(document, self.clip.config_path)"
+  },
+  {
+    "file": "model_unfolder/evidence/attention.py",
+    "source_sha256": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2",
+    "line": 1946,
+    "symbol": "attention_claim_operands",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/cell_topology.py",
+    "source_sha256": "564a5047956802f6c2b56b9948885f8bfdd7654540e9fbdd5ed82338d3887b8c",
+    "line": 710,
+    "symbol": "CellTopologyClaimWitness.project",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/cell_topology.py",
+    "source_sha256": "564a5047956802f6c2b56b9948885f8bfdd7654540e9fbdd5ed82338d3887b8c",
+    "line": 689,
+    "symbol": "CellTopologyClaimWitness.project",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/class_default_value.py",
+    "source_sha256": "9b3311740467832884d440fc217e5b7cf5cded7132d29b8fe46ca35ba2fb95b2",
+    "line": 217,
+    "symbol": "_declaration",
+    "call": "reader_operand(document, ('hidden_size',))"
+  },
+  {
+    "file": "model_unfolder/evidence/codebook_streams.py",
+    "source_sha256": "f4775bb689b1afda003377cc8413d1d6d61bfbaeac3681802d5de7c44df71649",
+    "line": 203,
+    "symbol": "CodebookClaimWitness.project",
+    "call": "reader_operand(document, self.streams.count_path)"
+  },
+  {
+    "file": "model_unfolder/evidence/diffusion_stack.py",
+    "source_sha256": "5a53d6e6e9e4fddd4f9d2037583374b53e74d22080fc2ec47efb1820b3031d09",
+    "line": 683,
+    "symbol": "declared_diffusion_operand",
+    "call": "reader_operand(document, path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/expert_width.py",
+    "source_sha256": "46d58570ff39e2037852bdff719f0c0089e5a80c2389d69a2713dec1a12ab40a",
+    "line": 151,
+    "symbol": "ExpertWidthClaimWitness.project",
+    "call": "self.storage_result.claim_witness.project('decoder.ffn.expert', 'expert_projection_mode', document)"
+  },
+  {
+    "file": "model_unfolder/evidence/expert_width.py",
+    "source_sha256": "46d58570ff39e2037852bdff719f0c0089e5a80c2389d69a2713dec1a12ab40a",
+    "line": 152,
+    "symbol": "ExpertWidthClaimWitness.project",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_mechanism.py",
+    "source_sha256": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509",
+    "line": 837,
+    "symbol": "FFNMechanismClaimWitness.validate_legacy_projection_value",
+    "call": "reader_operand(document, self.mechanism.activation_config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_mechanism.py",
+    "source_sha256": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509",
+    "line": 794,
+    "symbol": "FFNMechanismClaimWitness.project",
+    "call": "reader_operand(document, value.selector_config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_mechanism.py",
+    "source_sha256": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509",
+    "line": 886,
+    "symbol": "decoder_ffn_mechanism_for_path",
+    "call": "reader_operand(prepared, result.value.activation_config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_mechanism.py",
+    "source_sha256": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509",
+    "line": 802,
+    "symbol": "FFNMechanismClaimWitness.project",
+    "call": "reader_operand(document, value.activation_config_path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_width.py",
+    "source_sha256": "47500734db30764b14474a87d2a10f37437fa2758b4490d270f1ef324c37e12a",
+    "line": 101,
+    "symbol": "FFNWidthClaimWitness.project",
+    "call": "self.mechanism_result.claim_witness.project('decoder.ffn', 'gated', document)"
+  },
+  {
+    "file": "model_unfolder/evidence/ffn_width.py",
+    "source_sha256": "47500734db30764b14474a87d2a10f37437fa2758b4490d270f1ef324c37e12a",
+    "line": 102,
+    "symbol": "FFNWidthClaimWitness.project",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/per_layer_side_input.py",
+    "source_sha256": "622a8ceb6d15e9878c7a7a02708f23472bbae16bef4b322d71fc434287c12c76",
+    "line": 89,
+    "symbol": "PerLayerInputClaimWitness.project",
+    "call": "reader_operand(document, self.pathway.width_path)"
+  },
+  {
+    "file": "model_unfolder/evidence/per_layer_side_input.py",
+    "source_sha256": "622a8ceb6d15e9878c7a7a02708f23472bbae16bef4b322d71fc434287c12c76",
+    "line": 90,
+    "symbol": "PerLayerInputClaimWitness.project",
+    "call": "reader_operand(document, self.pathway.vocabulary_path)"
+  },
+  {
+    "file": "model_unfolder/evidence/position_initialization.py",
+    "source_sha256": "1c0af1fe054b4bc4fb9ce28e632c698c985508cacc3b55ea3135557c387a19b6",
+    "line": 244,
+    "symbol": "PositionInitializationClaimWitness.project",
+    "call": "PositionScheduleClaimWitness(self.index, value.schedule).project('decoder.attention', 'position_schedule', document)"
+  },
+  {
+    "file": "model_unfolder/evidence/projection_bias.py",
+    "source_sha256": "3bd883833c3a7f1b7f514841acf658ca617b42c11308610308d57312e01b1b9d",
+    "line": 237,
+    "symbol": "AttentionBiasClaimWitness.project",
+    "call": "reader_operand(document, path, allow_aliases=False)"
+  },
+  {
+    "file": "model_unfolder/evidence/reader_claims.py",
+    "source_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "line": 205,
+    "symbol": "repeated_count_operand",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/reader_claims.py",
+    "source_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "line": 66,
+    "symbol": "_checked_selector_reads",
+    "call": "reader_operand(document, read.path)"
+  },
+  {
+    "file": "model_unfolder/evidence/reader_claims.py",
+    "source_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "line": 80,
+    "symbol": "validate_reader_operands",
+    "call": "reader_operand(document, path)"
+  },
+  {
+    "file": "model_unfolder/evidence/reader_claims.py",
+    "source_sha256": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "line": 518,
+    "symbol": "ReaderProjectionClaimProof.__post_init__",
+    "call": "self.reader_result.claim_witness.project(owner, key, self.prepared_document)"
+  }
+]

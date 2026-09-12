@@ -1,0 +1,158 @@
+{
+  "directories": [
+    {
+      "archived": "twentyfourth/qualification",
+      "original": "/private/tmp/unfold-s9a-twentyfourth/qualification"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source/model_unfolder"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "twentyfourth/census.py",
+      "bytes": 5081,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/census.py",
+      "sha256": "12bb6cf776a553fa3c38b5a0352b367caaf93c5dc1b7dac2cf9f735a57625994"
+    },
+    {
+      "archived": "twentyfourth/generate-matrix.py",
+      "bytes": 547,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/generate-matrix.py",
+      "sha256": "e14c2afc5c3e6b1a57848d1f9cdaaf14c557ae739e30f52c36e5bac5d20ce427"
+    },
+    {
+      "archived": "twentyfourth/handoff-1.json",
+      "bytes": 585,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/handoff-1.json",
+      "sha256": "229c700e5bea38e8877bd505da4e8ca35d1c280d1c6b3263c85b3b72dad2288e"
+    },
+    {
+      "archived": "twentyfourth/handoff-2.json",
+      "bytes": 391,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/handoff-2.json",
+      "sha256": "55635378d81153b234c26741571d88bebc0f3752d84a55655e0f11e331102866"
+    },
+    {
+      "archived": "twentyfourth/qualification/result.json",
+      "bytes": 540,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/qualification/result.json",
+      "sha256": "6d8836533a51cdb4fee6ba58288cdef0726ee64d02a035f8d44f32251985e60c"
+    },
+    {
+      "archived": "twentyfourth/qualification/schema-proof-metadata.log",
+      "bytes": 181,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/qualification/schema-proof-metadata.log",
+      "sha256": "f73d0969689e7f59c753853912b85d2df290342ab6b80712304bb84309d4be9b"
+    },
+    {
+      "archived": "twentyfourth/run-broader.py",
+      "bytes": 2857,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/run-broader.py",
+      "sha256": "96ea30398fc599af3bba03c78b4381b38f5e3a136f4a2acb5fecfb83c3ea42ae"
+    },
+    {
+      "archived": "twentyfourth/run-census.py",
+      "bytes": 997,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/run-census.py",
+      "sha256": "ba2cddb045d895d795e54477afaada8e9d6935ae1e828c214d4e15d5bbb0ee8c"
+    },
+    {
+      "archived": "twentyfourth/run-matrix.py",
+      "bytes": 1014,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/run-matrix.py",
+      "sha256": "feacb428a8a8a6a3296ca6076c3b9cbe95fe76b335f2308319ac85550aea8177"
+    },
+    {
+      "archived": "twentyfourth/run-sparse.py",
+      "bytes": 1628,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/run-sparse.py",
+      "sha256": "7bf36a0be01832ac1ae3bc5af52b0186c09a7ebf9e33e913110d05535c2b5e2d"
+    },
+    {
+      "archived": "twentyfourth/run.py",
+      "bytes": 1219,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/run.py",
+      "sha256": "18717408a3daace73c3301087db68282f4d8b330184f1613f661f02ef46a7920"
+    },
+    {
+      "archived": "twentyfourth/scope.json",
+      "bytes": 459,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/scope.json",
+      "sha256": "4aabc02c9bfd9acebb261730017ca3e8d05e713795609a4252957e584f220774"
+    },
+    {
+      "archived": "twentyfourth/source-manifest.json",
+      "bytes": 17884,
+      "original": "/private/tmp/unfold-s9a-twentyfourth/source-manifest.json",
+      "sha256": "e055b2e17b3a00c0bdd3c9710f597454a8f9e509a7c906e4b1e79fced2f6ed99"
+    },
+    {
+      "archived": "twentyfourth-independent-review/manifest.json",
+      "bytes": 585,
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/manifest.json",
+      "sha256": "229c700e5bea38e8877bd505da4e8ca35d1c280d1c6b3263c85b3b72dad2288e"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source/model_unfolder/evidence/reconciliation.py",
+      "bytes": 94859,
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source/model_unfolder/evidence/reconciliation.py",
+      "sha256": "cd6246009d1b7be8753143fd351a84089ed022f892e06f9043cd75e42cd28dee"
+    },
+    {
+      "archived": "twentyfourth-independent-review/source/tests/test_s9_projection_claim_requirements.py",
+      "bytes": 2708,
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/source/tests/test_s9_projection_claim_requirements.py",
+      "sha256": "134773bc586a952235e3aee0d22d9d2ee44de8c27fc9ffd0028b761dfe746f7c"
+    },
+    {
+      "archived": "twentyfourth-independent-review/verdict.json",
+      "bytes": 1754,
+      "original": "/private/tmp/unfold-s9a-independent-consumer-requirements-review/verdict.json",
+      "sha256": "7d42f927bc784d5547a3bcab3a78e5033a69ab7a59a27120012ddbcc4f463390"
+    }
+  ],
+  "scope": "Released twentyfourth candidate and twentyfourth D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "twentyfourth/changed-sources.tar.gz",
+      "archive_sha256": "9a30d22ced39739160cad5478e45974d66e4c2f330e55108f9a7c806ac2031a2",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 122,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfourth",
+      "manifest_sha256": "e055b2e17b3a00c0bdd3c9710f597454a8f9e509a7c906e4b1e79fced2f6ed99",
+      "phase": "twentyfourth",
+      "uncompressed_bytes": 4120860
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 133289,
+    "copied_files": 17,
+    "source_files": 122
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

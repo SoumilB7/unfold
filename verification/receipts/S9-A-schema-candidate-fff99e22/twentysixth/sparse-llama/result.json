@@ -1,0 +1,2480 @@
+{
+  "status": "FAIL",
+  "scope": "S9-A explicit two-witness sparse-config diagnostic; no blessing or latency claim",
+  "witnesses": [
+    {
+      "slug": "llama-7b",
+      "status": "FAIL",
+      "omissions": [
+        {
+          "path": [
+            "hidden_act"
+          ],
+          "checkpoint_value": "silu",
+          "default_value": "silu",
+          "channel": "ParseContext.class_defaults_by_path[()]"
+        },
+        {
+          "path": [
+            "hidden_size"
+          ],
+          "checkpoint_value": 4096,
+          "default_value": 4096,
+          "channel": "ParseContext.class_defaults_by_path[()]"
+        },
+        {
+          "path": [
+            "num_attention_heads"
+          ],
+          "checkpoint_value": 32,
+          "default_value": 32,
+          "channel": "ParseContext.class_defaults_by_path[()]"
+        }
+      ],
+      "conditions": {
+        "ordinary": {
+          "status": "CAPTURED",
+          "page": "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/page.html",
+          "html_bytes": 60169,
+          "html_sha256": "c2d329e9fff92b5947c86b6bf03fe93d9448684078026723d3de6c39da070721",
+          "fact_count": 25,
+          "structure": {
+            "layer_count": 32,
+            "layers": [
+              {
+                "index": 0,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 6,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 7,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 8,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 9,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 10,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 11,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 12,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 13,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 14,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 15,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 16,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 17,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 18,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 19,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 20,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 21,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 22,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 23,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 24,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 25,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 26,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 27,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 28,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 29,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 30,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 31,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              }
+            ],
+            "stage_addresses": [
+              [
+                "tok_text",
+                "source",
+                null
+              ],
+              [
+                "embed",
+                "embedding",
+                null
+              ],
+              [
+                "final_rms",
+                "norm",
+                null
+              ],
+              [
+                "lm_head",
+                "output",
+                null
+              ]
+            ]
+          },
+          "params": {
+            "total": 6738415616,
+            "active": 6738415616,
+            "total_h": "6.74B",
+            "active_h": "6.74B",
+            "is_sparse": false,
+            "assumptions": [
+              "embedding-stage normalization not proven — its parameters omitted"
+            ]
+          }
+        },
+        "sparse-valid": {
+          "status": "CAPTURED",
+          "page": "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/page.html",
+          "html_bytes": 60342,
+          "html_sha256": "c50d33f6ef71065161af0319b47b9c3c8e46c5ca805aeb21f03e6d1775081da8",
+          "fact_count": 25,
+          "structure": {
+            "layer_count": 32,
+            "layers": [
+              {
+                "index": 0,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 6,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 7,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 8,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 9,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 10,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 11,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 12,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 13,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 14,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 15,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 16,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 17,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 18,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 19,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 20,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 21,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 22,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 23,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 24,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 25,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 26,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 27,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 28,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 29,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 30,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              },
+              {
+                "index": 31,
+                "count": null,
+                "blocks": [
+                  {
+                    "id": "rms1",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "attn",
+                    "kind": "attention",
+                    "type": null
+                  },
+                  {
+                    "id": "add1",
+                    "kind": "residual_add",
+                    "type": null
+                  },
+                  {
+                    "id": "rms2",
+                    "kind": "norm",
+                    "type": null
+                  },
+                  {
+                    "id": "ffn",
+                    "kind": "ffn",
+                    "type": null
+                  },
+                  {
+                    "id": "add2",
+                    "kind": "residual_add",
+                    "type": null
+                  }
+                ]
+              }
+            ],
+            "stage_addresses": [
+              [
+                "tok_text",
+                "source",
+                null
+              ],
+              [
+                "embed",
+                "embedding",
+                null
+              ],
+              [
+                "final_rms",
+                "norm",
+                null
+              ],
+              [
+                "lm_head",
+                "output",
+                null
+              ]
+            ]
+          },
+          "params": {
+            "total": 6738415616,
+            "active": 6738415616,
+            "total_h": "6.74B",
+            "active_h": "6.74B",
+            "is_sparse": false,
+            "assumptions": [
+              "embedding-stage normalization not proven — its parameters omitted"
+            ]
+          }
+        }
+      },
+      "unqualified_positive_facts": {
+        "ordinary": [
+          "decoder.ffn.activation",
+          "decoder.attention.scores_scale"
+        ],
+        "sparse-valid": [
+          "decoder.ffn.activation",
+          "decoder.attention.scores_scale"
+        ]
+      },
+      "proof_completeness_scope": "Parity is not qualification: every listed declaration-only positive remains an open proof obligation.",
+      "comparisons": {
+        "every_omission_has_actual_default_premise": false,
+        "params_equal": true,
+        "layer_stage_summary_equal": true,
+        "all_fact_keys_equal": true,
+        "fact_value_kind_completeness_stable": false,
+        "all_svg_bytes_equal_in_order": true,
+        "unexplained_fact_deltas": 1,
+        "ir_delta_count": 273,
+        "unexplained_ir_deltas": 225,
+        "post_render_delta_count": 273,
+        "unexplained_post_render_ir_deltas": 225
+      },
+      "error": {
+        "type": "ExperimentFailure",
+        "detail": "sparse experiment has changed semantics, drawings, or unexplained deltas; inspect exact retained records"
+      }
+    }
+  ],
+  "errors": [],
+  "publication": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-schema/sparse-twentysixth-llama",
+  "checkout": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentysixth",
+  "tool_before": {
+    "path": "/private/tmp/unfold-s9a-resume/run_sparse.py",
+    "bytes": 42114,
+    "sha256": "0cc13b9517b965337dd86ee80a8fce76988cbf5efe915e49a98dbffc68b0cf0a"
+  },
+  "plan_before": {
+    "path": "/private/tmp/unfold-s9a-twentysixth/sparse-plan.json",
+    "bytes": 823,
+    "sha256": "3933ecb158f538afb75a414cd8d92d4f055f327413efd91f6d498256d24ac2d5"
+  },
+  "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "dependencies": {
+    "torch": "2.9.1",
+    "transformers": "5.12.1",
+    "diffusers": "0.38.0"
+  },
+  "selected_witness": "llama-7b",
+  "campaign_scope": "explicit selected subset",
+  "pins_equal": true
+}

@@ -1,0 +1,13 @@
+{
+  "python": "3.12.10",
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "chrome": "152.0.7977.84",
+  "playwright": "1.62.0",
+  "executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "profile": "Playwright-created fresh temporary profile; no personal profile accessed",
+  "network": "HTTP(S) blocked for saved-artifact scope; external Google Fonts use CSS fallback",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  }
+}

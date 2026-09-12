@@ -1,0 +1,55 @@
+{
+  "status": "PASS_FINITE_SAVED_FLEET_SCOPE",
+  "models_inspected": 39,
+  "captured_files_rehashed": 585,
+  "native_totals": {
+    "facts": 665,
+    "qualified": 520,
+    "without_proof": 145
+  },
+  "native_statuses": {
+    "code_proven": 267,
+    "code_and_config": 257,
+    "ambiguous": 89,
+    "config_declared": 47,
+    "class_default": 5
+  },
+  "native_value_status_kind_proof_delta_keys": 0,
+  "unknown_and_html_totals": {
+    "native_delta_keys": 0,
+    "unknown_scalar_addresses": 26222,
+    "unknown_envelopes": 8473,
+    "metadata_findings": 0,
+    "html_bytes": 9510603,
+    "element_count": 34191,
+    "missing_rendered_paths": 0,
+    "unexpected_rendered_paths": 0,
+    "class3_records": 0,
+    "capture_census_findings": 0
+  },
+  "html_detail_totals": {
+    "html_bytes": 9510603,
+    "gzip_bytes": 880321,
+    "serialized_element_count": 34191,
+    "inline_detail_cards": 2159,
+    "deferred_template_expanded_element_count": 192621,
+    "deferred_template_expanded_detail_cards": 11717,
+    "banner_scalar_markers": 38
+  },
+  "four_styles_distinct_all39": true,
+  "all197_receipts_valid_on_declared_surface": true,
+  "receipt_surface_counts": {
+    "opgraph": 88,
+    "html": 103,
+    "card": 6
+  },
+  "card_receipts": 6,
+  "fact_backed_banner_receipts": 24,
+  "legacy_scalar_markers_without_receipts": 14,
+  "actual_unresolved_softcap_fleet_cases": 0,
+  "missing_softcap_branch_scope": "Fleet exercises zero missing-operand cases; separate six-case saved diagnostic establishes actual missing HTML limits.",
+  "scope": "Standard-library saved-data audit only; no model/tests/browser/product imports, portable proof replay, occurrence proof, output normalization or blessing. All published page bytes compared exactly. Root-native facts do not stand in for nested child ledgers.",
+  "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e",
+  "capture_result_sha256": "61bbf743073ee77ef7c6c5414a2e4ac68931e099aaceeba06f24f8d949285659",
+  "lane_result_sha256": "8045402b50171d50973204ca6b186082e9cef53471f3b42663e279ae4e7a5f1a"
+}

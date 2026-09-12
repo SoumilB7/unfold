@@ -1,0 +1,1724 @@
+{
+  "decoder.attention.bias": {
+    "value": false,
+    "status": "code_and_config",
+    "source": "decoder_attention_bias_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "existence",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.bias:df40488d7e9f5dfc",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:317:4:317:36",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:403:22:407:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:8:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:479:22:479:46",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9"
+        ],
+        "fact_id": "decoder.attention.bias",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "df40488d7e9f5dfc"
+    }
+  },
+  "decoder.attention.head_geometry": {
+    "value": {
+      "kind": "mla",
+      "num_heads": 128,
+      "num_kv_heads": 128,
+      "head_dim": 192,
+      "q_lora_rank": 1536,
+      "kv_lora_rank": 512,
+      "qk_nope_head_dim": 128,
+      "qk_rope_head_dim": 64,
+      "v_head_dim": 128
+    },
+    "status": "code_and_config",
+    "source": "decoder_attention_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.head_geometry:40c1771af56d9eb5",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9"
+        ],
+        "fact_id": "decoder.attention.head_geometry",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.head_geometry",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "40c1771af56d9eb5"
+    }
+  },
+  "decoder.attention.mask": {
+    "value": "causal",
+    "status": "code_and_config",
+    "source": "decoder_attention_mask_execution_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mask:d633e0971d5d5f6d",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:29:0:29:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:38:310:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:8:310:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:469:12:469:26",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:513:27:513:41",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:531:32:531:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:562:22:562:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:25:564:31",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:8:564:32",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:22:612:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:8:612:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:620:31:620:42"
+        ],
+        "fact_id": "decoder.attention.mask",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "d633e0971d5d5f6d"
+    }
+  },
+  "decoder.attention.mask_schedule": {
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ],
+    "status": "code_and_config",
+    "source": "decoder_attention_mask_execution_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mask_schedule:c9ae4581a63a99b6",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:29:0:29:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:38:310:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:310:8:310:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:469:12:469:26",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:513:27:513:41",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:531:32:531:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:562:22:562:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:25:564:31",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:564:8:564:32",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:22:612:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:606:8:612:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:620:31:620:42"
+        ],
+        "fact_id": "decoder.attention.mask_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mask_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "c9ae4581a63a99b6"
+    }
+  },
+  "decoder.attention.mechanism": {
+    "value": "mla",
+    "status": "code_and_config",
+    "source": "decoder_attention_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mechanism:2d0bb81da2278b7b",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9"
+        ],
+        "fact_id": "decoder.attention.mechanism",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "2d0bb81da2278b7b"
+    }
+  },
+  "decoder.attention.mixer_schedule": {
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ],
+    "status": "code_and_config",
+    "source": "decoder_mixer_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mixer_schedule:b9566eaf448f54ef",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:25:488:80",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102"
+        ],
+        "fact_id": "decoder.attention.mixer_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.mixer_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "b9566eaf448f54ef"
+    }
+  },
+  "decoder.attention.output_projection": {
+    "value": true,
+    "status": "code_proven",
+    "source": "decoder_attention_output_projection_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:11:0:11:12",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:13:0:13:20",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:312:19:312:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:314:18:314:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:317:4:317:36",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:387:28:387:105",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:389:28:389:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:391:34:395:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:393:12:393:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:397:25:401:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:398:12:398:29",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:399:12:399:70",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:403:22:407:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:23:432:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:432:56:432:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:436:24:436:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:439:17:439:60",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:440:31:440:100",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:8:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:479:22:479:46",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9"
+        ],
+        "fact_id": "decoder.attention.output_projection",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.output_projection",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    }
+  },
+  "decoder.attention.position_schedule": {
+    "value": [
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      },
+      {
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        "rope_dim": 64
+      }
+    ],
+    "status": "code_and_config",
+    "source": "decoder_position_application_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.position_schedule:7725e941c9773abd",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:24:434:101",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:70:434:91",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:434:8:434:101",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:24:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:71:437:92",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:437:8:437:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:11:445:38",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:451:34:451:40",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:451:8:451:57",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:452:32:452:38",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:452:8:452:55",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:25:488:80",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:488:70:488:79",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86"
+        ],
+        "fact_id": "decoder.attention.position_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.position_schedule",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "7725e941c9773abd"
+    }
+  },
+  "decoder.attention.projection_mode": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.attention.rope_initialization": {
+    "value": {
+      "kind": "imported_registry",
+      "callable": "_compute_yarn_parameters",
+      "selector": "yarn",
+      "parameters": {
+        "rope_parameters.rope_theta": 10000,
+        "rope_parameters.rope_type": "yarn",
+        "rope_parameters.factor": 40,
+        "rope_parameters.original_max_position_embeddings": 4096,
+        "rope_parameters.mscale": 1.0,
+        "rope_parameters.mscale_all_dim": 1.0,
+        "rope_parameters.beta_fast": 32,
+        "rope_parameters.beta_slow": 1
+      }
+    },
+    "status": "code_and_config",
+    "source": "position_frequency_initialization",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.rope_initialization:dc939dadd9cb30c9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:70:11:70:25",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:43:72:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:8:72:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:74:8:74:68",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:327:0:459:37",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:388:11:388:45",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:635:12:635:36"
+        ],
+        "fact_id": "decoder.attention.rope_initialization",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.rope_initialization",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "dc939dadd9cb30c9"
+    }
+  },
+  "decoder.attention.rope_theta": {
+    "value": 10000,
+    "status": "code_and_config",
+    "source": "position_frequency_initialization",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.rope_theta:1e4d3f6a64bb7d05",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:116:18:116:51",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:117:18:117:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:118:18:118:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:120:8:120:59",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:308:19:308:66",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:320:0:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:348:4:348:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:349:4:349:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:351:4:351:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:352:4:352:39",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:354:4:354:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:355:4:355:75",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:356:4:356:27",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:445:8:448:71",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:12:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:27:446:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:73:446:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:446:78:446:81",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:464:36:473:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:466:12:466:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:467:12:467:22",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:12:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:27:603:92",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:603:95:603:111",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:12:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:604:27:604:52",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:30:615:87",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:615:74:615:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:70:11:70:25",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:43:72:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:72:8:72:76",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:74:8:74:68",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:327:0:459:37",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:388:11:388:45",
+          "source:root:f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5:635:12:635:36"
+        ],
+        "fact_id": "decoder.attention.rope_theta",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.rope_theta",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "1e4d3f6a64bb7d05"
+    }
+  },
+  "decoder.attention.scores_scale": {
+    "value": "sqrt(head_dim)",
+    "status": "code_proven",
+    "source": "decoder_attention_score_scaling_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "20496603e5af0c6f"
+    }
+  },
+  "decoder.ffn.activation": {
+    "value": "silu",
+    "status": "code_and_config",
+    "source": "decoder_ffn_mechanism_for_path:hidden_act",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "b9c82d4207301835"
+    }
+  },
+  "decoder.ffn.expert.expert_activation_formula": {
+    "value": {
+      "kind": "silu"
+    },
+    "status": "code_and_config",
+    "source": "decoder_routed_expert_storage_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.expert.expert_activation_formula",
+      "owner": "decoder.ffn.expert",
+      "status": "code_and_config",
+      "value_status_hash": "cabbc3ab8da9f5d8"
+    }
+  },
+  "decoder.ffn.expert.expert_intermediate_size": {
+    "value": 2048,
+    "status": "code_and_config",
+    "source": "decoder_expert_intermediate_width_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.expert.expert_intermediate_size",
+      "owner": "decoder.ffn.expert",
+      "status": "code_and_config",
+      "value_status_hash": "9d8a9a9c663b34e7"
+    }
+  },
+  "decoder.ffn.expert.expert_projection_mode": {
+    "value": "fused_gate_up",
+    "status": "code_proven",
+    "source": "decoder_routed_expert_storage_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.expert.expert_projection_mode",
+      "owner": "decoder.ffn.expert",
+      "status": "code_proven",
+      "value_status_hash": "ddd2b21557515ef4"
+    }
+  },
+  "decoder.ffn.expert.shared_expert_count": {
+    "value": 1,
+    "status": "code_and_config",
+    "source": "decoder_shared_expert_count_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.expert.shared_expert_count",
+      "owner": "decoder.ffn.expert",
+      "status": "code_and_config",
+      "value_status_hash": "3fb7f689bb565b65"
+    }
+  },
+  "decoder.ffn.ffn_schedule": {
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe",
+      "moe"
+    ],
+    "status": "code_and_config",
+    "source": "decoder_ffn_schedule_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.ffn_schedule:920eb5a71463c06a",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:163:8:163:115",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:164:8:164:108",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:22:165:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:165:8:165:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:12:185:106",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:185:23:185:106",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:12:186:58",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:186:36:186:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:187:12:187:107",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:202:23:202:49",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:12:570:104",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:13:570:54",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:44:570:53",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:59:570:68",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:72:570:103",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:570:78:570:102"
+        ],
+        "fact_id": "decoder.ffn.ffn_schedule",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.ffn_schedule",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "920eb5a71463c06a"
+    }
+  },
+  "decoder.ffn.gated": {
+    "value": true,
+    "status": "code_proven",
+    "source": "decoder_ffn_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47"
+        ],
+        "fact_id": "decoder.ffn.gated",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.gated",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    }
+  },
+  "decoder.ffn.projection_mode": {
+    "value": "split",
+    "status": "code_proven",
+    "source": "decoder_ffn_mechanism_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47"
+        ],
+        "fact_id": "decoder.ffn.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.projection_mode",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "386c50fca9c31bcd"
+    }
+  },
+  "decoder.ffn.routing_policy": {
+    "value": {
+      "selection_kind": "topk",
+      "scoring_func": "sigmoid",
+      "scoring_before_topk": true,
+      "score_source_kind": "affine",
+      "bias_correction": true,
+      "num_experts": 256,
+      "selection_count": 8,
+      "num_experts_per_tok": 8,
+      "grouped": true,
+      "group_score_kind": "top2_sum",
+      "n_group": 8,
+      "topk_group": 4,
+      "normalization_kind": "sum",
+      "routed_scaling_factor": 2.5
+    },
+    "status": "code_and_config",
+    "source": "decoder_router_selection_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.routing_policy",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "b364552c9d8b8a30"
+    }
+  },
+  "decoder.layer.norm_kind": {
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "source": "decoder_norm_kind_for_path",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "d23812867aded33c"
+    }
+  },
+  "decoder.layer.norm_placement": {
+    "value": "pre",
+    "status": "code_proven",
+    "source": "decoder_cell_topology_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:495:31:495:93",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:496:40:496:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:509:24:509:59",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:520:24:520:48",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:524:24:524:68",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:526:24:526:48",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:527:8:527:28"
+        ],
+        "fact_id": "decoder.layer.norm_placement",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "ab69c0b0326e77e9"
+    }
+  },
+  "decoder.layer.parallel_norm_count": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.residual_topology": {
+    "value": "sequential",
+    "status": "code_proven",
+    "source": "decoder_cell_topology_for_path",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:129:25:129:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:130:23:130:86",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:131:25:131:88",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:132:22:132:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:20:135:84",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:65",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:35:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:47:135:64",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:135:68:135:83",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:136:8:136:24",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:491:23:491:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:493:23:493:44",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:495:31:495:93",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:496:40:496:102",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:509:24:509:59",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:511:27:519:9",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:520:24:520:48",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:524:24:524:68",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:525:24:525:47",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:526:24:526:48",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:527:8:527:28"
+        ],
+        "fact_id": "decoder.layer.residual_topology",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "acdbd5fdb3a8c659"
+    }
+  },
+  "model.final_norm_kind": {
+    "value": "rmsnorm",
+    "status": "code_proven",
+    "source": "final_stage_norm_evidence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "3980e1fe3bce2ab7401a63a43bd4037ca305b41fbc43182b3c8ce97bb49b8304"
+        ],
+        "evidence_refs": [
+          "projection:model.final_norm_kind:d23812867aded33c",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:50:19:50:62",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:51:40:51:85",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:572:20:572:82",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:618:28:626:13",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:628:24:628:48",
+          "source:root:2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701:629:8:632:9"
+        ],
+        "fact_id": "model.final_norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "code_proven",
+      "value_status_hash": "d23812867aded33c"
+    }
+  },
+  "model.tie_word_embeddings": {
+    "value": false,
+    "status": "config_declared",
+    "source": "tie_word_embeddings",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    }
+  }
+}

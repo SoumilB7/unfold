@@ -1,0 +1,53 @@
+{
+  "scope": "Exact disjoint source composition of two immutable author proposals; pending independent verdict; no main source edits or runtime.",
+  "origins": [
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/layer-count-alias-default-proposal-r2/manifest.json",
+      "sha256": "c4f3ab81462e669b8d26f86f99a1107046b67b3b58dc46d4d05a9afc391d8a4c"
+    },
+    {
+      "path": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/repeated-schedule-visibility-proposal-r2/manifest.json",
+      "sha256": "24050ff7373e377a9a5997ab753cebae29b35b54311a33812740b445a255278e"
+    }
+  ],
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a"
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721"
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "proposed_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07"
+    }
+  ],
+  "parser_edit_intervals": [
+    {
+      "start": 1226,
+      "end": 1228,
+      "author": "layer-count-alias-default-proposal-r2"
+    },
+    {
+      "start": 1229,
+      "end": 1235,
+      "author": "layer-count-alias-default-proposal-r2"
+    },
+    {
+      "start": 4336,
+      "end": 4336,
+      "author": "repeated-schedule-visibility-proposal-r2"
+    },
+    {
+      "start": 4582,
+      "end": 4582,
+      "author": "repeated-schedule-visibility-proposal-r2"
+    }
+  ],
+  "composition_script_sha256": "ab3568392487850b3a7762bfdb3b00dc56de29c38b0d46510639225a04626e69"
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "5b18a901ec6f8e8b11da08c7e576b0b93945511b8300ac8ae815ba6746e400e5",
+  "input": "tests/sable_test_corpus/gemma-2-2b-it.json",
+  "input_sha256": "6f8f118edaf514fe2119765ebdd30767f8745d38195974ce17b606e208d1b62b",
+  "resolved_class": {
+    "module": "transformers.models.gemma2.modeling_gemma2",
+    "qualname": "Gemma2ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

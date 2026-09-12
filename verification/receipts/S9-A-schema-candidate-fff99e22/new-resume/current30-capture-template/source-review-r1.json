@@ -1,0 +1,18 @@
+{
+  "manifest_before": {
+    "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN30_PIN",
+    "base": "held current28-capture; prior files untouched",
+    "files": {
+      "census.py": "85910ca6b086f5a1417a46a89b0e7b7e1f8701761195434b53ee6ec5c2b839ce",
+      "run-census.py": "b202fa7e100a60b6e0195e294413920b84dd6d429c0085323ab2ccd6c76bb7c0",
+      "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+      "capture_contract.py": "ae6fb10008af9ddfdc2cae4191a4f144f6d43ec0fbfdf0828e7f8b0dfeaae3a3",
+      "plan.json": "5c38f75c6a8037cc03ac0b727cca596a01b64fbfdb01d9b447c1cc4de4fb01b3",
+      "contract.json": "f0797b6be5adc9313858a6cecc74da2e3d7f86b1e236d9347ce09184e7aa61e7"
+    },
+    "no_execution": "Only source reads/writes and stdlib ast.parse performed by event_executor.",
+    "required_runtime_input": "--source-manifest-sha256; absent/malformed/placeholder/wrong digest must refuse before product import."
+  },
+  "manifest_sha256_before": "279c75c90b25d313e5d1abd80bd8cab658e0c2cf2b77679b134333cffea64a2c",
+  "returned_item": "Explicit null source-manifest deletion rows must validate exact absence, including broken symlinks, and remain in pins."
+}

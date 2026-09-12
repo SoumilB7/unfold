@@ -1,0 +1,203 @@
+{
+  "decoder.attention.bias": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.attention.mask": {
+    "value": "unknown",
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.attention.mechanism": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.attention.projection_mode": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.attention.scores_scale": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.ffn.activation": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.norm_kind": {
+    "value": "unknown",
+    "status": "ambiguous",
+    "source": "decoder_norm_kind_for_path:failed",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.norm_placement": {
+    "value": "unknown",
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.parallel_norm_count": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "decoder.layer.residual_topology": {
+    "value": "unknown",
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "model.final_norm_kind": {
+    "value": null,
+    "status": "ambiguous",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "unknown_reason": {
+      "reason_class": "investigation_missing",
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null
+    }
+  },
+  "model.tie_word_embeddings": {
+    "value": false,
+    "status": "config_declared",
+    "source": "tie_word_embeddings",
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "a9cd6a1ddefafc47"
+    }
+  }
+}

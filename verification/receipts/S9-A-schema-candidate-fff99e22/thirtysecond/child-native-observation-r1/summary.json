@@ -1,0 +1,26 @@
+{
+  "callbacks": 20,
+  "lane": {
+    "after": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+    "before": "3db3031e3c615856fc00ec6b64e646e24313bf1cf04e6865b677bc2ebe0549ec",
+    "duration": 72.75046858399946,
+    "log_path": "/private/tmp/unfold-s9a-thirtysecond/child-native-observation/actual32-child-native-ledgers.log",
+    "name": "actual32-child-native-ledgers",
+    "packet_passed": false,
+    "passed": false,
+    "pins_equal": true,
+    "returncode": 1,
+    "scope": "Native child-ledger observation only; missing proof stays missing; no output approval.",
+    "source_manifest_sha256": "d33175f1a25ceb2fd642495b830abb3b741a21322aac6ff589d7eadce72b5d3e"
+  },
+  "models": 15,
+  "native_child_snapshot_limit": "R1 did not persist live child before/after objects before raising. Exact native tuple/type paths cannot be established from this packet. Source compares live records.to_dict() with a JSON-roundtripped copy, which is an invalid mutation comparison when tuples occur. R2 must capture actual types and compare consistent representations.",
+  "no_product_or_test_runtime_performed_by_this_audit": true,
+  "original_product_return_objects_unchanged": true,
+  "runtime_verdict": "RED_PRESERVED",
+  "saved_json_ir_delta_count": 0,
+  "scope": "Saved JSON diff is the exact shared serialization, not an output normalization or architectural proof.",
+  "unverified_native_joins": 105
+}

@@ -37,6 +37,7 @@ from .position_factors import (
     PositionTrigFactorEvidence,
 )
 from .position_schedule import (
+    PositionScheduleClaimWitness,
     PositionApplicationScheduleEvidence,
     decoder_position_application_schedule_for_path,
 )
@@ -49,6 +50,8 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 
 
 @dataclass(frozen=True)
@@ -220,6 +223,50 @@ def decoder_position_frequency_initialization_for_path(
         index, schedule.value, config_selector=config_selector)
 
 
+@dataclass(frozen=True)
+class PositionInitializationClaimWitness:
+    index: ProgramIndex
+    initialization: PositionFrequencyInitializationEvidence
+    reader_symbol = "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+
+    def validate_result(self, result):
+        if type(self.initialization) is not PositionFrequencyInitializationEvidence:
+            raise TypeError("frequency projection retains exact initialization and rotation")
+        self.initialization.__post_init__()
+        if result.status != "resolved" or result.value is not self.initialization \
+                or result.owner != self.initialization.producer_occurrence:
+            raise ValueError("frequency projection belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.attention" or key not in {"rope_theta", "rope_initialization"}:
+            raise ValueError("frequency initialization cannot author this projection")
+        value = self.initialization
+        PositionScheduleClaimWitness(self.index, value.schedule).project(
+            "decoder.attention", "position_schedule", document)
+        validate_reader_operands(document, value.config_dependencies)
+        status = ("class_default" if any(kind == "class_default"
+                                        for _path, kind, _operand in value.config_dependencies)
+                  else "code_and_config" if value.config_dependencies else "code_proven")
+        if key == "rope_theta":
+            projected, kind = value.base_value, "value"
+            paths = tuple(path for path, _kind, _operand in value.base_dependencies)
+        else:
+            projected = {"kind": value.initializer_kind,
+                         "callable": value.initializer_callable.qualified_name,
+                         "selector": value.selector_value,
+                         "parameters": {".".join(path): operand for path, _kind, operand
+                                        in value.config_dependencies}}
+            kind = "applied_function"
+            paths = tuple(path for path, source_kind, operand in value.config_dependencies
+                          if (path, source_kind, operand) not in value.base_dependencies)
+        return ReaderFactProjection(owner, key, kind, projected, status,
+                                    paths, completeness="presence_only")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'rope_theta', 'value'),
+    ('decoder.attention', 'rope_initialization', 'applied_function'),
+))
 def position_frequency_initialization(
     index: ProgramIndex,
     schedule: PositionApplicationScheduleEvidence,
@@ -372,7 +419,8 @@ def position_frequency_initialization(
         address_relay,
         spans)
     provenance_kind = "code_and_config" if dependencies else "source"
-    return ReaderResult.resolved(owner, value, provenance=(
+    return ReaderResult.resolved(owner, value,
+        claim_witness=PositionInitializationClaimWitness(index, value), provenance=(
         ReaderProvenance(
             provenance_kind, spans=spans,
             config_paths=tuple(path for path, _kind, _value in dependencies),

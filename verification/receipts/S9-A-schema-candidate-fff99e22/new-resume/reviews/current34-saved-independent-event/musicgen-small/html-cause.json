@@ -1,0 +1,19 @@
+{
+  "after_bytes": 108794,
+  "after_sha256": "6b563e49739d95c95906c9de49fe2feaaaa0a8e64ec6a1780c2c5519e724cd7c",
+  "before_bytes": 108794,
+  "before_sha256": "03fd95a0b9ec4a87a92ccde608514a7f72b04c3f500a55acad9187e95e8ff5f2",
+  "exact_new_mount_occurrences": 206,
+  "exact_old_mount_occurrences": 206,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-e365a8c2a9",
+  "mount_identity_before": "uf-3e4ac43e0a",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 9,
+  "raw_ordered_svg_count_before": 9,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "musicgen-small",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

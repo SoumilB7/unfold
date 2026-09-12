@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "e0a436dc338a43b9b5cab21100d2689494acb5b5684f0aa2a8ddd0b25c1ad843",
+  "input": "tests/sable_test_corpus/gpt-oss-20b.json",
+  "input_sha256": "af6da44e46e4d84f1ea0e82b30af8922b90f59a11a7954ad383101090f974b52",
+  "resolved_class": {
+    "module": "transformers.models.gpt_oss.modeling_gpt_oss",
+    "qualname": "GptOssForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

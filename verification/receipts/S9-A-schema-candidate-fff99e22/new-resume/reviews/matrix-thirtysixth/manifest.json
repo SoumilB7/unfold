@@ -1,0 +1,25 @@
+{
+  "scope": "Source36 exact saved-data matrix harness; no runtime",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "5d408530b982f8ccb5f7fb56fd2ea2b300bdaf7ce6c166d7cd8d376c71661023"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "e367b3c39b4ee5d221a5b3bc70d754b993c0c1036e27100b9d87228fbf01e47d"
+    },
+    {
+      "path": "expected-generation-sources.json",
+      "sha256": "178c1868c215ebcb0704c0ce27e2a92fae3d1c3f5a0bb01620dd813ee8a1435e"
+    },
+    {
+      "path": "generation-source-law.py.txt",
+      "sha256": "cbb31d6624395a69fb46a96df7bdb1716a1dc2988a55a7ffad5f3f24dba9a896"
+    },
+    {
+      "path": "prepared-contract.json",
+      "sha256": "d826943314fd8936353d338da566e135668a8d86bdded980b057eaf97e6b430f"
+    }
+  ]
+}

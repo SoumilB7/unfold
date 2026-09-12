@@ -1,0 +1,19 @@
+{
+  "after_bytes": 204280,
+  "after_sha256": "9c8085961dad7f3a68c254e0205c92272d489df87bc333a6f7f8eb32e5272577",
+  "before_bytes": 204280,
+  "before_sha256": "24b18f9ede1a2daaf27feae56e73ac6c6e54e8e2f06b0261a6c346e7b4761b50",
+  "exact_new_mount_occurrences": 377,
+  "exact_old_mount_occurrences": 377,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-ce9ff50274",
+  "mount_identity_before": "uf-7fb17626a8",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 17,
+  "raw_ordered_svg_count_before": 17,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. Exhaustive finite substitution identifies the exact random mount-ID cause only; no normalized output is produced or accepted.",
+  "slug": "lumina-image-2-0",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

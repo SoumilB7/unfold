@@ -1,0 +1,193 @@
+[
+  {
+    "batch": "batch-000",
+    "summary": "1 failed, 334 passed in 6.38s",
+    "failures": [
+      "tests/test_u2_r2_raw_consume_debt.py::test_raw_consume_debt_matches_the_frozen_baseline_and_cannot_grow"
+    ]
+  },
+  {
+    "batch": "batch-001",
+    "summary": "181 passed in 20.84s",
+    "failures": []
+  },
+  {
+    "batch": "batch-002",
+    "summary": "1 failed, 172 passed in 399.78s (0:06:39)",
+    "failures": [
+      "tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config"
+    ]
+  },
+  {
+    "batch": "batch-003",
+    "summary": "1 failed, 158 passed, 14 skipped in 157.67s (0:02:37)",
+    "failures": [
+      "tests/test_h7_diffusion.py::test_metamorphic_harness_holds_on_a_diffusion_reference"
+    ]
+  },
+  {
+    "batch": "batch-004",
+    "summary": "170 passed in 28.68s",
+    "failures": []
+  },
+  {
+    "batch": "batch-005",
+    "summary": "170 passed in 64.75s (0:01:04)",
+    "failures": []
+  },
+  {
+    "batch": "batch-006",
+    "summary": "1 failed, 169 passed in 36.67s",
+    "failures": [
+      "tests/test_s5_release.py::test_example_check_never_invokes_platform_rasterizer"
+    ]
+  },
+  {
+    "batch": "batch-007",
+    "summary": "1 failed, 168 passed in 91.67s (0:01:31)",
+    "failures": [
+      "tests/test_conformance.py::test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved[unet]"
+    ]
+  },
+  {
+    "batch": "batch-008",
+    "summary": "169 passed in 27.56s",
+    "failures": []
+  },
+  {
+    "batch": "batch-009",
+    "summary": "167 passed in 34.37s",
+    "failures": []
+  },
+  {
+    "batch": "batch-010",
+    "summary": "167 passed in 5.94s",
+    "failures": []
+  },
+  {
+    "batch": "batch-011",
+    "summary": "167 passed in 246.40s (0:04:06)",
+    "failures": []
+  },
+  {
+    "batch": "batch-012",
+    "summary": "167 passed in 39.41s",
+    "failures": []
+  },
+  {
+    "batch": "batch-013",
+    "summary": "4 failed, 162 passed in 74.52s (0:01:14)",
+    "failures": [
+      "tests/test_smoke.py::test_qwen2_audio_sparse_text_config_keeps_only_source_bound_structure",
+      "tests/test_smoke.py::test_qwen2_audio_code_evidence_does_not_mark_config_partial",
+      "tests/test_smoke.py::test_modality_host_looks_through_declared_wrappers",
+      "tests/test_qk_norm.py::test_parser_records_and_receipts_uniform_gated_false"
+    ]
+  },
+  {
+    "batch": "batch-014",
+    "summary": "1 failed, 165 passed in 52.35s",
+    "failures": [
+      "tests/test_position_initialization.py::test_real_llama_parser_projects_only_the_proved_frequency_base"
+    ]
+  },
+  {
+    "batch": "batch-015",
+    "summary": "164 passed, 2 xfailed in 173.38s (0:02:53)",
+    "failures": []
+  },
+  {
+    "batch": "batch-016",
+    "summary": "166 passed in 23.44s",
+    "failures": []
+  },
+  {
+    "batch": "batch-017",
+    "summary": "2 failed, 165 passed in 113.06s (0:01:53)",
+    "failures": [
+      "tests/test_receipts.py::test_qwen2vl_positive_one_exact_chain - Assert...",
+      "tests/test_receipts.py::test_u8_layer_schedules_are_receipted_by_the_real_layer_map"
+    ]
+  },
+  {
+    "batch": "batch-018",
+    "summary": "167 passed in 162.32s (0:02:42)",
+    "failures": []
+  },
+  {
+    "batch": "batch-019",
+    "summary": "1 failed, 166 passed in 198.71s (0:03:18)",
+    "failures": [
+      "tests/test_isolation.py::test_no_module_imports_another_test_module - ..."
+    ]
+  },
+  {
+    "batch": "batch-020",
+    "summary": "167 passed in 35.68s",
+    "failures": []
+  },
+  {
+    "batch": "batch-021",
+    "summary": "1 failed, 166 passed in 71.93s (0:01:11)",
+    "failures": [
+      "tests/test_fact_ledger.py::test_tie_code_channel_order - ValueError: t..."
+    ]
+  },
+  {
+    "batch": "batch-022",
+    "summary": "167 passed in 51.26s",
+    "failures": []
+  },
+  {
+    "batch": "batch-023",
+    "summary": "166 passed in 48.88s",
+    "failures": []
+  },
+  {
+    "batch": "batch-024",
+    "summary": "3 failed, 163 passed in 428.67s (0:07:08)",
+    "failures": [
+      "tests/test_sable.py::test_u2_projection_and_census_nets_are_wired_blocking_and_clean",
+      "tests/test_sable.py::test_sable_mechanical_pass_on_corpus[LLAMA-cfg2]",
+      "tests/test_sable.py::test_sable_regression_corpus - AssertionError: bl..."
+    ]
+  },
+  {
+    "batch": "batch-025",
+    "summary": "2 failed, 164 passed in 317.48s (0:05:17)",
+    "failures": [
+      "tests/test_s6_physics.py::test_production_can_request_isolated_inventory_but_cannot_construct_in_parent",
+      "tests/test_projection_audit.py::test_projection_audit_is_wired_into_sable_as_blocking_and_clean"
+    ]
+  },
+  {
+    "batch": "batch-026",
+    "summary": "1 failed, 165 passed in 45.40s",
+    "failures": [
+      "tests/test_attention_storage.py::test_parser_and_conformance_share_one_exact_storage_result"
+    ]
+  },
+  {
+    "batch": "batch-027",
+    "summary": "167 passed in 22.17s",
+    "failures": []
+  },
+  {
+    "batch": "batch-028",
+    "summary": "166 passed in 118.33s (0:01:58)",
+    "failures": []
+  },
+  {
+    "batch": "batch-029",
+    "summary": "167 passed in 32.19s",
+    "failures": []
+  },
+  {
+    "batch": "batch-030",
+    "summary": "2 failed, 164 passed in 27.71s",
+    "failures": [
+      "tests/test_s7_artifacts.py::test_shadow_denominator_and_artifact_hashes_are_current",
+      "tests/test_projection_obligations.py::test_every_registry_drawable_fact_is_actually_drawn"
+    ]
+  }
+]

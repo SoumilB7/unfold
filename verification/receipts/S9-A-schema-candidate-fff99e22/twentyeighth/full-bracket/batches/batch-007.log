@@ -1,0 +1,64 @@
+...........................................F............................ [ 42%]
+........................................................................ [ 85%]
+.........................                                                [100%]
+=================================== FAILURES ===================================
+_ test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved[unet] __
+
+name = 'unet'
+
+    @pytest.mark.parametrize("name", list(tc.CORPUS))
+    def test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved(name):
+        """No corpus drill may silently skip.  Exact matches are clean; known gaps are
+        pinned as blocking ``unresolved`` results until provenance is implemented."""
+        cfg = tc.CORPUS[name]
+>       problems = check_nested_conformance(cfg, _render_log(cfg))
+                                                 ^^^^^^^^^^^^^^^^
+
+tests/test_conformance.py:657: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_conformance.py:616: in _render_log
+    diagram.to_html(standalone=True)
+model_unfolder/diagram.py:148: in to_html
+    return self._html(standalone=standalone)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/diagram.py:189: in _html
+    render_document(self.to_ir(), self._mount_id) if standalone
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/document.py:231: in render_document
+    body = render_fragment(ir, mount_id, include_font_import=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/document.py:18: in render_fragment
+    canonical = _render_canonical_fragment(ir, mount_id, include_font_import)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/document.py:42: in _render_canonical_fragment
+    fragment = render_diffusion_fragment(ir, mount_id, include_font_import)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/views_diffusion.py:90: in render_diffusion_fragment
+    loop_cards = _build_loop_cards(ir, info, mount_id)      # panel[0]  (L2)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/views_diffusion.py:238: in _build_loop_cards
+    cards.append(_rich_card(bid, title, desc, svg, facts, block=block) if svg
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/cards.py:226: in _rich_card
+    f"{_card_facts_html(node_id, facts, block)}"
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/renderers/html/cards.py:142: in _card_facts_html
+    chip.bind(context.fact_rows)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PresentationChip(chip_kind='class_default', text='declared_constructor_defaults: {"act_fn": {"checkpoint": "omitted", ...us":"class_default","value_status_hash":"abe96574cad55065"}'),), unknown_reason=None, decision_ref=None, parameters=())
+fact_rows = {}
+
+    def bind(self, fact_rows):
+        """Compare transport with current producer metadata; no evidence promotion."""
+        for ref in self.references:
+            data = ref.to_dict()
+            row = fact_rows.get(data["fact_key"])
+            if not isinstance(row, Mapping) or row.get("status") != data["status"] or row.get("presentation_reference") != data:
+>               raise ValueError("chip reference does not match the current producer ledger")
+E               ValueError: chip reference does not match the current producer ledger
+
+model_unfolder/presentation.py:214: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_conformance.py::test_nested_conformance_over_corpus_is_clean_or_explicitly_unresolved[unet]
+1 failed, 168 passed in 91.67s (0:01:31)

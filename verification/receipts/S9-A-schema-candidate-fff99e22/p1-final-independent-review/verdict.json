@@ -1,0 +1,15 @@
+{
+  "decision": "ACCEPT_BOUNDED_P1_SOURCE_CORRECTIONS",
+  "reviewer": "/root/independent_review",
+  "manifest_sha256": "5e91aba357de80db5f2fc16d4e0715869731d17825a77756afdea4c9270af954",
+  "source_pins": {
+    "model_unfolder/evidence/position_fixed.py": "8360cbe7d9ab1c574ed5c0a57fa5f3302bdb0662579364b9f45e68a1967697bc",
+    "tests/test_s9_input_position_claims.py": "6315b23d2e440e045342c6dcb46d22dc5adc6fd1fe48b1b8f4fd86f84e5fdbee",
+    "model_unfolder/evidence/program_index.py": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+    "model_unfolder/evidence/reader_claims.py": "ce35651c1e916d245263388365384018294aaa0e544a87a21ee15613c272d7f6"
+  },
+  "review_sha256": "9bc07b99058b898e002f7eb4feb7a72e2867b14269c7c83755361430f6919077",
+  "prior_return": "/private/tmp/unfold-s9a-independent-p1-second-correction-review/verdict.json",
+  "runtime_performed": false,
+  "output_approval": false
+}

@@ -1,0 +1,1 @@
+Independent33 saved-data audit, prepared before actual capture. Same finite schema, native field and HTML/deferred-card checks as executed32. Immediate reference is executed actual32. No model/test/browser imports, output normalization or blessing. Root matrix remains separate for occurrence placement.

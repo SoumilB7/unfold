@@ -1,0 +1,32 @@
+{
+  "architecture": "DeepseekV2ForCausalLM",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "DeepseekV2ForCausalLM"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v2/modeling_deepseek_v2.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "deepseek_v2"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v2/modeling_deepseek_v2.py"
+  ],
+  "import_roots": {},
+  "model_id": "deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+  "model_type": "deepseek_v2",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v2/configuration_deepseek_v2.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

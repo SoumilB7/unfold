@@ -1,0 +1,860 @@
+[
+  {
+    "path": [
+      "decoder.attention.bias",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.bias",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.bias",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.cached",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.cached",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.cached",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "projection:decoder.attention.head_geometry:38a8326edd3aad06",
+    "after": "projection:decoder.attention.head_geometry:58e42c61f60ced05",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "config_paths",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "num_key_value_heads",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "config_paths",
+      1
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_key_value_heads",
+    "after": "head_dim",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "config_paths",
+      2
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "head_dim",
+    "after": null,
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.head_geometry",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.head_geometry",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mask",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mask",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mask",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mask_schedule",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mask_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mask_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mechanism",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mechanism",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+    "after": "projection:decoder.attention.mechanism:7e943a2de3a9029e",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mechanism",
+      "config_paths",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "num_attention_heads",
+    "after": "num_key_value_heads",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mechanism",
+      "config_paths",
+      1
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "num_key_value_heads",
+    "after": null,
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mechanism",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mechanism",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.mixer_schedule",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.mixer_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.mixer_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.output_projection",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.output_projection",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.output_projection",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.position_schedule",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.position_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.position_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.projection_mode",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.projection_mode",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.projection_mode",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.rope_initialization",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.rope_initialization",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.rope_initialization",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.attention.rope_theta",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.attention.rope_theta",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.attention.rope_theta",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.ffn.activation",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "code_and_config",
+    "after": "class_default",
+    "cause": "UNEXPLAINED",
+    "diagnostic_cause": "unexplained value/structure or unsupported metadata delta",
+    "admitted": false
+  },
+  {
+    "path": [
+      "decoder.ffn.ffn_schedule",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.ffn_schedule",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.ffn_schedule",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.ffn.gated",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.gated",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.gated",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.ffn.intermediate_size",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.intermediate_size",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.intermediate_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.ffn.projection_mode",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.ffn.projection_mode",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.ffn.projection_mode",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.layer.norm_kind",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.norm_kind",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.norm_kind",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.layer.norm_placement",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.norm_placement",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.norm_placement",
+    "admitted": true
+  },
+  {
+    "path": [
+      "decoder.layer.residual_topology",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: decoder.layer.residual_topology",
+    "diagnostic_cause": "exact root proof/default operand binding: decoder.layer.residual_topology",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.final_norm_kind",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.final_norm_kind",
+    "diagnostic_cause": "exact root proof/default operand binding: model.final_norm_kind",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731",
+    "after": "projection:model.hidden_size:4e51a9e148e3c210",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      1
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:336:27:336:42",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      2
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:12:337:23",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      3
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:337:4:337:23",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      4
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:41:0:41:70",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      5
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:429:23:429:43",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      6
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:25:435:31",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      7
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:435:8:435:32",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      8
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5:46:0:46:44",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "evidence_refs",
+      9
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "source:root:5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda:65:4:65:27",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "fact_status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_declared",
+    "after": "",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "index_fingerprints",
+      0
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "proof_kind"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_resolution",
+    "after": "retained_reader_projection",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_proof",
+      "reader_symbols",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "adapters.transformer.parser.parse",
+    "after": "model_unfolder.evidence.class_default_value.model_hidden_size_class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "claim_readers",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "adapters.transformer.parser.parse",
+    "after": "model_unfolder.evidence.class_default_value.model_hidden_size_class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "config_paths",
+      0
+    ],
+    "before_present": true,
+    "after_present": false,
+    "before": "hidden_size",
+    "after": null,
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      0
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 435
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      1
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 336
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      2
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 41
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      3
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 429
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      4
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 337
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      5
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py",
+      "line": 46
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "source_spans",
+      6
+    ],
+    "before_present": false,
+    "after_present": true,
+    "before": null,
+    "after": {
+      "component": "root",
+      "class_name": null,
+      "method": null,
+      "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+      "line": 65
+    },
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.hidden_size",
+      "status"
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "config_declared",
+    "after": "class_default",
+    "cause": "exact root proof/default operand binding: model.hidden_size",
+    "diagnostic_cause": "exact root proof/default operand binding: model.hidden_size",
+    "admitted": true
+  },
+  {
+    "path": [
+      "model.tie_word_embeddings",
+      "claim_proof",
+      "document_fingerprints",
+      0
+    ],
+    "before_present": true,
+    "after_present": true,
+    "before": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+    "after": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+    "cause": "exact root proof/default operand binding: model.tie_word_embeddings",
+    "diagnostic_cause": "exact root proof/default operand binding: model.tie_word_embeddings",
+    "admitted": true
+  }
+]

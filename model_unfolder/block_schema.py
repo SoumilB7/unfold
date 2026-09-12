@@ -46,6 +46,10 @@ class Block(TypedDict, total=False):
     title: str                    # card heading
     description: str              # card body — explanation prose, no numbers
     facts: "list[str]"            # numeric/spec chips ("32 heads", "4,096 → 12,288")
+    presentation_chips: list[dict]  # typed display records; never block occurrences
+    presentation_path: list        # exact JSON path of this chip-bearing IR card
+    presentation_aliases: list[list]  # other paths of the same shared card object
+    unknown_reason: dict           # producer-authored unresolved envelope metadata
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
@@ -182,6 +186,13 @@ def validate_block_tree(ir: Any, *, known_views: Optional[set[str]] = None) -> l
         unknown = set(block) - KNOWN_BLOCK_KEYS
         if unknown:
             problems.append(f"{scope}/{bid}: unknown key(s) {sorted(unknown)} — typo?")
+
+        if "presentation_chips" in block:
+            from .presentation import chips_from_block
+            try:
+                chips_from_block(block)
+            except (TypeError, ValueError) as exc:
+                problems.append(f"{scope}/{bid}: invalid presentation chips: {exc}")
 
         view = block.get("view")
         if view is not None and view not in known_views:

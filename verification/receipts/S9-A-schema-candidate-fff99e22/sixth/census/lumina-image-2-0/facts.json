@@ -1,0 +1,360 @@
+{
+  "root.denoiser.diffusion_bookend_geometry": {
+    "value": [
+      {
+        "application_role": "state_input",
+        "operation_kind": "linear",
+        "dimension_role": "output_width",
+        "value": 2304
+      }
+    ],
+    "status": "code_and_config",
+    "source": "hidden_size + exact diffusion source",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.diffusion_bookend_geometry:92537d4b94069cfb",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:393:100:393:111",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:393:26:393:112",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:482:24:482:54"
+        ],
+        "fact_id": "root.denoiser.diffusion_bookend_geometry",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.diffusion_bookend_geometry",
+      "owner": "root.denoiser",
+      "status": "code_and_config",
+      "value_status_hash": "92537d4b94069cfb"
+    }
+  },
+  "root.denoiser.diffusion_bookend_operations": {
+    "value": {
+      "state_input": [
+        "linear",
+        "reshape"
+      ],
+      "conditioning_input": [],
+      "state_output": [],
+      "temporal_operations": []
+    },
+    "status": "code_proven",
+    "source": "exact diffusion source occurrence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.diffusion_bookend_operations:672073cef720173a",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:316:12:316:95",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:316:12:317:38",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:316:12:318:23",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:316:12:319:26",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:471:38:471:109",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:480:12:480:69",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:482:24:482:54",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:486:36:486:108",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:486:42:486:63",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:489:28:489:78",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:489:34:489:47",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:510:32:510:108",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:510:38:510:51",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:56:49:56:96"
+        ],
+        "fact_id": "root.denoiser.diffusion_bookend_operations",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_bookends.read_diffusion_bookends"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.diffusion_bookend_operations",
+      "owner": "root.denoiser",
+      "status": "code_proven",
+      "value_status_hash": "672073cef720173a"
+    }
+  },
+  "root.denoiser.diffusion_root_topology": {
+    "value": "repeated_stack",
+    "status": "code_proven",
+    "source": "exact diffusion source occurrence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.diffusion_root_topology:f54c9aeda5f113e8",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:485:8:486:108",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:488:8:489:78",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:504:8:510:108"
+        ],
+        "fact_id": "root.denoiser.diffusion_root_topology",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_root.read_diffusion_root_topology"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.diffusion_root_topology",
+      "owner": "root.denoiser",
+      "status": "code_proven",
+      "value_status_hash": "f54c9aeda5f113e8"
+    }
+  },
+  "root.denoiser.stacks[0].attention[0].diffusion_stream_relation": {
+    "value": "single_state",
+    "status": "code_proven",
+    "source": "exact diffusion source occurrence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[0].attention[0].diffusion_stream_relation:1182b98b3b09e8f4",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:165:8:165:36",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:207:8:228:70",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:12:208:95",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:64:208:95",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:75:208:88",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:90:208:94",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:209:26:214:13",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:210:30:210:48",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:211:38:211:56",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:215:12:215:98",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:217:12:217:101",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:15:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:8:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:409:31:409:35"
+        ],
+        "fact_id": "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[0].attention[0].diffusion_stream_relation",
+      "owner": "root.denoiser.stacks[0].attention[0]",
+      "status": "code_proven",
+      "value_status_hash": "1182b98b3b09e8f4"
+    }
+  },
+  "root.denoiser.stacks[0].diffusion_stack_depth": {
+    "value": 2,
+    "status": "code_and_config",
+    "source": "num_refiner_layers + exact diffusion source",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[0].diffusion_stack_depth:f6b67f5e2e0acc5b",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:411:31:411:49"
+        ],
+        "fact_id": "root.denoiser.stacks[0].diffusion_stack_depth",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[0].diffusion_stack_depth",
+      "owner": "root.denoiser.stacks[0]",
+      "status": "code_and_config",
+      "value_status_hash": "f6b67f5e2e0acc5b"
+    }
+  },
+  "root.denoiser.stacks[1].attention[0].diffusion_stream_relation": {
+    "value": "single_state",
+    "status": "code_proven",
+    "source": "exact diffusion source occurrence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[1].attention[0].diffusion_stream_relation:1182b98b3b09e8f4",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:165:8:165:36",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:207:8:228:70",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:219:12:219:58",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:219:33:219:58",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:219:44:219:57",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:220:26:225:13",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:221:30:221:48",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:222:38:222:56",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:226:12:226:67",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:228:12:228:70",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:15:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:8:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:424:31:424:36"
+        ],
+        "fact_id": "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[1].attention[0].diffusion_stream_relation",
+      "owner": "root.denoiser.stacks[1].attention[0]",
+      "status": "code_proven",
+      "value_status_hash": "1182b98b3b09e8f4"
+    }
+  },
+  "root.denoiser.stacks[1].diffusion_stack_depth": {
+    "value": 2,
+    "status": "code_and_config",
+    "source": "num_refiner_layers + exact diffusion source",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[1].diffusion_stack_depth:f6b67f5e2e0acc5b",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:426:31:426:49"
+        ],
+        "fact_id": "root.denoiser.stacks[1].diffusion_stack_depth",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[1].diffusion_stack_depth",
+      "owner": "root.denoiser.stacks[1]",
+      "status": "code_and_config",
+      "value_status_hash": "f6b67f5e2e0acc5b"
+    }
+  },
+  "root.denoiser.stacks[2].attention[0].diffusion_stream_relation": {
+    "value": "single_state",
+    "status": "code_proven",
+    "source": "exact diffusion source occurrence",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[2].attention[0].diffusion_stream_relation:1182b98b3b09e8f4",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:165:8:165:36",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:207:8:228:70",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:12:208:95",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:64:208:95",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:75:208:88",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:208:90:208:94",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:209:26:214:13",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:210:30:210:48",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:211:38:211:56",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:215:12:215:98",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:217:12:217:101",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:15:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:230:8:230:28",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:440:31:440:35"
+        ],
+        "fact_id": "root.denoiser.stacks[2].attention[0].diffusion_stream_relation",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stream.read_diffusion_stream_graph"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[2].attention[0].diffusion_stream_relation",
+      "owner": "root.denoiser.stacks[2].attention[0]",
+      "status": "code_proven",
+      "value_status_hash": "1182b98b3b09e8f4"
+    }
+  },
+  "root.denoiser.stacks[2].diffusion_stack_depth": {
+    "value": 26,
+    "status": "code_and_config",
+    "source": "num_layers + exact diffusion source",
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "7a58a72a5c552dd1a49d61d44c5154bca19cfb4739d42b4a5f5ff2fcb7226672"
+        ],
+        "evidence_refs": [
+          "projection:root.denoiser.stacks[2].diffusion_stack_depth:62930dba05d72c7b",
+          "source:root:82fe3f66544818da10544b5e906e6acb447ced68eb420012dbbeab636f106f7f:442:31:442:41"
+        ],
+        "fact_id": "root.denoiser.stacks[2].diffusion_stack_depth",
+        "fact_status": "",
+        "index_fingerprints": [
+          "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.diffusion_stack.read_diffusion_stack_inventory"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "root.denoiser.stacks[2].diffusion_stack_depth",
+      "owner": "root.denoiser.stacks[2]",
+      "status": "code_and_config",
+      "value_status_hash": "62930dba05d72c7b"
+    }
+  }
+}

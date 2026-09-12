@@ -1,0 +1,69 @@
+{
+  "architecture": "Gemma3nForConditionalGeneration",
+  "companion_components": [],
+  "component_architectures": {
+    "audio_config": "Gemma3nAudioEncoder",
+    "root": "Gemma3nForConditionalGeneration",
+    "text_config": "Gemma3nTextModel",
+    "vision_config": "TimmWrapperModel"
+  },
+  "component_files": {
+    "audio_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py"
+    ],
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py"
+    ],
+    "text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py"
+    ],
+    "vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py"
+    ]
+  },
+  "component_model_types": {
+    "audio_config": "gemma3n_audio",
+    "root": "gemma3n",
+    "text_config": "gemma3n_text",
+    "vision_config": "gemma3n_vision"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/modeling_gemma3n.py"
+  ],
+  "import_roots": {},
+  "model_id": null,
+  "model_type": "gemma3n",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "audio_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/configuration_gemma3n.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+    ],
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/configuration_gemma3n.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+    ],
+    "text_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/configuration_gemma3n.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+    ],
+    "vision_config": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma3n/configuration_gemma3n.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/auto/modeling_auto.py"
+    ]
+  },
+  "warnings": []
+}

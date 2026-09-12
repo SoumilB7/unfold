@@ -1,0 +1,80 @@
+--- before/capture_contract.py
++++ after/capture_contract.py
+@@ -20,13 +20,13 @@
+         if sha(HERE/name)!=h: raise ValueError('Held harness changed: '+name)
+     plan=json.loads((HERE/'plan.json').read_bytes())
+     if source_pin!=plan['source_manifest_sha256'] or sha(Path(plan['source_manifest']))!=source_pin:
+-        raise ValueError('Explicit frozen36 source manifest pin differs')
++        raise ValueError('Explicit frozen37 source manifest pin differs')
+     selected=plan['lanes'][lane]; tree=Path(selected['tree'])
+     if tree.resolve()!=tree: raise ValueError('Worktree address differs')
+     head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=tree,text=True).strip()
+     if head!=selected['head']: raise ValueError('Worktree HEAD differs')
+     rows=json.loads(Path(plan['source_manifest']).read_bytes()); sources={}
+-    if lane=='current36':
++    if lane=='current37':
+         for row in rows:
+             relative=row['path']; path=tree/relative
+             if path.resolve().relative_to(tree).as_posix()!=relative or relative in sources:
+--- before/run-capture.py
++++ after/run-capture.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,dataclasses,importlib.util,json,os,sys,traceback
+ from capture_contract import validate,HERE
+-p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current36','baseline'],required=True)
++p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current37','baseline'],required=True)
+ p.add_argument('--source-manifest-sha256',required=True); a=p.parse_args()
+ before=validate(a.lane,a.source_manifest_sha256)
+ plan=json.loads((HERE/'plan.json').read_bytes()); lane=plan['lanes'][a.lane]
+@@ -10,7 +10,7 @@
+ (out/'pins-before.json').write_text(json.dumps(before,indent=2)+'\n')
+ os.environ.update(HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',TOKENIZERS_PARALLELISM='false',
+     UNFOLD_EVIDENCE_CACHE_DIR=str(out/'cache'),PYTEST_ADDOPTS='')
+-spec=importlib.util.spec_from_file_location('preservation36_verify',tree/'scripts/verify_commit.py')
++spec=importlib.util.spec_from_file_location('preservation37_verify',tree/'scripts/verify_commit.py')
+ m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+ result=None
+ try:
+--- before/run-tests.py
++++ after/run-tests.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,json,os,sys,traceback
+ from capture_contract import validate,HERE
+-p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current36','baseline'],required=True)
++p=argparse.ArgumentParser(); p.add_argument('--lane',choices=['current37','baseline'],required=True)
+ p.add_argument('--source-manifest-sha256',required=True); a=p.parse_args()
+ before=validate(a.lane,a.source_manifest_sha256)
+ plan=json.loads((HERE/'plan.json').read_bytes()); lane=plan['lanes'][a.lane]
+--- before/compare-recovered.py
++++ after/compare-recovered.py
+@@ -8,7 +8,7 @@
+ plan=json.loads((HERE/'plan.json').read_bytes())
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+ def bracket_origins():
+-    current=validate('current36',a.source_manifest_sha256)
++    current=validate('current37',a.source_manifest_sha256)
+     baseline_now=validate('baseline',a.source_manifest_sha256)
+     origin=plan['baseline_recovery_origin']
+     old_here=Path(origin['harness'])
+@@ -25,8 +25,8 @@
+     module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)
+     baseline=module.validate('baseline',origin['source_manifest_sha256'])
+     if baseline['frozen_inputs']!=baseline_now['frozen_inputs'] or baseline['head']!=baseline_now['head']:
+-        raise ValueError('Original31 and current36 baseline source/input pins differ')
+-    return {'current36':current,'baseline':baseline}
++        raise ValueError('Original31 and current37 baseline source/input pins differ')
++    return {'current37':current,'baseline':baseline}
+ before=bracket_origins()
+ def load_packet(name):
+     root=Path(plan['lanes'][name]['output'])
+@@ -61,7 +61,7 @@
+         cases[slug]=(case,docs)
+     if set(cases)!=set(expected['witnesses']) or len(cases)!=29:raise ValueError('Saved29 membership differs')
+     return root,expected,cases
+-current_root,expected,current=load_packet('current36')
++current_root,expected,current=load_packet('current37')
+ _,baseline_expected,baseline=load_packet('baseline')
+ if baseline_expected!=expected:raise ValueError('Expected baseline manifests differ')
+ out=current_root/'recovered-deltas';out.mkdir(exist_ok=False)

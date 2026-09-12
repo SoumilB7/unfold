@@ -1,0 +1,13 @@
+{
+  "files": [
+    {
+      "path": "tests/test_s9_operand_channels.py",
+      "sha256": "dddfee14299b1d35a1e2d9534807fca6834854d8ff8a793b8babd1194f812bbf"
+    },
+    {
+      "path": "tests/test_s9_reader_declarations.py",
+      "sha256": "c43ab4296d78fd253e446cc3cfb0df0509c9c0c0e03a559359006b40e64791d4"
+    }
+  ],
+  "changes": "Direct adapter.parse controls capture the actual config-access ledger and root owner, matching the production wrapper. No product change."
+}

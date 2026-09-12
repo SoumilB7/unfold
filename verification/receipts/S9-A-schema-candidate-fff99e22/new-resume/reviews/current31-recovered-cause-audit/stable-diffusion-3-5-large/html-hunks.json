@@ -1,0 +1,44 @@
+[
+  {
+    "after": "/* Typed annotations remain distinguishable by borders and labels as well as colour. */\n#<MOUNT> .uf-chip-unresolved {\n  background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;\n}\n#<MOUNT> .uf-unknown-values {\n  margin:12px 0; padding:8px 12px; border:1px dashed #4D7C0F;\n  border-radius:8px; color:#14532D; background:#ECFDF5;\n}\n#<MOUNT> .uf-unknown-values summary { cursor:pointer; font-size:12px; }\n#<MOUNT> .uf-unknown-value-list { display:flex; flex-direction:column; gap:6px; margin-top:8px; }\n#<MOUNT> .uf-value-reason { white-space:normal; overflow-wrap:anywhere; border-radius:4px; }\n#<MOUNT> .uf-unknown-value-group { font-size:11px; line-height:1.5; }\n#<MOUNT> .uf-unknown-value-group > div { margin-top:5px; }\n#<MOUNT> .uf-value-paths { font-size:10px; white-space:pre-wrap; overflow-wrap:anywhere; max-height:320px; overflow:auto; }\n#<MOUNT> .uf-chip-class_default {\n  background:#EFF6FF; color:#1E3A8A; border:1px solid #60A5FA;\n}\n#<MOUNT> .uf-chip-symbolic {\n  background:#FAF5FF; color:#581C87; border:3px double #A855F7;\n}\n#<MOUNT> .uf-chip-pending_design {\n  background:#FFFBEB; color:#78350F; border:1px dotted #B45309;\n  border-radius:4px;\n}\n",
+    "after_lines": [
+      322,
+      345
+    ],
+    "before": "",
+    "before_lines": [
+      322,
+      321
+    ],
+    "cause": "css",
+    "tag": "insert"
+  },
+  {
+    "after": "<div class=\"uf-card\"><details class=\"uf-unknown-values\"><summary>Unresolved values \u00b7 57 \u00b7 reasons and exact locations</summary><div class=\"uf-unknown-value-list\"><section class=\"uf-unknown-value-group\"><span class=\"uf-fact uf-chip-unresolved uf-value-reason\" data-annotation-kind=\"unresolved-value-group\" data-value-state=\"unresolved_envelope\" data-reason-class=\"investigation_missing\">unresolved \u00b7 investigation missing: unknown reason unrecorded</span><div>3 value annotations; not a constructed-occurrence count.</div><div>Under <code class=\"uf-value-scope\">extras.render</code>; append each suffix below:</div><pre class=\"uf-value-paths\">.model_blocks[1]\n.model_blocks[2]\n.opaque_layer_block</pre></section><section class=\"uf-unknown-value-group\"><span class=\"uf-fact uf-chip-unresolved uf-value-reason\" data-annotation-kind=\"unresolved-value-group\" data-value-state=\"literal_unknown\" data-reason-class=\"investigation_missing\">unresolved \u00b7 investigation missing: unknown reason unrecorded</span><div>18 value annotations; not a constructed-occurrence count.</div><div>Under <code class=\"uf-value-scope\">extras.render.loop_blocks</code>; append each suffix below:</div><pre class=\"uf-value-paths\">[3].detail.sub_model.groups[0].attention.mask\n[3].detail.sub_model.groups[0].attention.position_kind\n[3].detail.sub_model.groups[0].attention.position_application\n[3].children[1].detail.attention.mask\n[3].children[1].detail.attention.position_kind\n[3].children[1].detail.attention.position_application\n[4].detail.sub_model.groups[0].attention.mask\n[4].detail.sub_model.groups[0].attention.position_kind\n[4].detail.sub_model.groups[0].attention.position_application\n[4].children[1].detail.attention.mask\n[4].children[1].detail.attention.position_kind\n[4].children[1].detail.attention.position_application\n[5].detail.sub_model.groups[0].norm_placement\n[5].detail.sub_model.groups[1].norm_placement\n[5].detail.sub_model.groups[1].attention.position_kind\n[5].detail.sub_model.groups[1].attention.position_application\n[5].children[3].detail.attention.position_kind\n[5].children[3].detail.attention.position_application</pre></section><section class=\"uf-unknown-value-group\"><span class=\"uf-fact uf-chip-unresolved uf-value-reason\" data-annotation-kind=\"unresolved-value-group\" data-value-state=\"null_unknown\" data-reason-class=\"investigation_missing\">unresolved \u00b7 investigation missing: unknown reason unrecorded</span><div>36 value annotations; not a constructed-occurrence count.</div><div>Under <code class=\"uf-value-scope\">extras.render.loop_blocks</code>; append each suffix below:</div><pre class=\"uf-value-paths\">[3].detail.sub_model.groups[0].attention.kind\n[3].detail.sub_model.groups[0].attention.qk_norm\n[3].detail.sub_model.groups[0].attention.cached\n[3].detail.sub_model.groups[0].attention.projection_mode\n[3].detail.sub_model.groups[0].ffn.activation\n[3].children[1].detail.attention.kind\n[3].children[1].detail.attention.qk_norm\n[3].children[1].detail.attention.cached\n[3].children[1].detail.attention.projection_mode\n[3].children[2].detail.ffn.activation\n[4].detail.sub_model.groups[0].attention.kind\n[4].detail.sub_model.groups[0].attention.qk_norm\n[4].detail.sub_model.groups[0].attention.cached\n[4].detail.sub_model.groups[0].attention.projection_mode\n[4].detail.sub_model.groups[0].ffn.activation\n[4].children[1].detail.attention.kind\n[4].children[1].detail.attention.qk_norm\n[4].children[1].detail.attention.cached\n[4].children[1].detail.attention.projection_mode\n[4].children[2].detail.ffn.activation\n[5].detail.sub_model.groups[0].attention.qk_norm\n[5].detail.sub_model.groups[0].attention.cached\n[5].detail.sub_model.groups[0].attention.output_projection\n[5].detail.sub_model.groups[0].attention.bias\n[5].detail.sub_model.groups[1].attention.qk_norm\n[5].detail.sub_model.groups[1].attention.cached\n[5].detail.sub_model.groups[1].attention.output_projection\n[5].detail.sub_model.groups[1].attention.bias\n[5].children[1].detail.attention.qk_norm\n[5].children[1].detail.attention.cached\n[5].children[1].detail.attention.output_projection\n[5].children[1].detail.attention.bias\n[5].children[3].detail.attention.qk_norm\n[5].children[3].detail.attention.cached\n[5].children[3].detail.attention.output_projection\n[5].children[3].detail.attention.bias</pre></section></div></details>\n",
+    "after_lines": [
+      468,
+      522
+    ],
+    "before": "<div class=\"uf-card\">\n",
+    "before_lines": [
+      444,
+      444
+    ],
+    "cause": "html_unknown",
+    "tag": "replace"
+  },
+  {
+    "after": "<div class=\"uf-stats\"><div class=\"uf-stat\"><div class=\"uf-stat-key\">LAYERS</div><div class=\"uf-stat-val\">0</div></div><div class=\"uf-stat\" data-uf-receipt-node=\"stats_hidden_size\"><div class=\"uf-stat-key\">HIDDEN</div><div class=\"uf-stat-val\">0</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">TIMESTEPS</div><div class=\"uf-stat-val\">-</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">LATENT</div><div class=\"uf-stat-val\">-</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">PARAMS</div><div class=\"uf-stat-val\">?</div></div></div>\n",
+    "after_lines": [
+      532,
+      532
+    ],
+    "before": "<div class=\"uf-stats\"><div class=\"uf-stat\"><div class=\"uf-stat-key\">LAYERS</div><div class=\"uf-stat-val\">0</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">HIDDEN</div><div class=\"uf-stat-val\">0</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">TIMESTEPS</div><div class=\"uf-stat-val\">-</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">LATENT</div><div class=\"uf-stat-val\">-</div></div><div class=\"uf-stat\"><div class=\"uf-stat-key\">PARAMS</div><div class=\"uf-stat-val\">?</div></div></div>\n",
+    "before_lines": [
+      454,
+      454
+    ],
+    "cause": "banner",
+    "tag": "replace"
+  }
+]

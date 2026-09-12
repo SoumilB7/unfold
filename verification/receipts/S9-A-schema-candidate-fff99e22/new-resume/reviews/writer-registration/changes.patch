@@ -1,0 +1,93 @@
+--- frozen26/model_unfolder/evidence/structural_writes.py
++++ candidate/model_unfolder/evidence/structural_writes.py
+@@ -674,6 +674,15 @@
+     ('model_unfolder/adapters/transformer/assembly.py', 'parallel_decoder_layer', 'spec', 'LayerSpec'),
+     ('model_unfolder/adapters/transformer/assembly.py', 'single_stream_decoder_layer', 'spec', 'LayerSpec'),
+     ('model_unfolder/adapters/transformer/parser.py', '_note_fact', 'ledger', '<dynamic>'),
++    # S9-A: exact typed ledger publication sites, not a parser-wide exemption.
++    # The FFN helper retries the actual reader's qualification after a limited
++    # declaration. parse publishes the two consumed scalar VALUE proofs and
++    # the still-unqualified default tying VALUE declaration (three sites).
++    # FactLedger retains its closed owner/key/value and proof validation.
++    ('model_unfolder/adapters/transformer/parser.py',
++     '_note_ffn_mechanism_fact', 'ledger', '<dynamic>'),
++    ('model_unfolder/adapters/transformer/parser.py',
++     'parse', 'ledger', '<dynamic>'),
+     # U6: native typed attention-mechanism fact author.  The registry validates
+     # its owner/key/status/value/provenance before this exact writer is pinned.
+     ('model_unfolder/adapters/transformer/parser.py',
+@@ -1026,6 +1035,13 @@
+ # Every other pinned key has count 1.  Growth = live count > pinned count,
+ # so a SECOND write of one target in one symbol is caught, not only a new key.
+ _STRUCTURAL_WRITERS_MULTI = {
++    # S9-A: legacy record plus the reader's typed declaration in _note_fact;
++    # explicit hidden_size / explicit tying / default tying in parse. Count
++    # growth or a different writer identity still fails the multiset gate.
++    ('model_unfolder/adapters/transformer/parser.py',
++     '_note_fact', 'ledger', '<dynamic>'): 2,
++    ('model_unfolder/adapters/transformer/parser.py',
++     'parse', 'ledger', '<dynamic>'): 3,
+     ('model_unfolder/expanded/sections.py', '_projected_diffusion_io',
+      'expanded', 'kind:denoiser_state'): 2,
+     ('model_unfolder/adapters/diffusor/projection_ir.py', '_ffn_spec',
+--- frozen26/tests/test_structural_writes.py
++++ candidate/tests/test_structural_writes.py
+@@ -12,6 +12,8 @@
+ from __future__ import annotations
+ 
+ from collections import Counter
++
++import pytest
+ 
+ from model_unfolder.evidence.structural_writes import (
+     STRUCTURAL_SURFACE,
+@@ -195,3 +197,49 @@
+         '    return ModelIR(extras={**other})\n')
+     assert any(w.sink == 'extras' and w.target == '<dynamic>'
+                and w.symbol == 'project' for w in scan_structural_writes(root=pkg))
++
++
++@pytest.mark.parametrize("symbol,methods", [
++    ("_note_fact", ("record", "record_typed")),
++    ("_note_ffn_mechanism_fact", ("record_typed",)),
++    ("parse", ("record_typed", "record_typed", "record_typed")),
++])
++def test_s9_typed_writer_registration_is_exact_and_counted(tmp_path, symbol, methods):
++    """A finite pin cannot hide an extra call, renamed author or moved module."""
++    from model_unfolder.evidence.structural_writes import (
++        StructuralWriteKey, new_structural_writers,
++        scan_structural_write_multiset, stale_structural_writers,
++    )
++
++    pkg = _pkg(tmp_path)
++    parser = pkg / "adapters" / "transformer" / "parser.py"
++    parser.parent.mkdir(parents=True)
++    module = "model_unfolder/adapters/transformer/parser.py"
++    key = StructuralWriteKey(module, symbol, "ledger", "<dynamic>")
++
++    def source(writer, calls):
++        return f"def {writer}(ledger, owner, name, fact):\n" + "".join(
++            "    ledger.record(owner, name, fact)\n" if method == "record"
++            else "    ledger.record_typed(fact)\n" for method in calls)
++
++    parser.write_text(source(symbol, methods))
++    assert scan_structural_write_multiset(pkg)[key] == len(methods)
++    assert new_structural_writers(pkg) == []
++    assert key not in stale_structural_writers(pkg)
++
++    parser.write_text(source(symbol, (*methods, "record_typed")))
++    assert key in new_structural_writers(pkg)
++
++    renamed = symbol + "_unregistered"
++    parser.write_text(source(renamed, methods))
++    assert StructuralWriteKey(module, renamed, "ledger", "<dynamic>") in new_structural_writers(pkg)
++    assert key in stale_structural_writers(pkg)
++
++    parser.unlink()
++    moved = parser.with_name("unregistered_parser.py")
++    moved.write_text(source(symbol, methods))
++    assert StructuralWriteKey(
++        "model_unfolder/adapters/transformer/unregistered_parser.py",
++        symbol, "ledger", "<dynamic>",
++    ) in new_structural_writers(pkg)
++    assert key in stale_structural_writers(pkg)

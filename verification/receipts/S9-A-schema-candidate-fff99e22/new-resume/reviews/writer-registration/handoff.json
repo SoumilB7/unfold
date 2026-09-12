@@ -1,0 +1,31 @@
+{
+  "role": "bounded implementation handoff, requires root independent review",
+  "diagnosis": "Three unregistered writer keys/count growth: _note_fact 1 -> 2; _note_ffn_mechanism_fact absent -> 1; parse absent -> 3. All six calls already present in archived twentyfourth, preceding event and occurrence-citation fixes; HEAD contains only the legacy _note_fact call. No parser change is made here.",
+  "exact_registered_operations": {
+    "_note_fact": [
+      "legacy record",
+      "declare_reader_fact typed publication"
+    ],
+    "_note_ffn_mechanism_fact": [
+      "qualify_reader_fact typed retry after actual reader projection lacks premise"
+    ],
+    "parse": [
+      "qualify_config_value_fact hidden_size",
+      "qualify_config_value_fact tie_word_embeddings",
+      "unqualified default tie VALUE declaration via replace"
+    ]
+  },
+  "boundary": "Two exact writer identities added; two exact count overrides. Existing normalized ledger target <dynamic> unchanged, with no new wildcard, scanner exception, registry bypass, delegation or product fact authority. The scanner remains a count/identity census; FactLedger and proof constructors separately validate semantics.",
+  "poisons": "Exact finite writer/count control; extra same-symbol call; renamed symbol; moved module; stale original identity after rename/move. Each case covers all three writer identities.",
+  "validation": "Both changed files ast.parse clean; no project import, pytest or model runtime by executor. Root must execute tests/test_structural_writes.py and tests/test_u2_r4_structural_multiset.py plus appropriate registry/debt gates.",
+  "files": {
+    "model_unfolder/evidence/structural_writes.py": {
+      "before_sha256": "20a723380a500c61ee2fa534f4c0c1ed118486297aa2f4c311a84351daa4b612",
+      "after_sha256": "d3e89d6e1bc3752e9f3b0fcc0208f55b3ab27ff8fcb39ffc59d6eaeef81ace2b"
+    },
+    "tests/test_structural_writes.py": {
+      "before_sha256": "2dfe6285bdffe4815c3e549d17df24f2f708fe11e264c50d26843ac63d36c9a3",
+      "after_sha256": "6c87cc1faac4659caf15714a9bc25140c5d692b86e10e5bf54a5ea4f12feb98a"
+    }
+  }
+}

@@ -14,6 +14,7 @@ returned bias: loop-carried sharing is a separate execution-flow fact.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from .reader_claims import ReaderClaimUnavailable, retained_claim_reader
 
 from .attention_score_additives import (
     EquivalentAttentionScoreAdditiveInventory,
@@ -207,6 +208,37 @@ class RelativePositionBiasEvidence:
             raise ValueError("relative-position provenance closes both proofs")
 
 
+@dataclass(frozen=True)
+class RelativePositionBiasClaimDeclaration:
+    """Producer-owned intended kind; the stronger projection remains unproved."""
+
+    index: ProgramIndex
+    value: RelativePositionBiasEvidence
+    reader_symbol = "model_unfolder.evidence.position_relative_bias.decoder_relative_position_bias_for_path"
+
+    def validate_result(self, result):
+        if type(self.value) is not RelativePositionBiasEvidence:
+            raise TypeError("declaration requires the reader's actual typed aggregate")
+        self.value.__post_init__()
+        value = self.value
+        if result.status != "resolved" or result.value is not value \
+                or result.owner != value.block_occurrence:
+            raise ValueError("declaration belongs to another actual reader result or owner")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ('decoder.attention', 'position_schedule'):
+            raise ValueError("reader has no such intended projection")
+        return 'relation'
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "relative-bias ownership/count schedule projection qualification; carried to S9-C text restoration")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'position_schedule', 'relation'),
+))
 def decoder_relative_position_bias_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -277,6 +309,7 @@ def decoder_relative_position_bias_for_path(
     value = next(iter(identities.values()))
     return ReaderResult.resolved(
         value.block_occurrence, value,
+        claim_witness=RelativePositionBiasClaimDeclaration(index, value),
         provenance=(ReaderProvenance(
             "source", spans=value.spans,
             detail=(

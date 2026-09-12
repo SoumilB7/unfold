@@ -1,0 +1,62 @@
+{
+  "verdict": "RETURN a simple exception-to-None poison relaxation; source predicts a missing visible-limit producer branch",
+  "scope": "Source-only frozen30 diagnosis. No product edits/runtime; actual root diagnostic still required.",
+  "source_manifest_sha256": "e4636c47c40267792d6ab489818bcd1c02deeb7c52ffe8cc44f2e8d60e6b9d43",
+  "source_pins": {
+    "tests/test_attention_softcap.py": "fb63fa2c9d5cd0d58f11d8006011c0defac6294a14e4d77545475a99ed489088",
+    "model_unfolder/adapters/transformer/parser.py": "da9c926c4fb603ec708ef5ac423f8fe925fd79f5893c7713290dd90b3bf2ecd5",
+    "model_unfolder/evidence/reader_claims.py": "9b14749f33253fa384d72d16c1395b38982d431aa755a796b26571be46bc7744",
+    "model_unfolder/evidence/attention.py": "1600d450015fff2a5e225ec325548d7c9d8b37a33cd335f4816d688a8855cab2",
+    "model_unfolder/parser.py": "671ab55689057a003f246bea148db022889055159969af55ed76e3aebc8e7344",
+    "model_unfolder/ir.py": "7f4bd0beddfb73691eb54e2823c1481ca4ad2b6daa9005fe97b1d3259ae8b320",
+    "model_unfolder/presentation.py": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740",
+    "model_unfolder/evidence/presentation_projection.py": "c4e119f6b402958ef938ccda82de0c73c7d49ea6e4d6216cd8a1d4c5cfe9f7ff",
+    "model_unfolder/evidence/registry.py": "c55a9255dd19ed4ae9e863092ef0240d918d3f19f7ee6c050ba17c07d7226a69",
+    "model_unfolder/evidence/ship_findings.py": "aec9e1796dc3da7ca662ba670c68522df956ee101606f49455a9daf287fbd17b",
+    "model_unfolder/renderers/html/block_views/attention.py": "2fe759d18ce5ed03bf7298402c8979d0b5c014d197a1dd471df2fd31a6bc1ae1"
+  },
+  "source_cause": [
+    {
+      "path": "model_unfolder/parser.py:61",
+      "finding": "config_to_ir prepares the actual input independently of supplied ParseContext.class_defaults, then binds that PreparedDocument at root before adapter.parse."
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py:87",
+      "finding": "_source_operand_resolution obtains defaults only from successful active document.class_overlay. It never reads context.class_defaults. The injected attention_cap=17 therefore cannot become this exact source operand unless actual prepared evidence independently supplies it."
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py:1357",
+      "finding": "The shared source operand resolver returns absent/no-default, which the helper limits to None before binding, consumption or proof construction. This replaces the former context-local default candidate that reached strict reader_operand and raised."
+    },
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py:3459",
+      "finding": "When source softcap reader resolves but numeric operand does not, there is no else branch: attn_logit_softcap remains None; no softcap bind/consume_decision/_note_typed_fact runs."
+    },
+    {
+      "path": "model_unfolder/ir.py:728",
+      "finding": "None logit_softcap is omitted from serialized AttentionSpec. It cannot distinguish source-present missing operand from absent softcap."
+    },
+    {
+      "path": "model_unfolder/presentation.py:285",
+      "finding": "unresolved_spec_values does not include optional logit_softcap; missing field/None cannot create an exact unknown annotation."
+    },
+    {
+      "path": "model_unfolder/evidence/presentation_projection.py:36",
+      "finding": "Fact chip attachment needs an existing typed cited fact. The missing softcap branch supplies none; generic warnings do not establish this exact operand limitation."
+    },
+    {
+      "path": "model_unfolder/evidence/registry.py:994",
+      "finding": "Current logit_softcap definition has numeric types, code_and_config/class_default statuses and unknown_policy omit. A typed explicit missing-value branch needs a deliberate finite schema/producer decision, not a test-only expectation change."
+    }
+  ],
+  "interpretation": "Refusing context-only cap17 before proof is correct. Silently flattening the source-present unresolved operand to ordinary no-cap is not an adequate limited result. Existing optional-slot omission is exposed by the earlier-refusal boundary.",
+  "actual_diagnostic_contract": [
+    "Retain source-backed decoder.attention.logit_softcap reader status/value.config_path and its exact source binding.",
+    "Record prepared root document failure, checkpoint attention_cap absence, class_overlay membership/value, and separately the injected context default.",
+    "Capture actual native fact rows and serialized IR attention fields; require no authoritative numeric17, and inspect whether an exact softcap unknown reason exists.",
+    "Capture every attention_cap/config softcap event, its intent/presence/fact target/hash; demonstrate no softcap consumption from injected17.",
+    "Capture ship_findings/warnings/presentation_unresolved_values/chips and actual HTML; an unrelated warning or raw absent-default event cannot satisfy visible softcap limitation.",
+    "Retain explicit checkpoint17 positive and actual Gemma class_default50 positive controls; retain no-source-mechanism negative."
+  ],
+  "repair_boundary": "Either keep this source-present/missing-operand case explicitly refused until supported, or add a finite typed unknown/visible limitation with source binding retained, no numeric17 consumption/proof, and no manufactured softcap operation. Root/owner chooses scope after actual evidence. A bare assertion that no cap is drawn is insufficient."
+}

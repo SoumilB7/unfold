@@ -1,0 +1,26 @@
+{
+  "status": "HELD SOURCE ONLY; independent review and root runtime required",
+  "base_source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "53b5c6c7aad9e68ba81fb7a9c2c79360d617b341be055f38695188938f95852a"
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "1794ca9a936cd1e5cbc1b18ec8cd55620523d189ad2a0e6efafcbc958a6d4e3d"
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "sha256": "c11dd8d3d9f190a38967665a3672111184d7e6b61e532aeecb550f417720d572"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "1987c2d9610b890357b2cf0c48a61429249e6471b83eff1c49fb09f15d050615"
+    }
+  ]
+}

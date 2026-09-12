@@ -1,0 +1,3631 @@
+{
+  "decoder.attention.bias": {
+    "claim_kind": "existence",
+    "claim_proof": {
+      "claim_kind": "existence",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.bias:df40488d7e9f5dfc",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:169:4:169:36",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:220:22:222:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:229:22:231:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:35:246:61",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:8:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:276:22:276:46",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21"
+      ],
+      "fact_id": "decoder.attention.bias",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "attention_bias"
+    ],
+    "key": "bias",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 220,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 169,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 229,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 276,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": false
+  },
+  "decoder.attention.cached": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.cached:7f3e293636cd0a7c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:257:8:258:103",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:258:12:258:103",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:258:39:258:103",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9"
+      ],
+      "fact_id": "decoder.attention.cached",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "cached",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 258,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 257,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.head_geometry": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.head_geometry:38a8326edd3aad06",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:214:24:214:101",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:214:52:214:100",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:214:52:214:70",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:214:74:214:100",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:220:22:222:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:221:32:221:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:221:61:221:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:224:32:224:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:227:32:227:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:35:246:61",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21"
+      ],
+      "fact_id": "decoder.attention.head_geometry",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_attention_heads",
+      "num_key_value_heads",
+      "hidden_size"
+    ],
+    "key": "head_geometry",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 220,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 221,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 224,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 227,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 214,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "head_dim": 128,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 32,
+      "num_kv_heads": 32,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    }
+  },
+  "decoder.attention.mask": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask:d633e0971d5d5f6d",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:162:38:162:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:162:8:162:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:269:12:269:26",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:319:27:319:41",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:338:27:338:42",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:357:17:357:37",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:359:25:359:31",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:359:8:359:32",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:401:22:407:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:401:8:407:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:413:28:421:13",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:415:31:415:42",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:42:0:42:70"
+      ],
+      "fact_id": "decoder.attention.mask",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mask",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 401,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 413,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 319,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 269,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 162,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 359,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 338,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 42,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 357,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "causal"
+  },
+  "decoder.attention.mask_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mask_schedule:61f6df5c5123ba18",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:162:38:162:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:162:8:162:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:269:12:269:26",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:319:27:319:41",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:338:27:338:42",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:357:17:357:37",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:359:25:359:31",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:359:8:359:32",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:401:22:407:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:401:8:407:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:413:28:421:13",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:415:31:415:42",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:42:0:42:70"
+      ],
+      "fact_id": "decoder.attention.mask_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mask_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 401,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 413,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 415,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 319,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 269,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 162,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 359,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 338,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 42,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 357,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ],
+      [
+        "causal",
+        null
+      ]
+    ]
+  },
+  "decoder.attention.mechanism": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:220:22:222:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:221:32:221:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:221:61:221:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:224:32:224:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:227:32:227:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:35:246:61",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21"
+      ],
+      "fact_id": "decoder.attention.mechanism",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "num_attention_heads",
+      "num_key_value_heads"
+    ],
+    "key": "mechanism",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 220,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 221,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 224,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 227,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "mha"
+  },
+  "decoder.attention.mixer_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.mixer_schedule:db7d4c151cc72744",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:300:25:300:75",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:12:365:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:13:365:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:39:365:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:54:365:63",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:67:365:98",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97"
+      ],
+      "fact_id": "decoder.attention.mixer_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.mixer_schedule.decoder_mixer_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "mixer_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 300,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention",
+      "ordinary_attention"
+    ]
+  },
+  "decoder.attention.output_projection": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:169:4:169:36",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:220:22:222:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:229:22:231:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:35:246:61",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:8:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:276:22:276:46",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21"
+      ],
+      "fact_id": "decoder.attention.output_projection",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "output_projection",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 220,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 169,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 229,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 276,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.position_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.position_schedule:b558ebc2063408fd",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:129:18:129:51",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:130:18:130:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:131:18:131:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:132:8:132:23",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:173:0:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:191:4:191:37",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:192:4:192:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:193:4:193:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:194:4:194:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:195:4:195:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:196:4:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:199:0:203:39",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:35:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:82:255:85",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:87:255:90",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:8:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:266:12:266:24",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:267:12:267:22",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:300:25:300:75",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:300:65:300:74",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:12:365:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:13:365:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:39:365:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:54:365:63",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:67:365:98",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:12:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:92",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:95:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:12:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:27:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:30:410:87",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:74:410:86"
+      ],
+      "fact_id": "decoder.attention.position_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_schedule.decoder_position_application_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "position_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 300,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 255,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 266,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 267,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 196,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 191,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 192,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 194,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 410,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 399,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      },
+      {
+        "position_application": "qk_rotation",
+        "position_kind": "rope",
+        "rope_dim": null
+      }
+    ]
+  },
+  "decoder.attention.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.projection_mode:21761fea3f037ea3",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:220:22:222:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:223:22:225:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:226:22:228:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:35:246:61",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:33:247:59",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:248:23:248:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21"
+      ],
+      "fact_id": "decoder.attention.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 220,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 223,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 226,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 248,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split_qkv"
+  },
+  "decoder.attention.qk_norm": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.qk_norm:7f3e293636cd0a7c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:232:22:232:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:233:22:233:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:23:246:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:21:247:60",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:300:25:300:75",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:12:365:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:13:365:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:39:365:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:54:365:63",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:67:365:98",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97"
+      ],
+      "fact_id": "decoder.attention.qk_norm",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "qk_norm",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 232,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 233,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 300,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.attention.qk_norm_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.qk_norm_schedule:0f20227eeb0cb82c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:164:19:164:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:166:18:166:58",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:232:22:232:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:233:22:233:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:246:23:246:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:247:21:247:60",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:29:0:29:12",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:300:25:300:75",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:30:0:30:21",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:12:365:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:13:365:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:39:365:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:54:365:63",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:67:365:98",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97"
+      ],
+      "fact_id": "decoder.attention.qk_norm_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.qk_norm_schedule.decoder_qk_norm_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "qk_norm_schedule",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 246,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 247,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 232,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 233,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 300,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "decoder.attention.rope_initialization": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_initialization:5531d919e129f3f3",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:109:15:109:51",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:129:18:129:51",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:130:18:130:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:131:18:131:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:132:8:132:23",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:173:0:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:191:4:191:37",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:192:4:192:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:193:4:193:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:194:4:194:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:195:4:195:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:196:4:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:199:0:203:39",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:35:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:82:255:85",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:87:255:90",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:8:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:266:12:266:24",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:267:12:267:22",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:12:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:92",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:95:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:12:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:27:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:30:410:87",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:74:410:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:83:11:83:25",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:85:43:85:76",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:85:8:85:76",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:87:8:87:68",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:91:4:118:41"
+      ],
+      "fact_id": "decoder.attention.rope_initialization",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "rope_parameters.rope_type"
+    ],
+    "key": "rope_initialization",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 255,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 266,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 267,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 196,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 191,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 192,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 194,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 410,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 87,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 85,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 91,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 109,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 83,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": {
+      "callable": "Olmo2RotaryEmbedding.compute_default_rope_parameters",
+      "kind": "local_default",
+      "parameters": {
+        "rope_parameters.rope_theta": 500000,
+        "rope_parameters.rope_type": "default"
+      },
+      "selector": null
+    }
+  },
+  "decoder.attention.rope_theta": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.attention.rope_theta:ecd7a1dc351d8b5b",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:109:15:109:51",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:129:18:129:51",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:130:18:130:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:131:18:131:27",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:132:8:132:23",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:160:19:160:66",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:173:0:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:191:4:191:37",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:192:4:192:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:193:4:193:38",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:194:4:194:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:195:4:195:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:196:4:196:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:199:0:203:39",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:35:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:82:255:85",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:87:255:90",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:255:8:255:91",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:264:36:273:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:266:12:266:24",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:267:12:267:22",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:12:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:27:398:92",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:398:95:398:111",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:12:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:399:27:399:52",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:30:410:87",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:410:74:410:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:83:11:83:25",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:85:43:85:76",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:85:8:85:76",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:87:8:87:68",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:91:4:118:41"
+      ],
+      "fact_id": "decoder.attention.rope_theta",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.position_initialization.position_frequency_initialization"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [
+      "rope_parameters.rope_theta"
+    ],
+    "key": "rope_theta",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 255,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 266,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 267,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 173,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 196,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 191,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 192,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 193,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 194,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 195,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 199,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 410,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 132,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 130,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 131,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 129,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 398,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 399,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 87,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 85,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 91,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 109,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 83,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 500000
+  },
+  "decoder.attention.scores_scale": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.attention.decoder_attention_score_scaling_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "scores_scale",
+    "owner": "decoder.attention",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 264,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 164,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 30,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 160,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 29,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 166,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 162,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "activation",
+    "owner": "decoder.ffn",
+    "source_spans": [],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": "silu"
+  },
+  "decoder.ffn.ffn_schedule": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.ffn_schedule:43c8dac4496c036b",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:286:25:286:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:287:23:287:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:288:25:288:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:289:22:289:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:20:292:84",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:65",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:47:292:64",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:68:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:293:8:293:24",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:302:19:302:35",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:331:24:331:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:12:365:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:13:365:49",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:39:365:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:54:365:63",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:67:365:98",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:365:73:365:97"
+      ],
+      "fact_id": "decoder.ffn.ffn_schedule",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "num_hidden_layers"
+    ],
+    "key": "ffn_schedule",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 365,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 302,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 331,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 286,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 287,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 288,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 292,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 289,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 293,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": [
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense",
+      "dense"
+    ]
+  },
+  "decoder.ffn.gated": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.gated:7f3e293636cd0a7c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:286:25:286:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:287:23:287:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:288:25:288:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:289:22:289:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:20:292:84",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:65",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:47:292:64",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:68:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:293:8:293:24"
+      ],
+      "fact_id": "decoder.ffn.gated",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "gated",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 286,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 287,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 288,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 292,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 289,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 293,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": true
+  },
+  "decoder.ffn.intermediate_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.intermediate_size:4c97e9d6f1864ba2",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:285:33:285:57",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:286:25:286:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:287:23:287:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:288:25:288:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:289:22:289:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:20:292:84",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:65",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:47:292:64",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:68:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:293:8:293:24"
+      ],
+      "fact_id": "decoder.ffn.intermediate_size",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "intermediate_size"
+    ],
+    "key": "intermediate_size",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 286,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 287,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 288,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 292,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 289,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 293,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 285,
+        "method": null
+      }
+    ],
+    "status": "code_and_config",
+    "unknown_reason": null,
+    "value": 11008
+  },
+  "decoder.ffn.projection_mode": {
+    "claim_kind": "relation",
+    "claim_proof": {
+      "claim_kind": "relation",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.ffn.projection_mode:386c50fca9c31bcd",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:286:25:286:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:287:23:287:86",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:288:25:288:88",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:289:22:289:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:20:292:84",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:65",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:35:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:47:292:64",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:292:68:292:83",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:293:8:293:24"
+      ],
+      "fact_id": "decoder.ffn.projection_mode",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "projection_mode",
+    "owner": "decoder.ffn",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 286,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 287,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 288,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 292,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 289,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 293,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "split"
+  },
+  "decoder.layer.norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_kind:d23812867aded33c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:303:40:303:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:304:42:304:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:326:24:326:68",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:332:24:332:70",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:63:19:63:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:64:40:64:85"
+      ],
+      "fact_id": "decoder.layer.norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+    ],
+    "completeness": "presence_only",
+    "config_paths": [],
+    "key": "norm_kind",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 326,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 303,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 64,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 332,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 304,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "decoder.layer.norm_placement": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.norm_placement:5d282b3b035ac455",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:303:40:303:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:304:42:304:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:326:24:326:68",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:327:24:327:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:331:24:331:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:332:24:332:70",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:333:24:333:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:334:8:334:28",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:63:19:63:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:64:40:64:85"
+      ],
+      "fact_id": "decoder.layer.norm_placement",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "norm_placement",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 331,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 327,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 326,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 303,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 64,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 333,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 332,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 304,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 334,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "post"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "claim_kind": "applied_function",
+    "claim_proof": null,
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "uninspected",
+    "config_paths": [],
+    "key": "parallel_norm_count",
+    "owner": "decoder.layer",
+    "source_spans": [],
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "claim_kind": "connection",
+    "claim_proof": {
+      "claim_kind": "connection",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:303:40:303:97",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:304:42:304:99",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:317:27:325:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:326:24:326:68",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:327:24:327:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:331:24:331:47",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:332:24:332:70",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:333:24:333:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:334:8:334:28",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:63:19:63:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:64:40:64:85"
+      ],
+      "fact_id": "decoder.layer.residual_topology",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "residual_topology",
+    "owner": "decoder.layer",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 317,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 331,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 327,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 326,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 303,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 64,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 333,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 332,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 304,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 334,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "sequential"
+  },
+  "model.final_norm_kind": {
+    "claim_kind": "applied_function",
+    "claim_proof": {
+      "claim_kind": "applied_function",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "projection:model.final_norm_kind:d23812867aded33c",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:367:20:367:77",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:413:28:421:13",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:423:24:423:48",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:424:8:427:9",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:63:19:63:62",
+        "source:root:fe06c39bf4bef238ee0bc9461e0ece68b579beb153e11981ffc3e2d6b8c33097:64:40:64:85"
+      ],
+      "fact_id": "model.final_norm_kind",
+      "fact_status": "",
+      "index_fingerprints": [
+        "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+      ],
+      "proof_kind": "retained_reader_projection",
+      "reader_symbols": [
+        "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    ],
+    "completeness": "complete",
+    "config_paths": [],
+    "key": "final_norm_kind",
+    "owner": "model",
+    "source_spans": [
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 423,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 367,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 63,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 64,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 424,
+        "method": null
+      },
+      {
+        "class_name": null,
+        "component": "root",
+        "file": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/olmo2/modeling_olmo2.py",
+        "line": 413,
+        "method": null
+      }
+    ],
+    "status": "code_proven",
+    "unknown_reason": null,
+    "value": "rmsnorm"
+  },
+  "model.hidden_size": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|67951bb3d9db1731|67951bb3d9db1731"
+      ],
+      "fact_id": "model.hidden_size",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "hidden_size"
+    ],
+    "key": "hidden_size",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": 4096
+  },
+  "model.tie_word_embeddings": {
+    "claim_kind": "value",
+    "claim_proof": {
+      "claim_kind": "value",
+      "document_fingerprints": [
+        "8a687b2425d8e3e0ec6fabb41f593e0fea2f32442f6da6c008b1d6b44be9fa28"
+      ],
+      "evidence_refs": [
+        "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|a9cd6a1ddefafc47|a9cd6a1ddefafc47"
+      ],
+      "fact_id": "model.tie_word_embeddings",
+      "fact_status": "config_declared",
+      "index_fingerprints": [],
+      "proof_kind": "config_resolution",
+      "reader_symbols": [
+        "model_unfolder.adapters.transformer.parser.parse"
+      ],
+      "recipe_ids": []
+    },
+    "claim_readers": [
+      "model_unfolder.adapters.transformer.parser.parse"
+    ],
+    "completeness": "complete",
+    "config_paths": [
+      "tie_word_embeddings"
+    ],
+    "key": "tie_word_embeddings",
+    "owner": "model",
+    "source_spans": [],
+    "status": "config_declared",
+    "unknown_reason": null,
+    "value": false
+  }
+}

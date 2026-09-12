@@ -1,0 +1,11 @@
+{
+  "name": "layer-default-diagnostic",
+  "returncode": 0,
+  "duration": 15.62586841600205,
+  "before": "f2d1b4e07c631f5a30f5f7d6d508d716c4304ed3fee11e3ed3e62e9538830d77",
+  "after": "f2d1b4e07c631f5a30f5f7d6d508d716c4304ed3fee11e3ed3e62e9538830d77",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-thirtythird/layer-default-diagnostic/layer-default-diagnostic.log",
+  "passed": true
+}

@@ -1,0 +1,20 @@
+{
+  "verdict": "PASS_SOURCE_ONLY_RUNTIME_REQUIRED",
+  "proposal_manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/repeated-schedule-qualification-proposal/manifest.json",
+  "manifest_sha256": "d5a94d4098a8acf23b340a32cf9dff494c056ed3921cebc694d4773d8d54e8fa",
+  "checks": [
+    "Six proposed files plus all supporting documents match held pins; all existing before bytes match immutable32. AST parsed without imports.",
+    "Only existing ALiBi and additive-cross readers issue their already-closed witness types and intended relation declarations. ALiBi canonical attention_bias value is preserved; no new drawing or occurrence author.",
+    "Whole schedule originates from actual retained reader/index/document and unique repeated child construction. Supported count grammar remains exact unshadowed builtin range(one source operand); no arithmetic/name heuristic expansion.",
+    "Parser authenticates the whole projection before comparing expected schedule value and exact count source kind/checkpoint path/value. Final schedule status and config paths follow actual config/default provenance; consumption cites final schedule hash.",
+    "No-document/no-mapping remains kind-only via existing declaration path; finite unsupported/missing count becomes ReaderClaimUnavailable. Positive reader_operand and proof binding remain strict; foreign/result-copy/wrong tier/path/value guards retained.",
+    "Only the two existing repeated_count_operand consumers are affected. Inconsistent unique-construction binding remains ValueError; unavailable does not create class3 evidence or qualify a limited fact.",
+    "Seventeen proposed parameterized controls cover two families, actual/default count values, copied result/foreign document, wrong schedule/status/path, unbound/no count proof, unsupported arithmetic/shadowing, real Bloom/MusicGen and nested default consumption. Existing assertions preserved except previously intentional witness-absence assertion now requires actual witness type."
+  ],
+  "runtime_required": [
+    "Actual Bloom/MusicGen and nested default must pass whole schedule hash/tier/path and exactly one consumed or absent_default decision.",
+    "Full prior missing-source/unbound/rename/reader proof poison lanes must remain green; candidate matrix must explicitly show remaining schedule findings rather than infer closure.",
+    "Exact rendered/source/output deltas need independent verdict and Soumil approval before blessing. Source PASS is no runtime, mechanism completion or output acceptance claim."
+  ],
+  "scope": "Source and AST/hash inspection only; no product imports, tests, model runtime or source edits by reviewer."
+}

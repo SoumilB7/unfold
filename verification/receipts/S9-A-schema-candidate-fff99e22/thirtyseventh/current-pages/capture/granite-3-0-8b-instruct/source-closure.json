@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879",
+  "reference26_seal": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879",
+  "scope": "Actual37 source index;26 is a comparison reference, not a36 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "adcaee412def0dc6ff0da3b197b67433d4f2be07a1816ad111330a42466c7c7a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_granite.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "3808560b2280af12f3982176114107a43011105a93212ff9a152244fcb17c81e",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_granite.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

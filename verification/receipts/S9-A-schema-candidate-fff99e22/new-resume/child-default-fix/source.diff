@@ -1,0 +1,479 @@
+--- before/model_unfolder/evidence/class_default_value.py
++++ after/model_unfolder/evidence/class_default_value.py
+@@ -25,10 +25,17 @@
+     config_class: object
+     declaration: object
+     spans: tuple[SourceSpan, ...]
++    construction: object = None
+ 
+ 
+ 
+ def _constructor_keeps_default(index, alias):
++    return _constructor_preserves_operand(index, alias.owner_symbol,
++        alias.constructor_parameter, alias.stored_field, ('hidden_size',))
++
++
++def _constructor_preserves_operand(index, owner_symbol, parameter, stored_field,
++                                  operand_path, *, allowed_config_calls=None):
+     """Refuse relevant direct constructor writes; no helper-effect theorem.
+ 
+     Root graph bindings name the loader actual, but do not include the local
+@@ -38,9 +45,8 @@
+     """
+     from .component_owner import _arg_config_flow, _self_attribute_chain, _paths_overlap
+     from .program_index import SymbolId
+-    constructor = SymbolId(alias.owner_symbol.source,
+-                           alias.owner_symbol.qualified_name + '.__init__')
+-    environment = {alias.constructor_parameter: ((),)}
++    constructor = SymbolId(owner_symbol.source, owner_symbol.qualified_name + '.__init__')
++    environment = {parameter: ((),)}
+ 
+     def paths(expression):
+         if expression is None:
+@@ -51,7 +57,7 @@
+         if direct is not None:
+             return direct.prefixes
+         stored = _self_attribute_chain(expression)
+-        if stored and stored[0] == alias.stored_field:
++        if stored and stored_field is not None and stored[0] == stored_field:
+             return (tuple(stored[1:]),)
+         if expression.kind == 'subscript' and expression.children:
+             bases = paths(expression.children[0])
+@@ -79,6 +85,14 @@
+ 
+     bindings = tuple(index.bindings_in(constructor))
+ 
++    def escaped(callee, arguments):
++        if allowed_config_calls is None:
++            return False  # Existing child/root guard has no helper-effect theorem.
++        receiver = (callee.children[0] if callee.kind == 'attribute' and callee.children else None)
++        carries_operand = transported_config(receiver) or any(
++            transported_config(argument) for argument in arguments)
++        return carries_operand and callee.span not in allowed_config_calls
++
+     def leaves(target):
+         if target.kind in {'tuple', 'list', 'starred'}:
+             return tuple(leaf for child in target.children for leaf in leaves(child))
+@@ -87,9 +101,10 @@
+     def transported_config(expression):
+         if expression is None:
+             return False
+-        if () in paths(expression):
++        if any(len(path) < len(operand_path) and operand_path[:len(path)] == path
++               for path in paths(expression)):
+             return True
+-        return expression.kind in {'tuple', 'list', 'dict', 'set'} and any(
++        return expression.kind in {'tuple', 'list', 'dict', 'set', 'ifexp', 'boolop', 'starred'} and any(
+             transported_config(child) for child in expression.children)
+ 
+     # Collect possible aliases before testing writes. This is deliberately
+@@ -102,24 +117,32 @@
+                 return False  # Namespace alias/transport is not an admitted config relay.
+             if not transported_config(binding.value):
+                 continue
+-            if binding.value.kind in {'tuple', 'list', 'dict', 'set'}:
++            if binding.value.kind in {'tuple', 'list', 'dict', 'set', 'ifexp', 'boolop', 'starred'}:
+                 return False  # Container transport has no exact config alias binding.
+             if any(target.kind != 'name' for target in binding.targets):
+                 return False  # Untracked field/container/destructuring transport.
+             for target in binding.targets:
+-                if target.name and target.name not in environment:
+-                    environment[target.name] = ((),)
+-                    changed = True
++                if target.name:
++                    previous = environment.get(target.name, ())
++                    combined = tuple(dict.fromkeys((*previous, *paths(binding.value))))
++                    if combined != previous:
++                        environment[target.name] = combined
++                        changed = True
+         if not changed:
+             break
+     for binding in bindings:
+         for target in (leaf for target in binding.targets for leaf in leaves(target)):
+             if target.kind == 'name':
+-                if target.name == alias.constructor_parameter:
++                if target.name == parameter:
+                     return False
+                 continue
+-            if any(_paths_overlap(path, ('hidden_size',)) for path in paths(target)):
++            if any(_paths_overlap(path, operand_path) for path in paths(target)):
+                 return False
++
++    if allowed_config_calls is not None and any(
++            transported_config(observation.value)
++            for observation in index.return_observations_in(constructor)):
++        return False
+ 
+     # The neutral name-access census includes delete targets and nested loop
+     # bodies, which the binding/statement tables do not fully represent.
+@@ -141,13 +164,17 @@
+                     and parent.children[0].name == 'vars' and any(
+                         paths(argument) for argument in parent.children[1:]):
+                 return False
++            if parent is not None and parent.kind == 'call' and parent.children and escaped(
++                    parent.children[0], (*parent.children[1:],
++                        *(value for _key, value in parent.keyword_children))):
++                return False
+             if access.context not in {'store', 'del'}:
+                 continue
+             if access.expression.kind == 'name':
+-                if access.name == alias.constructor_parameter:
++                if access.name == parameter:
+                     return False
+                 continue
+-            if any(_paths_overlap(path, ('hidden_size',)) for path in paths(access.expression)):
++            if any(_paths_overlap(path, operand_path) for path in paths(access.expression)):
+                 return False
+ 
+     # Ordinary explicit attribute mutation syntax is not a helper-effect
+@@ -155,6 +182,8 @@
+     # including unknown property names that may name the selected operand.
+     for call in index.calls_in(constructor):
+         callee = call.callee
++        if escaped(callee, (*call.args, *(value for _key, value in call.kwargs))):
++            return False
+         # Namespace dictionaries are mutable protocol objects. Refuse their
+         # whole direct-call boundary, including vars(config), mapping mutators
+         # and unknown namespace methods/escapes; do not infer helper effects.
+@@ -176,28 +205,106 @@
+         key = args[0] if args else None
+         suffix = (key.const_value,) if key is not None and key.kind == 'constant' \
+             and type(key.const_value) is str else ()
+-        if any(_paths_overlap((*base, *suffix), ('hidden_size',)) for base in receiver):
++        if any(_paths_overlap((*base, *suffix), operand_path) for base in receiver):
+             return False
+     return True
+ 
+ 
++def _outer_operand_preserved(index, outer, candidate, operand_path):
++    """Check the existing outer graph's exact config relays, never new calls.
++
++    A child-class literal is not a deployment value if its caller overwrites
++    or escapes that config. Only the already-proven construction, indexed
++    config-bound constructor relays and framework storage call are admitted.
++    Every inspected constructor span remains part of this value's proof.
++    """
++    from .program_index import SymbolId
++    plans = []
++    for node in outer.graph.walk():
++        alias = framework_config_alias(index, outer, node.occurrence)
++        bindings = node.config_bindings
++        if not bindings and alias.status == 'resolved':
++            bindings = (alias.value.config_binding,)
++        for binding in bindings:
++            relevant = tuple(prefix for prefix in binding.prefixes
++                             if operand_path[:len(prefix)] == prefix)
++            if not relevant:
++                continue
++            if len(binding.prefixes) != 1:
++                return None
++            prefix = relevant[0]
++            relative = operand_path[len(prefix):]
++            if not relative or binding.resolved_path(relative) != operand_path:
++                return None
++            if any(relative[:len(item.path)] == item.path or
++                   item.path[:len(relative)] == relative
++                   for item in binding.normalized_overrides):
++                return None
++            constructor = SymbolId(node.symbol.source, node.symbol.qualified_name + '.__init__')
++            init = index.callable_by_symbol(constructor)
++            if init is None or init.span is None:
++                return None
++            plans.append((node, binding, relative, alias, init))
++    if not plans or candidate.construction_owner not in {node.occurrence for node, *_ in plans}:
++        return None
++    inspected = {node.occurrence for node, *_ in plans}
++    spans = list(candidate.spans)
++    for node, binding, relative, alias, init in plans:
++        allowed = set()
++        if alias.status == 'resolved' and alias.value.constructor_parameter == binding.parameter:
++            allowed.add(alias.value.super_call.callee.span)
++            spans.extend(alias.value.spans)
++            stored_field = alias.value.stored_field
++        else:
++            stored_field = None
++        child_sites = {child.via_site for child in node.children if child.occurrence in inspected}
++        for site in index.construction_sites_in(init.symbol):
++            if site.site_id in child_sites:
++                allowed.add(site.constructor.span)
++                spans.append(site.span)
++        if node.occurrence == candidate.construction_owner:
++            allowed.add(candidate.construction_site.constructor.span)
++        if not _constructor_preserves_operand(index, node.symbol, binding.parameter,
++                stored_field, relative, allowed_config_calls=frozenset(allowed)):
++            return None
++        spans.append(init.span)
++    return tuple(dict.fromkeys(spans))
++
++
+ def _declaration(index, bundle, config_path, document):
+-    # This first finite scalar migration covers the root consumer only. A
+-    # child needs its own exact selected config-class binding; no root fallback.
+     from .document import PreparedDocument
+-    if config_path or not isinstance(document, PreparedDocument) or document.failure is not None:
+-        return None
+-    # The reader-facing document may differ from the checkpoint snapshot.
+-    # Both must show absence under the same canonical/alias arbitration.
++    if not isinstance(document, PreparedDocument) or document.failure is not None:
++        return None
++    # Check the checkpoint at the selected child address, never a root field.
++    checkpoint_config = document.checkpoint
++    for part in config_path:
++        if not isinstance(checkpoint_config, dict) or part not in checkpoint_config:
++            return None
++        checkpoint_config = checkpoint_config[part]
++    if not isinstance(checkpoint_config, dict):
++        return None
+     from ..everchanging import load_aliases
+     from .config_access import _resolve_for_claim_proof
+     checkpoint = _resolve_for_claim_proof(
+-        document.checkpoint, 'hidden_size', load_aliases().get('hidden_size', ()))
++        checkpoint_config, 'hidden_size', load_aliases().get('hidden_size', ()), path=config_path)
+     if checkpoint.state != 'absent':
+         return None
+     root = resolve_component_root(index, bundle, 'root')
+     if root.status != 'resolved':
+         return None
++    construction = None
++    outer_spans = ()
++    operand_path = (*config_path, 'hidden_size')
++    if config_path:
++        from .config_scoped_owner import resolve_config_constructed_root
++        selected = resolve_config_constructed_root(index, bundle, root, config_path)
++        if selected.status != 'resolved':
++            return None
++        construction = selected.candidate
++        outer_spans = _outer_operand_preserved(index, root, construction, operand_path)
++        if outer_spans is None:
++            return None
++        root = construction.component_root
+     owner = root.graph.root.occurrence
+     alias = framework_config_alias(index, root, owner)
+     if alias.status != 'resolved' or alias.value.config_binding.resolved_prefix != ():
+@@ -211,23 +318,24 @@
+     if declaration.status != 'resolved' or type(declaration.value.value) is not int \
+             or declaration.value.value <= 0:
+         return None
+-    # Shared resolver retains checkpoint/explicit-null/conflicting-alias
+-    # precedence. An overlay entry alone is not enough to qualify this value.
++    # Shared resolver retains explicit-null/alias precedence. An overlay or a
++    # class-name spelling alone cannot qualify the selected operand.
+     try:
+-        operand = reader_operand(document, ('hidden_size',))
++        operand = reader_operand(document, operand_path)
+     except (ValueError, KeyError):
+         return None
+     if operand.source_kind != 'class_default' or operand.checkpoint_path is not None \
+             or type(operand.value) is not int or operand.value != declaration.value.value:
+         return None
+-    if document.class_overlay.get('hidden_size') != declaration.value.value:
+-        return None
+-    spans = tuple(dict.fromkeys(span for result in (alias, config_class, declaration)
+-                                for origin in result.provenance for span in origin.spans))
++    if document.class_overlay.get('.'.join(operand_path)) != declaration.value.value:
++        return None
++    spans = tuple(dict.fromkeys((*outer_spans, *(span
++        for result in (alias, config_class, declaration)
++        for origin in result.provenance for span in origin.spans))))
+     if not spans or any(not isinstance(span, SourceSpan) for span in spans):
+         return None
+     return ModelHiddenSizeDefault(operand.value, owner, alias.value, config_class.value,
+-                                  declaration.value, spans)
++                                  declaration.value, spans, construction)
+ 
+ 
+ @dataclass(frozen=True)
+--- before/model_unfolder/adapters/transformer/parser.py
++++ after/model_unfolder/adapters/transformer/parser.py
+@@ -1364,41 +1364,17 @@
+         separate: the weakest deciding origin sets ONE honest fact status
+         before any obligation is emitted.
+         """
+-        exact = tuple(exact_path)
+-        if not exact:
++        from ...evidence.reader_claims import resolve_reader_operand
++        # The producer and its proof must use the SAME active preparation.
++        # Context-local hydrated candidates cannot revive an operand when the
++        # bound document failed or has no exact class-default channel.
++        resolution = resolve_reader_operand(cfg, tuple(exact_path),
++                                            allow_aliases=allow_aliases)
++        if resolution is None or resolution.ambiguous:
+             return None
+-        container = cfg
+-        for segment in exact[:-1]:
+-            if isinstance(container, dict):
+-                if segment not in container:
+-                    return None
+-                container = container[segment]
+-            elif hasattr(container, segment):
+-                container = getattr(container, segment)
+-            else:
+-                return None
+-        # Source code reads the config CLASS's runtime property.  A checkpoint
+-        # may serialize an audited input spelling for that same property
+-        # (``hidden_size`` <- ``n_embd``).  This bridge is syntax-only and is
+-        # permitted only when the source leaf is itself the canonical key;
+-        # source code that names an alias directly still resolves that exact
+-        # occurrence without widening its authority.
+-        _source_aliases = (
+-            _ALIASES.get(exact[-1], ())
+-            if allow_aliases and exact[-1] in _ALIASES else ())
+-        resolution = _config_access.resolve(
+-            container, exact[-1], _source_aliases, path=exact[:-1])
+-        if resolution.state == "absent":
+-            defaults = _defaults_by_path.get(exact[:-1])
+-            if not isinstance(defaults, dict) and exact[:-1] == _text_path:
+-                defaults = _fact_class_defaults
+-            if isinstance(defaults, dict) and exact[-1] in defaults:
+-                resolution = _config_access.resolve(
+-                    container, exact[-1], (), path=exact[:-1],
+-                    class_defaults={exact[-1]: defaults[exact[-1]]})
+-        if resolution.state == "present":
++        if resolution.state == "present" or resolution.source_kind == "class_default":
+             return resolution
+-        return resolution if resolution.source_kind == "class_default" else None
++        return None
+ 
+     def _actual_checkpoint_path(source_path, resolution):
+         """Return the exact supplying checkpoint spelling, or no path.
+--- before/tests/test_s9_child_class_default.py
++++ after/tests/test_s9_child_class_default.py
+@@ -0,0 +1,138 @@
++"""A selected child's own literal default requires the complete caller address."""
++from copy import deepcopy
++from dataclasses import replace
++
++import pytest
++
++from model_unfolder.evidence.class_default_value import model_hidden_size_class_default
++from model_unfolder.evidence.config_access import bound_document
++from model_unfolder.evidence.document import DocumentBinding, PreparedDocument, checkpoint_provenance
++from model_unfolder.evidence.models import SourceBundle
++from model_unfolder.evidence.program_index import build_program_index
++from test_support.s9_fixtures.s9_class_default_value import _fact
++
++
++def _child(tmp_path, *, before='', after='', child_after='', factory=True,
++           checkpoint=None, overlay=None, selected=('text_config',), child_component=True):
++    model = tmp_path / 'modeling_child.py'
++    support = tmp_path / 'configuration_child.py'
++    call = 'Child._from_config' if factory else 'Child'
++    model.write_text(f'''from transformers.modeling_utils import PreTrainedModel
++from .configuration_child import ExactConfig
++class Child(PreTrainedModel):
++    def __init__(self, config: ExactConfig):
++        super().__init__(config)
++{child_after}class Wrapper(PreTrainedModel):
++    def __init__(self, config):
++        super().__init__(config)
++{before}        self.slot = {call}(config.text_config)
++{after}''')
++    support.write_text('class ExactConfig:\n    hidden_size: int = 64\n')
++    components = {'root': (str(model),)}
++    if child_component:
++        components['text_config'] = (str(model),)
++    bundle = SourceBundle(source='local', files=(str(model),), component_files=components,
++        supporting_files={key: (str(support),) for key in components},
++        component_architectures={'root': 'Wrapper', 'text_config': 'Child'}, architecture='Wrapper')
++    index = build_program_index(bundle)
++    checkpoint = {'hidden_size': 999, 'text_config': {}} if checkpoint is None else checkpoint
++    document = PreparedDocument(deepcopy(checkpoint), deepcopy(checkpoint),
++        {'text_config.hidden_size': 64} if overlay is None else overlay,
++        provenance=checkpoint_provenance(checkpoint))
++    with bound_document(DocumentBinding('root', (), document)):
++        result = model_hidden_size_class_default(index, bundle, selected)
++    return result, index, document, bundle
++
++
++@pytest.mark.parametrize('factory', [False, True])
++def test_exact_constructed_child_literal_is_qualified_without_root_borrowing(tmp_path, factory):
++    result, index, document, _ = _child(tmp_path, factory=factory)
++    assert result.status == 'resolved', result.failures
++    fact = _fact(result, index, document)
++    assert (fact.value, fact.status, fact.claim_kind) == (64, 'class_default', 'value')
++    assert fact.config_paths == ()
++    assert result.value.construction.config_path == ('text_config',)
++    assert result.value.alias.owner_symbol.source.component_key == 'text_config'
++    assert result.value.config_class.config_class.qualified_name == 'ExactConfig'
++    assert set(result.value.construction.spans) <= set(result.value.spans)
++    assert any(span.source.component_key == 'root' for span in result.value.spans)
++    assert document.document['hidden_size'] == 999
++    # Receipt replay must re-establish the actual caller/child path.
++    with pytest.raises(ValueError):
++        replace(result.claim_witness, config_path=('other_config',))._checked()
++    changed = deepcopy(document.document)
++    changed['text_config']['hidden_size'] = 32
++    document.document['text_config'] = changed['text_config']
++    with pytest.raises(ValueError):
++        result.claim_witness._checked()
++
++
++@pytest.mark.parametrize('statement', [
++    'config.text_config.hidden_size = 32',
++    'config.text_config = replacement',
++    'del config.text_config.hidden_size',
++    'setattr(config.text_config, "hidden_size", 32)',
++    'config.text_config.__dict__.update(hidden_size=32)',
++    'escape(config.text_config)',
++    'escape(config)',
++    'self.leaked = config.text_config',
++    'self.leaked = config.text_config if enabled else None',
++    'return config.text_config',
++    'alias = config.text_config\n        alias.hidden_size = 32',
++    'alias = config\n        alias = config.text_config\n        alias.hidden_size = 32',
++    'escape(config.text_config).field = 32',
++])
++@pytest.mark.parametrize('where', ['before', 'after'])
++def test_parent_mutation_replacement_or_escape_cannot_keep_the_child_default(tmp_path, statement, where):
++    result, _, _, _ = _child(tmp_path, **{where: '        ' + statement + '\n'})
++    assert result.status == 'failed'
++    assert result.claim_witness is None
++
++
++@pytest.mark.parametrize('kwargs', [
++    {'checkpoint': {'text_config': {'hidden_size': None}}},
++    {'checkpoint': {'text_config': {'hidden_size': 64}}},
++    {'checkpoint': {'text_config': {'d_model': 64}}},
++    {'checkpoint': {'text_config': {'d_model': 64, 'n_embd': 32}}},
++    {'checkpoint': {'text_config': None}},
++    {'checkpoint': {}},
++    {'overlay': {'hidden_size': 64}},
++    {'overlay': {'text_config.hidden_size': 32}},
++    {'selected': ('other_config',)},
++    {'child_component': False},
++    {'child_after': '        config.hidden_size = 32\n'},
++])
++def test_absent_address_or_foreign_value_never_falls_back_to_root_default(tmp_path, kwargs):
++    result, _, _, _ = _child(tmp_path, **kwargs)
++    assert result.status == 'failed'
++    assert result.claim_witness is None
++
++
++def test_unrelated_root_scalar_write_does_not_replace_child_default(tmp_path):
++    result, index, document, _ = _child(tmp_path, before='        config.hidden_size = 32\n')
++    assert result.status == 'resolved', result.failures
++    assert _fact(result, index, document).value == 64
++
++
++def test_unknown_wrapper_cannot_reintroduce_locally_hydrated_bias_as_bound_default():
++    from model_unfolder import unfold
++    nested = {'model_type': 'composite_xyz', 'architectures': ['CompositeForConditionalGeneration'],
++              'thinker_config': {'model_type': 'inner_xyz', 'audio_token_index': 151646,
++                'vision_config': {'model_type': 'inner_vit', 'depth': 4, 'hidden_size': 128,
++                                  'num_heads': 4, 'patch_size': 14, 'spatial_merge_size': 2},
++                'audio_config': {'model_type': 'inner_audio', 'd_model': 128,
++                                 'encoder_layers': 2, 'encoder_attention_heads': 4, 'num_mel_bins': 128},
++                'text_config': {'model_type': 'llama', 'hidden_size': 256, 'num_hidden_layers': 2,
++                                'num_attention_heads': 4, 'intermediate_size': 512, 'vocab_size': 1000}}}
++    ir = unfold(nested).to_ir()
++    assert ir['hidden_size'] == 256
++    assert ir['layers'] and all(layer['attention']['bias'] is None for layer in ir['layers'])
++    row = ir['extras']['fact_provenance']['decoder.attention.bias']
++    assert row['status'] in ('ambiguous', 'oracle_missing', 'unknown')
++    assert row['unknown_reason']['reason_class'] == 'investigation_missing'
++    # A failed enclosing class address does not invalidate a real checkpoint
++    # value; the exact same source path becomes a lawful explicit operand.
++    nested['thinker_config']['text_config']['attention_bias'] = False
++    declared = unfold(nested).to_ir()
++    assert all(layer['attention']['bias'] is False for layer in declared['layers'])
++    assert declared['extras']['fact_provenance']['decoder.attention.bias']['status'] == 'code_and_config'

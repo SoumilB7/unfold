@@ -29,6 +29,7 @@ from .models import SourceBundle
 from .parallel_norm import exact_norm_sources_at_block
 from .program_index import CallSiteId, ExprNode, ProgramIndex, SourceSpan
 from .reader_result import Ambiguity, ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import ReaderFactProjection, retained_claim_reader
 from .repeated_child import (
     RepeatedChildResolution,
     resolve_repeated_child,
@@ -36,6 +37,9 @@ from .repeated_child import (
 )
 
 
+@retained_claim_reader(intended_claims=(
+    ('model', 'final_norm_kind', 'applied_function'),
+))
 def final_stage_norm_evidence(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -191,7 +195,7 @@ def read_final_stage_norm(
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph", detail),))
 
-    _site, call, _upstream, (_occurrence, kind, norm_spans) = qualified[0]
+    site, call, upstream, (occurrence, kind, norm_spans) = qualified[0]
     spans = tuple(dict.fromkeys(
         span for span in (
             call.span,
@@ -203,6 +207,9 @@ def read_final_stage_norm(
     return ReaderResult.resolved(
         owner,
         label,
+        claim_witness=FinalNormClaimWitness(
+            index, root, owner, repeated, occurrence, kind, site, call,
+            tuple(upstream), tuple(return_sources)),
         provenance=(ReaderProvenance(
             "source",
             spans=spans,
@@ -210,6 +217,51 @@ def read_final_stage_norm(
                 "exact repeated-child def-use reaches one exact norm whose "
                 "result reaches every exact primary model-stage return")),),
     )
+
+
+@dataclass(frozen=True)
+class FinalNormClaimWitness:
+    """The actual repeated-child -> norm -> every-return proof, not a label."""
+
+    index: ProgramIndex
+    root: object
+    owner: OwnerOccurrenceId
+    repeated: RepeatedChildResolution
+    norm_occurrence: OwnerOccurrenceId
+    norm_kind: str
+    norm_site: CallSiteId
+    norm_call: object
+    upstream_paths: tuple
+    returns: tuple
+    reader_symbol = "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+    attempted_projections = frozenset({("model", "final_norm_kind", "applied_function")})
+
+    def validate_result(self, result):
+        if result.status != "resolved" or result.owner != self.owner \
+                or self.norm_kind not in {"layernorm", "rmsnorm"} \
+                or result.value != {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}[self.norm_kind]:
+            raise ValueError("final norm result differs from its retained applied operation")
+        if self.repeated.status != "resolved" or self.repeated.model_stage != self.owner:
+            raise ValueError("final norm requires its exact repeated-child proof")
+        if self.norm_site != CallSiteId.of(self.norm_call) or self.norm_call.guard \
+                or not any(call is self.norm_call for call in
+                           self.index.calls_in(self.norm_call.enclosing_callable)):
+            raise ValueError("final norm requires an exact unguarded indexed call")
+        repeated_sites = {proof.template.call_site for proof in self.repeated.proofs}
+        if not any(repeated_sites & path.calls for path in self.upstream_paths):
+            raise ValueError("final norm is not downstream of the repeated child")
+        if not self.returns or not all(paths and all(
+                self.norm_site in path.calls and not any(
+                    _position_end(span) >= _position_start(self.norm_call.span)
+                    for span in path.taints)
+                for path in paths) for _span, paths in self.returns):
+            raise ValueError("final norm does not reach every primary return")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("model", "final_norm_kind"):
+            raise ValueError("final norm cannot author another fact projection")
+        return ReaderFactProjection(owner, key, "applied_function", self.norm_kind,
+                                    "code_proven")
 
 
 @dataclass(frozen=True)

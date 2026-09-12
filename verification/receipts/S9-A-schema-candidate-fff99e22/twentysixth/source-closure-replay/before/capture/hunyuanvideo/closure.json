@@ -1,0 +1,78 @@
+{
+  "actual_portable_seal": "d6360d3ce2a1c576ad5a33e605e92bd82a948513d141f4e4a556e151ce0495f1",
+  "baseline_output": {
+    "ir_after_sha256": "d2a5fb969db8cd9878d910456d1500ccce1b1b080e649d3307c423fa0a870e9e",
+    "ir_before_sha256": "eb295f8e2bf998b78e4d35a0552b1b93fb0436f99a61cfa0371b2103bf4917a8",
+    "page_bytes": 176258,
+    "page_sha256": "a023611dfeacd3846defd6a0e0397e6459ad730fe0f3d662aa814e3b8b6e265e",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "d6360d3ce2a1c576ad5a33e605e92bd82a948513d141f4e4a556e151ce0495f1",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "d6360d3ce2a1c576ad5a33e605e92bd82a948513d141f4e4a556e151ce0495f1",
+  "seconds": 2.5152561249997234,
+  "slug": "hunyuanvideo",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "89a674a8a6404cb0720b93fad1cf24a2472a35000d6799810cace05e01c5b2ef",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_hunyuan_video.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5e2e803d15956cdc402ab1c4a5151a899bd39ddfbecbb81181733657817aaeda",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_llama.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "46d313ec0f1116bcc1bb7f2379467ab249c140415c64fb758e2d5915cd8b89a5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_llama.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    }
+  ],
+  "source_node_count": 8,
+  "status": "REPRODUCED"
+}

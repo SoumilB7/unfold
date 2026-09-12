@@ -1,0 +1,71 @@
+{
+  "actual_portable_seal": "ea9a8ba30cdbbb6fed1a9273d8c5baaa1e1374a31d5340ab6371727221d893b0",
+  "baseline_output": {
+    "ir_after_sha256": "5e90960dfad7714dddd7a1d198af652e7a8e76b966dc2ed704957b25b838cf1f",
+    "ir_before_sha256": "5e90960dfad7714dddd7a1d198af652e7a8e76b966dc2ed704957b25b838cf1f",
+    "page_bytes": 177002,
+    "page_sha256": "7b4b33b56fef127c25d8c2f89e2730f91fc29bb5acaeaf665888d4c0551bb9e9",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "ea9a8ba30cdbbb6fed1a9273d8c5baaa1e1374a31d5340ab6371727221d893b0",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "ea9a8ba30cdbbb6fed1a9273d8c5baaa1e1374a31d5340ab6371727221d893b0",
+  "seconds": 2.291568708000341,
+  "slug": "fluxtransformer2dmodel",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "c537d690c63219979d2ad686a480f3553d7212e915c8c550b93a9f3b3efcbe83",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_flux.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "8363de8e0fbaec63cf918e7a5fcb3725337e1837ab42a28ed4d50f95a6a24a39",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_clip.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "46eb6a3523c9e7a188173a7da763c476bd1fa1e3121f8e1ca7b7b9c08655ce2f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_clip.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder_2",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 7,
+  "status": "REPRODUCED"
+}

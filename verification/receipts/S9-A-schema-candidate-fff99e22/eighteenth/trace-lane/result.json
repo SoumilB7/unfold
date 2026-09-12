@@ -1,0 +1,11 @@
+{
+  "name": "actual-default-trace",
+  "returncode": 0,
+  "duration": 10.035164583940059,
+  "before": "6b4a5c5447056cf50f34e2858a7f9d362e90034f580ab59e75de421296148384",
+  "after": "6b4a5c5447056cf50f34e2858a7f9d362e90034f580ab59e75de421296148384",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-eighteenth/trace-lane/actual-default-trace.log",
+  "passed": true
+}

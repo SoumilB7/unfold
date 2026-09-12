@@ -1,0 +1,382 @@
+[
+  {
+    "path": "capture/explicit_17/actual-softcap-readers.json",
+    "sha256": "9eaa230a2a5744f93003dd76466677e82f23198ed92de6498a13fbf8be845ac4",
+    "bytes": 45719
+  },
+  {
+    "path": "capture/explicit_17/context-defaults-before.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "path": "capture/explicit_17/events.json",
+    "sha256": "8c2d1593c22cef4b7c44d3195beeca8492d3e1e6dc9162c1da107dddbc9dd250",
+    "bytes": 3363
+  },
+  {
+    "path": "capture/explicit_17/input.json",
+    "sha256": "fc246bf04c131d484550b4bfe73037d28360e208f6c7f5473c5157dc0fcb0aa8",
+    "bytes": 1144
+  },
+  {
+    "path": "capture/explicit_17/ir-after.json",
+    "sha256": "be010b7757418380ee5c8db6312094b8a6bea52aee8f9fa91e7e3ec556470a38",
+    "bytes": 584714
+  },
+  {
+    "path": "capture/explicit_17/ir-before.json",
+    "sha256": "be010b7757418380ee5c8db6312094b8a6bea52aee8f9fa91e7e3ec556470a38",
+    "bytes": 584714
+  },
+  {
+    "path": "capture/explicit_17/model.py",
+    "sha256": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+    "bytes": 1315
+  },
+  {
+    "path": "capture/explicit_17/native-facts.json",
+    "sha256": "78576d4f376ecd865d82da6c584f6791c43ace2c386bffae5943ddeb60294ca7",
+    "bytes": 11697
+  },
+  {
+    "path": "capture/explicit_17/page.html.gz",
+    "sha256": "11778b4c1aca7e3a431e2e9679925e224f0e708090e66ec9431b397a0cfdac83",
+    "bytes": 11544
+  },
+  {
+    "path": "capture/explicit_17/prepared-document.json",
+    "sha256": "22e52d5e92be1e140a358a52d7c9966bc098ab3e37b3d34a522f3034331927aa",
+    "bytes": 3382
+  },
+  {
+    "path": "capture/explicit_17/render-contexts.json",
+    "sha256": "da0679317b6a998d1ac0fdbf80c845a00a3a17e85be09520959607e6fe9f492a",
+    "bytes": 8984
+  },
+  {
+    "path": "capture/explicit_17/result.json",
+    "sha256": "206d210356e9ee09489ea0e251392208692687be171c55793522c9274d6738b6",
+    "bytes": 827
+  },
+  {
+    "path": "capture/explicit_none/actual-softcap-readers.json",
+    "sha256": "e5f4e92cddf4e6f9af0d9a2af74381ddcd185548754741484ddf161d6a4aa2bd",
+    "bytes": 45867
+  },
+  {
+    "path": "capture/explicit_none/context-defaults-before.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "path": "capture/explicit_none/events.json",
+    "sha256": "3b1f007b46a30f43a31ffd37d43d0f3c9f9aa2abd9639442eed2b2bed4d14847",
+    "bytes": 1971
+  },
+  {
+    "path": "capture/explicit_none/input.json",
+    "sha256": "491f6e438d1ad4a828f0a81cee9c330646c6b9ad06a2165dea863c377ea53679",
+    "bytes": 1144
+  },
+  {
+    "path": "capture/explicit_none/ir-after.json",
+    "sha256": "3d40b4807983e513e33ee071cc3e7b2ec773091942180bf1dda9f71e8733a8bb",
+    "bytes": 580848
+  },
+  {
+    "path": "capture/explicit_none/ir-before.json",
+    "sha256": "3d40b4807983e513e33ee071cc3e7b2ec773091942180bf1dda9f71e8733a8bb",
+    "bytes": 580848
+  },
+  {
+    "path": "capture/explicit_none/model.py",
+    "sha256": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+    "bytes": 1315
+  },
+  {
+    "path": "capture/explicit_none/native-facts.json",
+    "sha256": "c39c04c7c993e617358d59383aac549365bf06a59cfb93aecabb49ad545d68be",
+    "bytes": 9482
+  },
+  {
+    "path": "capture/explicit_none/page.html.gz",
+    "sha256": "0831b99fbcc18b564ca525ee41c5500f08aa621721008981d60d0869fd5c382b",
+    "bytes": 11742
+  },
+  {
+    "path": "capture/explicit_none/prepared-document.json",
+    "sha256": "5d433e93234368b09f572af83979e04db50387c029578b7fc215b8e6c2384f18",
+    "bytes": 3382
+  },
+  {
+    "path": "capture/explicit_none/render-contexts.json",
+    "sha256": "f434f44ed6f937ba3bf4922f26c888f3dd29921c4cf8da6dfe357be84bf2f75c",
+    "bytes": 8311
+  },
+  {
+    "path": "capture/explicit_none/result.json",
+    "sha256": "cd0363fced04c3876837ea9863fc331998a38db3d2d765ab8a0b0362b59152ea",
+    "bytes": 689
+  },
+  {
+    "path": "capture/gemma_default/actual-softcap-readers.json",
+    "sha256": "ddb61332515eb68f028884dcb856744d3c061c5d3250b861faac086daf78e094",
+    "bytes": 51175
+  },
+  {
+    "path": "capture/gemma_default/context-defaults-before.json",
+    "sha256": "7c334de90a4798dc3258a6e3cc20d82f049a856f61ca658cfff703049eff4e6d",
+    "bytes": 97
+  },
+  {
+    "path": "capture/gemma_default/events.json",
+    "sha256": "cc9a27b3dc14ad536458542fa7333db0f0782598b14b88dbefd2b14af670ae10",
+    "bytes": 4178
+  },
+  {
+    "path": "capture/gemma_default/input.json",
+    "sha256": "e2471774263d31a16320b1deea2ecbdee11ed12cb76f4fb23f07175a5ee062f1",
+    "bytes": 1891
+  },
+  {
+    "path": "capture/gemma_default/ir-after.json",
+    "sha256": "78395f61a34e4b759d1aa6efd0bc1b00bf3afbe25728817c532c15fadb0e17db",
+    "bytes": 461393
+  },
+  {
+    "path": "capture/gemma_default/ir-before.json",
+    "sha256": "78395f61a34e4b759d1aa6efd0bc1b00bf3afbe25728817c532c15fadb0e17db",
+    "bytes": 461393
+  },
+  {
+    "path": "capture/gemma_default/native-facts.json",
+    "sha256": "9750ad6e4cfa0d9b397e013df965c0f5ca18dc66df6ec31fd10dea5ce8f8644f",
+    "bytes": 67761
+  },
+  {
+    "path": "capture/gemma_default/page.html.gz",
+    "sha256": "fc197769edbb03ce2cb605792af54cc7f968eab2899ae2fdb4b15be6089d9285",
+    "bytes": 11847
+  },
+  {
+    "path": "capture/gemma_default/prepared-document.json",
+    "sha256": "42bbfda9f2dca9707e06ddb0594fbbb0aab3f2723afee6eeb806a53c9c66e374",
+    "bytes": 4325
+  },
+  {
+    "path": "capture/gemma_default/render-contexts.json",
+    "sha256": "8c9f1bdfc36018f0ea12180f99b0f604c4772c6543120bc1993d922979d4ceb8",
+    "bytes": 47752
+  },
+  {
+    "path": "capture/gemma_default/result.json",
+    "sha256": "0ab7c60d7f01614e87fe01533ac6e3217aca54d94bbc9ba695e12ee80b524443",
+    "bytes": 768
+  },
+  {
+    "path": "capture/injected_missing/actual-softcap-readers.json",
+    "sha256": "1c8a64020b95e91ee1a91ffd7a1337ba64e4bf96458d2381885c53c0eacf7dfa",
+    "bytes": 46089
+  },
+  {
+    "path": "capture/injected_missing/context-defaults-before.json",
+    "sha256": "45e083114f81843f798634f794734611ec168d2cecf34ff701c7a9b44f06ece8",
+    "bytes": 28
+  },
+  {
+    "path": "capture/injected_missing/events.json",
+    "sha256": "8c74f0717007336393ffca6e8aedefbd1e59b7496d7fa2c495eef3d762fce541",
+    "bytes": 1993
+  },
+  {
+    "path": "capture/injected_missing/input.json",
+    "sha256": "1e95ccae006450a1afdc9fbe42689ad3981c7db7db2ec7b34bfa0dcb87158215",
+    "bytes": 1119
+  },
+  {
+    "path": "capture/injected_missing/ir-after.json",
+    "sha256": "aa91cb12fd39e74da7e572dbe0faf1673ded59d5321f06ba7a6112d37ccfdfc3",
+    "bytes": 579505
+  },
+  {
+    "path": "capture/injected_missing/ir-before.json",
+    "sha256": "aa91cb12fd39e74da7e572dbe0faf1673ded59d5321f06ba7a6112d37ccfdfc3",
+    "bytes": 579505
+  },
+  {
+    "path": "capture/injected_missing/model.py",
+    "sha256": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+    "bytes": 1315
+  },
+  {
+    "path": "capture/injected_missing/native-facts.json",
+    "sha256": "05d601811be8a282d28da01376021b454cf12ea3c70b4f06def624d6be3d1567",
+    "bytes": 9482
+  },
+  {
+    "path": "capture/injected_missing/page.html.gz",
+    "sha256": "d7e9c932b615ffcdf560b0dcf5f94a707e3aa2ba3f92a41e6b5da42be3832a85",
+    "bytes": 11543
+  },
+  {
+    "path": "capture/injected_missing/prepared-document.json",
+    "sha256": "717a5d4bc9b209f29b2a65d9a02f1b97a5bd71aeb701213d2d7ea84dc321e644",
+    "bytes": 3311
+  },
+  {
+    "path": "capture/injected_missing/render-contexts.json",
+    "sha256": "d75d4162b63de510814562da726ced4cf1c87447b8292c99798b40b6f7d02448",
+    "bytes": 8311
+  },
+  {
+    "path": "capture/injected_missing/result.json",
+    "sha256": "d96e2bd5c09938bcfec45014d78dd9c51297dd737ba7382f105733690cdbcbe5",
+    "bytes": 692
+  },
+  {
+    "path": "capture/no_mechanism/actual-softcap-readers.json",
+    "sha256": "178d424556151ee24ffac97265e2aa3840844f91129832d2295eff441f665a4a",
+    "bytes": 4042
+  },
+  {
+    "path": "capture/no_mechanism/context-defaults-before.json",
+    "sha256": "45e083114f81843f798634f794734611ec168d2cecf34ff701c7a9b44f06ece8",
+    "bytes": 28
+  },
+  {
+    "path": "capture/no_mechanism/events.json",
+    "sha256": "a1eb51c9fdf513a110843b266885baf530cf55c88e62d4debad9781587558ed4",
+    "bytes": 2011
+  },
+  {
+    "path": "capture/no_mechanism/input.json",
+    "sha256": "1e95ccae006450a1afdc9fbe42689ad3981c7db7db2ec7b34bfa0dcb87158215",
+    "bytes": 1119
+  },
+  {
+    "path": "capture/no_mechanism/ir-after.json",
+    "sha256": "bfb23463e767a65620b99cb53a5aa6f21fc84323c489c877846fc7b8ab10e736",
+    "bytes": 581163
+  },
+  {
+    "path": "capture/no_mechanism/ir-before.json",
+    "sha256": "bfb23463e767a65620b99cb53a5aa6f21fc84323c489c877846fc7b8ab10e736",
+    "bytes": 581163
+  },
+  {
+    "path": "capture/no_mechanism/model.py",
+    "sha256": "33703cfe06b1b4652a6f7517d9823efc1dbffd95232e090c5eb72959dac7dead",
+    "bytes": 1215
+  },
+  {
+    "path": "capture/no_mechanism/native-facts.json",
+    "sha256": "af1b0acd6d2ca91ab242da89b146d3691d75d6327f912c00f5841c0d2aef5782",
+    "bytes": 10967
+  },
+  {
+    "path": "capture/no_mechanism/page.html.gz",
+    "sha256": "d044b7cf088f690ffb562bb92868b031b0b618ffa5941ffb9c6309fb4e95e0a1",
+    "bytes": 11543
+  },
+  {
+    "path": "capture/no_mechanism/prepared-document.json",
+    "sha256": "717a5d4bc9b209f29b2a65d9a02f1b97a5bd71aeb701213d2d7ea84dc321e644",
+    "bytes": 3311
+  },
+  {
+    "path": "capture/no_mechanism/render-contexts.json",
+    "sha256": "b2b7e16e2e4af9fe93337e1705a2fbe49dea7b9553807b4dc6eb7353aaf1a80d",
+    "bytes": 8313
+  },
+  {
+    "path": "capture/no_mechanism/result.json",
+    "sha256": "fd7fa1bfb25d3999e3493174fcfca2953890ea3d00f858dbcec6c257c658de20",
+    "bytes": 686
+  },
+  {
+    "path": "capture/plain_missing/actual-softcap-readers.json",
+    "sha256": "0990f7a5bef10f3a05dbc471f5de9b54682615290265351dffa3bb25de3c5478",
+    "bytes": 45867
+  },
+  {
+    "path": "capture/plain_missing/context-defaults-before.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "path": "capture/plain_missing/events.json",
+    "sha256": "4da3eb9b6267c0e02246dd3894d98f29632f03f328e6a41d58c45047b0152b2c",
+    "bytes": 1993
+  },
+  {
+    "path": "capture/plain_missing/input.json",
+    "sha256": "1e95ccae006450a1afdc9fbe42689ad3981c7db7db2ec7b34bfa0dcb87158215",
+    "bytes": 1119
+  },
+  {
+    "path": "capture/plain_missing/ir-after.json",
+    "sha256": "5fdfc4abd3f7d87f6ec6f429aa54b51abfbfbf70b49946d9b9def0f492789fe4",
+    "bytes": 579502
+  },
+  {
+    "path": "capture/plain_missing/ir-before.json",
+    "sha256": "5fdfc4abd3f7d87f6ec6f429aa54b51abfbfbf70b49946d9b9def0f492789fe4",
+    "bytes": 579502
+  },
+  {
+    "path": "capture/plain_missing/model.py",
+    "sha256": "e949f8f2309f8b175f5aa5ac705bb834fe6bfd71f3976b8a231ff549b6b0bdc1",
+    "bytes": 1315
+  },
+  {
+    "path": "capture/plain_missing/native-facts.json",
+    "sha256": "05d601811be8a282d28da01376021b454cf12ea3c70b4f06def624d6be3d1567",
+    "bytes": 9482
+  },
+  {
+    "path": "capture/plain_missing/page.html.gz",
+    "sha256": "24cf5ce526b1c8d507b3fe4eb6313d6ea1af689962677406ffa6d2fe6f1e8c2b",
+    "bytes": 11544
+  },
+  {
+    "path": "capture/plain_missing/prepared-document.json",
+    "sha256": "717a5d4bc9b209f29b2a65d9a02f1b97a5bd71aeb701213d2d7ea84dc321e644",
+    "bytes": 3311
+  },
+  {
+    "path": "capture/plain_missing/render-contexts.json",
+    "sha256": "0770ce91dbfd02aec3f1e8f0f98a90b2c5b9dae765ffaa565eb741be5a49267e",
+    "bytes": 8311
+  },
+  {
+    "path": "capture/plain_missing/result.json",
+    "sha256": "97782048f7447abcbfe2ae4938348357051379945a5f4ad2e39224cfeb08e1fe",
+    "bytes": 689
+  },
+  {
+    "path": "capture/result.json",
+    "sha256": "2466fe5906a8ddc7f2db30a22b5e7f0fe21998eba1d8f307e38bef1640d73933",
+    "bytes": 5756
+  },
+  {
+    "path": "result.json",
+    "sha256": "d25e5f571115b576c502e9484e5f8d6733c053126d912344681cd7dcd8fe6508",
+    "bytes": 536
+  },
+  {
+    "path": "softcap-diagnostic.log",
+    "sha256": "655a4abc0e469e63ac4f63e6d28e17690102d52147c0febd645896bed6a9ecd0",
+    "bytes": 3259
+  },
+  {
+    "path": "softcap-diagnostic.py",
+    "sha256": "38e41f73ade4a3720ed3c08c110c9588556ce8eaeb970d5e9e01c92b182ed5c0",
+    "bytes": 4051
+  },
+  {
+    "path": "run-softcap-diagnostic.py",
+    "sha256": "24b469df397ee02196b0e952a8dce29c1db4428285ea01e2a1585913f08f6006",
+    "bytes": 1061
+  }
+]

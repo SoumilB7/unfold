@@ -1,0 +1,45 @@
+.................................................F...................... [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+........................................................................ [ 67%]
+........................................................................ [ 79%]
+........................................................................ [ 90%]
+............................................................             [100%]
+=================================== FAILURES ===================================
+____ test_sink_connection_cannot_be_qualified_by_presence_or_changed_value _____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5837/test_sink_connection_cannot_be0')
+
+    def test_sink_connection_cannot_be_qualified_by_presence_or_changed_value(tmp_path):
+        from test_attention_sinks import _reader
+        document = PreparedDocument({}, {})
+        with bound_document(DocumentBinding("root", (), document)):
+>           result = _reader(tmp_path)
+                     ^^^^^^^^^^^^^^^^^
+
+tests/test_reader_claims.py:393: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_attention_sinks.py:76: in _reader
+    return decoder_attention_sinks_for_path(
+model_unfolder/evidence/reader_claims.py:256: in invoke
+    witness.validate_result(result)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = AttentionSinkClaimWitness(index=ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(ca...af2aac0c9', component_key='root', external=False, external_provenance=''), line=20, col=16, end_line=20, end_col=41))))
+result = ReaderResult(status='resolved', owner=OwnerOccurrenceId(root=SymbolId(source=SourceId(canonical_path='/private/var/fol...detail='an exact learned Parameter and exact score producer join before the exact attention softmax')), ambiguity=None)
+
+    def validate_result(self, result):
+        if type(self.sink) is not AttentionSinkEvidence:
+            raise TypeError("sink claim needs exact learned-parameter to softmax lineage")
+        self.sink.__post_init__()
+        if result.status != "resolved" or result.value is not self.sink \
+                or result.owner != self.sink.block_occurrence:
+>           raise ValueError("sink claim belongs to another result or occurrence")
+E           ValueError: sink claim belongs to another result or occurrence
+
+model_unfolder/evidence/attention_sinks.py:125: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_reader_claims.py::test_sink_connection_cannot_be_qualified_by_presence_or_changed_value
+1 failed, 635 passed in 48.07s

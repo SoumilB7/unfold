@@ -57,6 +57,7 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderFactProjection, retained_claim_reader
 
 
 _TRANSPARENT_FUNCTION_PROTOCOLS = frozenset({
@@ -632,6 +633,99 @@ def _guards_for_selected_value(
     return tuple(dict.fromkeys(selected))
 
 
+@dataclass(frozen=True)
+class CellTopologyClaimWitness:
+    """All exact candidate equations, before the public result picks a value."""
+
+    index: ProgramIndex
+    candidates: object
+    results: tuple[ReaderResult, ...]
+    selector_reads: tuple[tuple[tuple[str, ...], object, str], ...] = ()
+    reader_symbol = "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+
+    def validate_result(self, result):
+        from .decoder_block import DecoderBlockCandidates
+        if not isinstance(self.candidates, DecoderBlockCandidates) \
+                or not self.results \
+                or tuple(item.owner for item in self.results) != self.candidates.occurrences:
+            raise ValueError("topology witness retains every exact block candidate")
+        if result.status != "resolved" or result.owner != self.candidates.stage_occurrence \
+                or result.value is not self.results[0].value:
+            raise ValueError("topology result differs from the retained candidate proof")
+        for item in self.results:
+            if item.status != "resolved" or type(item.value) is not DecoderCellTopologyEvidence:
+                raise ValueError("topology requires complete typed candidate equations")
+            item.value.__post_init__()
+            if item.owner != item.value.block_occurrence:
+                raise ValueError("topology equations belong to another occurrence")
+        signatures = {(item.value.norm_placement, item.value.residual_topology,
+                       item.value.parallel_input_norm_count,
+                       item.value.residual_scale_path, item.value.residual_scale_value)
+                      for item in self.results}
+        if len(signatures) != 1:
+            raise ValueError("topology projections require unanimous exact equations")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.layer":
+            raise ValueError("cell topology cannot author another fact owner")
+        value = self.results[0].value
+        if key == "norm_placement":
+            projected, kind = value.norm_placement, "connection"
+            paths = tuple(dict.fromkeys(path for item in self.results
+                                        for path in item.value.norm_config_paths))
+        elif key == "residual_topology":
+            projected, kind = value.residual_topology, "connection"
+            paths = tuple(dict.fromkeys(path for item in self.results
+                                        for path in item.value.residual_config_paths))
+        elif key == "parallel_norm_count" and value.parallel_input_norm_count is not None:
+            projected, kind = value.parallel_input_norm_count, "applied_function"
+            paths = tuple(dict.fromkeys(path for item in self.results for path in (
+                *item.value.norm_config_paths, *item.value.residual_config_paths)))
+        elif key == "residual_scale" and value.residual_scale_value is not None:
+            projected, kind, paths = value.residual_scale_value, "applied_function", ()
+        elif key == "residual_scale" and value.residual_scale_path is not None:
+            from .reader_claims import reader_operand
+            path = value.residual_scale_path
+            operand = reader_operand(document, path)
+            projected = operand.value
+            status = "class_default" if operand.source_kind == "class_default" else "code_and_config"
+            if not isinstance(projected, (int, float)) \
+                    or isinstance(projected, bool) or not math.isfinite(projected):
+                raise ValueError("residual scale has no exact finite declared/default operand")
+            return ReaderFactProjection(owner, key, "applied_function", projected,
+                                        status, (operand.checkpoint_path,) if operand.checkpoint_path else ())
+        else:
+            raise ValueError("cell topology has no qualified value for this projection")
+        kinds = {path: source_kind for item in self.results
+                 for path, source_kind in item.value.config_source_kinds}
+        # The ambient document identifies the parse; it cannot certify a
+        # callback's supplied values. Check the actual successful selector
+        # readings that decided these equations against the exact document.
+        from .reader_claims import reader_operand
+        for path in paths:
+            observed = tuple((value, source_kind) for selected, value, source_kind
+                             in self.selector_reads if selected == path)
+            if not observed:
+                raise ValueError("topology did not retain its deciding selector operand")
+            operand = reader_operand(document, path)
+            for actual, source_kind in observed:
+                from .receipts import value_status_hash
+                if value_status_hash(actual, "operand") != value_status_hash(operand.value, "operand") \
+                        or source_kind and source_kind != operand.source_kind:
+                    raise ValueError("topology selector value/origin differs from its prepared document")
+        status = ("class_default" if any(kinds[path] == "class_default" for path in paths)
+                  else "code_and_config" if paths else "code_proven")
+        return ReaderFactProjection(owner, key, kind, projected, status,
+                                    tuple(path for path in paths
+                                          if kinds[path] != "class_default"))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.layer', 'norm_placement', 'connection'),
+    ('decoder.layer', 'residual_topology', 'connection'),
+    ('decoder.layer', 'parallel_norm_count', 'applied_function'),
+    ('decoder.layer', 'residual_scale', 'applied_function'),
+))
 def decoder_cell_topology_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -649,6 +743,27 @@ def decoder_cell_topology_for_path(
     if not isinstance(config_path, tuple) or any(
             not isinstance(part, str) or not part for part in config_path):
         raise TypeError("config_path is tuple[str, ...]")
+
+    selector_reads = []
+    def captured(selector):
+        if selector is None:
+            return None
+        def select(path):
+            selected = selector(path)
+            source_kind = ""
+            value = selected
+            present = selected is not None
+            if isinstance(selected, tuple) and len(selected) in {2, 3} \
+                    and isinstance(selected[0], bool):
+                present, value = selected[:2]
+                source_kind = selected[2] if len(selected) == 3 else ""
+            if present:
+                from .document import _snapshot
+                selector_reads.append((tuple(path), _snapshot(value), source_kind))
+            return selected
+        return select
+    config_selector = captured(config_selector)
+    guard_config_selector = captured(guard_config_selector)
 
     candidates = decoder_block_candidates_for_config(
         index, bundle, config_path, allow_root_stage=allow_root_stage,
@@ -700,6 +815,8 @@ def decoder_cell_topology_for_path(
     value = results[0].value
     return ReaderResult.resolved(
         candidates.value.stage_occurrence, value,
+        claim_witness=CellTopologyClaimWitness(index, candidates.value, results,
+                                              tuple(selector_reads)),
         provenance=(
             *candidates.provenance,
             *(origin for item in results for origin in item.provenance),

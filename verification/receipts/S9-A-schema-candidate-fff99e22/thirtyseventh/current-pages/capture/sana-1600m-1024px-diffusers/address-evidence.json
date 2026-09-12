@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "2f52fe21d1e6fcb3c2d5c28ad90fc361c30cafd11df4060d050cd46d025d83de",
+  "input": "tests/sable_test_corpus/sana-1600m-1024px-diffusers.json",
+  "input_sha256": "112d3ed254272e488a005b70a7c00e8580cf43950093bcdbe9b8195eda094c4b",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.sana_transformer",
+    "qualname": "SanaTransformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

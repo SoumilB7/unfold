@@ -1,0 +1,11 @@
+{
+  "name": "remaining-changed-and-authority",
+  "returncode": 1,
+  "duration": 725.3752033340006,
+  "before": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+  "after": "b0d3e075f8d5a39464759ecaa90b633a3601184e51021a8fbc44c9929b6ea615",
+  "artifacts_before": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "artifacts_after": "5aed5480485a877c5393ec4eb97be56cf2709327baa35ede0da54884029bd97e",
+  "log_path": "/private/tmp/unfold-s9a-twentysixth/remaining-qualification/remaining-changed-and-authority.log",
+  "passed": false
+}

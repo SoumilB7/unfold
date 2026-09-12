@@ -1,0 +1,192 @@
+{
+  "verdict": "PASS_BOUNDED_ACTUAL37_BROWSER_QA",
+  "actual_runtime_manifest_sha256": "c9d5914f4fc59b4f9df05c3e14b7bd08260dd2cce75a4d0a6a4d603398759109",
+  "cases": {
+    "llama": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 0,
+      "ready_at_load_event_ms": 75.74645899876487,
+      "click_to_card_ms": 76.75345900497632,
+      "HTML_bytes_before_after": [
+        60032,
+        60329
+      ],
+      "executable_JS_bytes_before_after": [
+        4101,
+        4101
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        0,
+        0
+      ],
+      "page_errors": []
+    },
+    "sdxl": {
+      "before_scroll_width": 2267,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 1,
+      "ready_at_load_event_ms": 109.84866700164275,
+      "click_to_card_ms": 41.7838329958613,
+      "HTML_bytes_before_after": [
+        4458597,
+        4459264
+      ],
+      "executable_JS_bytes_before_after": [
+        7800,
+        7800
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [
+        [
+          "0c35d85cbfc25244fafb3b1d000c0b57d42fc08f0976ab45a891835c3123d196",
+          "b80fd1f1259cdcbced7eec605e1950d81c5cfb87134cbec8ee225d06e17cd464"
+        ]
+      ],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        3269566,
+        3269936
+      ],
+      "page_errors": []
+    },
+    "bloom-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 0,
+      "ready_at_load_event_ms": 34.24500000255648,
+      "click_to_card_ms": 39.10737499973038,
+      "HTML_bytes_before_after": [
+        63372,
+        63669
+      ],
+      "executable_JS_bytes_before_after": [
+        4101,
+        4101
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        0,
+        0
+      ],
+      "page_errors": []
+    },
+    "bloom-sparse": {
+      "before_scroll_width": 1419,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 1,
+      "ready_at_load_event_ms": 24.80820799974026,
+      "click_to_card_ms": 39.189999995869584,
+      "HTML_bytes_before_after": [
+        54278,
+        54575
+      ],
+      "executable_JS_bytes_before_after": [
+        4101,
+        4101
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        0,
+        0
+      ],
+      "page_errors": []
+    },
+    "musicgen-ordinary": {
+      "before_scroll_width": 644,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 0,
+      "ready_at_load_event_ms": 24.07474999927217,
+      "click_to_card_ms": 39.216208999278024,
+      "HTML_bytes_before_after": [
+        108794,
+        109091
+      ],
+      "executable_JS_bytes_before_after": [
+        4101,
+        4101
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        0,
+        0
+      ],
+      "page_errors": []
+    },
+    "musicgen-sparse": {
+      "before_scroll_width": 3161,
+      "after_scroll_width": 644,
+      "card_client_width": 644,
+      "full_card_and_chip_text_exact": true,
+      "DOM_counts_card_ids_and_four_border_colors_unchanged": true,
+      "actual_visible_default_chip_count": 1,
+      "ready_at_load_event_ms": 13.414000000921078,
+      "click_to_card_ms": 39.26779100584099,
+      "HTML_bytes_before_after": [
+        109420,
+        109717
+      ],
+      "executable_JS_bytes_before_after": [
+        4101,
+        4101
+      ],
+      "executable_JS_size_delta": 0,
+      "exact_payload_selector_pairs": [],
+      "JS_comparison_scope": "Raw JS differs only exact mount and SDXL content-addressed payload selector values. Size delta measured without normalization; no output approval normalization.",
+      "nonexecutable_script_data_bytes_before_after": [
+        0,
+        0
+      ],
+      "page_errors": []
+    }
+  },
+  "four_style_scope": "Actual model cards emit class_default in these three checked examples; the other kinds are evaluated with separately labelled synthetic long-token nodes under the actual37 stylesheet. This does not claim four actual fact emitters.",
+  "new_toggles": 0,
+  "new_colors": 0,
+  "full_text_preserved": true,
+  "screenshots_visually_inspected": [
+    "musicgen-sparse/card-viewport.png",
+    "bloom-sparse/card-viewport.png",
+    "sdxl/card-viewport.png",
+    "four-style-probe.png"
+  ],
+  "residuals": [
+    {
+      "id": "W1",
+      "owner": "S9-D",
+      "source": "model_unfolder/labels.py:382",
+      "finding": "Existing MusicGen card prose says projected image states; actual drawing labels Encoded text. Recorded without broadening A or inferring source mechanism from browser."
+    },
+    {
+      "id": "W2",
+      "owner": "S9-C/L5",
+      "finding": "Existing Bloom prose says every head attends over the sequence while mask is unresolved; wording should be proof-sourced. No further A change."
+    },
+    "Full JSON default labels remain verbose; no information-design redesign in this bounded correction."
+  ],
+  "limits": "Six actual37 captured pages; published bytes matched root saved outputs before browser; headless Chrome152 at1440x1000, fresh profile, fonts blocked. Incidental load/click times under concurrent matrix are not latency baselines. No exhaustive drill/mobile/accessibility check or output blessing."
+}

@@ -1,0 +1,242 @@
+{
+  "directories": [
+    {
+      "archived": "twentieth/broader-qualification",
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache",
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache/entries",
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/entries"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache/parses",
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/parses"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache/requests",
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/requests"
+    },
+    {
+      "archived": "twentieth/qualification",
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification"
+    },
+    {
+      "archived": "twentieth/qualification/cache",
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache"
+    },
+    {
+      "archived": "twentieth/qualification/cache/entries",
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/entries"
+    },
+    {
+      "archived": "twentieth/qualification/cache/parses",
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/parses"
+    },
+    {
+      "archived": "twentieth/qualification/cache/requests",
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/requests"
+    },
+    {
+      "archived": "twentieth-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source"
+    },
+    {
+      "archived": "twentieth-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/model_unfolder"
+    },
+    {
+      "archived": "twentieth-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "twentieth-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "twentieth/broader-qualification/cache/entries/2103ee16192626daff88ca644264428eb6457edf9c8c80966b09e5e22b765a2f.json",
+      "bytes": 3116310,
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/entries/2103ee16192626daff88ca644264428eb6457edf9c8c80966b09e5e22b765a2f.json",
+      "sha256": "2103ee16192626daff88ca644264428eb6457edf9c8c80966b09e5e22b765a2f"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache/parses/5fbd5620a51d9b9e6eb168cd1c82b801f39948338ddc2511694a83101e7dfb20.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/parses/5fbd5620a51d9b9e6eb168cd1c82b801f39948338ddc2511694a83101e7dfb20.json",
+      "sha256": "61523d88f49d95e28c25ff4201681f0f60400bc97b7e8628f2e6d1cc5ce3299b"
+    },
+    {
+      "archived": "twentieth/broader-qualification/cache/requests/2a96345e39e9eda77ba92d03390593134864e4e4a236d60b94172bade8e3eca7.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/cache/requests/2a96345e39e9eda77ba92d03390593134864e4e4a236d60b94172bade8e3eca7.json",
+      "sha256": "61523d88f49d95e28c25ff4201681f0f60400bc97b7e8628f2e6d1cc5ce3299b"
+    },
+    {
+      "archived": "twentieth/broader-qualification/result.json",
+      "bytes": 545,
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/result.json",
+      "sha256": "538db239827b56d6afcc8caa67c3fc9b0fc9426b03d7f8ff55ad53127a4c0981"
+    },
+    {
+      "archived": "twentieth/broader-qualification/schema-proof-broader.log",
+      "bytes": 8927,
+      "original": "/private/tmp/unfold-s9a-twentieth/broader-qualification/schema-proof-broader.log",
+      "sha256": "5e4220e49f34cbff0b5e1387eea20955b597e7d6b1f7d548462b7c900e260537"
+    },
+    {
+      "archived": "twentieth/census.py",
+      "bytes": 5060,
+      "original": "/private/tmp/unfold-s9a-twentieth/census.py",
+      "sha256": "82bdedd279d3e0197155e9cc328513c485cecd3c9fef6215bba2e8ee5bd7773a"
+    },
+    {
+      "archived": "twentieth/generate-matrix.py",
+      "bytes": 544,
+      "original": "/private/tmp/unfold-s9a-twentieth/generate-matrix.py",
+      "sha256": "5c68011d9c51be315502a62922f1b4ff7bdf8b8e44dafcd5d7a9855eee269fa7"
+    },
+    {
+      "archived": "twentieth/handoff-1.json",
+      "bytes": 904,
+      "original": "/private/tmp/unfold-s9a-twentieth/handoff-1.json",
+      "sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452"
+    },
+    {
+      "archived": "twentieth/qualification/cache/entries/39f57cb4d0d45fd7f317e9e8d3e94e4c83be81e4baa1c12201acb0a49d2ec7be.json",
+      "bytes": 3116310,
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/entries/39f57cb4d0d45fd7f317e9e8d3e94e4c83be81e4baa1c12201acb0a49d2ec7be.json",
+      "sha256": "39f57cb4d0d45fd7f317e9e8d3e94e4c83be81e4baa1c12201acb0a49d2ec7be"
+    },
+    {
+      "archived": "twentieth/qualification/cache/parses/5fbd5620a51d9b9e6eb168cd1c82b801f39948338ddc2511694a83101e7dfb20.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/parses/5fbd5620a51d9b9e6eb168cd1c82b801f39948338ddc2511694a83101e7dfb20.json",
+      "sha256": "abe932fb65b980aeebf9a168c28679fa392a0ae6f593f7a81873e736a522a2fa"
+    },
+    {
+      "archived": "twentieth/qualification/cache/requests/2a96345e39e9eda77ba92d03390593134864e4e4a236d60b94172bade8e3eca7.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/cache/requests/2a96345e39e9eda77ba92d03390593134864e4e4a236d60b94172bade8e3eca7.json",
+      "sha256": "abe932fb65b980aeebf9a168c28679fa392a0ae6f593f7a81873e736a522a2fa"
+    },
+    {
+      "archived": "twentieth/qualification/result.json",
+      "bytes": 537,
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/result.json",
+      "sha256": "44e7850a6c0a7cafd8c76781ab9088674568ac8bb0bd926132ab80e8f97e5928"
+    },
+    {
+      "archived": "twentieth/qualification/schema-proof-metadata.log",
+      "bytes": 511,
+      "original": "/private/tmp/unfold-s9a-twentieth/qualification/schema-proof-metadata.log",
+      "sha256": "deddbb1797339569492e374d67d87df3f77cd9d1249a6b239497b2a89dcccc9c"
+    },
+    {
+      "archived": "twentieth/run-broader.py",
+      "bytes": 2695,
+      "original": "/private/tmp/unfold-s9a-twentieth/run-broader.py",
+      "sha256": "7feaaebd72e472aafca96f5bf7333d58dc9b3eb61eb568ab2794a66a8f503a76"
+    },
+    {
+      "archived": "twentieth/run-census.py",
+      "bytes": 988,
+      "original": "/private/tmp/unfold-s9a-twentieth/run-census.py",
+      "sha256": "fac411d157e11397614f5a32e5f021a51f7958fa99b7d6f793d254f04f66766f"
+    },
+    {
+      "archived": "twentieth/run-matrix.py",
+      "bytes": 1005,
+      "original": "/private/tmp/unfold-s9a-twentieth/run-matrix.py",
+      "sha256": "b898960ca4ca7c40211081ebb60d376cd00270db059945aeaf246be4b8654793"
+    },
+    {
+      "archived": "twentieth/run-sparse.py",
+      "bytes": 1610,
+      "original": "/private/tmp/unfold-s9a-twentieth/run-sparse.py",
+      "sha256": "766d9ab27de5ecb70f558ba589a1cf648d6aba3de1499404d2f3b13550225391"
+    },
+    {
+      "archived": "twentieth/run.py",
+      "bytes": 1366,
+      "original": "/private/tmp/unfold-s9a-twentieth/run.py",
+      "sha256": "01f78659c640cf36f6f3a6b6a5017ff9ea594e80f3452af7d2289c2d0a061736"
+    },
+    {
+      "archived": "twentieth/scope.json",
+      "bytes": 384,
+      "original": "/private/tmp/unfold-s9a-twentieth/scope.json",
+      "sha256": "cadfd2a4ec13c48ff9dee04165bd4e7c2a9830253e2df06575e3cd57263c4666"
+    },
+    {
+      "archived": "twentieth/source-manifest.json",
+      "bytes": 16749,
+      "original": "/private/tmp/unfold-s9a-twentieth/source-manifest.json",
+      "sha256": "f846a46c1c4942dcb9d5b17f450585a173035ee75daf193abaa268a7453fe788"
+    },
+    {
+      "archived": "twentieth-independent-review/manifest.json",
+      "bytes": 904,
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/manifest.json",
+      "sha256": "e97662f5e5dc0f2f8861c8ca2807a139592a7d1f741f8bee46d9649d911a7452"
+    },
+    {
+      "archived": "twentieth-independent-review/source/model_unfolder/evidence/registry.py",
+      "bytes": 80756,
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/model_unfolder/evidence/registry.py",
+      "sha256": "20b5fe8c35ff2efbc3d4cce4009ebb06d8d734ae0266f145646deae6da94b615"
+    },
+    {
+      "archived": "twentieth-independent-review/source/tests/test_fact_registry.py",
+      "bytes": 19965,
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/tests/test_fact_registry.py",
+      "sha256": "d54118763ab344d5608656f4f6a5afa1ec587899a054acaa5dce3f715f40c255"
+    },
+    {
+      "archived": "twentieth-independent-review/source/tests/test_s9_reader_declarations.py",
+      "bytes": 16510,
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/source/tests/test_s9_reader_declarations.py",
+      "sha256": "afd708256e7847c63a8d90d5383cabb90667588721b1eee06b320dfc9b362e5f"
+    },
+    {
+      "archived": "twentieth-independent-review/verdict.json",
+      "bytes": 1375,
+      "original": "/private/tmp/unfold-s9a-independent-nineteenth-return-review/verdict.json",
+      "sha256": "e0e3cbef8c1a591708f12200bf261f09f5cec7c5c11b1116c84fd163d19f11b4"
+    }
+  ],
+  "scope": "Released twentieth candidate and twentieth D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "twentieth/changed-sources.tar.gz",
+      "archive_sha256": "88476eb7adae734b549c16c75d764f937b4634027a8d8faf6aad590289b2a73b",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 114,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentieth",
+      "manifest_sha256": "f846a46c1c4942dcb9d5b17f450585a173035ee75daf193abaa268a7453fe788",
+      "phase": "twentieth",
+      "uncompressed_bytes": 3954087
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 6394287,
+    "copied_files": 25,
+    "source_files": 114
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

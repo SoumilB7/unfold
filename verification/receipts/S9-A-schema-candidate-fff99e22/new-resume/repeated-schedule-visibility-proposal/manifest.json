@@ -1,0 +1,29 @@
+{
+  "status": "HELD_SOURCE_ONLY_REVIEW_AND_RUNTIME_PENDING",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "2610e6a2ee40a3acdedec6600ea5239dc4deec604586491338f2060d38933dbd"
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "proposed_sha256": "7dc38afa2ac9b1055ada65802ddf85cfdd3a497fcffddafe56220eb48449d8bf"
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "sha256": "26098ee5f971c35796229350e63d1a5c3a80f0d37ebe5c92df5bf4cf62b79fd4"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "cdb68ae974ea8215982843610cf679dfbc5327cb46e432f7795eb21f82f9ff0c"
+    },
+    {
+      "path": "source-pins.json",
+      "sha256": "ff76fe0001830c5b081a656539d34b6f319a490f8c088e96b1e2afc7072ff18e"
+    }
+  ]
+}

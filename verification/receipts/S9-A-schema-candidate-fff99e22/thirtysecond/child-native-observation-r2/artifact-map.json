@@ -1,0 +1,762 @@
+{
+  "actual32-child-native-ledgers.log": {
+    "bytes": 878,
+    "sha256": "1c0d1e01ffd32854dfe4876d676e152ffa03e84495c841956ff7bf269914683d"
+  },
+  "capture/auraflow-v0-3/child-ledgers-local.json": {
+    "bytes": 142208,
+    "sha256": "58350b3196a2bd8939e1c1163e41c35fdcdfaefef03f9cdd3034e8ec2274c077"
+  },
+  "capture/auraflow-v0-3/child-observations/call-001/after.json": {
+    "bytes": 1229285,
+    "sha256": "d139d4c84c50ba597e368a910f40fb46745d0a6915101a7793836c779ce8ece4"
+  },
+  "capture/auraflow-v0-3/child-observations/call-001/before.json": {
+    "bytes": 1229285,
+    "sha256": "d139d4c84c50ba597e368a910f40fb46745d0a6915101a7793836c779ce8ece4"
+  },
+  "capture/auraflow-v0-3/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 1141,
+    "sha256": "9dfd174d79781c65585a07d128f9228388f9beda82461a1d0435a4ddf9d30134"
+  },
+  "capture/auraflow-v0-3/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/auraflow-v0-3/joins.json": {
+    "bytes": 3234,
+    "sha256": "f7c7ecd692d8212de35ccb346a07babdc58d458dd1a83afa6c1ca2a5422a76bc"
+  },
+  "capture/auraflow-v0-3/result.json": {
+    "bytes": 627,
+    "sha256": "92b33b401dbf6b7efc78295742209de07f19cd7e2ac55fd09f44e02cc66172f8"
+  },
+  "capture/auraflow-v0-3/root-ir.json": {
+    "bytes": 729696,
+    "sha256": "d8fb2fa7ef63aaab6b5f4f60b77e43351b4150bf041b3a9e65a9081dd1b91391"
+  },
+  "capture/auraflow-v0-3/root-live-python-types.json": {
+    "bytes": 3462440,
+    "sha256": "7d6af5930235f8c7dfc3cfb89846b0d5455db7cc7791da963ed717a07e074056"
+  },
+  "capture/auraflow-v0-3/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2919,
+    "sha256": "0f7c67e33aa5f52033ad4178e321be3ca7fabed6b0d54bee211f9769bf766662"
+  },
+  "capture/auraflow-v0-3/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/cogvideox-5b/child-ledgers-local.json": {
+    "bytes": 217167,
+    "sha256": "8fb4de200138b34f54e1e0da86e051ad1fe8c4e53cd9d48de0a7d873d6c7b1f7"
+  },
+  "capture/cogvideox-5b/child-observations/call-001/after.json": {
+    "bytes": 1576803,
+    "sha256": "fb2f612fda9401fb163d742bcda7f97bd9d6b29abb1aa52d00ad7f0893e01c4a"
+  },
+  "capture/cogvideox-5b/child-observations/call-001/before.json": {
+    "bytes": 1576803,
+    "sha256": "fb2f612fda9401fb163d742bcda7f97bd9d6b29abb1aa52d00ad7f0893e01c4a"
+  },
+  "capture/cogvideox-5b/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/cogvideox-5b/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/cogvideox-5b/joins.json": {
+    "bytes": 6496,
+    "sha256": "fea4371800429d09c8bedb8045dc3069a2ee4b27c25dd15f07a28dec4a0e05d9"
+  },
+  "capture/cogvideox-5b/result.json": {
+    "bytes": 627,
+    "sha256": "f2213e90313f3b29c15eab6abdf88a9d205ca9d14173d68a19b800879cb631f3"
+  },
+  "capture/cogvideox-5b/root-ir.json": {
+    "bytes": 927045,
+    "sha256": "d849202a84b341a625e36962abd8c7c04ea3c611a4ead7c7c7f5141cabdb7436"
+  },
+  "capture/cogvideox-5b/root-live-python-types.json": {
+    "bytes": 4516356,
+    "sha256": "e39e0aeec2cd28b96d43d68c0c13c245889c1b0d1dece5e263c626d53ff9be01"
+  },
+  "capture/cogvideox-5b/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2300,
+    "sha256": "c1f923b28a676edef14122783cb4d834a6dfb91488fa902c95233793972a7f01"
+  },
+  "capture/cogvideox-5b/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/flux-2-dev/child-ledgers-local.json": {
+    "bytes": 329153,
+    "sha256": "a260ec08066049799697422e4e81af31904c6c288ebb8d5aabe4354ce70a20b2"
+  },
+  "capture/flux-2-dev/child-observations/call-001/after.json": {
+    "bytes": 3032020,
+    "sha256": "fc0d88d83a9dfc9374eca03c819925603cad8c2ffd771e21b903627b410fba80"
+  },
+  "capture/flux-2-dev/child-observations/call-001/before.json": {
+    "bytes": 3032020,
+    "sha256": "fc0d88d83a9dfc9374eca03c819925603cad8c2ffd771e21b903627b410fba80"
+  },
+  "capture/flux-2-dev/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 14016,
+    "sha256": "136eae63dfecb64e6da185af60b1b96bcd2473619685e73d8b64347b9936dc5e"
+  },
+  "capture/flux-2-dev/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/flux-2-dev/joins.json": {
+    "bytes": 7788,
+    "sha256": "8896f2c2af6a1ac85bf83a8d54ea583033aab6ac59c78070c798ebb38e12b4c3"
+  },
+  "capture/flux-2-dev/result.json": {
+    "bytes": 624,
+    "sha256": "2b50f8d016aee8a60292c5af5a86c86235a5f6fd38a85773af7a9d5991c3a72e"
+  },
+  "capture/flux-2-dev/root-ir.json": {
+    "bytes": 1174916,
+    "sha256": "a677dafcdb75673ebe577a21a700eb70318cc993190a2e6b2d59b74425351c14"
+  },
+  "capture/flux-2-dev/root-live-python-types.json": {
+    "bytes": 5692143,
+    "sha256": "037c10feb2c4eb0ba36928e8c6f9ef9867e0b90fb7151cc38c319cba4064e93e"
+  },
+  "capture/flux-2-dev/root-live-vs-saved-json-deltas.json": {
+    "bytes": 3846,
+    "sha256": "8d6c8ed5303868633a38744d637dabc3d605c778b6f4aa0a5f9719fbcabf1b76"
+  },
+  "capture/flux-2-dev/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/fluxtransformer2dmodel/child-ledgers-local.json": {
+    "bytes": 485889,
+    "sha256": "b06bd6965d8ae33ebb6aa56244a9a1eea6baae6598e23215d6cd74c5ac5d0597"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-001/after.json": {
+    "bytes": 912711,
+    "sha256": "15fde53b227ae93f66990504baeb762ae44729246aaeb4fd28cecce3d77feba7"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-001/before.json": {
+    "bytes": 912711,
+    "sha256": "15fde53b227ae93f66990504baeb762ae44729246aaeb4fd28cecce3d77feba7"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 5166,
+    "sha256": "49bd66052d95c73f7172c7806a42a24490a3a3d713449b1f3561b5ae7514e21b"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-002/after.json": {
+    "bytes": 1574624,
+    "sha256": "a4afdf1668aeb366b3b274e9811d1aa71504ced6fccfd27a47a191bf39ea9119"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-002/before.json": {
+    "bytes": 1574624,
+    "sha256": "a4afdf1668aeb366b3b274e9811d1aa71504ced6fccfd27a47a191bf39ea9119"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-002/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/fluxtransformer2dmodel/child-observations/call-002/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/fluxtransformer2dmodel/joins.json": {
+    "bytes": 9810,
+    "sha256": "7ef2ecee05e1cc54a610613f6034fff456457d1c4bc63a8f8148f5cd23efdbdd"
+  },
+  "capture/fluxtransformer2dmodel/result.json": {
+    "bytes": 749,
+    "sha256": "e1fc6df858b2a68ccc7f3d905dd816576802fb68d6a52c7e5756ce52b911315e"
+  },
+  "capture/fluxtransformer2dmodel/root-ir.json": {
+    "bytes": 1118096,
+    "sha256": "ca4b2bdb510b3935bd45b9d776412e375001db1c4b79dd74b6c6689e7d03eb82"
+  },
+  "capture/fluxtransformer2dmodel/root-live-python-types.json": {
+    "bytes": 5396865,
+    "sha256": "6bb6bf758319039a29da45bee9656e595677629efa4a02825621f25982a146de"
+  },
+  "capture/fluxtransformer2dmodel/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2592,
+    "sha256": "e65f9fda61804cd19d212b59e44a092d34717ef92365bee20544e3917dbbd2a0"
+  },
+  "capture/fluxtransformer2dmodel/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/hunyuanvideo/child-ledgers-local.json": {
+    "bytes": 633570,
+    "sha256": "9d378be02d3d8b5449911700ad6ba5916e66696842efc73041504f2733e68553"
+  },
+  "capture/hunyuanvideo/child-observations/call-001/after.json": {
+    "bytes": 2597797,
+    "sha256": "b498b82557aa59ea1d37de0b404a5892f6296c0ceb1778346805b67bafc8c9c0"
+  },
+  "capture/hunyuanvideo/child-observations/call-001/before.json": {
+    "bytes": 2597797,
+    "sha256": "b498b82557aa59ea1d37de0b404a5892f6296c0ceb1778346805b67bafc8c9c0"
+  },
+  "capture/hunyuanvideo/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 22761,
+    "sha256": "f4881d051bce94e9bedbfe85e66b7f07375403e0c1f15df1cc58c7d2bee57b7b"
+  },
+  "capture/hunyuanvideo/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/hunyuanvideo/child-observations/call-002/after.json": {
+    "bytes": 912724,
+    "sha256": "bd34bc1e0758f23a4a98c56355c97bf48776f1013884a250e8e4ba39ca40a0a7"
+  },
+  "capture/hunyuanvideo/child-observations/call-002/before.json": {
+    "bytes": 912724,
+    "sha256": "bd34bc1e0758f23a4a98c56355c97bf48776f1013884a250e8e4ba39ca40a0a7"
+  },
+  "capture/hunyuanvideo/child-observations/call-002/json-serialization-type-deltas.json": {
+    "bytes": 5166,
+    "sha256": "49bd66052d95c73f7172c7806a42a24490a3a3d713449b1f3561b5ae7514e21b"
+  },
+  "capture/hunyuanvideo/child-observations/call-002/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/hunyuanvideo/joins.json": {
+    "bytes": 14324,
+    "sha256": "a4157681af0c6e2776ec31c01e6068d6ba08ddf674df4d14ceab9b80eff82ff4"
+  },
+  "capture/hunyuanvideo/result.json": {
+    "bytes": 741,
+    "sha256": "648cef556ee8dc77a1e25abb45f7cf5b5b1dd083d5d2333420cd28927bbea3b9"
+  },
+  "capture/hunyuanvideo/root-ir.json": {
+    "bytes": 1210964,
+    "sha256": "1241c82833f3c8d4298e4d42f72a3612581e1208563285b0f8a0be5a2553fc4e"
+  },
+  "capture/hunyuanvideo/root-live-python-types.json": {
+    "bytes": 5797506,
+    "sha256": "d287ede0d9e4291490ce9035b0e816715630ae38fd1c1e58f705507929eda18f"
+  },
+  "capture/hunyuanvideo/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2544,
+    "sha256": "580f5e2ffdb29a1a2b200ca913359206c0465269101870917b146831779cf040"
+  },
+  "capture/hunyuanvideo/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/ltx-video/child-ledgers-local.json": {
+    "bytes": 219623,
+    "sha256": "63ef01c19f63931c56650a63df2d4080e1fc0c64255926beaceb802518120639"
+  },
+  "capture/ltx-video/child-observations/call-001/after.json": {
+    "bytes": 1575889,
+    "sha256": "7b88dc0918c7e916f0f9844325a320c444a779f1feccae7230575fd2ef7b20ca"
+  },
+  "capture/ltx-video/child-observations/call-001/before.json": {
+    "bytes": 1575889,
+    "sha256": "7b88dc0918c7e916f0f9844325a320c444a779f1feccae7230575fd2ef7b20ca"
+  },
+  "capture/ltx-video/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/ltx-video/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/ltx-video/joins.json": {
+    "bytes": 6496,
+    "sha256": "bc4160ec2267c1ab3b9d6af2b967b29521e20ef388e0371911a562ba2f3e977a"
+  },
+  "capture/ltx-video/result.json": {
+    "bytes": 624,
+    "sha256": "f6c9d2b34a42e3829d0c62c4739a480d97aab20957c2b480438512aa74e75082"
+  },
+  "capture/ltx-video/root-ir.json": {
+    "bytes": 1001039,
+    "sha256": "e5bcdc4eab74499b61ec9d96684e3859431667e9ee35e00bfa2575d6d32831ad"
+  },
+  "capture/ltx-video/root-live-python-types.json": {
+    "bytes": 4881698,
+    "sha256": "4b32bb3be995f79f9d73ccf77e0fa0e0e691465568f5c3c5de5785e09a65e4ad"
+  },
+  "capture/ltx-video/root-live-vs-saved-json-deltas.json": {
+    "bytes": 3561,
+    "sha256": "885e64ea60d5c35e51f21671713c6b4729249d7af84ac72c755bfcbfd036bb9c"
+  },
+  "capture/ltx-video/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/lumina-image-2-0/child-ledgers-local.json": {
+    "bytes": 340709,
+    "sha256": "09ac6daa4198386c574b26fe2e06f462e63f82f7ac565a61b9f76c3b1eab42d4"
+  },
+  "capture/lumina-image-2-0/child-observations/call-001/after.json": {
+    "bytes": 2377488,
+    "sha256": "1a02bddb26e544622a9725244bdda0bffeeecd75f73a06c66bd353331821e092"
+  },
+  "capture/lumina-image-2-0/child-observations/call-001/before.json": {
+    "bytes": 2377488,
+    "sha256": "1a02bddb26e544622a9725244bdda0bffeeecd75f73a06c66bd353331821e092"
+  },
+  "capture/lumina-image-2-0/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 24447,
+    "sha256": "53b29b3d49b220c8b7de174605fd46b9c3a86e66ed4782568d2aadba3bd52f6f"
+  },
+  "capture/lumina-image-2-0/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/lumina-image-2-0/joins.json": {
+    "bytes": 8829,
+    "sha256": "758662739755cb0add49b6eab13ff03a6e42a97fce4e597578633548d7519032"
+  },
+  "capture/lumina-image-2-0/result.json": {
+    "bytes": 631,
+    "sha256": "5a8a6436377cde4db54a1e52745f6a8d1e4c267d2dbb9b45b9ee3c7981254f73"
+  },
+  "capture/lumina-image-2-0/root-ir.json": {
+    "bytes": 692781,
+    "sha256": "f91d8cba0f548d3dfcba40287da3ba39ac1667e7c55979190bdc4e0c83554399"
+  },
+  "capture/lumina-image-2-0/root-live-python-types.json": {
+    "bytes": 3353412,
+    "sha256": "5d9380110221d30ba20cd7d0b64f4c8bcbfb69b6fda09bc5966184a136a18751"
+  },
+  "capture/lumina-image-2-0/root-live-vs-saved-json-deltas.json": {
+    "bytes": 7944,
+    "sha256": "b795bcc122ad6d8208efa6a99ef0493af1a12d943019010f5aa0a0b8d3c16a97"
+  },
+  "capture/lumina-image-2-0/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/mochi-1-preview/child-ledgers-local.json": {
+    "bytes": 212315,
+    "sha256": "76405024d18c8398fe3cb3e8ce831ebf554f5e4eacf919cb92144a34427b3673"
+  },
+  "capture/mochi-1-preview/child-observations/call-001/after.json": {
+    "bytes": 1576803,
+    "sha256": "d6984cca7688d35968b589ca374eb3b4ed8523a0ce66614ecc40d0bf3e33f1d0"
+  },
+  "capture/mochi-1-preview/child-observations/call-001/before.json": {
+    "bytes": 1576803,
+    "sha256": "d6984cca7688d35968b589ca374eb3b4ed8523a0ce66614ecc40d0bf3e33f1d0"
+  },
+  "capture/mochi-1-preview/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/mochi-1-preview/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/mochi-1-preview/joins.json": {
+    "bytes": 6496,
+    "sha256": "96033cd1b8db5437ff7db882a881dbd94699ca5f3b435da61952c440f231e5d6"
+  },
+  "capture/mochi-1-preview/result.json": {
+    "bytes": 629,
+    "sha256": "455142c5469dbc10d0a8327f5edee8a04751eecb4e1fb130e719dfdeb39220d5"
+  },
+  "capture/mochi-1-preview/root-ir.json": {
+    "bytes": 504955,
+    "sha256": "e548adf3bad02003478ecf3ea46c8a298cc888e76898a6e2669178b4232dea98"
+  },
+  "capture/mochi-1-preview/root-live-python-types.json": {
+    "bytes": 2529217,
+    "sha256": "22d93f7282f0600e58082e184fd33271104cb49907dfb2d379c561bfca19eba7"
+  },
+  "capture/mochi-1-preview/root-live-vs-saved-json-deltas.json": {
+    "bytes": 1495,
+    "sha256": "a47ec76c9aa63c089ef2f29a41606158c8f08f5ec7b52ae4b360cbb9b4546e4d"
+  },
+  "capture/mochi-1-preview/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/child-ledgers-local.json": {
+    "bytes": 211240,
+    "sha256": "e920f53a786ca7fb7ea777b9131fb4e39038747cefebcd03f1af73b3b5c52ec3"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/child-observations/call-001/after.json": {
+    "bytes": 1575886,
+    "sha256": "4f427b317683db7ef51e90416d73162f27161f3e9f70cd4e801929fafc7a777d"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/child-observations/call-001/before.json": {
+    "bytes": 1575886,
+    "sha256": "4f427b317683db7ef51e90416d73162f27161f3e9f70cd4e801929fafc7a777d"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/joins.json": {
+    "bytes": 6496,
+    "sha256": "880575c64033214c7447bd8d2988c543d59b60a3aebec006579298ae029ed0a3"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/result.json": {
+    "bytes": 640,
+    "sha256": "dccac067c547167798e3bf6d06e655cb97ea23c47ab34f2f7255348d7c374235"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/root-ir.json": {
+    "bytes": 93753,
+    "sha256": "bf3c9fcc139eb3711c1dc7c926febb299abfab4f8344df03fa3ba4dea21d792a"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/root-live-python-types.json": {
+    "bytes": 397537,
+    "sha256": "01008e22342d396dcdf2cac025456f501f7becfe851805e5552d4edc6eec1229"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/root-live-vs-saved-json-deltas.json": {
+    "bytes": 497,
+    "sha256": "8d76b2528d1ab8cb60be4778d57be2ad4b873c938b1e0384768728a1c6b34e06"
+  },
+  "capture/pixart-sigma-xl-2-1024-ms/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/prxpixel-t2i/child-ledgers-local.json": {
+    "bytes": 267536,
+    "sha256": "f1c8fc5d68e7f01852f30acff11f283330c74138801b30f251190b6fd58dd5dc"
+  },
+  "capture/prxpixel-t2i/child-observations/call-001/after.json": {
+    "bytes": 2091429,
+    "sha256": "4e69eb8117d1d2bf5a0d2fa6d3305dff65dcda335f02f7146abf471249ecb7d3"
+  },
+  "capture/prxpixel-t2i/child-observations/call-001/before.json": {
+    "bytes": 2091429,
+    "sha256": "4e69eb8117d1d2bf5a0d2fa6d3305dff65dcda335f02f7146abf471249ecb7d3"
+  },
+  "capture/prxpixel-t2i/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 13880,
+    "sha256": "7225ae2ba008fffb02317487b043ef1bb895187675c2ca80cd9613d58274a1a5"
+  },
+  "capture/prxpixel-t2i/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/prxpixel-t2i/joins.json": {
+    "bytes": 8808,
+    "sha256": "949fcc96e985e01b971f57ab11461beeb0e87350354b32fdf10a79b428b960da"
+  },
+  "capture/prxpixel-t2i/result.json": {
+    "bytes": 627,
+    "sha256": "de55ce761d61d327882ae7ac6b524056bdc465756bf7e50d0a82a9a83dc47baa"
+  },
+  "capture/prxpixel-t2i/root-ir.json": {
+    "bytes": 545391,
+    "sha256": "585c94f2a12705cb7fcaa8a9697046f7bb99df934a7c10f4db3c14e19e0337a8"
+  },
+  "capture/prxpixel-t2i/root-live-python-types.json": {
+    "bytes": 2586145,
+    "sha256": "ceb9f6978d964890f2cc9de5bfb9b162b307f84fa34a783238db1ba65fd556e4"
+  },
+  "capture/prxpixel-t2i/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2689,
+    "sha256": "c0e654b6f92f378c44c70664fec95c339ad9220445fdcb8d889838aa77460813"
+  },
+  "capture/prxpixel-t2i/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/qwen-image/child-ledgers-local.json": {
+    "bytes": 276141,
+    "sha256": "c03d2b530d2eafa855490595af26588645731432c1498971767a0f7878f0fa36"
+  },
+  "capture/qwen-image/child-observations/call-001/after.json": {
+    "bytes": 1968706,
+    "sha256": "2574db25899ba3bc0df0135dadc71640f59a740bbab5743cccf2935b8e60e1d7"
+  },
+  "capture/qwen-image/child-observations/call-001/before.json": {
+    "bytes": 1968706,
+    "sha256": "2574db25899ba3bc0df0135dadc71640f59a740bbab5743cccf2935b8e60e1d7"
+  },
+  "capture/qwen-image/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 11982,
+    "sha256": "7e24451f11624bb19575ae1aa02a725d42ce8a823c653463d050e3fb695151cc"
+  },
+  "capture/qwen-image/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/qwen-image/joins.json": {
+    "bytes": 8901,
+    "sha256": "d0889adc0ec1ab7c23cdea84022217d398e6d30be7851957d800de3be06425d0"
+  },
+  "capture/qwen-image/result.json": {
+    "bytes": 625,
+    "sha256": "002fbb56ed290358591e233886caaeb932058e44d29dee65544dcf00ae0704c6"
+  },
+  "capture/qwen-image/root-ir.json": {
+    "bytes": 1216072,
+    "sha256": "a5b2a96436dc2a15e02a9bd175e948c10df817b15b97eb8015ec0353009b0a6b"
+  },
+  "capture/qwen-image/root-live-python-types.json": {
+    "bytes": 5960410,
+    "sha256": "833d8f85ea54107f6c362e5a1bbf1fbc2781179d59595ea4e519158466bfca04"
+  },
+  "capture/qwen-image/root-live-vs-saved-json-deltas.json": {
+    "bytes": 2098,
+    "sha256": "0fa85592e49c6d5b75e446b53e89dfa12cb72220ef721907b95344a4a0013cf3"
+  },
+  "capture/qwen-image/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/result.json": {
+    "bytes": 33359,
+    "sha256": "da2b6bb470436ac32b0b5c6d204f49573e1a03bce71525243cf1c96334a7d365"
+  },
+  "capture/sana-1600m-1024px-diffusers/child-ledgers-local.json": {
+    "bytes": 334589,
+    "sha256": "738927e63484e431fc3a940e73889c2d1fc2a223b04c30e84cb3d14b427faedb"
+  },
+  "capture/sana-1600m-1024px-diffusers/child-observations/call-001/after.json": {
+    "bytes": 2377491,
+    "sha256": "9b42ca385be5ef7ce30d6467415ad05ab35e891de8e1935d88902f9e8868a0ac"
+  },
+  "capture/sana-1600m-1024px-diffusers/child-observations/call-001/before.json": {
+    "bytes": 2377491,
+    "sha256": "9b42ca385be5ef7ce30d6467415ad05ab35e891de8e1935d88902f9e8868a0ac"
+  },
+  "capture/sana-1600m-1024px-diffusers/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 24447,
+    "sha256": "53b29b3d49b220c8b7de174605fd46b9c3a86e66ed4782568d2aadba3bd52f6f"
+  },
+  "capture/sana-1600m-1024px-diffusers/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/sana-1600m-1024px-diffusers/joins.json": {
+    "bytes": 8829,
+    "sha256": "efe50f04ff28d63c686599be0d9472a0ce62d25363f4d3a98a0c723fc3efe315"
+  },
+  "capture/sana-1600m-1024px-diffusers/result.json": {
+    "bytes": 642,
+    "sha256": "52147a172f4fdd0d02894648d328a25f79a0be9732b9bee651010451c5a1cb8f"
+  },
+  "capture/sana-1600m-1024px-diffusers/root-ir.json": {
+    "bytes": 747467,
+    "sha256": "9f77da13bf534993d0343a9fc840560779f5b73a9ca23981588be8d74b907b98"
+  },
+  "capture/sana-1600m-1024px-diffusers/root-live-python-types.json": {
+    "bytes": 3585427,
+    "sha256": "6531fda78ec84078d3a8b6bf683398af0a31267f08a584e6ebeb3a87215e2b5d"
+  },
+  "capture/sana-1600m-1024px-diffusers/root-live-vs-saved-json-deltas.json": {
+    "bytes": 8222,
+    "sha256": "1932352dba92fdf9e29220d03274f0f3f5134f7fecc86adc0db7b5e64159da10"
+  },
+  "capture/sana-1600m-1024px-diffusers/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-3-5-large/child-ledgers-local.json": {
+    "bytes": 674232,
+    "sha256": "874530148384ef1cb141d87adc1ec893fc04eb287096683c88113cbd983c49c8"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-001/after.json": {
+    "bytes": 736819,
+    "sha256": "575a677f441fc8701380d29ebb1ec58344ce04c3d4555486283c525dd0901606"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-001/before.json": {
+    "bytes": 736819,
+    "sha256": "575a677f441fc8701380d29ebb1ec58344ce04c3d4555486283c525dd0901606"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 781,
+    "sha256": "f82cd53184fe24c6ef32601687a87066860ad4c3375c05e1f1fbbbdffca4b729"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-002/after.json": {
+    "bytes": 1683226,
+    "sha256": "a1a268af88fcc9243095f0c5152ddd5c23baf7f6378e6beecfcdd3383d0f70c3"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-002/before.json": {
+    "bytes": 1683226,
+    "sha256": "a1a268af88fcc9243095f0c5152ddd5c23baf7f6378e6beecfcdd3383d0f70c3"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-002/json-serialization-type-deltas.json": {
+    "bytes": 1381,
+    "sha256": "692dd4e59a9d6ede19cb331145b7cb7e373b16f5ee7e2bb2f9f0ce6abdda06f8"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-002/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-003/after.json": {
+    "bytes": 1575892,
+    "sha256": "74e599ccbe93bf122ee1e5ac4653bfefe1edf59fd1bf1f7a270b698ff7bd9d49"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-003/before.json": {
+    "bytes": 1575892,
+    "sha256": "74e599ccbe93bf122ee1e5ac4653bfefe1edf59fd1bf1f7a270b698ff7bd9d49"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-003/json-serialization-type-deltas.json": {
+    "bytes": 16659,
+    "sha256": "41c167013bb7c3f2aa1d308ce8918370b6a4dac6ea6df1568269bd2be6290311"
+  },
+  "capture/stable-diffusion-3-5-large/child-observations/call-003/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-3-5-large/joins.json": {
+    "bytes": 8680,
+    "sha256": "65d1c973bd03778069e812ed334f4b98e5bde0ad0cd59bd35f04fd8f1e74527b"
+  },
+  "capture/stable-diffusion-3-5-large/result.json": {
+    "bytes": 867,
+    "sha256": "dbb74fecf55da1223b299a5fbd67e16089eeb7a4efa253f9c732d93813c9f94d"
+  },
+  "capture/stable-diffusion-3-5-large/root-ir.json": {
+    "bytes": 150452,
+    "sha256": "0bd9fbfcc9b5be1029b9593a7f32d0bde57e18574e6644a8ca96837e5bea2da4"
+  },
+  "capture/stable-diffusion-3-5-large/root-live-python-types.json": {
+    "bytes": 663715,
+    "sha256": "3ddc545b45052709daa65bd1d12c4d4f4471b8da4c0d038110fabf94aec80ccd"
+  },
+  "capture/stable-diffusion-3-5-large/root-live-vs-saved-json-deltas.json": {
+    "bytes": 993,
+    "sha256": "3c56ba700eeb6181eb075c126f37b70dddef9c80fb805be88839f2ec0ad9749b"
+  },
+  "capture/stable-diffusion-3-5-large/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-ledgers-local.json": {
+    "bytes": 435538,
+    "sha256": "2ff1219504e6f8b3d20c2a504db048d125975b426e3f814b45677982b39b86d8"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-001/after.json": {
+    "bytes": 912723,
+    "sha256": "ae50a93c2269e82a6fbd0c9845faeac8aba0eb6c2ca695658c88baacc7e5494e"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-001/before.json": {
+    "bytes": 912723,
+    "sha256": "ae50a93c2269e82a6fbd0c9845faeac8aba0eb6c2ca695658c88baacc7e5494e"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 5166,
+    "sha256": "49bd66052d95c73f7172c7806a42a24490a3a3d713449b1f3561b5ae7514e21b"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-002/after.json": {
+    "bytes": 1683226,
+    "sha256": "a1a268af88fcc9243095f0c5152ddd5c23baf7f6378e6beecfcdd3383d0f70c3"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-002/before.json": {
+    "bytes": 1683226,
+    "sha256": "a1a268af88fcc9243095f0c5152ddd5c23baf7f6378e6beecfcdd3383d0f70c3"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-002/json-serialization-type-deltas.json": {
+    "bytes": 1381,
+    "sha256": "692dd4e59a9d6ede19cb331145b7cb7e373b16f5ee7e2bb2f9f0ce6abdda06f8"
+  },
+  "capture/stable-diffusion-xl-base-1-0/child-observations/call-002/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/stable-diffusion-xl-base-1-0/joins.json": {
+    "bytes": 6545,
+    "sha256": "eec857f5a0b11e30f806ba32565be90d5907fd270b7c494a2c342ef55dccc5ca"
+  },
+  "capture/stable-diffusion-xl-base-1-0/result.json": {
+    "bytes": 755,
+    "sha256": "40710c8be7728a4d8eb75defab169d1166b610f93de99074fa78b124e2c6fe89"
+  },
+  "capture/stable-diffusion-xl-base-1-0/root-ir.json": {
+    "bytes": 41648717,
+    "sha256": "9972ddf486ac7a5b8e1a9317d2d89946f50e9e82efbc405e6576225f41048811"
+  },
+  "capture/stable-diffusion-xl-base-1-0/root-live-python-types.json": {
+    "bytes": 161622307,
+    "sha256": "746adfa1b83a77a376ecb6badd76e531994eca21983e602aa9b07d20905fffa6"
+  },
+  "capture/stable-diffusion-xl-base-1-0/root-live-vs-saved-json-deltas.json": {
+    "bytes": 38749,
+    "sha256": "d151f3f45e74fa56e09aed93fcb647a6fddaec5db943fa19642a3f002c20f556"
+  },
+  "capture/stable-diffusion-xl-base-1-0/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/child-ledgers-local.json": {
+    "bytes": 142714,
+    "sha256": "64db1b19f9c75ab042228dde37abe668836676f69d0ba8928b6273fcb4792bd8"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/child-observations/call-001/after.json": {
+    "bytes": 1229511,
+    "sha256": "ec9aacf3851d5d8f32698c78fefde01a378108a15588e19d7f1bb2c4562f8c9c"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/child-observations/call-001/before.json": {
+    "bytes": 1229511,
+    "sha256": "ec9aacf3851d5d8f32698c78fefde01a378108a15588e19d7f1bb2c4562f8c9c"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/child-observations/call-001/json-serialization-type-deltas.json": {
+    "bytes": 1141,
+    "sha256": "9dfd174d79781c65585a07d128f9228388f9beda82461a1d0435a4ddf9d30134"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/child-observations/call-001/live-before-after-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/joins.json": {
+    "bytes": 3234,
+    "sha256": "3708e24dafe4e638efdebe8c03b00d482163feb1e2d9311965c2e7ff1a5af908"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/result.json": {
+    "bytes": 639,
+    "sha256": "6005c2ae7975ed8cd5a090ec8179d8d7e7ca6f8e0c3c7be766c6d818502b2025"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/root-ir.json": {
+    "bytes": 430949,
+    "sha256": "74671481ec056f11367b0259915336e195dfbfbf94129d0a92db650666d1570d"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/root-live-python-types.json": {
+    "bytes": 2139370,
+    "sha256": "0a41e50e05c7b736ec6603d5011628d4eea7fd7d0cd4fce69726adef29dc0d2e"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/root-live-vs-saved-json-deltas.json": {
+    "bytes": 1906,
+    "sha256": "4ff8dc8c4ca9fe16f8ab01074fc38d99b05aec7f86ad4975a08a6a036cccd283"
+  },
+  "capture/wan2-2-t2v-a14b-diffusers/root-saved-json-deltas.json": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "pins-after.json": {
+    "bytes": 83415,
+    "sha256": "e1acb2f208226f5cafb98e6da72dd7d0d7b9f9ab4456162238df867824144c63"
+  },
+  "pins-before.json": {
+    "bytes": 83415,
+    "sha256": "e1acb2f208226f5cafb98e6da72dd7d0d7b9f9ab4456162238df867824144c63"
+  },
+  "result.json": {
+    "bytes": 814,
+    "sha256": "2fad4e8e7f83e2fa74684db56af3f7fa93008527eeaf40348a892bccaee7b63e"
+  }
+}

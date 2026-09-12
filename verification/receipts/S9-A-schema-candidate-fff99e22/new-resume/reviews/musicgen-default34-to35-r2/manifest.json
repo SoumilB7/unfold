@@ -1,0 +1,189 @@
+{
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "0cdb19d9103df7739eb200ddeeee22514127548da5145ca777b2fe209ab436c4",
+      "bytes": 9235
+    },
+    {
+      "path": "explicit_null/context-defaults.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_null/count-resolution-traces.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_null/events.json.deltas.json",
+      "sha256": "7bfaf09c227ca3e9c329f7e1aae40ae89f16b61a6e5239fbf77550a2008616a1",
+      "bytes": 451
+    },
+    {
+      "path": "explicit_null/input.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_null/native-facts.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_null/prepared-documents.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_null/result.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/context-defaults.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/count-resolution-traces.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/events.json.deltas.json",
+      "sha256": "73aeefda7f2fddc2cf22d5c85a2ce2f82be753e6283934436c15c50067dad2e4",
+      "bytes": 451
+    },
+    {
+      "path": "explicit_zero/input.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/native-facts.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/prepared-documents.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "explicit_zero/result.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "input-pins.json",
+      "sha256": "4efb097fcc026d32ac24f9660df87808e7834550e7efc67175618ae6d2634709",
+      "bytes": 12098
+    },
+    {
+      "path": "missing_decoder_count/context-defaults.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "missing_decoder_count/count-resolution-traces.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "missing_decoder_count/events.json.deltas.json",
+      "sha256": "468414437644ac2805b958cce0f89227eb072c7d224874950d15eee237fddfa0",
+      "bytes": 1123
+    },
+    {
+      "path": "missing_decoder_count/html.exact-paired-mount-hunks.json",
+      "sha256": "bde97ff90512334e6eb6285bbb4dfc6c401b54c0588890ab2d5047cb4a0255c3",
+      "bytes": 74531
+    },
+    {
+      "path": "missing_decoder_count/html.raw.diff.gz",
+      "sha256": "8626b7b3d0ea85a6bb7102b2778116755fb99a9d10b47b2b0d4c40d92715435d",
+      "bytes": 15987
+    },
+    {
+      "path": "missing_decoder_count/input.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "missing_decoder_count/ir.json.deltas.json",
+      "sha256": "f108bd535ee0089ac3935280b3ad2e8b21a00a883c7f264932915f3158245059",
+      "bytes": 102295
+    },
+    {
+      "path": "missing_decoder_count/native-facts.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "missing_decoder_count/prepared-documents.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "missing_decoder_count/result.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/context-defaults.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/count-resolution-traces.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/events.json.deltas.json",
+      "sha256": "3b2763fcc4cce05f0713ea462858f8dcb8df4bb1b235d160ce4aebfd63381ece",
+      "bytes": 1347
+    },
+    {
+      "path": "ordinary/html.exact-paired-mount-hunks.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/html.raw.diff.gz",
+      "sha256": "42977cbe29c6f1ab76545d2a4a3e3719c731ea5c66118a9479d357adbebdd46a",
+      "bytes": 15915
+    },
+    {
+      "path": "ordinary/input.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/ir.json.deltas.json",
+      "sha256": "9f31d7ed3fa9c2b16cb969beff842daaebe4fa6b0ed579193c525e7e0b478276",
+      "bytes": 4265
+    },
+    {
+      "path": "ordinary/native-facts.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/prepared-documents.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "ordinary/result.json.deltas.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    {
+      "path": "verdict.json",
+      "sha256": "4ecff0c3a9a7ec7b0ac48ebde475dd34d1fd2e4f591f1872c29628c11a17c4d8",
+      "bytes": 15834
+    }
+  ]
+}

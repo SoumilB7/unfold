@@ -1,0 +1,89 @@
+--- before/model_unfolder/evidence/registry.py
++++ after/model_unfolder/evidence/registry.py
+@@ -1312,12 +1312,14 @@
+     FactDefinition(
+         key="tie_word_embeddings",
+         value_types=frozenset({"bool"}),
+-        allowed_statuses=frozenset({"config_declared", "class_default"}),
++        allowed_statuses=frozenset({"config_declared", "code_proven", "class_default"}),
+         owner_patterns=frozenset({"model"}),
+         projections=frozenset({"architecture_view", "params_annotation", "json"}),
+         unknown_policy="assumption_note",
+-        negative_requires_complete=False,   # config/class tiers, not code claims
++        negative_requires_complete=False,   # Boolean VALUE, not a negative sharing relation
+         parameter_consumer=True,
++        notes="scalar tie value preserves the existing positive manual-source channel; "
++              "a declaration alone never qualifies its evidence or proves a sharing relation",
+     ),
+     FactDefinition(
+         key="embedding_norm_kind",
+--- before/tests/test_s6_physics.py
++++ after/tests/test_s6_physics.py
+@@ -332,8 +332,11 @@
+     # S8 is the authorized first consumer of S6. Its production boundary may
+     # carry requests/results and call the isolated parent API, never import
+     # the worker's construction or observation internals into an adapter.
++    # S9-A consistency compares the returned immutable inventory DTO with
++    # independent header shapes. Importing its type grants no worker API.
+     public_boundary = {"BuildRequest", "Failure", "InventoryResult", "inventory_in_subprocess",
+-                       "FrameworkPrimitiveWitness", "AttributeLookupRequest", "PythonFunctionWitness"}
++                       "FrameworkPrimitiveWitness", "AttributeLookupRequest", "PythonFunctionWitness",
++                       "InstanceInventory"}
+     # Owner-approved S8.1 replay only carries parent metadata/cache lifecycle.
+     # It does not authorize worker construction or the cache implementation API.
+     parent_cache_hooks = {"register_source_context", "cache_source_bundle",
+--- before/tests/test_attention_storage.py
++++ after/tests/test_attention_storage.py
+@@ -500,7 +500,6 @@
+ 
+ def test_parser_and_conformance_share_one_exact_storage_result(monkeypatch):
+     from model_unfolder import config_to_ir
+-    from model_unfolder.evidence import attention_storage as storage_module
+     from model_unfolder.evidence.conformance import check_fact_conformance
+     from model_unfolder.evidence.context import ParseContext
+     from model_unfolder.parser import _coerce
+@@ -509,21 +508,25 @@
+     data = json.loads((corpus / "musicgen-small.json").read_text())
+     cfg = _coerce(data["config"])
+     context = ParseContext.build(cfg)
+-    real_reader = storage_module.decoder_attention_projection_storage_for_path
++    real_cached_reader = context.cached_reader_result
+     calls = []
+ 
+-    def counted_reader(*args, **kwargs):
+-        calls.append((args[2], kwargs.get("allow_root_stage")))
+-        return real_reader(*args, **kwargs)
+-
+-    monkeypatch.setattr(
+-        storage_module, "decoder_attention_projection_storage_for_path",
+-        counted_reader)
++    def counted(reader, config_path, factory):
++        if reader != "decoder.attention.projection_storage":
++            return real_cached_reader(reader, config_path, factory)
++        def counted_factory():
++            calls.append(tuple(config_path))
++            return factory()
++        return real_cached_reader(reader, config_path, counted_factory)
++
++    # Count actual cache fills without replacing the authenticated producer.
++    monkeypatch.setattr(context, "cached_reader_result", counted)
+     ir = config_to_ir(cfg, parse_context=context)
+     key = ("decoder.attention.projection_storage", ("decoder",))
+     parsed_result = context.reader_results[key]
+-    decoder_calls = [call for call in calls if call[0] == ("decoder",)]
+-    assert decoder_calls == [(("decoder",), True)]
++    decoder_calls = [call for call in calls if call == ("decoder",)]
++    assert decoder_calls == [("decoder",)]
++    assert parsed_result is not None and parsed_result.status == "resolved"
+ 
+     problems = check_fact_conformance(
+         cfg, ir.to_dict(), bundle=context.source_bundle,
+@@ -531,7 +534,7 @@
+     assert not [problem for problem in problems
+                 if problem.kind == "wrong_storage"]
+     assert context.reader_results[key] is parsed_result
+-    assert [call for call in calls if call[0] == ("decoder",)] == decoder_calls
++    assert [call for call in calls if call == ("decoder",)] == decoder_calls
+ 
+ 
+ def test_standalone_conformance_never_assumes_root_for_a_nested_decoder():

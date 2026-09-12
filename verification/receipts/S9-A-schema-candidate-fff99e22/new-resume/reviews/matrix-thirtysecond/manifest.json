@@ -1,0 +1,12 @@
+{
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "2df86b20d28e3f65b251360ebe85f24cb24b7a80e7911f326fb8b0aae50ab33e"
+    },
+    {
+      "path": "prepared-contract.json",
+      "sha256": "ca5eed43c9de14b6a32d3dd82c224f7dad33f8a597cf573ada15c0877f68a2cc"
+    }
+  ]
+}

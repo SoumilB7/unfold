@@ -1,0 +1,35 @@
+{
+  "bundle": {
+    "architecture": "LlamaForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "LlamaForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "llama"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py"
+    ],
+    "import_roots": {},
+    "model_id": "huggyllama/llama-7b",
+    "model_type": "llama",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/llama/configuration_llama.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

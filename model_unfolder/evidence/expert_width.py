@@ -38,6 +38,8 @@ from .program_index import (
     ExprNode, ProgramIndex, SourceSpan, SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderClaimUnavailable, ReaderFactProjection, reader_operand, retained_claim_reader,
+                            retained_reader_attempt, validate_reader_operands)
 
 
 _LINEAR = frozenset({
@@ -123,6 +125,42 @@ class SharedExpertCount:
                 "shared-expert evidence retains exact component spans")
 
 
+@dataclass(frozen=True)
+class ExpertWidthClaimWitness:
+    index: ProgramIndex
+    width: ExpertIntermediateWidth
+    storage_result: ReaderResult
+    reader_symbol = "model_unfolder.evidence.expert_width.decoder_expert_intermediate_width_for_path"
+
+    def validate_result(self, result):
+        if type(self.width) is not ExpertIntermediateWidth:
+            raise TypeError("expert width requires exact parameter arithmetic evidence")
+        self.width.__post_init__()
+        if result.status != "resolved" or result.value is not self.width \
+                or result.owner != self.storage_result.owner \
+                or self.width.owner_symbol != self.storage_result.value.owner_symbol:
+            raise ValueError("expert width belongs to another actual parameter owner")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.ffn.expert", "expert_intermediate_size"):
+            raise ValueError("expert width cannot author this fact")
+        symbol, index, supplying, _occurrence = retained_reader_attempt(self.storage_result)
+        if symbol != "model_unfolder.evidence.expert_storage.decoder_routed_expert_storage_for_path" \
+                or index is not self.index or supplying is not document:
+            raise ValueError("expert width needs its actual supplying parameter proof")
+        self.storage_result.claim_witness.project("decoder.ffn.expert", "expert_projection_mode", document)
+        operands = tuple(reader_operand(document, path) for path, _value in self.width.premises)
+        validate_reader_operands(document, tuple((path, operand.source_kind, value)
+            for (path, value), operand in zip(self.width.premises, operands)))
+        status = ("class_default" if any(item.source_kind == "class_default" for item in operands)
+                  else "code_and_config" if operands else "code_proven")
+        return ReaderFactProjection(owner, key, "value", self.width.value, status,
+            tuple(dict.fromkeys(item.checkpoint_path for item in operands if item.checkpoint_path)))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn.expert', 'expert_intermediate_size', 'value'),
+))
 def decoder_expert_intermediate_width_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -201,6 +239,7 @@ def decoder_expert_intermediate_width_for_path(
     channel = "code_and_config" if evidence.premises else "code_proven"
     return ReaderResult.resolved(
         storage_result.owner, evidence,
+        claim_witness=ExpertWidthClaimWitness(index, evidence, storage_result),
         provenance=(*block.provenance, *storage_result.provenance,
                     ReaderProvenance(
                         channel, spans=evidence.spans,
@@ -209,6 +248,36 @@ def decoder_expert_intermediate_width_for_path(
                                 "joined to the proved down-parameter dimension"))))
 
 
+@dataclass(frozen=True)
+class SharedExpertCountClaimDeclaration:
+    index: ProgramIndex
+    count: SharedExpertCount
+    reader_symbol = "model_unfolder.evidence.expert_width.decoder_shared_expert_count_for_path"
+
+    def validate_result(self, result):
+        if type(self.count) is not SharedExpertCount:
+            raise TypeError("shared-expert declaration requires its actual typed count")
+        self.count.__post_init__()
+        if result.status != "resolved" or result.value is not self.count \
+                or result.owner != self.count.block_occurrence \
+                or self.index.class_by_symbol(self.count.shared_owner_symbol) is None:
+            raise ValueError("shared-expert declaration belongs to another result or index")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ("decoder.ffn.expert", "shared_expert_count"):
+            raise ValueError("shared-expert reader has no such intended projection")
+        return "value"
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "shared-expert count awaits retained upstream invocation and exact "
+            "width/count operand qualification; carried to the MoE family unit")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn.expert', 'shared_expert_count', 'value'),
+))
 def decoder_shared_expert_count_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -341,6 +410,7 @@ def decoder_shared_expert_count_for_path(
     )
     return ReaderResult.resolved(
         block.value.block_occurrence, evidence,
+        claim_witness=SharedExpertCountClaimDeclaration(index, evidence),
         provenance=(
             *block.provenance, *storage_result.provenance,
             *width_result.provenance,

@@ -1,0 +1,113 @@
+{
+  "actual_portable_seal": "0d3e85165e4edb8ad20a869ec4ce43bd2be33fcc1fee573b1c62675e654a115d",
+  "baseline_output": {
+    "ir_after_sha256": "1d3614f9a28018b65b5f7e08315208d7c3796dee8a7c8e153b4aa3d1e45a558b",
+    "ir_before_sha256": "0f01b1fb7f0db4e8e71a0ee79ca86fb82ebcc6aafdf6ab22ea91f2680eb79169",
+    "page_bytes": 148855,
+    "page_sha256": "b8367790657d5945e44409726b3396003443b60b83d773d61c6257fb2a874127",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "0d3e85165e4edb8ad20a869ec4ce43bd2be33fcc1fee573b1c62675e654a115d",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "0d3e85165e4edb8ad20a869ec4ce43bd2be33fcc1fee573b1c62675e654a115d",
+  "seconds": 4.8433446250001,
+  "slug": "flux-2-dev",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "223cac7b8dbf156b65d71294e3686987fa0d0cf09f5611b24d1cb7d49ac56adc",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_flux2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "acfa0f2340c18dabcc4e4b99c9262c8df1a015a2639cf1b7127079c9ee8763dd",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_mistral3.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "1b52e1754883263378c2bd5fdb4bcd1020e6a743717086c145179755fa0f8ee9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_mistral3.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "858a4817a47fc90074c5667e83674cc9bf2d3282c8d207f065df028ebbfbf9bf",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_mistral.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "94035ed16e1f206905625840ffdad9b7b094f043b90a4160c3c2d0b0cc33f55b",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_mistral.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "37c08f9decb1689f353e3bdcd3df49b6ef7b41f02c7b78f225a9919364caf602",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_pixtral.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "e713605fcc0623cb49b2c25b96ae7d7d385fb6e4e2553e54871e3b5a32f9a699",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_pixtral.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 13,
+  "status": "REPRODUCED"
+}

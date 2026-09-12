@@ -1,0 +1,17 @@
+{
+  "cases": [
+    {
+      "case": "ordinary",
+      "count_traces": 4,
+      "error": null,
+      "layers": 70
+    },
+    {
+      "case": "missing_root_count",
+      "count_traces": 1,
+      "error": null,
+      "layers": 2
+    }
+  ],
+  "scope": "LOCAL_ONLY actual original source/default-resolution diagnostic; no bypass or approval"
+}

@@ -1,0 +1,15 @@
+{
+  "verdict": "PASS_SOURCE_R2_BROWSER_RECHECK_PENDING",
+  "proposal_manifest_sha256": "4946bf76eeb07504ad944be1d5a9055a8fe09333d6cf9f068e4f95786b4e8b7c",
+  "styles_sha256": "b908dbf51e08aa6c1e82bb3f38681c89ce59cf52a2854c29269cf3b66a953037",
+  "checks": [
+    "Exact nine-line typed-selector insertion only; all manifest, live-before and AST checks pass.",
+    "The modest4px radius prevents the capsule border crossing multiline edge text. inline-block gives inline-context chips one coherent rectangular wrapping box; flex-item use remains lawful.",
+    "Normal/anywhere wrapping, border-box,max-width100%,min-width0 retained. No clipping,truncation or text change. All four border/color differences and ordinary uf-fact styling remain.",
+    "No facts, readers, proof, graph, SVG or JavaScript source changed."
+  ],
+  "limits": [
+    "Actual derived six-page browser screenshots must verify R1 visual return is resolved.",
+    "Final source37 native regeneration/output approval still pending."
+  ]
+}

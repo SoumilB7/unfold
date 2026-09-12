@@ -1,0 +1,12 @@
+--- frozen28/tests/test_conformance.py
++++ candidate/tests/test_conformance.py
+@@ -611,7 +611,8 @@
+     from model_unfolder.renderers.html.render_context import RenderContext, activate_render_context
+ 
+     diagram = mu.unfold(cfg)
+-    context = RenderContext()
++    context = RenderContext(fact_rows=dict(
++        (diagram.to_ir().get("extras") or {}).get("fact_provenance") or {}))
+     with activate_render_context(context):
+         diagram.to_html(standalone=True)
+     # Preserve the corpus's historical view-level union until its pinned broad

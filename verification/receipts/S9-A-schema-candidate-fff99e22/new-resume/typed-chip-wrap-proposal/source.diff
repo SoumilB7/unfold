@@ -1,0 +1,17 @@
+--- before/model_unfolder/renderers/html/styles.py
++++ proposed/model_unfolder/renderers/html/styles.py
+@@ -308,6 +308,14 @@
+   white-space:nowrap;
+ }}
+ /* Typed annotations remain distinguishable by borders and labels as well as colour. */
++#{mount_id} .uf-chip-unresolved,
++#{mount_id} .uf-chip-pending_design,
++#{mount_id} .uf-chip-class_default,
++#{mount_id} .uf-chip-symbolic {{
++  box-sizing:border-box;
++  max-width:100%; min-width:0;
++  white-space:normal; overflow-wrap:anywhere;
++}}
+ #{mount_id} .uf-chip-unresolved {{
+   background:#ECFDF5; color:#14532D; border:1px dashed #4D7C0F;
+ }}

@@ -1,0 +1,92 @@
+........................................................................ [ 43%]
+....................................................F................... [ 86%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+_________________________ test_tie_code_channel_order __________________________
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-27/test_tie_code_channel_order0')
+
+    def test_tie_code_channel_order(tmp_path):
+        """U2 P2b channel order: config_declared → code_proven → class_default →
+        unknown.  An unconditional manual tie in source proves True when the flag
+        is absent; a declared flag still outranks the code idiom."""
+        from model_unfolder.evidence.models import SourceBundle
+    
+        src = tmp_path / "modeling_fake.py"
+        src.write_text(
+            "from torch import nn\n"
+            "\n"
+            "class FakeBlock:\n"
+            "    def forward(self, hidden):\n"
+            "        return hidden\n"
+            "\n"
+            "class FakeModel:\n"
+            "    def __init__(self):\n"
+            "        self.embed_tokens = nn.Embedding(16, 4)\n"
+            "        self.layers = nn.ModuleList(\n"
+            "            [FakeBlock() for _ in range(2)])\n"
+            "\n"
+            "    def forward(self, token_ids):\n"
+            "        hidden = self.embed_tokens(token_ids)\n"
+            "        for layer in self.layers:\n"
+            "            hidden = layer(hidden)\n"
+            "        return hidden\n"
+            "\n"
+            "class FakeForCausalLM:\n"
+            "    base_model_prefix = 'transformer'\n"
+            "\n"
+            "    def __init__(self):\n"
+            "        self.transformer = FakeModel()\n"
+            "        self.lm_head = nn.Linear(4, 16, bias=False)\n"
+            "        self.lm_head.weight = self.transformer.embed_tokens.weight\n"
+            "\n"
+            "    def forward(self, token_ids):\n"
+            "        return self.lm_head(self.transformer(token_ids))\n"
+        )
+        bundle = SourceBundle(
+            source="local",
+            files=(str(src),),
+            component_files={"root": (str(src),)},
+            component_architectures={"root": "FakeForCausalLM"},
+        )
+        ctx = ParseContext(source_bundle=bundle)
+        # flag absent + no model_type (no class default) → the code idiom decides
+>       ir = config_to_ir(dict(ZERO_EVIDENCE), parse_context=ctx)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_fact_ledger.py:363: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:4552: in parse
+    _note_fact("model", "tie_word_embeddings", True,
+model_unfolder/adapters/transformer/parser.py:899: in _note_fact
+    _facts.record_typed(declare_reader_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = FactLedger(records={'model.hidden_size': FactRecord(value=4096, status='config_declared', source='adapters.transformer...vestigation_missing', concrete_reason='legacy_unknown_reason_unrecorded', investigation=None), migrated_legacy=False)})
+fact = EvidenceFact(key='tie_word_embeddings', owner='model', value=True, status='code_proven', completeness='uninspected', s...evidence.weight_tying.manual_weight_tying_for_path',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+    
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+>           raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+E           ValueError: typed write violates the fact registry (H2): tie_word_embeddings: typed write with unregistered status 'code_proven'
+
+model_unfolder/evidence/context.py:116: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_fact_ledger.py::test_tie_code_channel_order - ValueError: t...
+1 failed, 166 passed in 71.93s (0:01:11)

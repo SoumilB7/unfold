@@ -1,0 +1,22 @@
+{
+  "proposal_sha256": "548aef2adf1c3d4bd58505541d8f195c680929a0f863cd73c40fe1da3b31865d",
+  "independent_verdict_sha256": "d4ab395982460ea556f302b84d6c4225ec40b0dad06b8add3e6b749b7e070859",
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "8294e7ea0f6d67e1a83a2c3c85b73a0999205fd1730d366c354b120fb640c74a"
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721"
+    },
+    {
+      "path": "tests/test_s9_repeated_schedule_visibility.py",
+      "before_sha256": null,
+      "proposed_sha256": "9f8defbc7e9d5e06c6ce1f164bd6f8758293a092360159e8dc9b8213d3495c07"
+    }
+  ],
+  "scope": "Applied exact reviewed source/test bytes only; no active artifact renewal or bless."
+}

@@ -51,6 +51,7 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderClaimUnavailable, retained_claim_reader
 
 
 _SCORE_PROTOCOLS = {
@@ -427,6 +428,38 @@ def router_selection_at_block(
     )
 
 
+@dataclass(frozen=True)
+class RouterPolicyClaimDeclaration:
+    """Declare the aggregate's intended relation without granting a proof."""
+
+    index: ProgramIndex
+    policy: RouterSelectionEvidence
+    reader_symbol = "model_unfolder.evidence.router.decoder_router_selection_for_path"
+
+    def validate_result(self, result):
+        if type(self.policy) is not RouterSelectionEvidence:
+            raise TypeError("router declaration requires its actual typed aggregate")
+        self.policy.__post_init__()
+        if result.status != "resolved" or result.value is not self.policy \
+                or result.owner != self.policy.block_occurrence \
+                or self.policy.owner_address.index is not self.index:
+            raise ValueError("router declaration belongs to another result or index")
+
+    def declared_kind(self, owner, key):
+        if (owner, key) != ("decoder.ffn", "routing_policy"):
+            raise ValueError("router aggregate has no such intended projection")
+        return "relation"
+
+    def project(self, owner, key, document):
+        self.declared_kind(owner, key)
+        raise ReaderClaimUnavailable(
+            "routing policy aggregate awaits an exact projection of operation order, "
+            "selected branches and numeric operands; carried to the MoE family unit")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn', 'routing_policy', 'relation'),
+))
 def decoder_router_selection_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -455,6 +488,7 @@ def decoder_router_selection_for_path(
     return ReaderResult.resolved(
         result.owner,
         result.value,
+        claim_witness=RouterPolicyClaimDeclaration(index, result.value),
         provenance=(*block.provenance, *result.provenance),
     )
 

@@ -1,0 +1,109 @@
+--- fff99e22/model_unfolder/evidence/presentation_projection.py
++++ frozen26/model_unfolder/evidence/presentation_projection.py
+@@ -0,0 +1,106 @@
++"""Attach sourced annotations to existing cited cards, without architectural authorship."""
++from __future__ import annotations
++
++import json
++
++from ..presentation import PresentationChip, architectural_envelopes, unresolved_spec_values
++from .facts import EvidenceFact
++
++
++def attach_unresolved_envelope_reasons(ir):
++    """Mark explicit unresolved producer omissions as class-1 investigation debt."""
++    from ..uncertainty import UnknownReason
++    document = ir.to_dict() if hasattr(ir, 'to_dict') else ir
++    for _path, envelope in architectural_envelopes(document):
++        if (envelope.get('resolved') is False or envelope.get('kind') == 'unknown') and (
++                envelope.get('unknown_reason') is None):
++            envelope['unknown_reason'] = UnknownReason(
++                'investigation_missing', 'unknown_reason_unrecorded').to_dict()
++    specs = list(unresolved_spec_values(document))
++    if specs:
++        extras = document.setdefault('extras', {})
++        records = extras.setdefault('presentation_unresolved_values', [])
++        if not isinstance(records, list):
++            raise ValueError('presentation_unresolved_values must be a list')
++        existing = {tuple(row['path']) for row in records
++                    if isinstance(row, dict) and isinstance(row.get('path'), list)}
++        for path, state in specs:
++            if path not in existing:
++                records.append({'path': list(path), 'value_state': state,
++                    'unknown_reason': UnknownReason('investigation_missing',
++                        'unknown_reason_unrecorded').to_dict()})
++
++
++
++def attach_fact_chips(ir, typed_facts):
++    """Attach default/unknown chips and stamp exact shared-object card paths.
++
++    Returns explicit producer limitations. No new citations, nodes, group
++    decisions or graph connectivity are added. Only actual shared dictionaries
++    receive aliases; equal IDs, text or structural signatures are not enough.
++    """
++    attach_unresolved_envelope_reasons(ir)
++    document = ir.to_dict() if hasattr(ir, 'to_dict') else ir
++    rows = (document.get('extras') or {}).get('fact_provenance') or {}
++    blocks = {}
++    findings = []
++
++    for path, value in architectural_envelopes(document):
++        if isinstance(value.get('id'), str) and value['id']:
++            blocks.setdefault(id(value), (value, []))[1].append(path)
++    prepared = []
++    for block, paths in blocks.values():
++        cited = block.get('source_fact_keys') or ()
++        if not isinstance(cited, (list, tuple)) or any(not isinstance(key, str) for key in cited):
++            findings.append(f'{list(paths[0])!r}: malformed source fact citations')
++            continue
++        try:
++            existing = block.get('presentation_chips', [])
++            if not isinstance(existing, list):
++                raise ValueError('existing presentation_chips must be a list')
++            chips = [PresentationChip.from_dict(record) for record in existing]
++            for chip in chips:
++                if any(ref.to_dict()['fact_key'] not in cited for ref in chip.references):
++                    raise ValueError('existing chip cites a fact outside this card')
++                chip.bind(rows)
++        except (TypeError, ValueError) as exc:
++            findings.append(f'{list(paths[0])!r}: invalid existing annotation: {exc}')
++            continue
++        covered = {(chip.chip_kind, ref.to_dict()['fact_key'])
++                   for chip in chips for ref in chip.references}
++        for key in dict.fromkeys(cited):
++            row = rows.get(key)
++            if not isinstance(row, dict):
++                continue  # Not an annotation qualification; other citation nets own this gap.
++            status = row.get('status')
++            if status != 'class_default' and status not in {'unknown', 'ambiguous', 'oracle_missing'}:
++                continue
++            kind = 'class_default' if status == 'class_default' else 'unresolved'
++            if (kind, key) in covered:
++                continue
++            fact = typed_facts.get(key)
++            try:
++                if not isinstance(fact, EvidenceFact) or fact.ledger_key() != key:
++                    raise ValueError('cited annotation has no actual typed fact')
++                if kind == 'class_default':
++                    value = json.dumps(fact.value, ensure_ascii=False, sort_keys=True, allow_nan=False)
++                    chip = PresentationChip.from_facts(kind, fact.key + ': ' + value,
++                                                        fact.owner, [fact])
++                else:
++                    chip = PresentationChip.from_facts(kind,
++                        fact.key + ': ' + fact.unknown_reason.concrete_reason,
++                        fact.owner, [fact], unknown_reason=fact.unknown_reason)
++                chip.bind(rows)
++                chips.append(chip)
++                covered.add((kind, key))
++            except (TypeError, ValueError, AttributeError) as exc:
++                findings.append(f'{list(paths[0])!r} {key}: annotation not qualified: {exc}')
++        if chips:
++            prepared.append((block, paths, [chip.to_dict() for chip in chips]))
++    # Commit metadata only after traversal; shared objects retain their exact
++    # identity and all their canonical aliases receive the same annotation.
++    for block, paths, chips in prepared:
++        block['presentation_chips'] = chips
++        block['presentation_path'] = list(paths[0])
++        block['presentation_aliases'] = [list(path) for path in paths[1:]]
++    return tuple(findings)

@@ -1,0 +1,246 @@
+{
+  "directories": [
+    {
+      "archived": "twentythird/broader-qualification",
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache",
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache/entries",
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/entries"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache/parses",
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/parses"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache/requests",
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/requests"
+    },
+    {
+      "archived": "twentythird/qualification",
+      "original": "/private/tmp/unfold-s9a-twentythird/qualification"
+    },
+    {
+      "archived": "twentythird-independent-review/source",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/adapters",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/adapters"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/adapters/diffusor",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/adapters/diffusor"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/evidence",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/evidence"
+    },
+    {
+      "archived": "twentythird-independent-review/source/tests",
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/tests"
+    }
+  ],
+  "files": [
+    {
+      "archived": "twentythird/broader-qualification/cache/entries/fbd63d690a25b3bbda9c600f420d8abcf024639d41099a94ed90843c828fe1c3.json",
+      "bytes": 3116310,
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/entries/fbd63d690a25b3bbda9c600f420d8abcf024639d41099a94ed90843c828fe1c3.json",
+      "sha256": "fbd63d690a25b3bbda9c600f420d8abcf024639d41099a94ed90843c828fe1c3"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache/parses/21b4d12ffcb17ad9131a1dfe5e3fce772b0d41eaae70aa98c2493b1d95f1441b.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/parses/21b4d12ffcb17ad9131a1dfe5e3fce772b0d41eaae70aa98c2493b1d95f1441b.json",
+      "sha256": "6aa43586a4f758a68e9b32dbacff0426c4cd5d607e8531f68ee847be2025ab38"
+    },
+    {
+      "archived": "twentythird/broader-qualification/cache/requests/8ca8617b2ba0fb0ac8045425aec6621bed2f9c508caf8e10f4fb76802211d919.json",
+      "bytes": 83,
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/cache/requests/8ca8617b2ba0fb0ac8045425aec6621bed2f9c508caf8e10f4fb76802211d919.json",
+      "sha256": "6aa43586a4f758a68e9b32dbacff0426c4cd5d607e8531f68ee847be2025ab38"
+    },
+    {
+      "archived": "twentythird/broader-qualification/result.json",
+      "bytes": 546,
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/result.json",
+      "sha256": "ef0c8f2a8ed329640dd42c8a721052739353f73a541a1fdb4dceda885cd1f5c8"
+    },
+    {
+      "archived": "twentythird/broader-qualification/schema-proof-broader.log",
+      "bytes": 2193,
+      "original": "/private/tmp/unfold-s9a-twentythird/broader-qualification/schema-proof-broader.log",
+      "sha256": "76e6b9b0538d5af08a4e3f5709229f861d8225537892919548966d6a802253e4"
+    },
+    {
+      "archived": "twentythird/census.py",
+      "bytes": 5074,
+      "original": "/private/tmp/unfold-s9a-twentythird/census.py",
+      "sha256": "db4bda4387e61fb6ae76a2f9bc56cf7a83d0658e184abe15715c2b78eadb4e50"
+    },
+    {
+      "archived": "twentythird/generate-matrix.py",
+      "bytes": 546,
+      "original": "/private/tmp/unfold-s9a-twentythird/generate-matrix.py",
+      "sha256": "04071443864045154a5fd3a39d7792ad3a77037f6b2409654e43fd3d186bade7"
+    },
+    {
+      "archived": "twentythird/handoff-1.json",
+      "bytes": 835,
+      "original": "/private/tmp/unfold-s9a-twentythird/handoff-1.json",
+      "sha256": "b5779054518c87a8b75d7d3f0425cde116dba499796ece96103c42bb71c34581"
+    },
+    {
+      "archived": "twentythird/handoff-2.json",
+      "bytes": 2759,
+      "original": "/private/tmp/unfold-s9a-twentythird/handoff-2.json",
+      "sha256": "e41f8755984e61020222491173564d89d820ffa224f2646b1942bfb10a1b44ee"
+    },
+    {
+      "archived": "twentythird/qualification/result.json",
+      "bytes": 539,
+      "original": "/private/tmp/unfold-s9a-twentythird/qualification/result.json",
+      "sha256": "85e8b178a64373ac016bdb3742754119016c442d6c460c56aaecb26113b0720f"
+    },
+    {
+      "archived": "twentythird/qualification/schema-proof-metadata.log",
+      "bytes": 421,
+      "original": "/private/tmp/unfold-s9a-twentythird/qualification/schema-proof-metadata.log",
+      "sha256": "219159d68a7dc904d5a3deb8f23afcea1e6c7727f2fd021341736c261d0c0f43"
+    },
+    {
+      "archived": "twentythird/run-broader.py",
+      "bytes": 2855,
+      "original": "/private/tmp/unfold-s9a-twentythird/run-broader.py",
+      "sha256": "806dc2838beffea63d78dcb1dd880d46a5147763db2d69653f13f583dca5e131"
+    },
+    {
+      "archived": "twentythird/run-census.py",
+      "bytes": 994,
+      "original": "/private/tmp/unfold-s9a-twentythird/run-census.py",
+      "sha256": "3e9c802b28a205466bfc584bf04f7e45b4f79ff38e05ecc20733cad68e1894e1"
+    },
+    {
+      "archived": "twentythird/run-matrix.py",
+      "bytes": 1011,
+      "original": "/private/tmp/unfold-s9a-twentythird/run-matrix.py",
+      "sha256": "8c72049edfb1e78fc73664433e50047fca419883fc3ef7d2fc627b6a818044d6"
+    },
+    {
+      "archived": "twentythird/run-sparse.py",
+      "bytes": 1623,
+      "original": "/private/tmp/unfold-s9a-twentythird/run-sparse.py",
+      "sha256": "8eabbd5b92b5655a45ee50a58d8797b6b1ba8812973f1da5515712c1c347aede"
+    },
+    {
+      "archived": "twentythird/run.py",
+      "bytes": 1330,
+      "original": "/private/tmp/unfold-s9a-twentythird/run.py",
+      "sha256": "805eafa7b9e5caad3fea612697a4741c88cf634ee5a8778f013746462c946038"
+    },
+    {
+      "archived": "twentythird/scope.json",
+      "bytes": 474,
+      "original": "/private/tmp/unfold-s9a-twentythird/scope.json",
+      "sha256": "2db8314d2ec20dac6882e5bf8d2f380b0ac2ca24b674a65572151a3222b2b89f"
+    },
+    {
+      "archived": "twentythird/source-manifest.json",
+      "bytes": 17732,
+      "original": "/private/tmp/unfold-s9a-twentythird/source-manifest.json",
+      "sha256": "4da632834b4c2f0506303d419d81b1d951c923a341859c93f9a1429c8084835b"
+    },
+    {
+      "archived": "twentythird/sparse-plan.json",
+      "bytes": 823,
+      "original": "/private/tmp/unfold-s9a-twentythird/sparse-plan.json",
+      "sha256": "22df95d70bcb3ecd62ce575262d0a0c4d377c4ef482e062e40c6601140d5eba4"
+    },
+    {
+      "archived": "twentythird-independent-review/manifest.json",
+      "bytes": 2759,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/manifest.json",
+      "sha256": "e41f8755984e61020222491173564d89d820ffa224f2646b1942bfb10a1b44ee"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "bytes": 37449,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/adapters/diffusor/config_binding.py",
+      "sha256": "2b19cee8207e1f34b6d784c6e04fad8b8abc7dcbf18032cf6e37bb4b8fe6fb27"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/evidence/config_access.py",
+      "bytes": 98010,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/evidence/config_access.py",
+      "sha256": "fb1da6c0843c747e8eadac4dcca6b57ad85d7b13b20a582026e842e8596868c4"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/evidence/config_registration.py",
+      "bytes": 18839,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/evidence/config_registration.py",
+      "sha256": "cc99cfd8a62081685bd019629b0b13989eaae82b552d57cd0827f5e3704849c9"
+    },
+    {
+      "archived": "twentythird-independent-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "bytes": 46791,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/model_unfolder/evidence/diffusion_stack.py",
+      "sha256": "9420b3aa5f107826847129792b51901a9c3f9622329c7a16c5608066660b23c7"
+    },
+    {
+      "archived": "twentythird-independent-review/source/tests/test_s9_default_consumption.py",
+      "bytes": 6921,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/tests/test_s9_default_consumption.py",
+      "sha256": "67e47e00a2745d692a6583c64e012f21c5e70fe079f352c695f71b81632be72e"
+    },
+    {
+      "archived": "twentythird-independent-review/source/tests/test_s9_registered_default_events.py",
+      "bytes": 6105,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/source/tests/test_s9_registered_default_events.py",
+      "sha256": "19ab376ffbf131c8c6a6811abc63f6186d79e60f1d3fcdfb4957c73a7ec690da"
+    },
+    {
+      "archived": "twentythird-independent-review/verdict.json",
+      "bytes": 2699,
+      "original": "/private/tmp/unfold-s9a-independent-default-accounting-v2-review/verdict.json",
+      "sha256": "bf7776c64bcdae46f641098a5074835e4557321de4ba1e083da964f43495b162"
+    }
+  ],
+  "scope": "Released twentythird candidate and twentythird D1 bounded review and actual trace; broader returns remain",
+  "source_archives": [
+    {
+      "archive": "twentythird/changed-sources.tar.gz",
+      "archive_sha256": "19a7eb398d60f4c1d1366cda66f75394848314838a0eaf59834f118defa623db",
+      "complete_member_restoration_verified": true,
+      "deletions": [
+        "model_unfolder/adapters/diffusor/unet.py",
+        "model_unfolder/adapters/diffusor/unet_differential.py",
+        "model_unfolder/everchanging/diffusor/conditioning.yaml"
+      ],
+      "file_count": 121,
+      "frozen_tree": "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentythird",
+      "manifest_sha256": "4da632834b4c2f0506303d419d81b1d951c923a341859c93f9a1429c8084835b",
+      "phase": "twentythird",
+      "uncompressed_bytes": 4117217
+    }
+  ],
+  "status": "IN_PROGRESS_NOT_APPROVED",
+  "totals": {
+    "copied_bytes": 3375804,
+    "copied_files": 27,
+    "source_files": 121
+  },
+  "verification": {
+    "all_copied_original_bytes_equal": true,
+    "all_source_tar_members_equal_frozen_manifest_bytes": true,
+    "models_tests_or_product_imports_run": false,
+    "source_and_copy_membership_equal": true
+  }
+}

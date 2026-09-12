@@ -1,0 +1,15 @@
+{
+  "base_manifest": "8e4d2557409fc9474275b088d0fcc579a074d579f2c62fa806160090e105682d",
+  "handoffs": [
+    {
+      "original": "/private/tmp/unfold-s9a-s7-proof-preservation/manifest.json",
+      "sha256": "90bf35a775975b1218beef4193a904721644b73b3415135fd560b5ddeb36c88f"
+    },
+    {
+      "original": "/private/tmp/unfold-s9a-diffusion-default-test-correction/manifest.json",
+      "sha256": "a0a8f04765616ae58a78ade389050849e2c33177f1ecf400a5066fc3ba66c09b"
+    }
+  ],
+  "diffusion_default_v2_included": true,
+  "new_default_declarations_and_MRO_included": true
+}

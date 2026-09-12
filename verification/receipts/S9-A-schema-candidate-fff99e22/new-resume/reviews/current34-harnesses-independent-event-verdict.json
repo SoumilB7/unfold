@@ -1,0 +1,71 @@
+{
+  "capture": "All executable source is accepted33 behavior with exact generation-coordinate changes and previously requested descriptive label corrections. All39 checkpoint/inventory/class addresses rehashed/verified, native proof validators and active DocumentBinding retained, full actual RenderContext and immediate actual HTML publication preserved. Source/input/script/artifact brackets preserved.",
+  "commands": {
+    "pages": "python3 /Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current34-capture-template/run-census.py --source-manifest-sha256 b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+    "preservation": "python3 /Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/current34-preservation-capture/run-capture.py --lane current34 --source-manifest-sha256 b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+    "saved_comparison": "Use held compare-recovered.py only after current34 packet completes; original31 baseline is read-only, do not rerun its producer."
+  },
+  "delta_from_immutable33": [
+    "model_unfolder/adapters/transformer/parser.py",
+    "tests/test_s9_layer_count_defaults.py"
+  ],
+  "historical_docs": "203 historical file pins unchanged;118 historical canonical expectation mismatches remain non-authoritative. The exact original31 recoveredfff canonical surfaces only enter through their unchanged committed expected hash gate.",
+  "import_source_files_rehashed": 391,
+  "labels": "All current-generation contract/census/launcher/audit self-label corrections requested by33 review are present. Historical reference26, executed32, original31 baseline and stable UNFOLD_S9A32_OUTPUT_CAPTURE protocol key remain intentionally unchanged.",
+  "negative_deletion_pins_verified": [
+    "model_unfolder/adapters/diffusor/unet.py",
+    "model_unfolder/adapters/diffusor/unet_differential.py",
+    "model_unfolder/everchanging/diffusor/conditioning.yaml"
+  ],
+  "output_approval": false,
+  "preservation": "Five executable files exactly preserve previous behavior after current33\u2192current34 lane coordinates. Original31 baseline origin AND complete baseline lane equal original31. Same29 witness/52-test original verifier, exact expected canonical hash join, no guarded writer or assertion changes. Full source/test_support/scripts/physics inputs rehashed.",
+  "reported_root_source_fingerprint": "b9a2c4d8937c1d53b65baac166e9cc0be2a86d7a5c63c2cd25c637ce2dd3b75e",
+  "reviewed": {
+    "current34-capture-template": {
+      "all_files_rehashed": true,
+      "file_sha256": {
+        "capture_contract.py": "a9ea104e38796a81c1d8139d7c01eb3ecc232bc5c83934f654b10df612fc38c4",
+        "census.py": "c9bfc6fb168f8223867304d2f44819f15ffe1acec9e6da65b6dc8b13c796dc2f",
+        "contract.json": "8a8e7f32a6c5e80a2bc3f950f4fac6188601534849ace543bd68e5b5c5eec3a8",
+        "plan.json": "4009f269879e6e54dce092ba0e94af22f1cd199ea1e1638ea00d05295269ae4a",
+        "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+        "run-census.py": "57a8b94565a7c5857fde916edaf89c90d5a8c68bae8d6cb07013404bfe84b0dc"
+      },
+      "manifest_sha256": "8cac5a31974eed0230f216b376ee81cfc4524fca9a07b28e985d4fdb2171b86a",
+      "python_syntax_parsed_not_executed": true
+    },
+    "current34-preservation-capture": {
+      "all_files_rehashed": true,
+      "file_sha256": {
+        "capture_contract.py": "4aed22f297af0ae3bc3ca7f57eb62dc47a94b0c19cce1f32fc941c890d28bef0",
+        "capture_preservation.py": "dd1fdb8c339679fc76b4985eb0ccb5975cbc5ea1029a63d0c8b359ed77d63e68",
+        "compare-recovered.py": "59dbe9f4aa7382bddab87860f4f76212c42d76953bffc6282da4a7da7d9f4836",
+        "composition-audit.json": "2851a6ef8f9fa0cf95b4142a6689df532ed85eacd55aa66190a0ed80078541d5",
+        "contract.json": "b1ed5391c31c10cee9b7e67367b60593fdb34626a194d3b2e6b2cdf77d99de6c",
+        "harness.diff": "0c8669170ee847ac82893d6fedda22ea648dadc07f721d348675b0999e16f77d",
+        "plan.json": "785f262bd581fdd276afe89560ddabf8014615bb152f170a8175d8a84d25107d",
+        "run-capture.py": "f0da5a7d21b15a62e7feec0399af76ed0bbfbc21018ad8e7f241e0f88cb4f007",
+        "run-tests.py": "0e180be6fbd1100c7fa25d11e4efcda6bb967179d1f5b3bdc141ebb4bfbfebae",
+        "saved-baseline-inventory.json": "63394b2d904c3fed1aa13ca78bf8e50fabf17c6561d1311bc1aac5937ff385ee"
+      },
+      "manifest_sha256": "3d059e6ae4f9053a9504645c3017b7cfb24b46e333da59be43b1a290bedee1b7",
+      "python_syntax_parsed_not_executed": true
+    },
+    "reviews/current34-saved-audit": {
+      "all_files_rehashed": true,
+      "file_sha256": {
+        "README.md": "3a0fd27cff43fd42bdac467fea5f5fe0aa47dd62a3362f318fca82abb2b0ae4b",
+        "audit.py": "d051637a0a1e6f4c3d8d0459a6c54c55e01b1b3732db2c9a9a04c4fe9f6f0037",
+        "plan.json": "d605f3643ef64918ab1575600cc57918d00fdc6c7f4e2a403d2df69b75caa614"
+      },
+      "manifest_sha256": "bdb3e26257adef6de7f2631794e2295f336051180822c834e3f4ba4b584774f0",
+      "python_syntax_parsed_not_executed": true
+    }
+  },
+  "runtime_pending": true,
+  "saved_audit": "Same executable comparison behavior as33; reference remains latest executed actual32, never unexecuted33. Native deltas are enumerated, not required equal; all unknown/chip/local-event checks and raw HTML/data retained. No process-local proof reconstruction.",
+  "scope": "Independent source/AST/hash review only; no runtime, product import, canonicalization, output acceptance or blessing.",
+  "source_manifest_rows_rehashed": 196,
+  "source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "verdict": "PASS_SOURCE_ONLY_READY_FOR_ROOT_SERIAL_EXECUTION"
+}

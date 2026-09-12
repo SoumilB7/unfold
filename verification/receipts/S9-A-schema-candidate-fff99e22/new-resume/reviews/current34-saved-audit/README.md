@@ -1,0 +1,1 @@
+Independent34 saved-data audit, prepared before capture. Immediate reference is executed actual32;33 never ran. Same finite schema/native field/HTML checks. Native differences, including schedule values/status/proofs, are enumerated without asserting equality or approving output. No product/model/test/browser imports or normalization.

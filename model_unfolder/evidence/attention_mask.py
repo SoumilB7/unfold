@@ -59,6 +59,8 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 from .self_method_return import (
     SelfMethodReturnLane,
     SelfMethodReturnTransport,
@@ -1312,6 +1314,67 @@ def decoder_attention_mask_geometry_for_path(
         ))))
 
 
+@dataclass(frozen=True)
+class MaskExecutionClaimWitness:
+    index: ProgramIndex
+    execution: AttentionMaskExecution
+    reader_symbol = "model_unfolder.evidence.attention_mask.decoder_attention_mask_execution_for_path"
+
+    def validate_result(self, result):
+        if type(self.execution) is not AttentionMaskExecution:
+            raise TypeError("mask claim retains its enacted score-lane witness")
+        self.execution.__post_init__()
+        self.execution.schedule.__post_init__()
+        owner = self.execution.schedule.score_inventory.mechanisms.stage_occurrence
+        if result.status != "resolved" or result.owner != owner \
+                or result.value is not self.execution:
+            raise ValueError("mask claim belongs to another exact stage or result")
+
+    def project(self, owner, key, document):
+        if owner != "decoder.attention" or key not in {"mask", "mask_schedule"}:
+            raise ValueError("mask execution cannot author this projection")
+        schedule = self.execution.schedule
+        operands = [(schedule.count_path, schedule.count_source_kind, len(schedule.decisions))]
+        if isinstance(schedule, AttentionMaskLayerSchedule):
+            operands.append((schedule.selector_path, schedule.selector_source_kind,
+                             tuple(item.selector_value for item in schedule.decisions)))
+        operands.extend((item.config_path, item.source_kind, item.value)
+                        for item in self.execution.geometries)
+        validate_reader_operands(document, operands)
+        decisions = self.execution.schedule.decisions
+        geometries = {item.builder: item.value for item in self.execution.geometries}
+        has_sliding = any(item.builder.mechanism in {
+            "sliding_causal", "sliding_bidirectional"} for item in decisions)
+        values = []
+        for decision in decisions:
+            mechanism = decision.builder.mechanism
+            if mechanism in {"sliding_causal", "sliding_bidirectional"}:
+                values.append(("sliding", geometries[decision.builder]))
+            elif mechanism == "chunked_causal":
+                values.append(("chunked", geometries[decision.builder]))
+            elif mechanism in {"causal", "bidirectional"}:
+                values.append(("global" if has_sliding else mechanism, None))
+            else:
+                raise ValueError("mask witness has no supported display projection")
+        if key == "mask":
+            masks = tuple(mask for mask, _window in values)
+            value = masks[0] if len(set(masks)) == 1 else "windowed schedule"
+            kind = "applied_function"
+        else:
+            value, kind = tuple(values), "relation"
+        status = ("class_default" if any(source_kind == "class_default"
+                                        for _path, source_kind
+                                        in self.execution.config_dependencies)
+                  else "code_and_config")
+        return ReaderFactProjection(owner, key, kind, value, status,
+                                    tuple(path for path, _kind
+                                          in self.execution.config_dependencies))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'mask', 'applied_function'),
+    ('decoder.attention', 'mask_schedule', 'relation'),
+))
 def decoder_attention_mask_execution_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -1418,6 +1481,7 @@ def decoder_attention_mask_execution_for_path(
         schedule.value, tuple(geometries), dependencies, spans)
     return ReaderResult.resolved(
         schedule.owner, value,
+        claim_witness=MaskExecutionClaimWitness(index, value),
         provenance=(ReaderProvenance(
             "code_and_config", spans=spans, config_paths=paths,
             detail=("exact enacted framework-mask schedule and every required "

@@ -1,0 +1,18 @@
+S7 shadow corpus auraflow-v0-3
+Traceback (most recent call last):
+  File "/private/tmp/unfold-s9a-twentyfirst/generate-matrix.py", line 8, in <module>
+    result=module.generate(output=out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfirst/scripts/generate_s7_shadow.py", line 668, in generate
+    artifact, observation_payload, relation_payload = _one(
+                                                      ^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfirst/scripts/generate_s7_shadow.py", line 534, in _one
+    key: qualify_config_value_fact(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfirst/model_unfolder/evidence/claim_evidence.py", line 382, in qualify_config_value_fact
+    proof = ConfigValueClaimProof(
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 11, in __init__
+  File "/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/.claude/worktrees/verify-s9-a-twentyfirst/model_unfolder/evidence/claim_evidence.py", line 69, in __post_init__
+    raise ValueError("value proof reader identity must come from its events")
+ValueError: value proof reader identity must come from its events

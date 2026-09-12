@@ -1,0 +1,120 @@
+{
+  "actual_portable_seal": "2bd403cc4eb3241f43dd0768df064bf4cf3fc5fa6d79888fbb669eadec4f3041",
+  "baseline_output": {
+    "ir_after_sha256": "baa7035873ddf8eef3e65226ee9de0da877d0bb6670b735d6efbe41c2adfa327",
+    "ir_before_sha256": "baa7035873ddf8eef3e65226ee9de0da877d0bb6670b735d6efbe41c2adfa327",
+    "page_bytes": 73617,
+    "page_sha256": "89b85c88521c8ce9fb86c1d4b926426cecad10a70518ccc54bf688a3a2bfe95e",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "2bd403cc4eb3241f43dd0768df064bf4cf3fc5fa6d79888fbb669eadec4f3041",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "2bd403cc4eb3241f43dd0768df064bf4cf3fc5fa6d79888fbb669eadec4f3041",
+  "seconds": 5.628738334000445,
+  "slug": "musicgen-small",
+  "source_multiset": [
+    {
+      "component": "audio_encoder",
+      "content_sha256": "dd576517eb2065e355831309e7eb6a6fcdf6b49904eb5a08c80aa73c7299d9b1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_encodec.py"
+    },
+    {
+      "component": "audio_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "audio_encoder",
+      "content_sha256": "68a6e3eeff06078ccebcbfd8b8afd4e537550bbead898dc5872414154fdf9298",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_encodec.py"
+    },
+    {
+      "component": "decoder",
+      "content_sha256": "d8c81b65a2f25b2b9b47458f9600fdbcd4cddb3f0d5648229e0459443d4f216a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_musicgen.py"
+    },
+    {
+      "component": "decoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "decoder",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "decoder",
+      "content_sha256": "d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_musicgen.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "d8c81b65a2f25b2b9b47458f9600fdbcd4cddb3f0d5648229e0459443d4f216a",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_musicgen.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "d2da30dd030f2dc970c2537501f9207e0a66f671079cd362d3f3fb827821590c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_musicgen.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "5cdcc0a40ffb58656090d021e45feffe5ca79c4e51e51e8bac11a7aaba3259d9",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_t5.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "c93d06819e02f275b0c4ed7fa8bb95c79924c10cc4b52c9ab6260a1e6e6b27d1",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_t5.py"
+    }
+  ],
+  "source_node_count": 14,
+  "status": "REPRODUCED"
+}

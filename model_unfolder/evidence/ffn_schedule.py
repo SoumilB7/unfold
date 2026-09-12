@@ -48,6 +48,8 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
+from .reader_claims import (ReaderFactProjection, retained_claim_reader,
+                            validate_reader_operands)
 from .repeated_child import RepeatedChildProof
 
 
@@ -272,6 +274,51 @@ class DecoderFFNSchedule:
             raise ValueError("FFN schedule provenance is closed")
 
 
+@dataclass(frozen=True)
+class FFNScheduleClaimWitness:
+    index: ProgramIndex
+    schedule: DecoderFFNSchedule
+    reader_symbol = "model_unfolder.evidence.ffn_schedule.decoder_ffn_schedule_for_path"
+
+    def validate_result(self, result):
+        if type(self.schedule) is not DecoderFFNSchedule:
+            raise TypeError("FFN projection retains the complete mechanism schedule")
+        self.schedule.__post_init__()
+        if result.status != "resolved" or result.value is not self.schedule \
+                or result.owner != self.schedule.block_occurrence:
+            raise ValueError("FFN projection belongs to another result or occurrence")
+
+    def validate_document(self, document):
+        transport = self.schedule.transport
+        operands = [(transport.count_config_path, transport.count_source_kind,
+                     transport.layer_count)]
+        operands.extend((operand.path, operand.source_kind, operand.value)
+                        for decision in self.schedule.decisions
+                        for operand in decision.operands)
+        # Unselected candidates also decide the closed schedule.
+        operands.extend((operand.path, operand.source_kind, operand.value)
+                        for candidate in self.schedule.candidates
+                        if candidate.selector is not None
+                        for decision in candidate.selector.decisions
+                        for operand in decision.operands)
+        validate_reader_operands(document, operands)
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.ffn", "ffn_schedule"):
+            raise ValueError("FFN schedule cannot author this projection")
+        self.validate_document(document)
+        status = ("class_default" if any(kind == "class_default" for _path, kind
+                                        in self.schedule.config_dependencies)
+                  else "code_and_config")
+        return ReaderFactProjection(owner, key, "relation",
+                                    tuple(item.state for item in self.schedule.decisions),
+                                    status, tuple(path for path, _kind
+                                                  in self.schedule.config_dependencies))
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.ffn', 'ffn_schedule', 'relation'),
+))
 def decoder_ffn_schedule_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -550,6 +597,7 @@ def decoder_ffn_schedule_for_path(
         tuple(dependency_kinds.items()), spans)
     return ReaderResult.resolved(
         block_occurrence, value,
+        claim_witness=FFNScheduleClaimWitness(index, value),
         provenance=(*blocks_result.provenance, ReaderProvenance(
             "code_and_config", spans=spans,
             config_paths=tuple(dependency_kinds),

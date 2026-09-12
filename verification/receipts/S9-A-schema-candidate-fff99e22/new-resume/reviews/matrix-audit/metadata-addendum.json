@@ -1,0 +1,1494 @@
+{
+  "verdict_file": "verdict.json",
+  "verdict_sha256": "36bd014b16da16d030370a77d7cfde595b9aaa6428f568934995f9b8f017bd31",
+  "report_file": "result.json.gz",
+  "provenance_file": "provenance-additions.json",
+  "page_path": "../../../../../../../z-docs/12-design/S9-schema/matrix-twentysixth.html",
+  "plan_models": [
+    {
+      "slug": "deepseek-v3",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3",
+          "after": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "2d3fd7e917eb5f8be83121f416c987f581a3c083e125e12317ad469950a621e9",
+          "after": "dd904197b5fe82a76f949a4881bcef51a0d532e55caa58115b0dca78b0cfa56e"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+          "after": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "11284c93f4071eacdc69d2977b5106311610ad1a963582cfc96f2932b41b2ccc",
+          "after": "02fc779e4ec503e86824a1c4b15e2d32b59dce9d9d91035756a11fb4f2f863ed"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "glm-4-5",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+          "after": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "b3f171fbc412afa7155987ba48c1d06bf0146bd0ff3e5c7a1e2084ae9d216541",
+          "after": "cffe83a326e128e444f5d5a3438e9f7cfc1e600b9f516053de775c4258db614d"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+          "after": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "7e68bd907f809af0fa7a89fcaf520a85a78dba06b84c7648e7152f41f600781e",
+          "after": "81b20d910aa9359fa47aee5d135e69792ea7cf1ec7adc07728c1a5e6aa1a82be"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "llama-7b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+          "after": "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "05843f8bdc11e2763960e2c026853979b5523992d2b861e0666b09f3af1a0564",
+          "after": "4c79ed8cf0aa5b4591911019be6249ad27f44d62181621d4cec92b85386c79b6"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+          "after": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "663cd83f9c75b14409426f06ac8f837542cac5f2c8b467be1fdc5e33a086496d",
+          "after": "e567313fda6b68bcec2d3f73a0626423f0038df6c684f315ae920e6b3f9fd3cc"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "changed_plan_count": 26,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "010d65a8633d8a452cbdae9d84f53c90870a6b0554a6d52344be1c1068cd1852",
+          "after": "0330bff12f4eb6af0d73d225b129f4b2ce0611ea1e6f3c633e04cf051bf4eb9c"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            1,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            1,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "6c1ec277947ca62e33d578761a9180bf4a59153bff439981f92d6ea3d7e4e9c1",
+          "after": "608dbfc4872fd1414ae5757815910f711832e30b85298264e1c4220d1ed840ae"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            2,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            2,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "eab7d0fd239b09990b6fb0bb2febf60b0b0c427d9a1fe16abddf0bfafea67548",
+          "after": "1253ea0840773271b87ca43a2fdbb2c2cdb693e3ef0a5203849ac138333ba59a"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            3,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            3,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "119bb4188d92664b2e6f57c0d06c415919335bae462002409abf851af7d1b045",
+          "after": "d1745253321797c14c5e2488d02f590f1c2917089665b754269b14938e1947a1"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            4,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            4,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "4164981eac46c42306b5461c16b63dba9f1cbd720733b9c2e7040028522b449e",
+          "after": "7644503f27ddc3b0690fb05433133b616265a316b938caf9998ed3aab0c0154e"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            5,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            5,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "2eae138cd778f20abef9cd8408d7fc33b0c695dbf250e4c0d63d68147916e776",
+          "after": "650c89f853520e654de13c176b09996ec1cdcc2447c65771ed4e8b6618cdcb52"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            6,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            6,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "2061096df465cc6286c6fa5101557be4575a5dba94cf42dee25089bc934ff8b6",
+          "after": "454cbf32c7d66f218ca697afb4e39b8839496071b094ddfec9b40f3a844b9c49"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            7,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            7,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9ba7d10de91b7c7c05591f7417eb394274bebd65dee91a8b14d7531814101bd5",
+          "after": "cb1887d61c5801ba5aeb9171120cffbfb43bdd7a1f47add1cb4f12b4e9778515"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            8,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            8,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "f5310b70163dc40fc4db5a82e88ab53374f3d23c7eeec75ae43b1861fd54d9a2",
+          "after": "c5eaa4d306d48b106ae53eff4e0c4112fb2543c401b36f91c7bb5763b0fbce1b"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            9,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            9,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "eea1b6abb2aeeb3fa2c548af9e437039f99fd490ccac887ec64d35a270fd8ccc",
+          "after": "8a68182f66500f7ff784a6b807b17fe598c09dd3cfbc0f8c22df687e05ba6586"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            10,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            10,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "f83aadf5695d4691a33e767a09a49892ceea20d6a78de75d05d6661af4b023fc",
+          "after": "1e187427cc6f00e8645a1a1fc60c6eb2a8c65f30bb76f88618df51c707861c09"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            11,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            11,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "f4537fd4450b6c4b9ac3eb5871a66d6cc1bc5b9f73b1fd7cc446a1075f0d0d64",
+          "after": "f133fb4d40d0733bd40704f15f3aa8544b8587cba0794ef88a9e3e8a0363dd37"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            12,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            12,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "ff5d4017acc9e8c7c81a8d2aa89de177008c5b2942643d4cc98dca6b553e85ef",
+          "after": "3eeebfea30a799f10c524034c04c5f9b756c262e2b40d39a873821769e6c6bfd"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            13,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            13,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "7ef474e96d623109b78323c9a4042cafe0723d5b36786e644007afbb88bea168",
+          "after": "6571e0ce3f577b02eb3436b49bf1963c3116349d63d5e03e77df7d3a0c69d728"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            14,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            14,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9ac43781ccc91efcbed16563bca056daa6d40cc8f92e16183455d3a617e5aa0f",
+          "after": "66b93c0161410d123234ffe33bc6881966a2b9880b74fc0b0b8225ea299cefec"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            15,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            15,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "c1aa37918083b7c70bc379006bf3c99ff527c82b208e1ed617f7da68694da78a",
+          "after": "2cb7d750da06ae04642a063ec68b87f8a0e390269faff443ebe735bafc368d7e"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            16,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            16,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "eee12d4903716b072f22f5d53c2fbb60190974ca6c089de12501e453d83cc02c",
+          "after": "dd9697486e3060281b7fff8a26f51b7de3618f735fd05c7ebd63a7dca8d42edf"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            17,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            17,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "5370a75a1840e583c8e8ea7bb9097ada867341dcaed6b06dbb840d2d1ca1f181",
+          "after": "ca0b005d659d2e83029ad8ea62ff282c56a61154f6af54eff79b6416ce5c56e8"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            18,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            18,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d0a783ff5c86ba78b1c3f6fcc6aed65f87f336b59380c0a8a010d3149f9728b6",
+          "after": "126c5a07230fa90da3cb0af9182cafa1f9110571f26749b40459c4e6c0e91a1f"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            19,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            19,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "e81c4757a10e40d4aa028775341e817e6d2df66ee0cf453de7b42d7afda47d49",
+          "after": "e34c7af47f089a2cd76769c425ca2360dac49362c7b8d4feee19e96076beb2de"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            20,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            20,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "b44358d8a7fc609b99cb8026fb9d2fe9fc7d73e6e1234cf9757a9648673fa982",
+          "after": "6042f612cb575cbc9c172067714abcf5a65ecff07cacbe9e4ba6d668c2744bba"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            21,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            21,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "3f1f2c225c9ea4dfc2d18da98dd55d8f0d684d8cc7e48a4dc80e7b246f39759a",
+          "after": "5f4483ddb7c8e76d241a72d21562899eeaecb790acd4bf0e2023fdc7c5e7ca37"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            22,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            22,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "a9e86d6bd652d26fc48b9554aa305b26159320b77e530f4a768fc8322611fe1e",
+          "after": "d1b01de9ab4dfa077e5b9c2f4d5403fcb48a44784a8157dac02c58800a7d769a"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            23,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            23,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "06e1a6157bae6911a11baf318f1981f537e9ceebb4b2cac72df3adf6dd99a5c8",
+          "after": "69d3a1401d53c42556aafae8348a3a2416c0a1bfdffef45abfccee1639c680b8"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            24,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            24,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "361761c618f41240188311b8dc48736d67449c62cbd947efdd0b1f9633536377",
+          "after": "0dcf2edc39a8938650b60bfc20cfbd5416e31925dcca1045acf762e0c63436b0"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            25,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+          "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            25,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "f2da5f234b7d607f3a001ea6a6346f3237ee9c48c6471c4c4464363b827b76d5",
+          "after": "85d31342ace744f9106a880bf9f4eb259a0853205c649b8cc0194189b34b47a7"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+          "after": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "7d31ec38f4df99f5f2b4cdd04a3f4153d89a015614568d6e8ffa685f31ebcb6a",
+          "after": "ac2d12889d500484dcbb33e2a8fe2ae1053194e1b5fc86c38b7c615fc4d6e8b0"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+          "after": "211dc8c6227c1317dc22e1feebe032f74d52b86f34c37d08dbd7f3677f42aaee"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "175632897320fc5d0147ecb76d9b22250aa3d5aa1bb90c4f459634c1bf4b2ffa",
+          "after": "eebd0bdfca966eae0a45cddffc26c0ff9df254096548543a1a603ff678e33c19"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "qwen3-8b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "ac2f750d749a2a69fde51196d0f3f72e5a235b35b77a93d9ef1c3675697758f8",
+          "after": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "b1648078b511fd52da60ca6ad1d34c7deee1d3d62856af3df59c8835ee674c22",
+          "after": "2d9666f8da7a823fbd7aa37d2ead9d7426074c99bc1ebd09a7371ead4ca0ee42"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+          "after": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "ce021133342442a818cb5f08882a5857878779d7af475ceceaac09cd4ea214f6",
+          "after": "d6d7bac16f2e0bbeb3f9a2d53c0cbab25cb1d43f41621839942ab834cb306112"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "command-a-03-2025",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+          "after": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "afe72f8e370999977cafdacd9d7bc83608940c3304d3bcd97cd2facda9398e46",
+          "after": "843c0ae006d34a52cdc48a508bb610939806bb9fb17c01be4e74b2fcba583e98"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+          "after": "0887c472d4ce8790cb021b7501e4a715c13c5717a1a745d58a45be5de9c596d9"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "1ca473ba18e72c3f736cdf30b34e24ddd19743ff9c5b5529e48f1dad9254116d",
+          "after": "ed7ad022dad23f2436b7ad8450e1d57a3c6fc88ad7c10909cd08e46cd5cd1123"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+          "after": "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9333d13457b746c14875dd4c6e1ce7d3385bf462a9ed61e9685adabddc8078d4",
+          "after": "844a39d86b93b5711283fb0c38e97763dbb0d94bc1e503afa712e0d28f54a353"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "changed_plan_count": 3,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+          "after": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "7648ba1d07c29470723d07c124ce83f57da912bf43d6b965bb4cf42667262e92",
+          "after": "7374d37e716a2f7b29c21f31172501e337af5e4336b16dfe1152dc17663fced5"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            1,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+          "after": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            1,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "a168680ba07f1b8e5c4ed3eec363ac9d27ae542531fa974fc874b96fe097598e",
+          "after": "129863dac3e6b8c900bffad9843dd8211d4939c68d0be652adf0731a71820691"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            2,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+          "after": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            2,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "fef58fd9ffb3ceed3df45c82621a045cc28c92c28f6116174c35d5a8c2e493e9",
+          "after": "556d913440384f327271a6466bff5af5f9e884ecbcbecb315ce8a2429a022ba5"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "jamba-v0-1",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+          "after": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "5ba9e5e5a021c0bfb876325a8efff964ddc54fd0fe310b78732ed9e6c256f93a",
+          "after": "719f66e402df358b5651d8c5c697d9dbadec278a1f59d6f6e30caf19c8b925ef"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+          "after": "afef78eb46f5a761c05faaa94dc24e7eab45968d698e28a4385035619cf24911"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "ea060b528bfa3882403eefc01601640e2e9f902d21655e796c4772e11c8fdb33",
+          "after": "6ca0314f1791b21ff7bab69bebf2bfb3bcbf433e01ee82d52c93c431715f84d0"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+          "after": "e75536fca326449af9cf2a5c8f28a7ddb3315f23f78ef3293e80a89f3184a727"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "c047bfe3f6318494ce9df8b875c061dfb0612784f56828fad1744aadce1aafc0",
+          "after": "3b2d0300c245c445297767ab73c11b48bc913ad248a92bfff81ddb824f69371c"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "changed_plan_count": 1,
+      "metadata_changes": [
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "index_fingerprint"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "12806e9d99f83c5a84b4e4f8448f47a7f08f23095017641bb45a5f682817f157",
+          "after": "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+        },
+        {
+          "path": [
+            "probe_resolution",
+            "plans",
+            0,
+            "receipt",
+            "plan_sha256"
+          ],
+          "before_present": true,
+          "after_present": true,
+          "before": "824a40891ae9b6dceab52276f54425b37b373bc12252e74ac1f56bea817a1759",
+          "after": "f9f43861bb9fedd295673aaca3fb6dfe51c02b888cadce3988a2a436b8d7d211"
+        }
+      ],
+      "cause": "Source-index seal renewed; dependent canonical plan receipt hash renewed. All remaining plan payload and relation results equal.",
+      "source_cause_limit": "The source change includes discovery of imported transformers activation support. The matrix lacks complete before/after SourceBundle membership, so this audit cannot establish that as the exhaustive per-target source closure cause."
+    }
+  ],
+  "source_index_changes": [
+    {
+      "slug": "auraflow-v0-3",
+      "before": "764102f963bc4bb1cf170407593c3678feef71190c09543c27edbf7ec4455809",
+      "after": "23b5952678794fde50f86ebf9cd3390cab7e5517dc13cd8a7437e2c2ff6d727d"
+    },
+    {
+      "slug": "cogvideox-5b",
+      "before": "73ac79b933c58c1ed8ff50553e74f877befdacf0e3970cfc03d6e4e134af85b7",
+      "after": "030ef1b30f980932f4fe0fda8856f492d5e3a82c6253b8f90f3134bba6494882"
+    },
+    {
+      "slug": "dbrx-base",
+      "before": "44ae812a0559855a09050eddff2004286f1856ecf59caa9f599935ea59a3a7a5",
+      "after": "ca11367f22a7d0a438247885a1accf0b3458fa3a87bfd883d946135531038a3b"
+    },
+    {
+      "slug": "deepseek-v3",
+      "before": "880b258a596f42348a236fcf9483eb4f19a2c07a025c958cd401ed9b7e1d36d3",
+      "after": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d"
+    },
+    {
+      "slug": "flux-2-dev",
+      "before": "0d3e85165e4edb8ad20a869ec4ce43bd2be33fcc1fee573b1c62675e654a115d",
+      "after": "589c6cdeeb1fbb151d288e15b10a583e0d6847de4e2e45d9ebf99f48eed0ccfe"
+    },
+    {
+      "slug": "fluxtransformer2dmodel",
+      "before": "ea9a8ba30cdbbb6fed1a9273d8c5baaa1e1374a31d5340ab6371727221d893b0",
+      "after": "53d08479a0a65c6caf2679dfeabbacc371bb4ad9ef7a5b5ac7da37d4ac07a998"
+    },
+    {
+      "slug": "gemma-2-2b-it",
+      "before": "ce59eee49f44e2bad0b31a664624f7daed7089ae11db403ad7d147a39841021e",
+      "after": "f498358b6fb2fc23a03dbbbd52f30da1c377ce15fdce5c288cb0ceb582dfde21"
+    },
+    {
+      "slug": "glm-4-5",
+      "before": "a6f4698cc9729db5a42df8128f4ca7e7a45f19a7730943faef8075453d884fb1",
+      "after": "e11111e1de7c670d270478f2a92daf2bc8be9bd401fbc9b6e47c93545b62de62"
+    },
+    {
+      "slug": "granite-3-0-8b-instruct",
+      "before": "30547a77837217aa2b91b4913ce9b3acc57a6ba6d2cf9f0c6547d6de76d2af1f",
+      "after": "74f508865f0baefe3056493fcc833c806c59a4673f06de0bade39161cf375879"
+    },
+    {
+      "slug": "hunyuanvideo",
+      "before": "d6360d3ce2a1c576ad5a33e605e92bd82a948513d141f4e4a556e151ce0495f1",
+      "after": "daae216874233165cf292f646fed874500ecde025bb5b7078403fa92b0a83ee7"
+    },
+    {
+      "slug": "llama-7b",
+      "before": "a759a158decc3c62f599a96cf54194f73eb52ef7c991d77e77a053e5b2e14762",
+      "after": "5e2d47187fcd4f014b249fb90e77dada806169b657c9b427d296862fc2214a1b"
+    },
+    {
+      "slug": "ltx-video",
+      "before": "b8965771470e95ff43d8377c8f0b205f96da0c8fa887074e939aa796c1efe2c7",
+      "after": "691650a754fb6a0da91ecc2a6f44ca9abd9a2cbb7b08564e5d1073bd32ba8b96"
+    },
+    {
+      "slug": "lumina-image-2-0",
+      "before": "7396035d25ec0b2b3f86a2be22bce42a1d68d5365cc0d6d5b5ada1fe8d95184c",
+      "after": "8777c33229605593520df6fafe5e468679a8729a7490443a0cd8648ba7865e71"
+    },
+    {
+      "slug": "mochi-1-preview",
+      "before": "acd367e439a2e7fc418febe7089a5945c2322dfd922aa6e8ad60a1e85b415427",
+      "after": "69cc793761b4051d09773450aee42ae0545c7be2295a270125dc3415f7f58190"
+    },
+    {
+      "slug": "musicgen-small",
+      "before": "2bd403cc4eb3241f43dd0768df064bf4cf3fc5fa6d79888fbb669eadec4f3041",
+      "after": "68c722abeee6e643b5f3a45ef1e0b2ebf4e91f4a424e4a70bbc8a47d2ff84a0e"
+    },
+    {
+      "slug": "olmo-2-1124-7b",
+      "before": "298d923e71e699d293f6a991b03856c83243becbe978adab1d61aae88510ad5f",
+      "after": "add15a5286f623f42c3a267b4eee682189086709a88bf9265ac98bc08e4bd5da"
+    },
+    {
+      "slug": "pixart-sigma-xl-2-1024-ms",
+      "before": "80dade997ec9a0d1c4a7a8b7bc5784eebcab23476be4891779b342aff92343d3",
+      "after": "7a40e21bf10b8469a14a2ff4ee3e0aef5fedb4156993810e6d7971f100638a05"
+    },
+    {
+      "slug": "prxpixel-t2i",
+      "before": "d073fb35a37820e57751bc2ad55a9fa67a9d774ac94532dfdcb2b870d78de2cf",
+      "after": "60e8254e4a74200e185770bc0f0f338eab301c3b62f33f16c8b921fecb789324"
+    },
+    {
+      "slug": "qwen-image",
+      "before": "42b527919b040a221da72bdf5171863b5f4b99cb85a0d06744a810c720e86c64",
+      "after": "bf15a4a45be2f33364628365199ab82d1fd513040f75b98722ece0153554546f"
+    },
+    {
+      "slug": "qwen2-vl-7b-instruct",
+      "before": "04ab1df86a47a9e7dab5edf3392752e60eb88199def8e2fd6c58105f1e3b53f5",
+      "after": "f5c8544aa4c9a96c35e454945c6315aa56d4897f6b4bcbaa3e640c21c0f1b87c"
+    },
+    {
+      "slug": "qwen3-5-27b-text",
+      "before": "e5156d80b86840092a95809ecb0ef57ea465ae7c2aa65b30e8e1878946cb6d87",
+      "after": "211dc8c6227c1317dc22e1feebe032f74d52b86f34c37d08dbd7f3677f42aaee"
+    },
+    {
+      "slug": "qwen3-8b",
+      "before": "ac2f750d749a2a69fde51196d0f3f72e5a235b35b77a93d9ef1c3675697758f8",
+      "after": "adcbf27a983bde487ead55872bfb7efe93a22562b1b3e7ba020fb1a572551d06"
+    },
+    {
+      "slug": "sana-1600m-1024px-diffusers",
+      "before": "21bc6feb8bbb8c1cecd8586326c64c813fd4c209f3a790e9270209054e64cf5c",
+      "after": "5a50434c45935ec0916b41e4496917f6d62957d32c215cbac2350d26e88c4016"
+    },
+    {
+      "slug": "stable-diffusion-3-5-large",
+      "before": "80ea44c28a12e864711d8a8bda58d8844803988bfb4b26e255076e48a2a26fc2",
+      "after": "6ff63e947c9e51d1bcb92e8b3a078e393aa81e9c1bf74dc0148e072ce36970db"
+    },
+    {
+      "slug": "stable-diffusion-xl-base-1-0",
+      "before": "524247a453189c6da1e8ab7775de0fed439cab4aa9442998e32a06ebd8d61382",
+      "after": "9a05f66706f865fd95de5527a57b9e4b897c3532f83c91549967bafb39b07312"
+    },
+    {
+      "slug": "stablelm-2-1-6b",
+      "before": "e9e1e1198966f06fa8644f206317b7c84649cde033a734c127f90e0e4ee8803b",
+      "after": "33a47f799a87548bac40c341f53b7d67d5d2247282b75ede7a04f8f7681b301a"
+    },
+    {
+      "slug": "wan2-2-t2v-a14b-diffusers",
+      "before": "6a3490835b50b315c80d99ad2ee04a259a37624cd5e59612f3b625ae96b30973",
+      "after": "887e06bdbdf35d7ae3235719ebc2391ce1946f26907fde3318ea7f968d5d6f5f"
+    },
+    {
+      "slug": "command-a-03-2025",
+      "before": "de159415d8e3dab0fc0cf9ba4dfdb4a1a5e73824015777af09c4cc8ce146e407",
+      "after": "5d66a8b61b58e56519443201667761f8cb033e21275911ea39032ef621ca74b3"
+    },
+    {
+      "slug": "deepseek-coder-v2-lite",
+      "before": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+      "after": "0887c472d4ce8790cb021b7501e4a715c13c5717a1a745d58a45be5de9c596d9"
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "before": "aa4d04060d838fd690163203b7184766f471764fc25ff8a147a4eecc25fa2d8c",
+      "after": "01edd4d5d70d9ae08c54ebf87e6237fa789598f257d89db4221a09c2916c6537"
+    },
+    {
+      "slug": "gemma-3n-e2b",
+      "before": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+      "after": "d67d99cd63b3681d31ba1f9f36433023504450166e3c269acdbfd8969c583766"
+    },
+    {
+      "slug": "jamba-v0-1",
+      "before": "6f31a33393000df7943f03334d35d5e047722f5c4821f2699208c083abfd6f94",
+      "after": "65b251604926d89e95dc1e516ef77af57195112ea80933773785ef5c345da72f"
+    },
+    {
+      "slug": "nemotron-h-8b",
+      "before": "29d7ca2a892f2719824ecf0fee298dc178bcdc34dd25deada84b1e9999f93e86",
+      "after": "afef78eb46f5a761c05faaa94dc24e7eab45968d698e28a4385035619cf24911"
+    },
+    {
+      "slug": "qwen3-5-27b",
+      "before": "bed460611291fd90d91acd77f0611b56dddc6e26605e0ec8a307eb50ecd63db7",
+      "after": "e75536fca326449af9cf2a5c8f28a7ddb3315f23f78ef3293e80a89f3184a727"
+    },
+    {
+      "slug": "qwen3-omni-30b",
+      "before": "ffebeef60dc928d00d5ef327bd3f6f3ccf1f174da60efa639e33435d556cd5c2",
+      "after": "73a2e86f45a802300624f8d684b2df96b86ab543ae6647346f212b749e6958c7"
+    },
+    {
+      "slug": "qwen3-vl-235b",
+      "before": "12806e9d99f83c5a84b4e4f8448f47a7f08f23095017641bb45a5f682817f157",
+      "after": "e348105b490702637a85f0a45159b223ceca6a65a9b09bddb29be1a85d986c58"
+    }
+  ],
+  "scope": "Saved-data integrity only; no new source/runtime/page review or output approval. Parent reports all39 pages captured and a separate additional runtime lane has at least one failure; this addendum does not assert a full gate or S9-A acceptance."
+}

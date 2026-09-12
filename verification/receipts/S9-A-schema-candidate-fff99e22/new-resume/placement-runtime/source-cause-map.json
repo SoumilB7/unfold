@@ -1,0 +1,46 @@
+{
+  "status": "source-only integration and cause map, not a matrix verdict",
+  "candidate": 26,
+  "source_pins": [
+    {
+      "path": "scripts/generate_s7_shadow.py",
+      "sha256": "e415c5d0a4efac1ae655d4a992a08087daa015e6d2438dc8e4771fddbbead70c"
+    },
+    {
+      "path": "model_unfolder/evidence/decoder_norm.py",
+      "sha256": "5631d108109806371684d8f66c8f3b9f644e159e619862a196e54803621fdef9"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_placement.py",
+      "sha256": "8ba74fb63160f8b9591261e75262d5b2e2970e633e30a44f660441fc0655831e"
+    },
+    {
+      "path": "model_unfolder/evidence/reader_claims.py",
+      "sha256": "aee930638b7b6287c9b1b0435096fcbda70de72f3d042c27f6e149ad85972db6"
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "sha256": "3790b963bd1f433dfa592d3adaef0eb52a43eb477c17c68c3770f437e3ab9d1d"
+    },
+    {
+      "path": "model_unfolder/evidence/context.py",
+      "sha256": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c"
+    }
+  ],
+  "data_auditor_sha256": "035902f942604dd50327ccff63fbdb95a6072ac5b287cd8ad7fd3ec7c5a24848",
+  "earliest_false_producer_in_candidate22": "_fact_static_claims converted rich semantic dependency source spans into occurrence placement by shared class membership. Caller-layer and unrelated instances of the same norm class could acquire a placement without exact callee evidence.",
+  "candidate26_source_correction": "DecoderNormClaimWitness.placement_occurrences retains direct positively classified normalization construction callees. ReaderOccurrenceCitation authenticates actual reader/result/index/prepared document and fact slot. _fact_static_claims joins only these static occurrence identities; callers are contextual and missing/empty/erased citations cannot restore the old span join.",
+  "per_target_checks": {
+    "deepseek-v4-flash": "Distinguish direct decoder normalization targets from enclosing layer callers, final model norm and nested attention q_a_norm/kv_norm. Shared RMSNorm implementation does not authorize all these placements. Count actual changes, not an assumption that all 216 changed rows must revert.",
+    "gemma-3n-e2b": "The six audio/vision embedder RMSNorm instances are outside the exact decoder callee census and must not borrow its receipt.",
+    "nemotron-h-8b": "The 52 whole-layer callers are context, never target occurrences solely through the norm reader.",
+    "bloom": "External LayerNorm calls have no internal target occurrence in this rail. Compare exact existing placement, which may be independently supported by other facts or canonical blocks."
+  },
+  "integration": "The live FactLedger retains typed facts; typed_records is a shallow dict copy; source-qualified norm facts survive config value fallback unchanged. Renderer summaries are separate transport. Actual live facts enter projection_claims_from_product before final table serialization.",
+  "scope_boundaries": [
+    "No project imports, model executions or tests performed by this audit agent.",
+    "No output change approved or blessed.",
+    "Existing R4 direct canonical block occurrence citations retain placement independently of proof qualification.",
+    "Any actual loss or new kind change is enumerated and requires source cause review, not a rewritten baseline."
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "actual_portable_seal": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+  "baseline_output": {
+    "ir_after_sha256": "c626bf332e6c9ddd40b7cc8d4a742fddf64bc8f1e1de681dd5dd5415264f425e",
+    "ir_before_sha256": "c626bf332e6c9ddd40b7cc8d4a742fddf64bc8f1e1de681dd5dd5415264f425e",
+    "page_bytes": 177092,
+    "page_sha256": "b1e245c62808f00ff055e6f04c2c0a5fbf6c2527586045f83b329509673c15a2",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "9a2e3792cec2325b31b48c2b9c99696207481351696afb7e927fe0f6d4296629",
+  "seconds": 6.950676084001316,
+  "slug": "gemma-3n-e2b",
+  "source_multiset": [
+    {
+      "component": "audio_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "audio_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "4ffdc29552da868e0753f284a0b5f38deb42e8a67f73074183aa7b99a68756bb",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma3n.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "82066b6c1037720190a8a22c54c26de2ddf9eef66f88957ba5df300fafa4d46f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_auto.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "6a7656fbd39c17001bac6ce9a26c8094479b593730ebadd37f4b028fee8327ed",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma3n.py"
+    },
+    {
+      "component": "vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 20,
+  "status": "REPRODUCED"
+}

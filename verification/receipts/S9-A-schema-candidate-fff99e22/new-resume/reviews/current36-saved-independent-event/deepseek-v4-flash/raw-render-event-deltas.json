@@ -1,0 +1,30 @@
+[
+  {
+    "after": "baaad582989d439ea765109ca0ba9e56",
+    "after_present": true,
+    "after_type": "str",
+    "before": "4269f223a8934f42b40ede17ebba7df6",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "baaad582989d439ea765109ca0ba9e56",
+    "after_present": true,
+    "after_type": "str",
+    "before": "4269f223a8934f42b40ede17ebba7df6",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

@@ -1,0 +1,306 @@
+[
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      5
+    ],
+    "before": "root:encoder_layers",
+    "after": "root:feed_forward_proj"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      6
+    ],
+    "before": "root:feed_forward_proj",
+    "after": "root:final_logit_softcapping"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      7
+    ],
+    "before": "root:final_logit_softcapping",
+    "after": "root:hidden_size_per_layer_input"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      8
+    ],
+    "before": "root:hidden_size_per_layer_input",
+    "after": "root:is_gated_act"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      9
+    ],
+    "before": "root:is_gated_act",
+    "after": "root:layer_norm_eps"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      10
+    ],
+    "before": "root:layer_norm_eps",
+    "after": "root:layer_norm_epsilon"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      11
+    ],
+    "before": "root:layer_norm_epsilon",
+    "after": "root:logits_scaling"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      12
+    ],
+    "before": "root:logits_scaling",
+    "after": "root:max_window_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      13
+    ],
+    "before": "root:max_window_layers",
+    "after": "root:mlp_bias"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      14
+    ],
+    "before": "root:mlp_bias",
+    "after": "root:moe_intermediate_size"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      15
+    ],
+    "before": "root:moe_intermediate_size",
+    "after": "root:norm_type"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      16
+    ],
+    "before": "root:n_blocks",
+    "after": "root:num_experts"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      17
+    ],
+    "before": "root:n_layer",
+    "after": "root:num_experts_per_tok"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      18
+    ],
+    "before": "root:n_layers",
+    "after": "root:num_hidden_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      19
+    ],
+    "before": "root:norm_type",
+    "after": "root:num_mtp_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      20
+    ],
+    "before": "root:num_blocks",
+    "after": "root:num_nextn_predict_layers"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      21
+    ],
+    "before": "root:num_experts",
+    "after": "root:num_shared_experts"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      22
+    ],
+    "before": "root:num_experts_per_tok",
+    "after": "root:query_pre_attn_scalar"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      23
+    ],
+    "before": "root:num_hidden_layers",
+    "after": "root:rms_norm_eps"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      24
+    ],
+    "before": "root:num_layers",
+    "after": "root:sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      25
+    ],
+    "before": "root:num_mtp_layers",
+    "after": "root:sliding_window_pattern"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      26
+    ],
+    "before": "root:num_nextn_predict_layers",
+    "after": "root:swiglu_limit"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      27
+    ],
+    "before": "root:num_shared_experts",
+    "after": "root:use_bidirectional_attention"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      28
+    ],
+    "before": "root:query_pre_attn_scalar",
+    "after": "root:use_sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      29
+    ],
+    "before": "root:rms_norm_eps",
+    "after": "root:vocab_size_per_layer_input"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      30
+    ],
+    "removed": "root:sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      31
+    ],
+    "removed": "root:sliding_window_pattern"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      32
+    ],
+    "removed": "root:swiglu_limit"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      33
+    ],
+    "removed": "root:use_bidirectional_attention"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      34
+    ],
+    "removed": "root:use_sliding_window"
+  },
+  {
+    "path": [
+      "extras",
+      "config_access",
+      "absent_default",
+      35
+    ],
+    "removed": "root:vocab_size_per_layer_input"
+  }
+]

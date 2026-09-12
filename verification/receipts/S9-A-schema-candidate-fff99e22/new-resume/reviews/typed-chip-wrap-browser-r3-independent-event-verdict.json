@@ -1,0 +1,71 @@
+{
+  "verdict": "PASS_BOUNDED_CSS_R2_SOURCE_AND_BROWSER_VISUAL_RETURN_CLOSED",
+  "proposal_manifest_sha256": "4946bf76eeb07504ad944be1d5a9055a8fe09333d6cf9f068e4f95786b4e8b7c",
+  "browser_manifest_sha256": "a1d65584f45cb92469b7073b925ba65b472a5e220ccc0974ecc62efa6a13c2a8",
+  "comparison_verdict_sha256": "fcf4cd6b08f8fd05631088da00b98c89c1b1743cf005b2d2ea3c1101d77dac52",
+  "browser_packet_checks": [
+    {
+      "case": "llama",
+      "original_sha256": "25949499d548b0255689648e551cde6f4205fc9eaecc29a5efd71c54beb23157",
+      "derived_sha256": "cffb914c968edb1c0963963e71c173826b6b95fc63855cb7452a5c8c1813c3b3",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "measured_card_width_and_scroll_width": 644
+    },
+    {
+      "case": "sdxl",
+      "original_sha256": "8a972e6cb63429b0de1e269028d38750f1fc9b5a2fc9a4a2ddd7459334e12650",
+      "derived_sha256": "618dcff8c13bbb2f84848f7be804ca76ea0de7602f4d09dd2e466bf608acc2d5",
+      "exact_CSS_insertions": 2,
+      "interactions": 2,
+      "measured_card_width_and_scroll_width": 644
+    },
+    {
+      "case": "bloom-ordinary",
+      "original_sha256": "cf2d4e18c7c1bdcc39b8c101f91781b70d25af72aafd9ab5d274e052fe0595ba",
+      "derived_sha256": "0056ba099d9054a730e8d3b02e2ab06b0d0e55e3bd4f1859ebffb48369691238",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "measured_card_width_and_scroll_width": 644
+    },
+    {
+      "case": "bloom-sparse",
+      "original_sha256": "067c71df5818c5ca2a841a04e5f7a2a92d084963a863c6d185ad68ff23959035",
+      "derived_sha256": "168e071243737bd5c6cd9019c841ca9355f5676182bf560521b9384c3d8fb3c1",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "measured_card_width_and_scroll_width": 644
+    },
+    {
+      "case": "musicgen-ordinary",
+      "original_sha256": "536bad8f2741235c5460f65fc32fa9ebb551dc37ff6128c790a58af652ff680f",
+      "derived_sha256": "01e5614e8f632c80affe69412d143f6c199078617d7e92c9ed6d02b090f534a3",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "measured_card_width_and_scroll_width": 644
+    },
+    {
+      "case": "musicgen-sparse",
+      "original_sha256": "bb9f0549d4f160a17009aec3dbdf96a164e936342cd9f9c522483ce9526be09a",
+      "derived_sha256": "9f7fff10001a993e1e9f7e11c57d018329f12a637ff956a70f7f6616f2c946cc",
+      "exact_CSS_insertions": 1,
+      "interactions": 1,
+      "measured_card_width_and_scroll_width": 644
+    }
+  ],
+  "data_result": "All held files rehashed. Removing only the recorded rendered R2 CSS insertions reproduces six original saved36 HTML pages byte-for-byte, including root+deferred SDXL styles. Full card text, card identity, six first clicks and nested SDXL text retained. All measured cards now have scrollWidth=clientWidth=644.",
+  "images_independently_viewed": [
+    "results/musicgen-sparse/card-viewport.png",
+    "results/bloom-sparse/card-viewport.png",
+    "results/sdxl/card-viewport.png",
+    "results/four-style-probe.png"
+  ],
+  "visual_result": "MusicGen first/last text lines no longer intersect rounded capsule border. SDXL/Bloom complete default text fits inside modest rectangular corners. Four-style long-token probe has coherent separate bounded boxes, with green dashed unresolved, amber dotted pending design, blue solid class default, purple double symbolic borders. No overflow or border/text interference visible in the inspected screenshots.",
+  "remaining_limits": [
+    "Dense full JSON/default lists remain dense; no summarization or new information-design treatment is claimed.",
+    "These are derived exact-CSS-only saved36 pages, not native37 output. Root still must generate final-source pages and run required verification.",
+    "Existing MusicGen projected-image wording versus Encoded text drawing is preexisting S9-D debt, outside this CSS correction.",
+    "Browser run is bounded six pages/headless1440x1000, not all drills/mobile/accessibility coverage or latency baseline.",
+    "No output blessing or architecture completeness verdict."
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "decision": "RETURN operand-channel boundary and actual D1 poison failure",
+  "handoff_manifest_sha256": "fe98a2463a750ef7b6db073be6e79d82538adfadaf98808c6d0dddaf23ea2c22",
+  "source_pins": {
+    "model_unfolder/evidence/reader_claims.py": "5cb6e30d22884f560bc652925fa6004fb04ae42818d69b3cd8148df4515ab87f",
+    "model_unfolder/evidence/position_absolute.py": "0beb87644f12d29918929b6f1db4b9691f19453650a8865302a4d80a9bd8c18a",
+    "model_unfolder/evidence/position_relative_bias.py": "ba62a182ce195541fd0d006f3f16c5b529c84e15ef745282f51bee5812cafb3b",
+    "model_unfolder/evidence/attention_geometry.py": "c648c39c851671d82e225d5b9fabc08d22619100e5f7534df797df1bc707ec47",
+    "model_unfolder/evidence/cross_attention_replacement.py": "3e4552fedb536057efc20dbdf46211aee81b762bbfa7a1b0456fbd00d3cf5167",
+    "model_unfolder/evidence/mtp.py": "12159063539e7eac85649f457fe0b3a319de328b8b83cafc0435e68def60a6ee",
+    "model_unfolder/adapters/transformer/parser.py": "a2ebe63c8fea4bcf746badcd9fded92673fe0b9d98b0f30ca5c0036b923dc329",
+    "model_unfolder/adapters/transformer/special_parts/modalities/vision.py": "69eaebbc64ed4bf40b47cde828144385ce860cc1f12cd284d3db4e4a5b1e9673",
+    "tests/test_s9_reader_declarations.py": "0dfb9909dc0d5859912fc208635874d35f328428b0145dc731c56eb0df9d8b76",
+    "tests/test_s9_operand_channels.py": "e8dd3e1ac7df2d0c5d1a271c598c77960597365a9a54fb2b5c2c08575165bea0"
+  },
+  "findings": [
+    {
+      "id": "O1",
+      "origin": "Root question confirmed in source",
+      "case": "PreparedDocument with failure and nonempty class_overlay",
+      "reason": "resolve_reader_operand and reader_operand accept default overlay without refusing failed preparation; defaults need fail-closed status. Explicit checkpoint evidence can remain separate."
+    },
+    {
+      "id": "O2",
+      "case": "path=('vision_config','width'), cfg/document checkpoint={'vision_config':None}, overlay={'vision_config.width':8}",
+      "reason": "Both helpers collapse explicitly null/nonmapping ancestor to empty container and accept nested default. Distinguish absent container from explicit null/malformed parent; leaf-null guard is insufficient."
+    },
+    {
+      "id": "O3",
+      "case": "cfg={} but prepared checkpoint/document has hidden_act='silu' and no default overlay",
+      "reason": "Supplied absence returns before comparison against actual prepared channel; existing expert source-literal fallback may then consume the wrong absence. Compare unavailable/ambiguous as well as positive supplied states before returning authority to fallback callers."
+    }
+  ],
+  "root_reported_additional_return": "Later ConfigSelectedFFNMechanism activation/gated/projection_mode writers still hardcode code_and_config after default selector acceptance. Root/claim executor fixing separately; not accepted here.",
+  "actual_D1_invalidation": {
+    "log_sha256": "6df5ea7e6f90e53cd61dd3d893ea36363c5bf2f3728046ce664a61fcf967a18f",
+    "actual": "1 failed, 350 passed in 33.90s",
+    "failure": "vars(config)['hidden_size'] = 32 remained resolved instead of failed",
+    "prior_verdict": "/private/tmp/unfold-s9a-independent-default-d1-v4-review/verdict.json",
+    "prior_sha256": "f9ce5ee7ce9cec30d33ef380a0c2a273ab3b46bba70fefbafac8ee9ceda0fe8d",
+    "disposition": "Earlier source acceptance invalidated for this namespace case by executed poison; original receipt retained unchanged. Reviewer assumption that assignment-target vars call appears in calls_in was not valid. Runtime result takes precedence."
+  },
+  "bounded_positive": "Explicit leaf-null and conflicting alias controls, positive supplying value/status/path comparison, default omission of checkpoint paths, and preservation of source-only fallback branches inspected. Five prior declaration handoffs unchanged. These do not cure O1/O2/O3.",
+  "limits": "No reviewer tests/models/checker rerun or output blessing. Supplied-state source falsifiers not claimed executed. Root owns runtime; original FAIL retained."
+}

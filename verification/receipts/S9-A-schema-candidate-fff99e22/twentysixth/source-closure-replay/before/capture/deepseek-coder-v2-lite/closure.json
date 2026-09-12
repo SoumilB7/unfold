@@ -1,0 +1,50 @@
+{
+  "actual_portable_seal": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+  "baseline_output": {
+    "ir_after_sha256": "2cd8da8e0eacb7847dd244896c4bc0774ff565f447abf93edcc4bf20278745a1",
+    "ir_before_sha256": "2cd8da8e0eacb7847dd244896c4bc0774ff565f447abf93edcc4bf20278745a1",
+    "page_bytes": 77028,
+    "page_sha256": "21e2a85c4dae73dcfa6dbc24f1acee2fa57cfec9a5d12987c97745e78fc51974",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "35c2cd0727e5deaa4a4b286ce7f61927d665e4f221b756cfc3eb1fe8e94b3d2d",
+  "seconds": 0.43993725000109407,
+  "slug": "deepseek-coder-v2-lite",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "d925b6e1e2047ef4d3ca70793799cd9edef76d8383b082436252323b9632955c",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_deepseek_v2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "9808083b533205145a54a0475b4fa4a3400b4fe8425f6ca126d18da68f9c2337",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_deepseek_v2.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 4,
+  "status": "REPRODUCED"
+}

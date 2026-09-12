@@ -1,0 +1,19 @@
+{
+  "after_bytes": 89743,
+  "after_sha256": "ae86df80a10de3b0f0304b15edf723dc3a49b37c4c755bc0aa043ea616219b8f",
+  "before_bytes": 89743,
+  "before_sha256": "d572683712b035e973a4df4c9a10b29c580a2026a470d0491e68763604ccdfa6",
+  "exact_new_mount_occurrences": 205,
+  "exact_old_mount_occurrences": 205,
+  "finite_mount_substitution_leaves_zero_other_deltas": true,
+  "mount_identity_after": "uf-68e3795e04",
+  "mount_identity_before": "uf-19d80c4a35",
+  "payload_json_deltas": [],
+  "raw_equal": false,
+  "raw_ordered_svg_count_after": 6,
+  "raw_ordered_svg_count_before": 6,
+  "raw_ordered_svg_equal": false,
+  "scope": "Raw output hashes differ and remain unblessed. This exhaustive substitution only identifies the exact random mount-ID cause; no normalized output is produced or accepted.",
+  "slug": "dbrx-base",
+  "svg_after_exact_same_mount_substitution_equal": true
+}

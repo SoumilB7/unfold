@@ -1,0 +1,93 @@
+{
+  "authority_accounting": "authority-bridges-debt.json",
+  "baseline_full_python_inventory_sha256": "ec3a0f5741676e76171c3b89d47abb9e398e992b0f9ac5ea7a7c4fcc93db2dc9",
+  "candidate_full_python_inventory_sha256": "cc7bf5a84df63b16ac273e6c2d5ae7be1446900f1d5c1f39fcfeef5e9d38f6fc",
+  "debt_register": {
+    "added": 0,
+    "after": 101,
+    "before": 101,
+    "eliminated": 0,
+    "factories": {
+      "_config": 92,
+      "_extras": 9
+    },
+    "limits": "Fresh runtime gate must assess deletion predicates. Fact-level S7 findings are a different census."
+  },
+  "fixture_relocation": {
+    "definition_lines": 1703,
+    "definitions": 81,
+    "destination_modules": 29,
+    "note": "Moved authority remains present. Gross source additions/deletions include relocation; never credit these deleted test lines or moved uncertainty definitions as authority removal."
+  },
+  "input_fingerprints_identical_before_after": true,
+  "latency_delta_count": 1,
+  "limits": [
+    "No runtime/model import/acceptance/blessing.",
+    "S10 UNet deletion and original latency measurement receive no S9-A credit.",
+    "Current source counts do not count qualified facts or replace matrix/page evidence."
+  ],
+  "line_growth": {
+    "production": {
+      "added": 8302,
+      "deleted": 675,
+      "files_added": 9,
+      "files_changed": 72,
+      "files_deleted": 0
+    },
+    "scripts": {
+      "added": 1,
+      "deleted": 0,
+      "files_added": 0,
+      "files_changed": 1,
+      "files_deleted": 0
+    },
+    "test_support": {
+      "added": 2086,
+      "deleted": 0,
+      "files_added": 30,
+      "files_changed": 0,
+      "files_deleted": 0
+    },
+    "tests": {
+      "added": 6200,
+      "deleted": 1781,
+      "files_added": 25,
+      "files_changed": 37,
+      "files_deleted": 0
+    }
+  },
+  "method": "All Python sources under model_unfolder, physics, tests, test_support, scripts; SequenceMatcher autojunk=False (reproduces prior26 counts exactly). Generated receipts, examples, and data are excluded from source line totals; latency metadata is accounted separately.",
+  "product_modules_added": [
+    "model_unfolder/evidence/activation_registry.py",
+    "model_unfolder/evidence/checkpoint_metadata.py",
+    "model_unfolder/evidence/class_default_value.py",
+    "model_unfolder/evidence/presentation_census.py",
+    "model_unfolder/evidence/presentation_projection.py",
+    "model_unfolder/evidence/reader_claims.py",
+    "model_unfolder/evidence/reader_placement.py",
+    "model_unfolder/presentation.py",
+    "model_unfolder/uncertainty.py"
+  ],
+  "product_modules_deleted": [],
+  "retained_producers": {
+    "fixed_intended_triples": 52,
+    "functions": 48,
+    "modules": 40
+  },
+  "s10_source_manifest_gzip_sha256": "9fe261a261a9ea5d08904c8419277648d294bc0d2c5ee284ab047ec9913d2c7b",
+  "s10_source_manifest_raw_sha256": "082cd74f2707e1ca8cb064b4af948ec77587246c3c8777feb3b70df6a006304d",
+  "scope": "Immutable33 versus separately held S10 census-fix; stdlib saved-source audit, no imports/tests",
+  "source_manifest_sha256": "ab6077e3efba310b322e7257974e26b15bcdff5afa1d45d725953fe0149f4c06",
+  "test_combined": {
+    "added": 8286,
+    "deleted": 1781,
+    "note": "tests + test_support combined; test_support separately includes relocated shared fixtures."
+  },
+  "total_added": 16589,
+  "total_deleted": 2456,
+  "unchanged_inventory_source_pins": {
+    "docs/U3_CURRENT_READER_INVENTORY.md": "621267d3fbf1f589652581530664c840b6dc5921d020035b1b06f4bc6e964e92",
+    "model_unfolder/evidence/legacy_reader_quarantine.py": "118a826ee0e7c1cb9fdd4f11b134da09a1da68ac99eadb2b08d1d06611a56d30",
+    "model_unfolder/evidence/structural_debt.py": "41a7cc7264fd8cc1bead067dd8d57f61d8fcbfabeb690c130ccbf78460e65c48"
+  }
+}

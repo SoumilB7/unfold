@@ -1,0 +1,17 @@
+........................................................................ [ 41%]
+............................................................F........... [ 83%]
+.............................                                            [100%]
+=================================== FAILURES ===================================
+_________ test_expanded_json_completes_qwen2_audio_sparse_text_config __________
+
+    def test_expanded_json_completes_qwen2_audio_sparse_text_config():
+        data = unfold(QWEN2_AUDIO_SPARSE_CONFIG, return_json=True)
+    
+>       assert data["dimensions"]["hidden_size"] == 4096
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'hidden_size'
+
+tests/test_expanded_json.py:327: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_expanded_json.py::test_expanded_json_completes_qwen2_audio_sparse_text_config
+1 failed, 172 passed in 399.78s (0:06:39)

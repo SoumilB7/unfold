@@ -1,0 +1,707 @@
+{
+  "decoder.attention.bias": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "existence",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.bias:7f3e293636cd0a7c",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:194:21:194:66",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:304:28:304:53"
+        ],
+        "fact_id": "decoder.attention.bias",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.projection_bias.decoder_attention_bias_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.bias",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    },
+    "source": "decoder_attention_bias_for_path",
+    "status": "code_proven",
+    "value": true
+  },
+  "decoder.attention.cached": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.cached:7f3e293636cd0a7c",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:258:8:259:94",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:259:12:259:94",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:259:37:259:94",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78"
+        ],
+        "fact_id": "decoder.attention.cached",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_cache_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.cached",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    },
+    "source": "decoder_attention_cache_for_path",
+    "status": "code_proven",
+    "value": true
+  },
+  "decoder.attention.head_geometry": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.head_geometry:6108b7a81a8f98e5",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:170:27:170:45",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:25:171:38",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:8:171:38",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:24:172:58",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:8:172:58",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:59:193:79",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:211:20:211:92",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:256:8:256:70",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+        ],
+        "fact_id": "decoder.attention.head_geometry",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_geometry.decoder_attention_head_geometry_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.head_geometry",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "6108b7a81a8f98e5"
+    },
+    "source": "decoder_attention_head_geometry_for_path",
+    "status": "code_and_config",
+    "value": {
+      "head_dim": 128,
+      "kind": "mha",
+      "kv_lora_rank": null,
+      "num_heads": 112,
+      "num_kv_heads": 112,
+      "q_lora_rank": null,
+      "qk_nope_head_dim": null,
+      "qk_rope_head_dim": null,
+      "v_head_dim": null
+    }
+  },
+  "decoder.attention.mask": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.attention.mask",
+      "owner": "decoder.attention",
+      "status": "ambiguous",
+      "value_status_hash": "3b9b39e88d186966"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": "unknown"
+  },
+  "decoder.attention.mechanism": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.mechanism:a615d6a9effdcd21",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:171:8:171:38",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:172:8:172:58",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:59:193:79",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:211:20:211:92",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:256:8:256:70",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+        ],
+        "fact_id": "decoder.attention.mechanism",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention.decoder_attention_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.attention.mechanism",
+      "owner": "decoder.attention",
+      "status": "code_and_config",
+      "value_status_hash": "a615d6a9effdcd21"
+    },
+    "source": "decoder_attention_mechanism_for_path",
+    "status": "code_and_config",
+    "value": "mha"
+  },
+  "decoder.attention.output_projection": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.output_projection:7f3e293636cd0a7c",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:194:21:194:66",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:304:28:304:53"
+        ],
+        "fact_id": "decoder.attention.output_projection",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_output.decoder_attention_output_projection_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.output_projection",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "7f3e293636cd0a7c"
+    },
+    "source": "decoder_attention_output_projection_for_path",
+    "status": "code_proven",
+    "value": true
+  },
+  "decoder.attention.projection_mode": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.attention.projection_mode:8d7cfeba43eae77c",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:18:0:18:12",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:193:31:193:91",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:21:0:21:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:254:20:254:55",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:280:26:280:78",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:289:24:289:72"
+        ],
+        "fact_id": "decoder.attention.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.attention.projection_mode",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "8d7cfeba43eae77c"
+    },
+    "source": "decoder_attention_projection_storage_for_path",
+    "status": "code_proven",
+    "value": "fused_qkv"
+  },
+  "decoder.attention.scores_scale": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "complete",
+      "fact_key": "decoder.attention.scores_scale",
+      "owner": "decoder.attention",
+      "status": "code_proven",
+      "value_status_hash": "20496603e5af0c6f"
+    },
+    "source": "decoder_attention_score_scaling_for_path",
+    "status": "code_proven",
+    "value": "sqrt(head_dim)"
+  },
+  "decoder.ffn.activation": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.activation:6d7f500aac103a4f",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+        ],
+        "fact_id": "decoder.ffn.activation",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.activation",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "6d7f500aac103a4f"
+    },
+    "source": "decoder_ffn_mechanism_for_path",
+    "status": "code_proven",
+    "value": "gelu"
+  },
+  "decoder.ffn.gated": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.gated:973804cd719a4fb5",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+        ],
+        "fact_id": "decoder.ffn.gated",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.gated",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "973804cd719a4fb5"
+    },
+    "source": "decoder_ffn_mechanism_for_path",
+    "status": "code_proven",
+    "value": false
+  },
+  "decoder.ffn.intermediate_size": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.intermediate_size:083e0653e8b48ddf",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:313:22:313:40",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:52:317:53",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:52:317:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:39:319:40",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:39:319:54",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+        ],
+        "fact_id": "decoder.ffn.intermediate_size",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_width.decoder_ffn_intermediate_width_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.intermediate_size",
+      "owner": "decoder.ffn",
+      "status": "code_and_config",
+      "value_status_hash": "083e0653e8b48ddf"
+    },
+    "source": "decoder_ffn_intermediate_width_for_path",
+    "status": "code_and_config",
+    "value": 57344
+  },
+  "decoder.ffn.projection_mode": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "relation",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.ffn.projection_mode:acb1f8105eb06c41",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:117:11:117:80",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:317:29:317:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:318:25:318:36",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:319:29:319:68",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:24:323:73",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:323:39:323:72",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:334:34:334:67",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:338:8:338:21"
+        ],
+        "fact_id": "decoder.ffn.projection_mode",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.ffn_mechanism.decoder_ffn_mechanism_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.ffn.projection_mode",
+      "owner": "decoder.ffn",
+      "status": "code_proven",
+      "value_status_hash": "acb1f8105eb06c41"
+    },
+    "source": "decoder_ffn_mechanism_for_path",
+    "status": "code_proven",
+    "value": "dense"
+  },
+  "decoder.layer.norm_kind": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_kind:4dcb3749bc66e61e",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74"
+        ],
+        "fact_id": "decoder.layer.norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.decoder_norm.decoder_norm_kind_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "presence_only",
+      "fact_key": "decoder.layer.norm_kind",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "4dcb3749bc66e61e"
+    },
+    "source": "decoder_norm_kind_for_path",
+    "status": "code_proven",
+    "value": "layernorm"
+  },
+  "decoder.layer.norm_placement": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.norm_placement:ab69c0b0326e77e9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:104:10:104:24",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:397:17:397:53",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:399:8:399:35"
+        ],
+        "fact_id": "decoder.layer.norm_placement",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.norm_placement",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "ab69c0b0326e77e9"
+    },
+    "source": "decoder_cell_topology_for_path",
+    "status": "code_proven",
+    "value": "pre"
+  },
+  "decoder.layer.parallel_norm_count": {
+    "presentation_reference": {
+      "claim_proof": null,
+      "completeness": "uninspected",
+      "fact_key": "decoder.layer.parallel_norm_count",
+      "owner": "decoder.layer",
+      "status": "ambiguous",
+      "value_status_hash": "3effe0a746ad1181"
+    },
+    "status": "ambiguous",
+    "unknown_reason": {
+      "concrete_reason": "legacy_unknown_reason_unrecorded",
+      "investigation": null,
+      "reason_class": "investigation_missing"
+    },
+    "value": null
+  },
+  "decoder.layer.residual_topology": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "connection",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:decoder.layer.residual_topology:acdbd5fdb3a8c659",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:104:10:104:24",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:346:31:346:84",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:349:40:349:93",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:369:27:369:62",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:378:41:386:9",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:388:27:388:74",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:397:17:397:53",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:399:8:399:35"
+        ],
+        "fact_id": "decoder.layer.residual_topology",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.cell_topology.decoder_cell_topology_for_path"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "decoder.layer.residual_topology",
+      "owner": "decoder.layer",
+      "status": "code_proven",
+      "value_status_hash": "acdbd5fdb3a8c659"
+    },
+    "source": "decoder_cell_topology_for_path",
+    "status": "code_proven",
+    "value": "sequential"
+  },
+  "model.embedding_norm_kind": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:model.embedding_norm_kind:4dcb3749bc66e61e",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:422:41:422:97",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:496:24:496:69",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:496:8:496:69",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:520:16:520:29"
+        ],
+        "fact_id": "model.embedding_norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.embedding_bookend.embedding_stage_norm_evidence"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.embedding_norm_kind",
+      "owner": "model",
+      "status": "code_proven",
+      "value_status_hash": "4dcb3749bc66e61e"
+    },
+    "source": "embedding_stage_norm_evidence",
+    "status": "code_proven",
+    "value": "layernorm"
+  },
+  "model.final_norm_kind": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "applied_function",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "projection:model.final_norm_kind:4dcb3749bc66e61e",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:20:0:20:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:428:20:428:76",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:519:22:526:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:533:24:533:48",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:539:12:541:13",
+          "source:root:1dca97f336d8bc0747a7b9c9234da9004c3516e9e72a7df59d9e328ea1956ca5:543:8:548:9"
+        ],
+        "fact_id": "model.final_norm_kind",
+        "fact_status": "",
+        "index_fingerprints": [
+          "8fe241438c749c9ec244379d62dcbe07b84dc0c4066b18fcf76570e1234b3e60"
+        ],
+        "proof_kind": "retained_reader_projection",
+        "reader_symbols": [
+          "model_unfolder.evidence.final_bookend.final_stage_norm_evidence"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.final_norm_kind",
+      "owner": "model",
+      "status": "code_proven",
+      "value_status_hash": "4dcb3749bc66e61e"
+    },
+    "source": "final_stage_norm_evidence",
+    "status": "code_proven",
+    "value": "layernorm"
+  },
+  "model.hidden_size": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "root||hidden_size|hidden_size|adapters.transformer.parser.parse|model|hidden_size|model_hidden_size_value|checkpoint_declared|2da68d653b2a3f52|2da68d653b2a3f52"
+        ],
+        "fact_id": "model.hidden_size",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.hidden_size",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "2da68d653b2a3f52"
+    },
+    "source": "adapters.transformer.parser.parse",
+    "status": "config_declared",
+    "value": 14336
+  },
+  "model.tie_word_embeddings": {
+    "presentation_reference": {
+      "claim_proof": {
+        "claim_kind": "value",
+        "document_fingerprints": [
+          "302c7f9dab08571c8b951a34aae9dfb5e92cea2edbd21597ac9c74633b63617d"
+        ],
+        "evidence_refs": [
+          "root||tie_word_embeddings|tie_word_embeddings|model_unfolder.adapters.transformer.parser.parse|model|tie_word_embeddings||checkpoint_declared|34b451cd19670900|34b451cd19670900"
+        ],
+        "fact_id": "model.tie_word_embeddings",
+        "fact_status": "config_declared",
+        "index_fingerprints": [],
+        "proof_kind": "config_resolution",
+        "reader_symbols": [
+          "model_unfolder.adapters.transformer.parser.parse"
+        ],
+        "recipe_ids": []
+      },
+      "completeness": "complete",
+      "fact_key": "model.tie_word_embeddings",
+      "owner": "model",
+      "status": "config_declared",
+      "value_status_hash": "34b451cd19670900"
+    },
+    "source": "tie_word_embeddings",
+    "status": "config_declared",
+    "value": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "0a156df173ae38a9edd3216071bbd7ece6142c64f0f2d25492d88e82570a9547",
+  "input": "tests/sable_test_corpus/olmo-2-1124-7b.json",
+  "input_sha256": "5c3c89e6a7dcce617337f309c48ce9db1ae361bc7c88d0735e2537ea50a44a85",
+  "resolved_class": {
+    "module": "transformers.models.olmo2.modeling_olmo2",
+    "qualname": "Olmo2ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

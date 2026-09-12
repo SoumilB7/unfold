@@ -1,0 +1,26 @@
+{
+  "scope": "Prepared recovered31 to exact37 saved-data cause inventory R2; stale prose corrected, no runtime",
+  "supersedes_manifest_sha256": "d39defea0cc908e64696e57aa2faddf8966bf10675c9dd35a24af4fe2ac30510",
+  "files": [
+    {
+      "path": "audit.py",
+      "sha256": "7e4c596da18db32dfb482d8cebd76d5ffffd6b9d8098df97f45cc91376bcb939"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "504710e92a43e1be08aa1c3f5d6f1d8c851c771dbd250b3cc97b8da4f5243c37"
+    },
+    {
+      "path": "contract.json",
+      "sha256": "593adf11528b0cef066a76bbbe7f0f075a5c861b8f1692d2909b50a903b81b62"
+    },
+    {
+      "path": "final-consolidation-checklist.md",
+      "sha256": "061539e1f149df967ecaabbfe7eff00a2b18b29bab96d0dd5165fa9680fe58f5"
+    },
+    {
+      "path": "source-causes.json",
+      "sha256": "4ab000db5db0a3cf9cbffeed9f3273b1b95187f87a62ab02532b66e895ba10be"
+    }
+  ]
+}

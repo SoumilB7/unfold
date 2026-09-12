@@ -1,0 +1,21 @@
+{
+  "base_manifest_sha256": "b2a7972efe7968a8efdba3ea2768ce9535ea5767866fe0a726f44eb5d5f747ab",
+  "feature_changes": 0,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "3a0fd27cff43fd42bdac467fea5f5fe0aa47dd62a3362f318fca82abb2b0ae4b",
+      "bytes": 337
+    },
+    {
+      "path": "audit.py",
+      "sha256": "d051637a0a1e6f4c3d8d0459a6c54c55e01b1b3732db2c9a9a04c4fe9f6f0037",
+      "bytes": 23858
+    },
+    {
+      "path": "plan.json",
+      "sha256": "d605f3643ef64918ab1575600cc57918d00fdc6c7f4e2a403d2df69b75caa614",
+      "bytes": 3312
+    }
+  ]
+}

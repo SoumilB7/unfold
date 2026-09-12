@@ -1,0 +1,20 @@
+{
+  "decision": "ACCEPT_SOURCE_ONLY",
+  "scope": "Coherent six-file e41f8755 default accounting v2, no runtime/output approval",
+  "manifest_sha256": "e41f8755984e61020222491173564d89d820ffa224f2646b1942bfb10a1b44ee",
+  "findings": [],
+  "accepted_boundaries": [
+    "ClassDefaultPremise validates exact current PreparedDocument identity, document path, live checkpoint seal, successful preparation, supplying-channel hash, exact source-container identity and absence of every declared spelling in both document and checkpoint. Its value comes only from matching prepared overlay; it is channel accounting, not a source mechanism/default-survival proof.",
+    "RegisteredConstructorDefaultPremise is an exact closed provider, not an arbitrary callback/subclass. It adds re-derived current index/root constructor/default evidence to the same address guard and compares the full registration, exact parameter/path and type-sensitive value hash.",
+    "The registered-constructor helper relocation is AST-identical to independently accepted DD1 v2 after renaming and removal of the now-local self import. Exact-one-registration-decorator guard and explicit formal rewrite refusal are retained.",
+    "Explicit provider admission and value/address checks precede initial resolve record even with _record_events=False. ConfigResolution.consume and bind validate exact provider type, state/source_kind/provenance/selection metadata/source container/component/canonical and value before emission, including without capture.",
+    "Default events retain absent_default, present=False, alias=None and missing value-state. path_exact and class_default provenance describe the validated default address only. selected_path remains None and ConsumedConfigDecision.occurrence remains None; default_path carries the separate address. Existing present-only occurrence census is unchanged.",
+    "Diffusion selector now constructs the source provider before the first resolve event, rather than first emitting an unqualified absence. Compound expectation/receipt proof logic remains separate.",
+    "Bare/foreign/failed/overlay-mismatched default dictionaries may retain legacy value behavior but receive no exact premise; this does not authorize a stronger proof. Mutation/null-alias/invalid-parent/foreign-container/foreign-document and no-capture poisoned-provider controls inspected."
+  ],
+  "limits": [
+    "All six files hash-verified and copied; tests not executed by reviewer.",
+    "Raw prior sparse failures remain unchanged; actual event/observer results must still be checked after execution.",
+    "This review does not grant mechanism proof, full C9, output approval, or whole S9-A acceptance."
+  ]
+}

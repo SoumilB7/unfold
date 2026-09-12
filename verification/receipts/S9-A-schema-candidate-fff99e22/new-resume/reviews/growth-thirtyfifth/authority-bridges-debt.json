@@ -1,0 +1,157 @@
+{
+  "authority_paths_removed": {
+    "count_of_old_paths_disabled_in_finite_scope": 1,
+    "path": "reconciliation._fact_static_claims shared-class/source-span placement",
+    "scope": "decoder.layer.norm_kind or actual decoder_norm_kind_for_path reader identity; exact reader callee occurrence targets replace legacy join, callers contextual only, missing/erased citation never falls back.",
+    "whole_product_modules_deleted": 0,
+    "residual": "Other unmigrated fact slots retain the documented legacy span join."
+  },
+  "new_scalar_boundary": {
+    "path": "reconciliation.projection_claims_from_product",
+    "scope": "stats_banner / model.hidden_size is scalar-only; its event and receipt survive but source-default constructor spans cannot place occurrences. Direct canonical R4 block positives are unchanged.",
+    "deletion_credit": "No old authority-path deletion credit: this prevents a defect in the newly introduced S9-A banner route."
+  },
+  "relocation": {
+    "names": [
+      "ReaderExhaustion",
+      "InvestigationRecord",
+      "_validate_exhaustion_reason",
+      "_validate_unresolved_class"
+    ],
+    "from": "model_unfolder/evidence/reconciliation.py",
+    "to": "model_unfolder/uncertainty.py",
+    "old_definitions_including_methods": 7,
+    "current_definitions_including_methods": 8,
+    "note": "Four top-level definitions remain available via reconciliation imports; moved and evolved authority is not deleted authority."
+  },
+  "identified_compatibility_paths": [
+    {
+      "path": "model_unfolder/evidence/diffusion_stack.py::registered_diffusion_default",
+      "target": "config_registration.registered_constructor_default",
+      "sunset": "No dedicated predicate; facade remains."
+    },
+    {
+      "path": "model_unfolder/evidence/reconciliation.py uncertainty imports and INVESTIGATION_KINDS reexport",
+      "target": "model_unfolder/uncertainty.py",
+      "sunset": "No explicit sunset; facade remains."
+    },
+    {
+      "path": "reader_claims.qualify_reader_fact -> ffn_mechanism.FFNMechanismClaimWitness.validate_legacy_projection_value",
+      "target": "Keep old label unqualified when source value differs",
+      "sunset": "Replace old selector writer through owner-approved correction; approval hold remains."
+    }
+  ],
+  "identified_compatibility_count": 3,
+  "count_limits": "Same three concrete paths as prior sheet; not an exhaustive bridge discovery theorem. Two unsunset facades and one approval hold.",
+  "new_input_binding_capability": "Retained exact child config-class source address plus current-value preparation/cache identity; exact constructed-child default VALUE witness. This does not import original defaults, prove mechanism, create a per-model exception, or replace old authority deletion.",
+  "residual_debt": [
+    "101 unchanged structural debt rows; no register row added/eliminated.",
+    "Generated legacy inventory remains 0 quarantined readers /19 evidence ast.parse sites /8 legacy model-source parse sites; source unchanged, not a fresh runtime census.",
+    "Nonmigrated span placement, activation/application and score-formula claim proof, S11 N1/N2 remain open; current matrix supplies actual counts."
+  ],
+  "latency_pointer": "Exactly one metadata leaf differs from the held S10 baseline: unet_instance.baseline_receipt.artifact_map_sha256 a248be73\u2026 ->269169de\u2026. Stored timing samples/descriptors, medians, host measurements and budgets in latency_budgets.json are identical. This is an existing receipt-index pointer correction, not remeasurement or an S9-A latency ratchet.",
+  "source_pins": {
+    "model_unfolder/evidence/reconciliation.py": {
+      "baseline": "e02796bb0121962a2b41d153a208977f900fb985b643d887622f6dbe48b5feb4",
+      "candidate": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db"
+    },
+    "model_unfolder/evidence/reader_placement.py": {
+      "baseline": null,
+      "candidate": "8ba74fb63160f8b9591261e75262d5b2e2970e633e30a44f660441fc0655831e"
+    },
+    "model_unfolder/evidence/decoder_norm.py": {
+      "baseline": "32bd2e808a0905840efdfa3ef597319d7d4eda5f3952ac32b53e62949dffafc2",
+      "candidate": "49c08fbac556158b63b7a7b854f16502476f2ba5d2853504d10054a27fb7ec9c"
+    },
+    "model_unfolder/evidence/diffusion_stack.py": {
+      "baseline": "af57f3022c4fcb990c7635bb87e19c104736f8c411f02637a4611515415eb651",
+      "candidate": "5a53d6e6e9e4fddd4f9d2037583374b53e74d22080fc2ec47efb1820b3031d09"
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "baseline": null,
+      "candidate": "dd54a8cbb3f492229d8901630470d8033400fd856253ef9d681466b694920a68"
+    },
+    "model_unfolder/evidence/ffn_mechanism.py": {
+      "baseline": "1d0cf5280ab3c7ff46ef2388f1d4e75a79c059ca4656d6c7f776ded087fe1ee3",
+      "candidate": "9b0c661eef2543103816730f87bbb33140fbdb9fd9dc38ddd12405ecd387b509"
+    },
+    "model_unfolder/uncertainty.py": {
+      "baseline": null,
+      "candidate": "f29d5fba5f33b4f4a969759dd06a2202cec0c3a258957355f227bd00616afab6"
+    },
+    "model_unfolder/evidence/document.py": {
+      "baseline": "b61425287c1a3583eaadb053f2042af1da166d73bda8ff938ac35e43d44398c7",
+      "candidate": "23fcf4b1c0080a04c0e93ad61663a7854b9a22e2b6da5f3a446897e960a26c42"
+    },
+    "model_unfolder/evidence/context.py": {
+      "baseline": "6abd0046e1d4a6f06f7d8b186f1af2793f3ee03202f8e20a8834506c403dfadc",
+      "candidate": "539c4df8a026916c849dc1507ce7291269572729b558c43c3f94d09cc8e8f0fc"
+    },
+    "physics/result_cache.py": {
+      "baseline": "e7f56fdecc99410f71fba078929f2a875620936025c85bc8dcc30646df7f3cca",
+      "candidate": "f8a1737fe6041868995f1944c5519390c1adb83cfa6ce05ad802466bbc6a2553"
+    },
+    "model_unfolder/evidence/class_default_value.py": {
+      "baseline": null,
+      "candidate": "20dfe12577200b57f9e83877772608d335333509f43d025a5cfea5e83aa09556"
+    },
+    "verification/latency_budgets.json": {
+      "baseline": "d2468dc7e1a9c471c341adb35d03c705afd679f25547e31e11b7ccf8cb31d547",
+      "candidate": "c54f86d62df83ce357564ba098817b8a640fd90a2f8e5abf8aac8d6c0d278431"
+    },
+    "model_unfolder/evidence/position_linear_bias.py": {
+      "baseline": "711927b5d10a441552582282e153b84e03959cb3a6942505c5ed7361deea44b7",
+      "candidate": "7ed45313345eb6d89485b4db357b79f30ec15f48968aa70b8b5fbe3bc38c25ec"
+    },
+    "model_unfolder/evidence/cross_attention_schedule.py": {
+      "baseline": "92824ae9aadbe49e8b6823c497574ebc1d50617a4bdc23ef22c783f22fc96e30",
+      "candidate": "e9588904fccdafdfe73415edae5262cfaf30fcd0d73cc9d6d6a137e59856400b"
+    }
+  },
+  "frozen31_addendum": {
+    "new_authority_path_deletion_credit": 0,
+    "new_compatibility_paths_identified": 0,
+    "finite_softcap_boundary": "Source-present applied function with unavailable bound operand gets unknown/None class1 declaration and existing chip only; its graph-event exclusion prevents manufacturing occurrence placement. Not a new operation or positive numeric proof.",
+    "census_limit": "Existing typed-write sink is reused. source_fact_keys assignment is outside the finite structural scanner; exact chip/event tests own this metadata boundary. Source audit alone does not certify runtime census."
+  },
+  "frozen32_addendum": {
+    "old_projection_authority_restriction": "Finite decoder softcap graph receipt/facts_projected no longer authored from native value alone; requires actual canonical tanh node.",
+    "whole_authority_paths_deleted": 0,
+    "compatibility_paths_added": 0,
+    "qualification_limit": "Does not alter native claim qualification or create missing graph. Dedicated root-owned actual-node poisons validate receipt honesty."
+  },
+  "frozen33_addendum": {
+    "retained_readers_before_after": [
+      46,
+      48
+    ],
+    "retained_modules_before_after": [
+      38,
+      40
+    ],
+    "fixed_claim_triples_before_after": [
+      50,
+      52
+    ],
+    "new_modules": 0,
+    "authority_deletion_credit": 0,
+    "compatibility_paths_added": 0,
+    "change": "Two already registered source-owned scalar mechanism readers issue their exact repeated-schedule witnesses. Shared parser count join binds whole schedule value/tier/path and consumed hash, not a model name or generic fallback.",
+    "debt_limits": "101 structural rows unchanged. Original142 citation qualification awaits actual matrix; no count predicted from source becomes a measured closure.",
+    "approval_boundary": "Preparing correction is authorized; Soumil and independent verdict required before re-bless, not before preparing/testing."
+  },
+  "frozen34_addendum": {
+    "new_modules": 0,
+    "new_compatibility_paths": 0,
+    "authority_deletion_credit": 0,
+    "change": "One existing layer-count scalar slot accepts only a genuine bound default through the existing shared resolver after checkpoint absence. Broad hydration and all other slots remain unchanged.",
+    "debt": "101 register rows unchanged;48 readers/40 modules/52 intended triples unchanged. Expected142 claim closures remain a matrix measurement, not a source-count assertion."
+  },
+  "frozen35_addendum": {
+    "new_product_modules": 0,
+    "new_compatibility_paths": 0,
+    "authority_deletion_credit": 0,
+    "change": "Existing absent layer-count slot resolves supported alias default addresses with bound premises and rejects conflicting candidates. Finite qualified schedules attach their existing fact keys to already constructed matching attention cards. No new mechanism readers, ledger writer or occurrence placement authority.",
+    "debt": "101 register rows and48 readers/40 modules/52 triples unchanged. Original142 qualification and visible default chips require actual matrix/page evidence."
+  }
+}

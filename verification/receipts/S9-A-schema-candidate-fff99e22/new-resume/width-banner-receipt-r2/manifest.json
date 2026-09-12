@@ -1,0 +1,39 @@
+{
+  "status": "HELD SOURCE ONLY; independent review and root runtime pending",
+  "scope": "One exact model.hidden_size stats_banner surface is scalar-only and cannot author occurrence placement. Existing fact validation, scalar event/receipt, and direct canonical R4 occurrence positives preserved.",
+  "previous_width_handoff_sha256": "61bde38d801c1d0fe0d33fe589919008164a38bcdaa577df25b3c7b95df83260",
+  "files": [
+    {
+      "path": "model_unfolder/evidence/reconciliation.py",
+      "before_sha256": "cefb98c7736972c3a6453589745e6715fb80206c69d9eceec2907fabef12d8a1",
+      "sha256": "af5a661d4f464648cca085c8eff3f341294b3c2a42493a6a4d745c41346244db"
+    },
+    {
+      "path": "tests/test_s9_width_banner_receipts.py",
+      "before_sha256": "c049515ce46dcb4416c664a9fa13bc94554cee05931aced0fdffca4614676f61",
+      "sha256": "3654ac39df7ff32da5cf7bbba715ba1557b926c00eda5d7c799c86dd59015fa7"
+    }
+  ],
+  "changes_patch_sha256": "02107eed0da775ea64f9136b04b87ef91bea9f6a92fd2f47a3f5cc164bcb79fa",
+  "poisons": [
+    "Actual _read + parser-produced class_default fact, live proof, source spans and actual OwnerGraph static claims; assert legacy source join reaches the root constructor so test exercises the original defect.",
+    "Typed matching one-root inventory fixture and actual emitted stats-banner event: no placement before/after scalar event, receipt retained. This fixture is not a worker construction run.",
+    "Unknown fact key still rejected before finite exclusion.",
+    "Independent canonical source_instance_path root block remains rendered for both qualified and unstamped fact; unstamped case retains exact R4 fact finding."
+  ],
+  "runtime": "No project imports, tests or model builds run by author; ast.parse only.",
+  "proposed_root_tests": [
+    "tests/test_s9_width_banner_receipts.py",
+    "tests/test_s9_reader_placement.py",
+    "tests/test_s7_reconciliation.py",
+    "tests/test_projection_obligations.py",
+    "tests/test_receipts.py",
+    "tests/test_projection_audit.py",
+    "tests/test_qk_norm.py::test_parser_records_and_receipts_uniform_gated_false"
+  ],
+  "limits": [
+    "Author cannot independently approve own change.",
+    "This finite scalar-surface exclusion does not migrate other legacy event/span placement paths.",
+    "Current pages/matrix must be regenerated and enumerated; no baseline or output approval."
+  ]
+}

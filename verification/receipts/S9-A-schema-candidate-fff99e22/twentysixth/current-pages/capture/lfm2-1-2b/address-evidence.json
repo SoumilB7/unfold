@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "f9b42e45f9b185f0b21ccf53136df98a48ad631d0adca4b8106a1c745c628a57",
+  "input": "tests/unseen_model_configs/lfm2-1-2b.json",
+  "input_sha256": "aef76f29d8213deaaa121fd4ed5e06a7c498560e6ef28488d5bcd969c9043c08",
+  "resolved_class": {
+    "module": "transformers.models.lfm2.modeling_lfm2",
+    "qualname": "Lfm2ForCausalLM"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

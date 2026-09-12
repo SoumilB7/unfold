@@ -1,0 +1,34 @@
+{
+  "bundle": {
+    "architecture": "Lfm2ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Lfm2ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/lfm2/modeling_lfm2.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "lfm2"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/lfm2/modeling_lfm2.py"
+    ],
+    "import_roots": {},
+    "model_id": "LiquidAI/LFM2-1.2B",
+    "model_type": "lfm2",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/lfm2/configuration_lfm2.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY addresses, not portable identity"
+}

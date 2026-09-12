@@ -60,6 +60,8 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+from .reader_claims import ReaderFactProjection, retained_claim_reader
+
 _LINEAR_PROTOCOLS = frozenset({
     "torch.nn.Linear",
     "torch.nn.modules.linear.Linear",
@@ -202,6 +204,41 @@ def decoder_attention_projection_storage_mode_evidence(
         index, root, allow_root_stage=allow_root_stage)
 
 
+@dataclass(frozen=True)
+class AttentionStorageClaimWitness:
+    index: ProgramIndex
+    storage: object
+    owner: OwnerOccurrenceId
+    selected_census: object | None = None
+    reader_symbol = "model_unfolder.evidence.attention_storage.decoder_attention_projection_storage_for_path"
+
+    def validate_result(self, result):
+        from .dispatch_attention_storage import EquivalentDispatchStorage
+        if type(self.storage) not in (AttentionProjectionStorage, EquivalentDispatchStorage):
+            raise TypeError("attention storage requires an exact complete projection proof")
+        self.storage.__post_init__()
+        if isinstance(self.storage, EquivalentDispatchStorage):
+            for proof in self.storage.proofs:
+                proof.__post_init__()
+        elif self.selected_census is not None:
+            unguarded = tuple(item for item in self.selected_census.candidates
+                              if not item.invocation.call.guard)
+            if len(unguarded) != 1 or unguarded[0] != self.storage.attention:
+                raise ValueError("attention storage omitted a rival unguarded lane")
+        if result.status != "resolved" or result.value != self.storage.mode \
+                or result.owner != self.owner:
+            raise ValueError("attention storage belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "projection_mode"):
+            raise ValueError("attention storage cannot author this projection")
+        mode = "split_qkv" if self.storage.mode == "split" else self.storage.mode
+        return ReaderFactProjection(owner, key, "relation", mode, "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'projection_mode', 'relation'),
+))
 def decoder_attention_projection_storage_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -238,6 +275,7 @@ def decoder_attention_projection_storage_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=result.claim_witness,
         provenance=(*block_path.provenance, *result.provenance))
 
 
@@ -286,6 +324,7 @@ def _attention_projection_storage_mode_for_block_path(
     if direct_storage.status == "resolved":
         return ReaderResult.resolved(
             direct_storage.owner, direct_storage.value.mode,
+            claim_witness=AttentionStorageClaimWitness(index, direct_storage.value, direct_storage.owner),
             provenance=direct_storage.provenance)
     # Non-value outcomes are type-agnostic ReaderResult envelopes.  Preserve
     # ambiguity/absence/failure exactly instead of manufacturing a failure
@@ -312,6 +351,7 @@ def _attention_projection_storage_mode_for_block_path(
                 mode = proof.value.mode
                 return ReaderResult.resolved(
                     block, mode,
+                    claim_witness=AttentionStorageClaimWitness(index, proof.value, block, census.value),
                     provenance=(
                         *census.provenance,
                         *proof.provenance,
@@ -330,6 +370,7 @@ def _attention_projection_storage_mode_for_block_path(
     if dispatch.status == "resolved":
         return ReaderResult.resolved(
             block, dispatch.value.mode,
+            claim_witness=AttentionStorageClaimWitness(index, dispatch.value, block),
             provenance=dispatch.provenance)
     return direct
 

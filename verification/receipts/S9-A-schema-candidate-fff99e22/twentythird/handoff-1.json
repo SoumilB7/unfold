@@ -1,0 +1,14 @@
+{
+  "files": {
+    "model_unfolder/evidence/reader_claims.py": "1f74aa090970ce9182d2a23f8eff837f3c733f5b2f77aa042866a9e9afed3918",
+    "tests/test_reader_claims.py": "7cd61543d9cae41c049603e9ee0f4dc3cf3bcc548818848a2b7d888bf3205e05",
+    "tests/test_mtp.py": "544d315aa469a49f3a7b1de0cbf0dfd0ab768ed6a4167460cdfc02b4c1c42ddd",
+    "tests/test_ffn_mechanism.py": "653bb76aea7c68b013d30ad7194fdc75cc3d0ea48b9c331918b313f65bb4a1ac"
+  },
+  "runtime": "not run; parent owns runtime",
+  "causes": {
+    "Bloom": "Actual object-input no_mapping limitation, no counterfeit checkpoint conversion; original attention_geometry regression unchanged",
+    "MTP": "Preserve exact value/status/source and additionally compare exact typed ChipFactReference",
+    "FFN": "Count actual cache factory invocations; authoritative producer unchanged"
+  }
+}

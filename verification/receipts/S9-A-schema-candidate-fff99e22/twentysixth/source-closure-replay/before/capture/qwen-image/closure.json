@@ -1,0 +1,113 @@
+{
+  "actual_portable_seal": "42b527919b040a221da72bdf5171863b5f4b99cb85a0d06744a810c720e86c64",
+  "baseline_output": {
+    "ir_after_sha256": "5c484788331cff2dbc7473c3a0c9caf5e8dce6338174570d6bebc71fbcf70c15",
+    "ir_before_sha256": "5c484788331cff2dbc7473c3a0c9caf5e8dce6338174570d6bebc71fbcf70c15",
+    "page_bytes": 115550,
+    "page_sha256": "7bcc1db3050b2e2cd053ac47e67dee092315e0add3df09b1c10a7962896fb7fa",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "42b527919b040a221da72bdf5171863b5f4b99cb85a0d06744a810c720e86c64",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "42b527919b040a221da72bdf5171863b5f4b99cb85a0d06744a810c720e86c64",
+  "seconds": 7.960551749998558,
+  "slug": "qwen-image",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "34c864b0b066a4a9eb84e40e1bb77b7df303c165e7910600b402a0f5f8d8f94e",
+      "external": false,
+      "external_provenance": "",
+      "locator": "transformer_qwenimage.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "085160680e6e00385f39b3e414e9818c7d455bcaa2efa66770b8b402cfd9b571",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "8ec8f3eb6b21bdd8f24c30bc54dbcf10eaa16c6f7f5e36e7f9ff6a88fbd0e630",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "085160680e6e00385f39b3e414e9818c7d455bcaa2efa66770b8b402cfd9b571",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "8ec8f3eb6b21bdd8f24c30bc54dbcf10eaa16c6f7f5e36e7f9ff6a88fbd0e630",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder.text_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "085160680e6e00385f39b3e414e9818c7d455bcaa2efa66770b8b402cfd9b571",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "8ec8f3eb6b21bdd8f24c30bc54dbcf10eaa16c6f7f5e36e7f9ff6a88fbd0e630",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_qwen2_5_vl.py"
+    },
+    {
+      "component": "text_encoder.vision_config",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 13,
+  "status": "REPRODUCED"
+}

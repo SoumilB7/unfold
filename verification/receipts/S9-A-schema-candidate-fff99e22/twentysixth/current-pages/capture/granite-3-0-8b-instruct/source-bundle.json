@@ -1,0 +1,32 @@
+{
+  "architecture": "GraniteForCausalLM",
+  "companion_components": [],
+  "component_architectures": {
+    "root": "GraniteForCausalLM"
+  },
+  "component_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/granite/modeling_granite.py"
+    ]
+  },
+  "component_model_types": {
+    "root": "granite"
+  },
+  "files": [
+    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/granite/modeling_granite.py"
+  ],
+  "import_roots": {},
+  "model_id": "ibm-granite/granite-3.0-8b-instruct",
+  "model_type": "granite",
+  "pipeline_components": [],
+  "source": "local",
+  "supporting_files": {
+    "root": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/granite/configuration_granite.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+    ]
+  },
+  "warnings": []
+}

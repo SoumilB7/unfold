@@ -1,0 +1,197 @@
+[
+  {
+    "slug": "auraflow-v0-3",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/auraflow-v0-3.html",
+    "sha256": "547054e088c33d2caa1495f993554fb76417e200a789d968bb83232d1e15d009"
+  },
+  {
+    "slug": "bloom",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/bloom.html",
+    "sha256": "eeee63a6426fae6ec022ef1f029b4cb3de27abf59b16d8e2236d5244ad0dd057"
+  },
+  {
+    "slug": "cogvideox-5b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/cogvideox-5b.html",
+    "sha256": "2a68ab855d1a2198e68149e7941b0e1ba72f0ec26ea625d1586d36d0037b9d96"
+  },
+  {
+    "slug": "dbrx-base",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/dbrx-base.html",
+    "sha256": "d572683712b035e973a4df4c9a10b29c580a2026a470d0491e68763604ccdfa6"
+  },
+  {
+    "slug": "deepseek-v3",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/deepseek-v3.html",
+    "sha256": "c11178cb62a20dd8240502f66f04824c98b2e63585d458688c9c490e60641bdf"
+  },
+  {
+    "slug": "flux-2-dev",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/flux-2-dev.html",
+    "sha256": "2781ec2d93d346bffc4317955c94d997adb732a572fa30dc414572fab6bcd449"
+  },
+  {
+    "slug": "fluxtransformer2dmodel",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/fluxtransformer2dmodel.html",
+    "sha256": "64a276dc823295d10cefc628d819f6b026f57b2ec513b2b4b8e9c513ff73924f"
+  },
+  {
+    "slug": "gemma-2-2b-it",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/gemma-2-2b-it.html",
+    "sha256": "e99b316a8dbba7b1c01aecd10095f00fcc029d8d942f101aaac2b3fd07f6a0f0"
+  },
+  {
+    "slug": "glm-4-5",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/glm-4-5.html",
+    "sha256": "8ce5f7a7134afddc9fdbc65eceb29b72093701853cb51fc2f44d316ef878b94a"
+  },
+  {
+    "slug": "gpt-oss-20b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/gpt-oss-20b.html",
+    "sha256": "771358abdeb7fcb3e8777d82568e783d78305d60e0fe35ccc9292f764a5ddc31"
+  },
+  {
+    "slug": "granite-3-0-8b-instruct",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/granite-3-0-8b-instruct.html",
+    "sha256": "076be8d80034a033ff8f6726727c741281393d34d16a7709fe2223ae0b5f8396"
+  },
+  {
+    "slug": "hunyuanvideo",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/hunyuanvideo.html",
+    "sha256": "51620ebe1cb0d1d3e1f8febf7629f810bdf4c2d679ee1ac4425ba3c43ff73565"
+  },
+  {
+    "slug": "llama-7b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/llama-7b.html",
+    "sha256": "46d3cd5c0f7ea74c34195722135674a56965b8ce16a173c4b5152aa98f9aa9b6"
+  },
+  {
+    "slug": "ltx-video",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/ltx-video.html",
+    "sha256": "029e1d66c58e46df0067cc3203ac48105ebbdbc2d268c5d67d4d887d4c350c4a"
+  },
+  {
+    "slug": "lumina-image-2-0",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/lumina-image-2-0.html",
+    "sha256": "fea14a4cacaf398ced10fb8dc5eaf124ba6a5ee840a6a62fbea9f141120ac4c2"
+  },
+  {
+    "slug": "mochi-1-preview",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/mochi-1-preview.html",
+    "sha256": "d2eafcd61c5b9ac8babf15c6619d270d0d8b12ee7249c26023a33ca63920fcda"
+  },
+  {
+    "slug": "musicgen-small",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/musicgen-small.html",
+    "sha256": "03fd95a0b9ec4a87a92ccde608514a7f72b04c3f500a55acad9187e95e8ff5f2"
+  },
+  {
+    "slug": "olmo-2-1124-7b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/olmo-2-1124-7b.html",
+    "sha256": "bdf8fa535e6d16335fbdb05ecce080c8b4d7b337637ec95f6bdfcc533acac257"
+  },
+  {
+    "slug": "pixart-sigma-xl-2-1024-ms",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/pixart-sigma-xl-2-1024-ms.html",
+    "sha256": "70d428f724829dfd8d5ac5953ae69f04dde113c90c4e22ff0d7f6ca26a00064e"
+  },
+  {
+    "slug": "prxpixel-t2i",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/prxpixel-t2i.html",
+    "sha256": "6747815860f66b70347d4f20035b93dfeec2590ada8677f5e5a003bebcfd8508"
+  },
+  {
+    "slug": "qwen-image",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/qwen-image.html",
+    "sha256": "246a3f0848113ae1a04f850122e610668466689cbd1e624f40172dfb771bf2e2"
+  },
+  {
+    "slug": "qwen2-vl-7b-instruct",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen2-vl-7b-instruct.html",
+    "sha256": "f3db4a0fac52f3fdfd888a7e9d114894a6be7ed7965a7a0ba1f13f17b807cf5e"
+  },
+  {
+    "slug": "qwen3-5-27b-text",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen3-5-27b-text.html",
+    "sha256": "2689d0523a39a0f8fb4bf82bc935699f44ccc153f3babbb6f016e8b66de5513e"
+  },
+  {
+    "slug": "qwen3-8b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen3-8b.html",
+    "sha256": "13737db4e4557e2256796542140b114a8128e281cb3d951f614dabbc9f46fa0f"
+  },
+  {
+    "slug": "sana-1600m-1024px-diffusers",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/sana-1600m-1024px-diffusers.html",
+    "sha256": "ebfe4dc8dc504e84ab719618ccb0a25fa4bc0613cd1b3bab8ff15facae888e44"
+  },
+  {
+    "slug": "stable-diffusion-3-5-large",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/stable-diffusion-3-5-large.html",
+    "sha256": "da965d6329a920989c9aaeb5bc18a4e4f11872e0cf71ba6ad5fdfb3a8efa77cf"
+  },
+  {
+    "slug": "stable-diffusion-xl-base-1-0",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-unet/schema-thirtysecond/stable-diffusion-xl-base-1-0.html",
+    "sha256": "099c46abc82aea895705dd90e5ebc6c9e81737878a820f65059ed465f6088265"
+  },
+  {
+    "slug": "stablelm-2-1-6b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/stablelm-2-1-6b.html",
+    "sha256": "10237592d424cf578361ab20f011d22d719f6891e9ca4fd4467626ac4dd40943"
+  },
+  {
+    "slug": "wan2-2-t2v-a14b-diffusers",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-diffusion/schema-thirtysecond/wan2-2-t2v-a14b-diffusers.html",
+    "sha256": "a067833174d77a14f0ae37e0c0c3525cbfaf6a7c7aad6bc77bdb68134b5721ec"
+  },
+  {
+    "slug": "command-a-03-2025",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/command-a-03-2025.html",
+    "sha256": "7c963b40636306a2f9bfc73e63b14c6d533c147263964ca814efda81e50917b5"
+  },
+  {
+    "slug": "deepseek-coder-v2-lite",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/deepseek-coder-v2-lite.html",
+    "sha256": "f0bcf54009fd9e4edf4e1d61715d3ad3c0da6732142dcafd55296761b7c49483"
+  },
+  {
+    "slug": "deepseek-v4-flash",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/deepseek-v4-flash.html",
+    "sha256": "894fbfad444448b36c9cdb6d6b0584a2c3fe0c509e95323e408151022da4f399"
+  },
+  {
+    "slug": "gemma-3n-e2b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/gemma-3n-e2b.html",
+    "sha256": "9f1e1c68b3497bbd7985c7dc6e5fbafa848e2f7db1026f17fdbb0926691bbe2a"
+  },
+  {
+    "slug": "jamba-v0-1",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/jamba-v0-1.html",
+    "sha256": "7dcbb6c2063ce05115972a3e0c8086ce2dcfb1a9026a754780b38b54cbef2e02"
+  },
+  {
+    "slug": "lfm2-1-2b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/lfm2-1-2b.html",
+    "sha256": "1dfe6dec326c224a9c9d04cd77339c0ba65e6bc90bfc35f1aaf39333beb65aad"
+  },
+  {
+    "slug": "nemotron-h-8b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/nemotron-h-8b.html",
+    "sha256": "eaf35348fa2a4f79fac69ceed3174ac1b57291ec2495632b15e6efe67383ba8c"
+  },
+  {
+    "slug": "qwen3-5-27b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen3-5-27b.html",
+    "sha256": "9032c68f004eec515d12c41f814e09dd510f1e17bf2da417d6c9e9940ebb3d62"
+  },
+  {
+    "slug": "qwen3-omni-30b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen3-omni-30b.html",
+    "sha256": "f8284457c5f19f9b5fe328b50bae7f9a5ad33e1638cd8d982c059bc74afeebf9"
+  },
+  {
+    "slug": "qwen3-vl-235b",
+    "page": "/Users/soumil/Code/Projects/Understand/llmvisualizer/z-docs/12-design/S9-transformer/schema-thirtysecond/qwen3-vl-235b.html",
+    "sha256": "56031a510aa40337e0157be11b41a583c627eaacc5108b23bbaf566924449c54"
+  }
+]

@@ -1,0 +1,154 @@
+--- fff99e22/model_unfolder/evidence/program_index.py
++++ frozen26/model_unfolder/evidence/program_index.py
+@@ -238,6 +238,33 @@
+ 
+ 
+ @dataclass(frozen=True)
++class ModuleNameAccess:
++    """One lexical name and its exact attribute/subscript receiver chain.
++
++    The context and parent expression are raw syntax. A load underneath a
++    subscript store stays a write-shaped receiver, not a harmless name load.
++    Includes nested callable/class bodies; no execution or binding is inferred.
++    """
++    name: str
++    expression: "ExprNode"
++    context: str
++    parent_expression: "ExprNode | None"
++    parent_kind: str
++    span: SourceSpan
++
++
++@dataclass(frozen=True)
++class ModuleStatement:
++    """One lexical statement's syntax, including unsupported forms."""
++    kind: str
++    targets: tuple
++    value: "ExprNode | None"
++    guard: tuple
++    span: SourceSpan
++    enclosing_scope: "SymbolId | None" = None
++
++
++@dataclass(frozen=True)
+ class ModuleRecord:
+     """One module: its module/package identity and its source node."""
+ 
+@@ -245,6 +272,8 @@
+     package: str                 # dotted package (containing package), '' if top
+     source: SourceFileNode
+     span: SourceSpan
++    name_accesses: tuple[ModuleNameAccess, ...] = ()
++    statements: tuple[ModuleStatement, ...] = ()
+ 
+ 
+ # --------------------------------------------------------------------------- #
+@@ -459,6 +488,8 @@
+     bases: tuple = ()            # tuple[ExprNode]
+     body_assigns: tuple = ()     # tuple[ClassBodyAssign]
+     span: SourceSpan | None = None
++    decorators: tuple = ()      # tuple[ExprNode] — exact syntax, no semantics
++    keywords: tuple = ()        # tuple[(name, ExprNode)] — e.g. explicit metaclass
+ 
+ 
+ @dataclass(frozen=True)
+@@ -1464,6 +1495,8 @@
+         # outputs
+         self.imports: list = []
+         self.module_bindings: list = []
++        self.module_name_accesses: list = []
++        self.module_statements: list = []
+         self.classes: list = []
+         self.callables: list = []
+         self.identifiers: list = []
+@@ -1514,6 +1547,8 @@
+         # Direct/private calls outside run retain their uncached behavior.
+         self._expr_memo = {}
+         try:
++            self._module_access_syntax()
++            self._module_statement_syntax(self.tree.body, ())
+             self.module_bindings.extend(
+                 _ModuleBindingCollector(self.sid).collect(self.tree))
+             self._collect_definitions(self.tree.body, scope="", guard=())
+@@ -1526,6 +1561,59 @@
+             return self
+         finally:
+             self._expr_memo = None
++
++    def _module_access_syntax(self):
++        parents = {child: parent for parent in ast.walk(self.tree)
++                   for child in ast.iter_child_nodes(parent)}
++        for node in ast.walk(self.tree):
++            if not isinstance(node, ast.Name):
++                continue
++            receiver = node
++            parent = parents.get(receiver)
++            while isinstance(parent, (ast.Attribute, ast.Subscript)) and parent.value is receiver:
++                receiver = parent
++                parent = parents.get(receiver)
++            context = getattr(receiver, "ctx", node.ctx)
++            self.module_name_accesses.append(ModuleNameAccess(
++                node.id, self._expr(receiver),
++                "store" if isinstance(context, ast.Store) else
++                "del" if isinstance(context, ast.Del) else "load",
++                self._expr(parent) if isinstance(parent, (ast.Call, ast.Compare)) else None,
++                type(parent).__name__ if parent is not None else "Module",
++                self._span(node)))
++
++    def _module_statement_syntax(self, body, guard, scope=None):
++        for node in body:
++            targets = ()
++            value = None
++            if isinstance(node, ast.Assign):
++                targets, value = tuple(self._expr(item) for item in node.targets), self._expr(node.value)
++            elif isinstance(node, ast.AnnAssign):
++                targets = (self._expr(node.target),)
++                value = self._expr(node.value) if node.value is not None else None
++            elif isinstance(node, ast.AugAssign):
++                targets, value = (self._expr(node.target),), self._expr(node.value)
++            elif isinstance(node, ast.Delete):
++                targets = tuple(self._expr(item) for item in node.targets)
++            elif isinstance(node, ast.Expr):
++                value = self._expr(node.value)
++            elif isinstance(node, ast.If):
++                value = self._expr(node.test)
++            elif isinstance(node, (ast.Return, ast.Raise)):
++                raw = node.value if isinstance(node, ast.Return) else node.exc
++                value = self._expr(raw) if raw is not None else None
++            self.module_statements.append(ModuleStatement(
++                type(node).__name__, targets, value, guard, self._span(node), scope))
++            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
++                qualified = (scope.qualified_name + "." if scope is not None else "") + node.name
++                self._module_statement_syntax(node.body, (), SymbolId(self.sid, qualified))
++            if isinstance(node, ast.If):
++                self._module_statement_syntax(node.body, (*guard,
++                    GuardStep("if", self._expr(node.test), self._span(node))), scope)
++                self._module_statement_syntax(node.orelse, (*guard,
++                    GuardStep("else", None, self._span(node))), scope)
++            # Other control forms stay explicit unsupported statements. The
++            # name-access census still includes every nested expression.
+ 
+     def _collect_definitions(self, body, scope: str, guard: tuple) -> None:
+         for node in body:
+@@ -1643,7 +1731,10 @@
+                     self._expr(stmt.value) if stmt.value is not None else None,
+                     self._span(stmt), self._expr(stmt.annotation)))
+         self.classes.append(ClassRecord(sym, bases, tuple(body_assigns),
+-                                        self._span(node)))
++                                        self._span(node),
++                                        tuple(self._expr(item) for item in node.decorator_list),
++                                        tuple((item.arg or "**", self._expr(item.value))
++                                              for item in node.keywords)))
+         for stmt in node.body:
+             if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                 self._callable(stmt, owner=sym, scope=qual)
+@@ -3160,7 +3251,8 @@
+     module_name = os.path.splitext(
+         os.path.basename(source_id.canonical_path))[0]
+     module = ModuleRecord(
+-        module_name, "", node, SourceSpan(source_id, 1))
++        module_name, "", node, SourceSpan(source_id, 1),
++        tuple(walker.module_name_accesses), tuple(walker.module_statements))
+     records = tuple(
+         (output_name, tuple(getattr(walker, walker_name)))
+         for output_name, walker_name in _WALKER_RECORDS

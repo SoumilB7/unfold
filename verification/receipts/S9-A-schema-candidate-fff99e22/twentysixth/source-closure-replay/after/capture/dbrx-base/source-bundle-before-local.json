@@ -1,0 +1,38 @@
+{
+  "bundle": {
+    "architecture": "DbrxForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "DbrxForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/dbrx/modeling_dbrx.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "dbrx"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/dbrx/modeling_dbrx.py"
+    ],
+    "import_roots": {},
+    "model_id": "databricks/dbrx-base",
+    "model_type": "dbrx",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/dbrx/configuration_dbrx.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": [
+      "Could not infer model_type for Transformers component 'attn_config'.",
+      "Could not infer model_type for Transformers component 'ffn_config'."
+    ]
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

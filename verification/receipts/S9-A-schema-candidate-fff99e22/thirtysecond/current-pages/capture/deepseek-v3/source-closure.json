@@ -1,0 +1,46 @@
+{
+  "actual_portable_seal": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d",
+  "equals_reference26": true,
+  "parse_failures": [],
+  "recomputed_from_rows": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d",
+  "reference26_seal": "5355d834c5a3b08ca21b3ee7796d947d9f31f407fa42d40c2372f9587b82ed4d",
+  "scope": "Actual32 source index;26 is a comparison reference, not a32 matrix.",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4b1a469c24be4e4c6320536ad55a7337d24de04c3ecc71597fbf0267f1560612",
+      "external": false,
+      "external_provenance": "",
+      "locator": "activations.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f4a8b645b0742cf37f6f86e7339cd9bcadb923775ed0274b787bdd0b8f531451",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_deepseek_v3.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "2244db0d2c69fa9c09720c96e2c03f5faf3d52fcc78f593acdf045e713f99701",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_deepseek_v3.py"
+    },
+    {
+      "component": "root",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5
+}

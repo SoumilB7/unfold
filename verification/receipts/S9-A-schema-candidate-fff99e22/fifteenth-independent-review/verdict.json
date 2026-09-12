@@ -1,0 +1,99 @@
+{
+  "decision": "RETURN width; ACCEPT bounded declaration-only portions",
+  "scope": "Fifteenth frozen source only",
+  "manifest_sha256": "b5cc36b171ac9ca5a1efc7623877dfa4e20432e9dbf5f6ff7ad4e943e5ede1a7",
+  "source_pins": {
+    "model_unfolder/evidence/model_state_width.py": {
+      "sha256": "b5bb90bbb52a46f330999eac01560a9e4d60485befbf6e7c886f832bc077d32b",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/activation_registry.py": {
+      "sha256": "eb523946a0262b4a610d72cd1fdf9e38be5a223428af93e88a872f79ac1ec636",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/reader_claims.py": {
+      "sha256": "206dadd03f3d4381d5c50c904e9a9fd842b74452989d466df264b4ecb60ecc84",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/registry.py": {
+      "sha256": "fda7f23134e869bbc16fc0d3502aa1ce338d98282d503360887802d86d02081b",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/router.py": {
+      "sha256": "e903de1384206e4292d1598b5159d51eb049745dfe7fccb50624565d86a00b13",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/projector.py": {
+      "sha256": "706454d6d927cdf19b5dc58a356cf98addf150acb0477aee014d3b6b6ae195ca",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/expert_width.py": {
+      "sha256": "248f2843ec9f21628f5e7c128a34430aada67a518235b36511e94fb864d44222",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/attention.py": {
+      "sha256": "693603ce2a72aeb3dc81c6ef2d7480121627bf74a15418b61831846a0b29f216",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/context.py": {
+      "sha256": "c3d82fb114a5c008d931291c361f100c852053cb6bc8fc2a67b0c67062a4a72c",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/program_index.py": {
+      "sha256": "eb1a682b3f3c7b728d6f21cc3fd9e4b68756e2a295237c25127e5cbeb73ba509",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/evidence/construction_calls.py": {
+      "sha256": "692fadfd39a8ddf47181b0c37649e72d66166253bb5289acc2266ac428ae097b",
+      "matched_candidate_manifest": false
+    },
+    "model_unfolder/evidence/execution_flow.py": {
+      "sha256": "1acfb475787fb1809656f24b91e0ed2175972ba0d971afeacf6caaf0c2928c1e",
+      "matched_candidate_manifest": false
+    },
+    "model_unfolder/adapters/transformer/parser.py": {
+      "sha256": "6b572c873b607615e325606545a3f18ad02c6635339f3eb4bf005b8c05f9ec24",
+      "matched_candidate_manifest": true
+    },
+    "model_unfolder/adapters/transformer/special_parts/modalities/vision.py": {
+      "sha256": "afed6604117511c662c9dec2830cd41b0473debf1ac568ab741b3102cd67d5b5",
+      "matched_candidate_manifest": true
+    },
+    "tests/test_s9_model_state_width.py": {
+      "sha256": "e696864c7ee96a003d34d199a0e24bdd72e8873b9a9c3f2843ddf93da381ed06",
+      "matched_candidate_manifest": true
+    },
+    "tests/test_s9_reader_declarations.py": {
+      "sha256": "70b57262085500c312520d75f0a002584f6777eed0156ecb8401bfa90d1ec2b4",
+      "matched_candidate_manifest": true
+    },
+    "tests/test_weight_tying.py": {
+      "sha256": "de365f3efdf1f113ffc30283f697241d996561c4cfbc40f23471808ef199b36a",
+      "matched_candidate_manifest": true
+    }
+  },
+  "findings": [
+    {
+      "id": "W1",
+      "location": "model_state_width.py:_derive; construction_calls.py:resolve_import_reference",
+      "falsifier": "Append nn.Embedding = replacement or override nn.Embedding.forward in indexed source.",
+      "reason": "Width semantics granted solely from lexical qualified_target. Resolver explicitly supplies address evidence, checks root-name rebinding but not member mutations; new reader adds no selected primitive use closure."
+    },
+    {
+      "id": "W2",
+      "location": "model_state_width.py:_lineage; program_index.py:_module_statement_syntax",
+      "falsifier": "Insert hidden.resize_(1,16) inside existing for unit in self.units immediately before hidden = unit(hidden).",
+      "reason": "Backward bindings still reach embedding. Mutation scan uses module.statements, which does not descend For bodies; this no-binding mutation call is missed."
+    }
+  ],
+  "accepted": [
+    "Exact source dimension property and document/default operand, positive int, channel-specific status/presence_only; no head_dim*heads guess. These do not repair W1/W2.",
+    "Parser sets width only after qualified fact, and cites existing embed block for shared chip transport.",
+    "Router/shared-count/projector/gated-delta original result and finite destination declarations always raise typed unavailable; central authentication retains kind/readers only, no evidence/token. Not qualified proof completion.",
+    "Projector writer checks actual inventory member identity and document-scoped cached result.",
+    "Default weight tying remains value declaration only, no storage-sharing proof.",
+    "A5 origin source matches accepted correction."
+  ],
+  "scope_caution": "Initial embedding route is not a proof that arbitrary repeated child bodies preserve width; keep that boundary and alternate external-input uncertainty explicit.",
+  "limits": "No runtime/output approval. Findings are source inferences, not executed poisons. Unchanged dependency files absent from 109-file changed-source manifest are explicitly marked separately hashed, not falsely manifest-matched. Prior scopes unchanged."
+}

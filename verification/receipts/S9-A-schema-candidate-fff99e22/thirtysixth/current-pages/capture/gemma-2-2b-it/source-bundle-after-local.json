@@ -1,0 +1,35 @@
+{
+  "bundle": {
+    "architecture": "Gemma2ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Gemma2ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "gemma2"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/modeling_gemma2.py"
+    ],
+    "import_roots": {},
+    "model_id": "google/gemma-2-2b-it",
+    "model_type": "gemma2",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/gemma2/configuration_gemma2.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY addresses, not portable identity"
+}

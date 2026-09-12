@@ -1,0 +1,21 @@
+{
+  "decision": "ACCEPT",
+  "scope": "Source-only DD1 correction and bounded seven-file diffusion-default handoff v2; runtime pending",
+  "manifest_sha256": "e41cb9d27f99edcaf591dbcdd6bb24cb12b76a6bb05176a1567d8d8a1c3c8af2",
+  "supersedes_finding": {
+    "prior_verdict": "/private/tmp/unfold-s9a-independent-diffusion-default-review/verdict.json",
+    "sha256": "7c2a8c75bba1a8aa9f56e3cef2c4ac2a4701fbbaae9472b4d85a3e956af78c73",
+    "finding": "DD1"
+  },
+  "findings": [],
+  "verified_delta": [
+    "Exactly two files changed versus reviewed v1; other five byte-identical.",
+    "registered_diffusion_default now refuses unless complete constructor.decorators equals exactly the one independently import-proved registration decorator. This closes either extra-wrapper order before literal-default value issuance.",
+    "Two actual source-defined force_layers wrappers set layers=99, one above rtc and one below it; both feed the existing omitted-layers default-refusal assertion. Existing ordinary, computed-default and formal-rewrite controls remain."
+  ],
+  "acceptance_limits": [
+    "Extends prior bounded positive source review of typed constructor/default revalidation, checkpoint/default separation, snapshotted expected compound values, contributing bound-operand tier and position declaration-only transport.",
+    "No runtime or model tests performed by reviewer; upcoming focused/actual results remain necessary.",
+    "No output/census/full S9-A acceptance. No general decorator interpreter or external-effect theorem claimed."
+  ]
+}

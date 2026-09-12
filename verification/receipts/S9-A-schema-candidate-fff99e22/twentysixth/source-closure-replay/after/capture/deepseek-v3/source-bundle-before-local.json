@@ -1,0 +1,37 @@
+{
+  "bundle": {
+    "architecture": "DeepseekV3ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "DeepseekV3ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "deepseek_v3"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/modeling_deepseek_v3.py"
+    ],
+    "import_roots": {},
+    "model_id": "deepseek-ai/DeepSeek-V3",
+    "model_type": "deepseek_v3",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/deepseek_v3/configuration_deepseek_v3.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": [
+      "Could not infer model_type for Transformers component 'quantization_config'."
+    ]
+  },
+  "scope": "LOCAL_ONLY source addresses; not the portable seal"
+}

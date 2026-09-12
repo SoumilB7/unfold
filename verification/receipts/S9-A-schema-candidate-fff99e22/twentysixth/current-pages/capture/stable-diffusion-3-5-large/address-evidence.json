@@ -1,0 +1,10 @@
+{
+  "active_s7_inventory_sha256": "49072e18c66da422b7fdf44c3fb1e1b41c541157fd204e4260de262817e32776",
+  "input": "tests/sable_test_corpus/stable-diffusion-3-5-large.json",
+  "input_sha256": "20cf7706597ae23435393f22e20db7847bc31720c9f5a405cdb6370b15abe2d7",
+  "resolved_class": {
+    "module": "diffusers.models.transformers.transformer_sd3",
+    "qualname": "SD3Transformer2DModel"
+  },
+  "scope": "Resolved class supplies an address, never architectural meaning."
+}

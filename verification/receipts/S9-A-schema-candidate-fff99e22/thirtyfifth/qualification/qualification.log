@@ -1,0 +1,53 @@
+F.........F............................................................. [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 46%]
+........................................................................ [ 62%]
+........................................................................ [ 78%]
+........................................................................ [ 93%]
+.............................                                            [100%]
+=================================== FAILURES ===================================
+_ test_actual_sparse_bloom_uses_constructor_alias_default_and_exact_schedule_hash _
+
+    def test_actual_sparse_bloom_uses_constructor_alias_default_and_exact_schedule_hash():
+        cfg = _bloom()
+        assert cfg.pop("n_layer") == 70
+        context = ParseContext.build(cfg)
+        ir = config_to_ir(cfg, parse_context=context)
+        assert len(ir.layers) == 2
+        fact = context.facts.typed["decoder.attention.position_schedule"]
+>       assert len(fact.value) == 2 and fact.status == "class_default"
+E       AssertionError: assert (2 == 2 and 'code_proven' == 'class_default'
+E        +  where 2 = len(({'position_application': 'attention_bias', 'position_kind': 'alibi', 'rope_dim': None}, {'position_application': 'attention_bias', 'position_kind': 'alibi', 'rope_dim': None}))
+E        +    where ({'position_application': 'attention_bias', 'position_kind': 'alibi', 'rope_dim': None}, {'position_application': 'attention_bias', 'position_kind': 'alibi', 'rope_dim': None}) = EvidenceFact(key='position_schedule', owner='decoder.attention', value=({'position_kind': 'alibi', 'position_applicati...tion_linear_bias.decoder_alibi_score_bias_for_path',), claim_evidence=None, unknown_reason=None, migrated_legacy=False).value
+E         
+E         - class_default
+E         + code_proven)
+
+tests/test_s9_layer_count_alias_defaults.py:28: AssertionError
+_ test_repeated_schedule_citation_is_consistent_and_default_is_really_emitted[True-alibi] _
+
+case = ('bloom', 'position_schedule', 'attn', (), 'n_layer', 70)
+defaulted = True
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x171990a40>
+
+    @pytest.mark.parametrize("case", CASES, ids=["alibi", "additive_cross"])
+    @pytest.mark.parametrize("defaulted", [False, True])
+    def test_repeated_schedule_citation_is_consistent_and_default_is_really_emitted(case, defaulted, monkeypatch):
+        cfg, context = _prepare(case, defaulted)
+        ir = config_to_ir(cfg, parse_context=context)
+        key = "decoder.attention." + case[1]
+        fact = context.facts.typed[key]
+        assert len(ir.layers) > 0 and len(fact.value) == len(ir.layers)
+        if not defaulted:
+            assert len(ir.layers) == case[5]
+>       assert fact.status == ("class_default" if defaulted else "code_and_config")
+E       AssertionError: assert 'code_proven' == 'class_default'
+E         
+E         - class_default
+E         + code_proven
+
+tests/test_s9_repeated_schedule_visibility.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_s9_layer_count_alias_defaults.py::test_actual_sparse_bloom_uses_constructor_alias_default_and_exact_schedule_hash
+FAILED tests/test_s9_repeated_schedule_visibility.py::test_repeated_schedule_citation_is_consistent_and_default_is_really_emitted[True-alibi]
+2 failed, 459 passed in 194.39s (0:03:14)

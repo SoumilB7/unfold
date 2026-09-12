@@ -1,0 +1,100 @@
+[
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      1,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      1,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      2,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      3,
+      "receipts",
+      3,
+      "context_token"
+    ]
+  },
+  {
+    "after": "9b3b29c4f77d47ec815ff6745774e71d",
+    "after_present": true,
+    "after_type": "str",
+    "before": "5814c2948a724c5db38dfe46d5a9dc8e",
+    "before_present": true,
+    "before_type": "str",
+    "path": [
+      4,
+      "receipts",
+      0,
+      "context_token"
+    ]
+  }
+]

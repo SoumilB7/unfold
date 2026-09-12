@@ -1,0 +1,50 @@
+[
+  {
+    "path": "/True/1/facts_projected/1",
+    "before": "decoder.attention.logit_softcap",
+    "after": "decoder.attention.mask"
+  },
+  {
+    "path": "/True/1/facts_projected/2",
+    "before": "decoder.attention.mask",
+    "after": "decoder.attention.mechanism"
+  },
+  {
+    "path": "/True/1/facts_projected/3",
+    "before": "decoder.attention.mechanism",
+    "after": "decoder.attention.projection_mode"
+  },
+  {
+    "path": "/True/1/facts_projected/4",
+    "before": "decoder.attention.projection_mode",
+    "after": "decoder.attention.scores_scale"
+  },
+  {
+    "path": "/True/1/facts_projected/5",
+    "removed": "decoder.attention.scores_scale"
+  },
+  {
+    "path": "/True/1/receipts/0",
+    "removed": {
+      "context_token": "e7a0ec6939204a53904ff13260194c62",
+      "fact_id": "decoder.attention.logit_softcap",
+      "fact_key": "logit_softcap",
+      "fact_value_status_hash": "0a43e6f78db3cb40",
+      "mechanism": "attention_logit_softcap",
+      "node_ids": [
+        "attn_softcap"
+      ],
+      "output_hash": null,
+      "owner": "decoder.attention",
+      "projection_kind": "op",
+      "projector_symbol": "renderers.html.block_views.attention.build_attention_view",
+      "structural_target": "attn_softcap",
+      "surface": "opgraph"
+    }
+  },
+  {
+    "path": "/True/3/receipts/0/context_token",
+    "before": "e7a0ec6939204a53904ff13260194c62",
+    "after": "aaa24c8822d34f1b8321e4dd5fcac54f"
+  }
+]

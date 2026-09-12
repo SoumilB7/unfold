@@ -1,0 +1,57 @@
+--- events/model_unfolder/adapters/transformer/parser.py
++++ events-r2/model_unfolder/adapters/transformer/parser.py
+@@ -958,7 +958,7 @@
+             fact, reader_result, context.program_index(),
+             current_prepared_document.get()))
+ 
+-    def _ffn_fact_status(value, status):
++    def _ffn_status_with_selector_default(value, status):
+         from ...evidence.config_access import current_prepared_document
+         from ...evidence.ffn_mechanism import ConfigSelectedFFNMechanism
+         from ...evidence.reader_claims import reader_operand
+@@ -977,7 +977,7 @@
+     def _note_ffn_mechanism_fact(key, value, status, source):
+         from ...evidence.config_access import current_prepared_document
+         from ...evidence.reader_claims import ReaderClaimUnavailable
+-        status = _ffn_fact_status(value, status)
++        status = _ffn_status_with_selector_default(value, status)
+         witness = getattr(_ffn_mechanism, "claim_witness", None)
+         if witness is not None and value is not None:
+             try:
+@@ -1680,7 +1680,7 @@
+                 if (_dispatch_res.provenance == "class_default"
+                     or _dispatch_res.source_kind == "class_default")
+                 else "code_and_config")
+-            _activation_event_status = _ffn_fact_status(activation_raw, _activation_status)
++            _activation_event_status = _ffn_status_with_selector_default(activation_raw, _activation_status)
+             # Consume only the exact occurrence the source dispatch names.
+             # Equal aliases remain visible inspections, never alternate proof.
+             _dispatch_res.consume_decision(
+--- events/tests/test_s9_attention_event_association.py
++++ events-r2/tests/test_s9_attention_event_association.py
+@@ -19,6 +19,10 @@
+ def _parse(context, checkpoint, defaults):
+     context.class_defaults = dict(defaults)
+     context.class_defaults_by_path = {(): dict(defaults)}
++    # This synthetic direct preparation deliberately has no provenance map.
++    # Present fields must retain unknown provenance, never become checkpoint
++    # declarations merely because they are addressable. Defaults have their
++    # own retained class-default premise.
+     prepared = PreparedDocument(deepcopy(checkpoint), deepcopy(checkpoint), class_overlay=dict(defaults))
+     with config_access.bound_document(DocumentBinding('root', (), prepared)), \
+             config_access.capture_events(context.config_access), capture_facts(context.facts):
+@@ -50,7 +54,7 @@
+                    for event in decisions)
+         heads = next(event for event in decisions if event.config_path == 'num_attention_heads')
+         assert heads.present is (not omitted) and heads.path_exact
+-        assert heads.provenance == ('class_default' if omitted else 'checkpoint_declared')
++        assert heads.provenance == ('class_default' if omitted else '')
+     assert not [event for event in events if event.mechanism == 'attention_mechanism'
+                 and event.fact_key in {'num_heads', 'num_kv_heads'}]
+ 
+@@ -165,4 +169,4 @@
+     assert len(decisions) == 1
+     assert decisions[0].value_status_hash == value_status_hash(fact.value, fact.status)
+     assert decisions[0].present is (not omitted)
+-    assert decisions[0].provenance == ('class_default' if omitted else 'checkpoint_declared')
++    assert decisions[0].provenance == ('class_default' if omitted else '')

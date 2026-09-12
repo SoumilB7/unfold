@@ -1,0 +1,209 @@
+--- fff99e22/model_unfolder/evidence/registry.py
++++ frozen26/model_unfolder/evidence/registry.py
+@@ -250,6 +250,26 @@
+ # ---------------------------------------------------------------------------
+ REGISTRY: dict[str, FactDefinition] = _definition_map([
+     FactDefinition(
++        key="hidden_size", value_types=frozenset({"int"}),
++        allowed_statuses=frozenset({"config_declared", "class_default"}),
++        owner_patterns=frozenset({"model"}),
++        projections=frozenset({"json", "architecture_view", "params_annotation", "card_chip"}),
++        projection_routes=(
++            ProjectionRoute("model", "model_hidden_size_value", "ir", "hidden_size",
++                frozenset({"field"}), frozenset({("hidden_size",)}),
++                frozenset({"adapters.transformer.parser.parse"})),
++            ProjectionRoute("model", "model_hidden_size_value", "block", "embed",
++                frozenset({"field", "chip"}), frozenset({("embed",)}),
++                frozenset({"adapters.transformer.parser.parse"})),
++            ProjectionRoute("model", "model_hidden_size_value", "params", "hidden_size",
++                frozenset({"field"}), frozenset({("hidden_size",)}),
++                frozenset({"params.estimate_params"})),
++        ),
++        unknown_policy="unknown_banner", parameter_consumer=True,
++        notes="S9-A: exact checkpoint scalar or source-bound config-class scalar default for the existing model width consumer; "
++              "value declaration only, no forward/embedding/state-connection claim.",
++    ),
++    FactDefinition(
+         key="spatial_mechanisms", value_types=frozenset({"dict"}),
+         allowed_statuses=frozenset({"code_proven"}),
+         owner_patterns=frozenset({"root.denoiser"}),
+@@ -428,7 +448,7 @@
+     FactDefinition(
+         key="diffusion_bookend_geometry",
+         value_types=frozenset({"tuple"}),
+-        allowed_statuses=frozenset({"code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser"}),
+         projections=frozenset({"json"}),
+         projection_routes=(
+@@ -480,7 +500,7 @@
+     FactDefinition(
+         key="diffusion_stack_depth",
+         value_types=frozenset({"int", "NoneType"}),
+-        allowed_statuses=frozenset({"code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(
+@@ -513,7 +533,7 @@
+     FactDefinition(
+         key="diffusion_attention_head_protocol",
+         value_types=frozenset({"dict"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -525,7 +545,7 @@
+     FactDefinition(
+         key="diffusion_attention_head_dim",
+         value_types=frozenset({"int", "NoneType"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -537,7 +557,7 @@
+     FactDefinition(
+         key="diffusion_attention_score_scaling",
+         value_types=frozenset({"bool", "NoneType"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -549,7 +569,7 @@
+     FactDefinition(
+         key="diffusion_attention_qk_norm",
+         value_types=frozenset({"bool", "NoneType"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -562,7 +582,7 @@
+     FactDefinition(
+         key="diffusion_attention_position_application",
+         value_types=frozenset({"dict"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].attention[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -574,7 +594,7 @@
+     FactDefinition(
+         key="diffusion_gated_delta_geometry",
+         value_types=frozenset({"dict"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].mixers[i]"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -586,7 +606,7 @@
+     FactDefinition(
+         key="diffusion_ffn_mechanism",
+         value_types=frozenset({"dict"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].ffn"}),
+         projections=frozenset({"json"}),
+         projection_routes=(
+@@ -602,7 +622,7 @@
+     FactDefinition(
+         key="diffusion_cell_topology",
+         value_types=frozenset({"dict"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
++        allowed_statuses=frozenset({"class_default", "code_proven", "code_and_config"}),
+         owner_patterns=frozenset({"root.denoiser.stacks[i].cell"}),
+         projections=frozenset({"json"}),
+         projection_routes=(_diffusion_spec_route(
+@@ -651,7 +671,8 @@
+     FactDefinition(
+         key="gated",
+         value_types=frozenset({"bool"}),
+-        allowed_statuses=frozenset({"code_proven"}),
++        allowed_statuses=frozenset({
++            "code_proven", "code_and_config", "class_default"}),
+         owner_patterns=frozenset({"decoder.ffn"}),
+         projections=frozenset({"ffn_detail", "params_annotation", "json"}),
+         unknown_policy="pale_undeclared",
+@@ -743,7 +764,7 @@
+         # after its exact config-bound expressions are evaluated. A raw
+         # declaration or QKV-only proof is powerless.
+         allowed_statuses=frozenset({
+-            "code_proven", "code_and_config", "config_declared",
++            "oracle_missing", "code_proven", "code_and_config", "config_declared",
+             "class_default", "ambiguous",
+         }),
+         owner_patterns=frozenset({"decoder.attention"}),
+@@ -969,7 +990,7 @@
+     FactDefinition(
+         key="logit_softcap",
+         value_types=frozenset({"int", "float"}),
+-        allowed_statuses=frozenset({"code_and_config"}),
++        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+         owner_patterns=frozenset({"decoder.attention"}),
+         projections=frozenset({"attention_detail", "json"}),
+         projection_routes=(
+@@ -1236,7 +1257,7 @@
+     FactDefinition(
+         key="scores_scale",
+         value_types=frozenset({"str", "NoneType"}),
+-        allowed_statuses=frozenset({"code_proven", "code_and_config",
++        allowed_statuses=frozenset({"oracle_missing", "class_default", "code_proven", "code_and_config",
+                                     "config_declared", "ambiguous"}),
+         owner_patterns=frozenset({"decoder.attention",
+                                   "layers[i].attention"}),
+@@ -1249,7 +1270,8 @@
+     FactDefinition(
+         key="projection_mode",
+         value_types=frozenset({"str", "NoneType"}),
+-        allowed_statuses=frozenset({"code_proven", "ambiguous"}),
++        allowed_statuses=frozenset({
++            "oracle_missing", "code_proven", "code_and_config", "class_default", "ambiguous"}),
+         owner_patterns=frozenset({"decoder.attention", "decoder.ffn"}),
+         projections=frozenset({"attention_detail", "ffn_detail", "json"}),
+         unknown_policy="pale_undeclared",
+@@ -1407,7 +1429,7 @@
+     FactDefinition(
+         key="projector_out_features",
+         value_types=frozenset({"int"}),
+-        allowed_statuses=frozenset({"code_and_config", "code_proven"}),
++        allowed_statuses=frozenset({"class_default", "code_and_config", "code_proven"}),
+         owner_patterns=frozenset({"root.vision", "root.video"}),
+         projections=frozenset({"json"}),
+         projection_routes=(
+@@ -1428,7 +1450,7 @@
+     FactDefinition(
+         key="projector_in_features",
+         value_types=frozenset({"int"}),
+-        allowed_statuses=frozenset({"code_and_config", "code_proven"}),
++        allowed_statuses=frozenset({"class_default", "code_and_config", "code_proven"}),
+         owner_patterns=frozenset({"root.vision", "root.video"}),
+         projections=frozenset({"json"}),
+         projection_routes=(
+@@ -1513,8 +1535,14 @@
+     value_type = type(fact.value).__name__
+     if value_type not in definition.value_types:
+         problems.append(f"{fact.key}: typed write with unregistered value type {value_type!r}")
++    # A None payload in an explicitly unresolved row asks an unanswered
++    # question. It does not assert that the mechanism is absent. False, the
++    # explicit "none" spelling, and None under a claiming status retain the
++    # complete-negative obligation.
++    unresolved_none = (fact.value is None and fact.status in {
++        "unknown", "ambiguous", "oracle_missing"})
+     if (definition.negative_requires_complete and is_negative_value(fact.value)
+-            and fact.completeness != "complete"):
++            and not unresolved_none and fact.completeness != "complete"):
+         problems.append(f"{fact.key}: registry requires a complete negative, got "
+                         f"completeness={fact.completeness!r}")
+     return problems
+@@ -1623,6 +1651,8 @@
+ INFRA_EXTRAS_KEYS = frozenset({
+     "config_audit", "source_provenance", "fact_provenance", "config_consumed",
+     "code_evidence", "config_access", "config_ambiguity", "ship_findings",
++    # Exact evidence-audit channels, neither of which authors model structure.
++    "presentation_unresolved_values", "checkpoint_consistency",
+ })
+ 
+ 

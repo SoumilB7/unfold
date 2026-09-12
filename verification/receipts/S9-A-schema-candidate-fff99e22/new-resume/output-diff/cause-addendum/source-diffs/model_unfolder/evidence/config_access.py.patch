@@ -1,0 +1,405 @@
+--- fff99e22/model_unfolder/evidence/config_access.py
++++ frozen26/model_unfolder/evidence/config_access.py
+@@ -29,7 +29,10 @@
+ from contextlib import contextmanager
+ from contextvars import ContextVar
+ from dataclasses import dataclass, field
+-from typing import Any, Callable, Iterable
++from typing import TYPE_CHECKING, Any, Callable, Iterable
++
++if TYPE_CHECKING:
++    from .config_registration import RegisteredConstructorDefaultPremise
+ 
+ 
+ # The owner path of the component whose parse is currently reading config.  Set
+@@ -338,6 +341,110 @@
+     structural_sink_kind: str = "fact"   # fact | geometry
+ 
+ 
++class _DefaultPremiseUnavailable(ValueError):
++    """The optional exact default-channel accounting evidence is unavailable."""
++
++
++@dataclass(frozen=True)
++class ClassDefaultPremise:
++    """Exact address/value of the prepared class-default channel, not an occurrence.
++
++    This accounts for a supplied default operand. It proves neither a modeling
++    operation nor that a literal class declaration survived constructor logic.
++    Those stronger claims remain owned by their source readers.
++    """
++
++    document: Any = field(repr=False, compare=False)
++    source_obj: Any = field(repr=False, compare=False)
++    path: tuple[str, ...]
++    spellings: tuple[str, ...]
++    component: str
++    document_path: tuple
++    value_hash: str
++    document_fingerprint: str = field(repr=False)
++    document_token: str = field(repr=False)
++    supplying_channels_hash: str = field(repr=False)
++
++    def validate_address(self) -> None:
++        """Exact omitted address/scope, independent of which default channel supplied it."""
++        document = self.document
++        if current_prepared_document.get() is not document \
++                or current_document.get()[0] != self.document_path \
++                or not verify_prepared_document_token(
++                    document, self.document_fingerprint, self.document_token):
++            raise _DefaultPremiseUnavailable("default premise belongs to another or changed prepared document")
++        if document.failure is not None or not self.path or not self.spellings \
++                or self.path[-1] != self.spellings[0]:
++            raise _DefaultPremiseUnavailable("default premise requires successful preparation and an exact source address")
++        if checkpoint_fingerprint({"document": document.document,
++                                   "class_overlay": document.class_overlay,
++                                   "provenance": document.provenance}) != self.supplying_channels_hash:
++            raise _DefaultPremiseUnavailable("default premise supplying channels changed")
++        for mapping in (document.document, document.checkpoint):
++            container = mapping
++            for segment in self.path[:-1]:
++                container = _member(container, segment)
++                if container is MISSING or container is None or isinstance(
++                        container, (str, bytes, int, float, bool, list, tuple)):
++                    raise _DefaultPremiseUnavailable("default premise has no exact addressed parent")
++            if mapping is document.document and container is not self.source_obj:
++                raise _DefaultPremiseUnavailable("default premise was resolved from a foreign source container")
++            if any(_member(container, spelling) is not MISSING for spelling in self.spellings):
++                raise _DefaultPremiseUnavailable("default premise cannot replace a present checkpoint spelling, including null")
++    def validate(self) -> None:
++        from .receipts import value_status_hash
++        self.validate_address()
++        document = self.document
++        dotted = ".".join(self.path)
++        if dotted not in document.class_overlay or value_status_hash(
++                document.class_overlay[dotted], "class_default") != self.value_hash:
++            raise _DefaultPremiseUnavailable("default premise value differs from the prepared class-default channel")
++
++    def validate_value(self, value) -> None:
++        from .receipts import value_status_hash
++        self.validate()
++        if value_status_hash(value, "class_default") != self.value_hash:
++            raise _DefaultPremiseUnavailable("default resolution value differs from its retained premise")
++
++
++def _validate_default_premise_type(premise) -> None:
++    if type(premise) is ClassDefaultPremise:
++        return
++    # The second channel is source-owned. No callback, protocol, subclass or
++    # caller-created default dictionary can extend this closed authority set.
++    from .config_registration import RegisteredConstructorDefaultPremise
++    if type(premise) is not RegisteredConstructorDefaultPremise:
++        raise TypeError("default event requires an exact supported typed default premise")
++
++
++def _class_default_premise(cfg, path, spellings, value, component):
++    """Retain a default address only when the active preparation establishes it."""
++    document = current_prepared_document.get()
++    if document is None or document.failure is not None:
++        return None
++    from .receipts import value_status_hash
++    dotted = ".".join(path)
++    if dotted not in document.class_overlay or value_status_hash(
++            document.class_overlay[dotted], "class_default") != value_status_hash(value, "class_default"):
++        return None
++    fingerprint, token = _current_document_seal()
++    if not fingerprint or not token:
++        return None
++    premise = ClassDefaultPremise(
++        document, cfg, path, tuple(spellings), component, current_document.get()[0],
++        value_status_hash(value, "class_default"), fingerprint, token,
++        checkpoint_fingerprint({"document": document.document,
++                                "class_overlay": document.class_overlay,
++                                "provenance": document.provenance}))
++    try:
++        premise.validate()
++    except _DefaultPremiseUnavailable:
++        # A bare/foreign default dictionary remains unqualified metadata. The
++        # resolver's value channel is unchanged; no stronger claim is invented.
++        return None
++    return premise
++
++
+ @dataclass(frozen=True)
+ class ConsumedConfigDecision:
+     """U2-R2 (§5.2): value and ORIGIN, inseparable.
+@@ -363,6 +470,9 @@
+     target: "ProjectionTarget"
+     reader: str
+     reason: str = ""
++    # An exact prepared/registered default address is separate from selected_path, which
++    # remains None when the checkpoint has no supplying occurrence.
++    default_path: tuple[str, ...] = ()
+ 
+     @property
+     def present(self) -> bool:
+@@ -407,6 +517,9 @@
+     # COR-4 (§9): True when the path came from an explicit resolution or an
+     # active container scope; False for a bare legacy-funnel leaf (which may
+     # clear same-owner nested occurrences only via the transitional fallback).
++    # For an absent_default with class_default provenance, exact means the
++    # validated DEFAULT-channel address. present remains False; it never
++    # certifies a checkpoint occurrence or contributes an occurrence key.
+     path_exact: bool = True
+     # U2.2a: the address of the document ``config_path`` is relative to, within
+     # the top-level document (``()`` for a root parse).  ``config_path`` stays
+@@ -927,6 +1040,7 @@
+     # default below a declaration needs to know which one it is holding, and a
+     # candidate may not borrow a strength its source does not have.
+     provenance: str = ""
++    default_premise: ClassDefaultPremise | RegisteredConstructorDefaultPremise | None = field(default=None, repr=False, compare=False)
+ 
+     @property
+     def _source_obj_id(self):
+@@ -970,6 +1084,19 @@
+     def ambiguous(self) -> bool:
+         return self.state == "ambiguous"
+ 
++    def _validate_default_premise(self) -> None:
++        premise = self.default_premise
++        if premise is None:
++            return
++        _validate_default_premise_type(premise)
++        if self.state != "absent" or self.source_kind != "class_default" \
++                or self.provenance != CLASS_DEFAULT or self.selected_path is not None \
++                or self.selected_alias is not None or self.present_aliases \
++                or premise.source_obj is not self.source_obj \
++                or premise.component != self.component or premise.path[-1] != self.canonical:
++            raise ValueError("default resolution metadata differs from its retained premise")
++        premise.validate_value(self.value)
++
+     # -- explicit transitions (Contract A.5) ---------------------------------
+     def consume(self, fact_owner: str = "", fact_key: str = "",
+                 mechanism: str = "", status: str = "",
+@@ -994,8 +1121,10 @@
+                 f"consume({self.canonical!r}) requires an exact fact/spec/"
+                 "geometry target — a consumption with no target is a silent "
+                 "audit-clearing read (COR-1 §6)")
++        self._validate_default_premise()
+         expected = ""
+-        if status and self.state == "present":
++        if status and (self.state == "present" or (
++                self.state == "absent" and self.source_kind == "class_default")):
+             from .receipts import value_status_hash
+             # Most facts project the consumed scalar directly.  Composite
+             # facts (per-layer schedules, geometry records) instead project a
+@@ -1007,6 +1136,10 @@
+             projected_value = (
+                 self.value if expected_value is MISSING else expected_value)
+             expected = value_status_hash(projected_value, status)
++        # A resolved class default can decide a fact without creating a
++        # checkpoint occurrence. Retain that exact decision on its existing
++        # absent_default premise; an unresolved absence has no deciding value
++        # and must never acquire one from expected_value alone.
+         emit(self.canonical,
+              intent="consumed" if self.state == "present" else "absent_default",
+              present=self.state == "present", alias=self.selected_alias,
+@@ -1014,7 +1147,7 @@
+              reader=reader,
+              mechanism=mechanism, value_status_hash=expected,
+              component=self.component, config_path=self.selected_path,
+-             source_obj_id=self._source_obj_id,
++             source_obj_id=self._source_obj_id, default_premise=self.default_premise,
+              value_state=("value" if self.value is not None else
+                           "explicit_null") if self.state == "present" else "missing",
+              reason=self.reason if self.state == "present" else (
+@@ -1055,6 +1188,7 @@
+             value_state=("value" if self.value is not None else "explicit_null")
+             if self.state == "present" else "missing",
+             provenance=self.provenance, mechanism=mechanism,
++            default_path=self.default_premise.path if self.default_premise is not None else (),
+             target=ProjectionTarget(owner=self._target_owner(fact_owner),
+                                     fact_key=fact_key),
+             reader=reader, reason=self.reason)
+@@ -1070,12 +1204,13 @@
+                 f"{self.component!r}: {self.reason}")
+         if not reader:
+             raise ValueError("bind() requires the source reader's name")
++        self._validate_default_premise()
+         emit(self.canonical,
+              intent="bound" if self.state == "present" else "absent_default",
+              present=self.state == "present", alias=self.selected_alias,
+              fact_owner=self._target_owner(fact_owner), fact_key=fact_key,
+              reader=reader, component=self.component, reason=self.reason,
+-             config_path=self.selected_path, source_obj_id=self._source_obj_id,
++             config_path=self.selected_path, source_obj_id=self._source_obj_id, default_premise=self.default_premise,
+              value_state=("value" if self.value is not None else
+                           "explicit_null") if self.state == "present" else "missing")
+         return self.value
+@@ -1092,7 +1227,7 @@
+                 f"{self.component!r} — only a present occurrence is ignorable")
+         emit(self.canonical, intent="ignored", present=True,
+              alias=self.selected_alias, component=self.component, reason=reason,
+-             config_path=self.selected_path, source_obj_id=self._source_obj_id,
++             config_path=self.selected_path, source_obj_id=self._source_obj_id, default_premise=self.default_premise,
+              value_state="value" if self.value is not None else "explicit_null")
+ 
+ 
+@@ -1153,7 +1288,9 @@
+ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
+             component: str | None = None, class_defaults: Any = None,
+             path: tuple[str, ...] = (),
+-            null_policy: str = "") -> ConfigResolution:
++            null_policy: str = "",
++            default_premise: ClassDefaultPremise | RegisteredConstructorDefaultPremise | None = None,
++            _record_events: bool = True) -> ConfigResolution:
+     """Contract A + REC-2 (§8): resolve ``canonical`` through its alias
+     spellings at ONE exact container ``path``, record exactly one base event,
+     and return the typed decision.
+@@ -1171,6 +1308,15 @@
+       a scoped ignore (§20.4.5).  Null occurrences never CONTEST a non-null
+       value: they are retained while selection runs over accepted values.
+     """
++    if not isinstance(_record_events, bool):
++        raise TypeError("resolution emission control is an explicit boolean")
++    # Claim validation reuses this exact selection/address/provenance policy.
++    # Its private dry inspection cannot consume or clear the production
++    # ledger, and suppression is local to this call (never a ContextVar).
++    def record(*args, **kwargs):
++        if _record_events:
++            emit(*args, **kwargs)
++
+     owner = component if component is not None else current_owner.get()
+     # U2.2a vet: only claim a location we can address (see _is_addressable) —
+     # otherwise the reader holds a nested object nobody located, and its bare
+@@ -1194,13 +1340,31 @@
+             default_value = class_defaults[canonical]
+             source_kind = "class_default"
+             reason = f"absent from checkpoint — installed class default {default_value!r}"
+-        emit(canonical, intent="absent_default", present=False, component=owner,
++        premise = default_premise
++        if premise is not None:
++            _validate_default_premise_type(premise)
++            if source_kind != "class_default" or premise.source_obj is not cfg \
++                    or premise.component != owner \
++                    or premise.path != (*tuple(path), canonical) \
++                    or premise.spellings != tuple(spellings):
++                raise ValueError("typed default premise belongs to another resolution")
++            premise.validate_value(default_value)
++        else:
++            premise = (_class_default_premise(
++                cfg, (*tuple(path), canonical), spellings, default_value, owner)
++                if source_kind == "class_default" else None)
++        record(canonical, intent="absent_default", present=False, component=owner,
++             source_obj_id=id(cfg), default_premise=premise,
+              reason=reason or "field absent for this owner — a default premise")
+         return ConfigResolution(
+             component=owner, canonical=canonical, selected_path=None,
+             selected_alias=None, value=default_value, state="absent",
+-            present_aliases=(), source_kind=source_kind, reason=reason)
+-
++            present_aliases=(), source_kind=source_kind, reason=reason,
++            source_obj=cfg, provenance=CLASS_DEFAULT if premise is not None else "",
++            default_premise=premise)
++
++    if default_premise is not None:
++        raise ValueError("typed default premise cannot override a present or conflicting spelling")
+     accepted = [occ for occ in occurrences if occ.value is not None]
+     nulls = [occ for occ in occurrences if occ.value is None]
+     # COR-1 (§6): an explicit null BESIDE a value is AMBIGUOUS BY DEFAULT — a
+@@ -1235,7 +1399,7 @@
+             and e.canonical == canonical and e.config_path == first.dotted_path
+             for e in ledger.events)
+         if not already:
+-            emit(canonical, intent="ambiguous", present=True, alias=first.spelling,
++            record(canonical, intent="ambiguous", present=True, alias=first.spelling,
+                  component=owner, config_path=first.dotted_path,
+                  reason=conflict_reason,
+                  value_state="value" if first.value is not None else "explicit_null")
+@@ -1250,7 +1414,7 @@
+               if len(contest) > 1 else "")
+     if accepted and nulls and null_policy:
+         reason = (reason + "; " if reason else "") + f"null-coexistence policy: {null_policy}"
+-    emit(canonical, intent="inspected", present=True, alias=selected.spelling,
++    record(canonical, intent="inspected", present=True, alias=selected.spelling,
+          component=owner,
+          config_path=selected.dotted_path if addressable else None,
+          reason=reason, source_obj_id=id(cfg),
+@@ -1266,7 +1430,7 @@
+                  f"named policy {null_policy!r}")
+                 if occ.value is None and accepted else
+                 f"redundant equal alias of {canonical!r} — selected {selected.spelling!r}")
+-        emit(canonical, intent="ignored", present=True, alias=occ.spelling,
++        record(canonical, intent="ignored", present=True, alias=occ.spelling,
+              component=owner,
+              config_path=occ.dotted_path if addressable else None, reason=note,
+              source_obj_id=id(cfg),
+@@ -1279,6 +1443,18 @@
+         value=selected.value, state="present",
+         present_aliases=tuple(occurrences), source_kind="checkpoint",
+         reason=reason)
++
++
++def _resolve_for_claim_proof(cfg, canonical, aliases=(), *, class_defaults=None,
++                             path=()):
++    """Revalidate a retained claim without adding inspections or consumption.
++
++    The normal parser lifecycle remains mandatory. This result is solely a
++    cross-check against the original reader/fact/document evidence, never a
++    substitute consumption event or an unread-field disposition.
++    """
++    return resolve(cfg, canonical, aliases, class_defaults=class_defaults,
++                   path=path, _record_events=False)
+ # --------------------------------------------------------------------------- #
+ # Runtime emission — the accessor appends owner-scoped events to every active
+ # ledger.  Nesting- and concurrency-safe via a ContextVar (the same discipline
+@@ -1393,7 +1569,15 @@
+             return ["str", value]
+         if isinstance(value, dict):
+             if any(not isinstance(key, str) for key in value):
+-                raise TypeError("checkpoint claim mappings require string keys")
++                # AutoConfig dictionaries legitimately retain integer label
++                # keys. Preserve their types, including mixed 0 / "0", while
++                # leaving every all-string checkpoint seal byte-for-byte as it
++                # was before this extension.
++                items = [(canonical(key), canonical(item)) for key, item in value.items()]
++                items.sort(key=lambda item: json.dumps(
++                    item[0], separators=(",", ":"), ensure_ascii=False,
++                    allow_nan=False))
++                return ["typed_key_dict", [[key, item] for key, item in items]]
+             return ["dict", [[key, canonical(value[key])]
+                              for key in sorted(value)]]
+         if isinstance(value, list):
+@@ -1631,7 +1815,8 @@
+          reason: str = "", component: str | None = None,
+          config_path: str | None = None,
+          value_state: str | None = None, mechanism: str = "",
+-         value_status_hash: str = "", source_obj_id: int | None = None) -> None:
++         value_status_hash: str = "", source_obj_id: int | None = None,
++         default_premise: ClassDefaultPremise | RegisteredConstructorDefaultPremise | None = None) -> None:
+     """Append one owner-scoped event to every active ledger (a no-op outside a
+     capture, so the accessor stays cheap when no audit is running).  The owner
+     comes from :data:`current_owner` unless given explicitly."""
+@@ -1639,6 +1824,17 @@
+     if not ledgers:
+         return
+     owner = component if component is not None else current_owner.get()
++    if default_premise is not None:
++        _validate_default_premise_type(default_premise)
++        default_premise.validate()
++        if present or intent != "absent_default" or alias is not None \
++                or default_premise.component != owner \
++                or default_premise.path[-1] != canonical:
++            raise ValueError("a default premise cannot certify a checkpoint occurrence or another read")
++        premise_path = ".".join(default_premise.path)
++        if config_path is not None and config_path != premise_path:
++            raise ValueError("default event path differs from its retained premise")
++        config_path = premise_path
+     # An INSPECTED read of an address/identity key or a declared
+     # non-architectural field is a lawful scoped ignore, not
+     # accessed-but-unconsumed debt (it located source, labelled a card, or
+@@ -1685,11 +1881,12 @@
+         # OF the document root, whose fields live at its top so the bare leaf IS
+         # the exact path.  Anything else is an honest bare leaf — some undeclared
+         # object supplied it and the reader never said which.
+-        path_exact=(bool(_proof) if _proof is not None else
++        path_exact=(True if default_premise is not None else
++                    bool(_proof) if _proof is not None else
+                     (bool(_container_prefix_for(source_obj_id))
+                      or _is_document_root_read(source_obj_id))),
+         document_path=current_document.get()[0],
+-        provenance=_provenance_for(_path),
++        provenance=(CLASS_DEFAULT if default_premise is not None else _provenance_for(_path)),
+         canonical=canonical, alias=(alias or canonical) if present else None,
+         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
+         reader=reader, reason=reason,

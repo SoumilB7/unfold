@@ -43,6 +43,8 @@ from .reader_result import (
     ReaderResult,
 )
 
+from .reader_claims import ReaderFactProjection, retained_claim_reader
+
 
 _PARAMETER_PROTOCOLS = frozenset({
     "torch.nn.Parameter",
@@ -108,6 +110,29 @@ class AttentionSinkEvidence:
             raise ValueError("sink provenance belongs to the attention source")
 
 
+@dataclass(frozen=True)
+class AttentionSinkClaimWitness:
+    index: ProgramIndex
+    sink: AttentionSinkEvidence
+    reader_symbol = "model_unfolder.evidence.attention_sinks.decoder_attention_sinks_for_path"
+
+    def validate_result(self, result):
+        if type(self.sink) is not AttentionSinkEvidence:
+            raise TypeError("sink claim needs exact learned-parameter to softmax lineage")
+        self.sink.__post_init__()
+        if result.status != "resolved" or result.value is not self.sink \
+                or result.owner != self.sink.attention_occurrence:
+            raise ValueError("sink claim belongs to another result or occurrence")
+
+    def project(self, owner, key, document):
+        if (owner, key) != ("decoder.attention", "sinks"):
+            raise ValueError("sink reader cannot author this projection")
+        return ReaderFactProjection(owner, key, "connection", True, "code_proven")
+
+
+@retained_claim_reader(intended_claims=(
+    ('decoder.attention', 'sinks', 'connection'),
+))
 def decoder_attention_sinks_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -137,6 +162,7 @@ def decoder_attention_sinks_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
+        claim_witness=AttentionSinkClaimWitness(index, result.value),
         provenance=(
             *block.provenance,
             *attention.provenance,

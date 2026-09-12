@@ -1,0 +1,36 @@
+{
+  "status": "held_source_only_runtime_pending",
+  "files": [
+    {
+      "path": "model_unfolder/presentation.py",
+      "sha256": "d8b7654b5e27a35e9e58d186bed7e8a7f0551b6be0dd7bdf4b840b17cf59d740",
+      "held_path": "held/model_unfolder/presentation.py",
+      "lines_added": 57,
+      "lines_deleted": 6
+    },
+    {
+      "path": "tests/test_s9_finite_unknown_coverage.py",
+      "sha256": "b38911ccad5b57a01a4b9bd35aec8091df09a11a93371965db74d9a947bbecea",
+      "held_path": "held/tests/test_s9_finite_unknown_coverage.py",
+      "lines_added": 142,
+      "lines_deleted": 0
+    }
+  ],
+  "growth": {
+    "lines_added": 199,
+    "lines_deleted": 6,
+    "authority_paths_added": 0,
+    "authority_paths_removed": 0,
+    "bridges_added": 0
+  },
+  "runtime": "No project imports, tests, models or browser execution by this subagent. Pure stdlib saved-data scripts and AST syntax inspection only.",
+  "tests_proposed": [
+    "tests/test_s9_finite_unknown_coverage.py",
+    "tests/test_s9_presentation_chips.py",
+    "tests/test_s9_fact_unknowns.py"
+  ],
+  "predicted_annotation_growth_on_frozen26": 11893,
+  "predicted_total_annotations_on_frozen26": 34695,
+  "active_artifact_changes": false,
+  "output_blessing": false
+}

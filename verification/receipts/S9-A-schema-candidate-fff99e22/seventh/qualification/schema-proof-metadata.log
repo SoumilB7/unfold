@@ -1,0 +1,498 @@
+F.F.F.F.F.F.F.F.F....................................................... [  6%]
+........................................................................ [ 12%]
+........................................................F............... [ 18%]
+........................................................................ [ 25%]
+........................................................................ [ 31%]
+........................................................................ [ 37%]
+........................................................................ [ 43%]
+........................................................................ [ 50%]
+........................................................................ [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 68%]
+........................................................................ [ 75%]
+........................................................................ [ 81%]
+........................................................................ [ 87%]
+........................................................................ [ 94%]
+....................................................................     [100%]
+=================================== FAILURES ===================================
+__ test_actual_norm_claims_keep_original_values_and_source_lineage[_decoder] ___
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_actual_norm_claims_keep_o0')
+reader = <function _decoder at 0x109237f60>
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    def test_actual_norm_claims_keep_original_values_and_source_lineage(tmp_path, reader):
+>       result, index, document, fact = reader(tmp_path)
+                                        ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change0-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno0')
+reader = <function _decoder at 0x109237f60>, change = {'value': 'invented'}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change1-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno2')
+reader = <function _decoder at 0x109237f60>
+change = {'status': 'class_default'}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change2-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno4')
+reader = <function _decoder at 0x109237f60>, change = {'source_spans': ()}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change3-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno6')
+reader = <function _decoder at 0x109237f60>, change = {'owner': 'other'}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change4-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno8')
+reader = <function _decoder at 0x109237f60>, change = {'key': 'other'}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_qualified_norm_fact_cannot_change_any_claim_axis[change5-_decoder] ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_qualified_norm_fact_canno10')
+reader = <function _decoder at 0x109237f60>, change = {'claim_kind': 'value'}
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    @pytest.mark.parametrize('change', [
+        {'value': 'invented'}, {'status': 'class_default'}, {'source_spans': ()},
+        {'owner': 'other'}, {'key': 'other'}, {'claim_kind': 'value'},
+    ])
+    def test_qualified_norm_fact_cannot_change_any_claim_axis(tmp_path, reader, change):
+>       *_, fact = reader(tmp_path)
+                   ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+__ test_norm_strings_spans_and_copied_witnesses_cannot_issue_claims[_decoder] __
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_norm_strings_spans_and_co0')
+reader = <function _decoder at 0x109237f60>
+
+    @pytest.mark.parametrize('reader', [_decoder, _embedding])
+    def test_norm_strings_spans_and_copied_witnesses_cannot_issue_claims(tmp_path, reader):
+>       result, index, document, fact = reader(tmp_path)
+                                        ^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+___ test_decoder_proof_cannot_remove_a_candidate_or_change_primitive_family ____
+
+tmp_path = PosixPath('/private/var/folders/9_/b8s3b2qx4l7f5m01hyh6kcq00000gn/T/pytest-of-soumil/pytest-5868/test_decoder_proof_cannot_remo0')
+
+    def test_decoder_proof_cannot_remove_a_candidate_or_change_primitive_family(tmp_path):
+>       result, _, _, _ = _decoder(tmp_path)
+                          ^^^^^^^^^^^^^^^^^^
+
+tests/test_s9_norm_claims.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_s9_norm_claims.py:26: in _decoder
+    fact = qualify_reader_fact(_native_fact(result, owner='decoder.layer',
+model_unfolder/evidence/reader_claims.py:484: in qualify_reader_fact
+    return replace(fact, claim_kind=proof.claim_kind,
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/dataclasses.py:1588: in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:19: in __init__
+    ???
+model_unfolder/evidence/facts.py:184: in __post_init__
+    self._validate(migrated=False)
+model_unfolder/evidence/facts.py:257: in _validate
+    validate_fact_claim(self, self.claim_evidence)
+model_unfolder/evidence/claim_evidence.py:265: in validate_fact_claim
+    proof.validate_fact(fact)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind')
+fact = EvidenceFact(key='norm_kind', owner='decoder.layer', value='layernorm', status='code_proven', completeness='complete',...aim_evidence=ReaderProjectionClaimProof(fact_id='decoder.layer.norm_kind'), unknown_reason=None, migrated_legacy=False)
+
+    def validate_fact(self, fact):
+        projection = self.projection()
+        if fact.claim_document_token != self.document_token:
+            raise ValueError("reader fact carries another document seal")
+        if fact.status != projection.status \
+                or fact.completeness != projection.completeness \
+                or value_status_hash(fact.value, fact.status) != self._value_status_hash:
+>           raise ValueError("reader fact differs from its whole typed projection")
+E           ValueError: reader fact differs from its whole typed projection
+
+model_unfolder/evidence/reader_claims.py:448: ValueError
+__________ test_parser_and_conformance_share_one_exact_expert_result ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x147a828d0>
+
+    def test_parser_and_conformance_share_one_exact_expert_result(monkeypatch):
+        from model_unfolder import config_to_ir
+        from model_unfolder.evidence import expert_storage as storage_module
+        from model_unfolder.evidence.conformance import check_fact_conformance
+        from model_unfolder.parser import _coerce
+    
+        config = json.loads(
+            (_CORPUS / "gpt-oss-20b.json").read_text(
+                encoding="utf-8"))["config"]
+        cfg = _coerce(config)
+        context = ParseContext.build(cfg)
+        real_reader = storage_module.decoder_routed_expert_storage_for_path
+        calls = []
+    
+        def counted(*args, **kwargs):
+            calls.append((args[2], kwargs.get("allow_root_stage")))
+            return real_reader(*args, **kwargs)
+    
+        monkeypatch.setattr(
+            storage_module, "decoder_routed_expert_storage_for_path", counted)
+>       ir = config_to_ir(cfg, parse_context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_expert_storage.py:623: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/parser.py:110: in config_to_ir
+    ir = adapter.parse(cfg, context=parse_context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:3609: in parse
+    _expert_width_reader = _expert_width_result(
+model_unfolder/adapters/transformer/parser.py:683: in _expert_width_result
+    return context.cached_reader_result(
+model_unfolder/evidence/context.py:314: in cached_reader_result
+    self.reader_results[key] = factory()
+                               ^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:685: in <lambda>
+    lambda: decoder_expert_intermediate_width_for_path(
+model_unfolder/evidence/reader_claims.py:266: in invoke
+    result = replace(function(*args, **kwargs), claim_reader_symbol=symbol)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/evidence/expert_width.py:179: in decoder_expert_intermediate_width_for_path
+    storage_result = decoder_routed_expert_storage_for_path(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (ProgramIndex(bundle_source='local', source_nodes=(SourceFileNode(source_id=SourceId(canonical_path='/Library/Framewor...gpt_oss'}, component_architectures={'root': 'GptOssForCausalLM'}, pipeline_components=(), companion_components=()), ())
+kwargs = {'allow_root_stage': True}
+
+    @wraps(function)
+    def invoke(*args, **kwargs):
+        if function.__code__ is not code or getattr(module, function.__name__, None) is not invoke \
+                or _PRODUCER_CALLABLES.get(symbol) != (function, code, invoke):
+>           raise ValueError("reader claim producer callable changed after registration")
+E           ValueError: reader claim producer callable changed after registration
+
+model_unfolder/evidence/reader_claims.py:235: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_s9_norm_claims.py::test_actual_norm_claims_keep_original_values_and_source_lineage[_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change0-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change1-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change2-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change3-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change4-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_qualified_norm_fact_cannot_change_any_claim_axis[change5-_decoder]
+FAILED tests/test_s9_norm_claims.py::test_norm_strings_spans_and_copied_witnesses_cannot_issue_claims[_decoder]
+FAILED tests/test_s9_norm_claims.py::test_decoder_proof_cannot_remove_a_candidate_or_change_primitive_family
+FAILED tests/test_expert_storage.py::test_parser_and_conformance_share_one_exact_expert_result
+10 failed, 1138 passed in 54.59s

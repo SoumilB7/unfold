@@ -1,0 +1,49 @@
+{
+  "status": "PASS_BOUNDED_INTERACTIONS",
+  "findings": [],
+  "cases": {
+    "llama": {
+      "load_ms": 75.74645899876487,
+      "click_to_card_ms": 76.75345900497632,
+      "page_errors": [],
+      "initial_cards": 28,
+      "final_cards": 28
+    },
+    "sdxl": {
+      "load_ms": 109.84866700164275,
+      "click_to_card_ms": 41.7838329958613,
+      "page_errors": [],
+      "initial_cards": 1,
+      "final_cards": 2
+    },
+    "bloom-ordinary": {
+      "load_ms": 34.24500000255648,
+      "click_to_card_ms": 39.10737499973038,
+      "page_errors": [],
+      "initial_cards": 29,
+      "final_cards": 29
+    },
+    "bloom-sparse": {
+      "load_ms": 24.80820799974026,
+      "click_to_card_ms": 39.189999995869584,
+      "page_errors": [],
+      "initial_cards": 27,
+      "final_cards": 27
+    },
+    "musicgen-ordinary": {
+      "load_ms": 24.07474999927217,
+      "click_to_card_ms": 39.216208999278024,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    },
+    "musicgen-sparse": {
+      "load_ms": 13.414000000921078,
+      "click_to_card_ms": 39.26779100584099,
+      "page_errors": [],
+      "initial_cards": 36,
+      "final_cards": 36
+    }
+  },
+  "limits": "Six saved pages in fresh headless Chrome1440x1000; external fonts blocked; browser times observed under concurrent root matrix and are not latency-baseline measurements. No proof/architecture validation, exhaustive drills, mobile/accessibility coverage or output blessing. Screenshots require independent visual inspection."
+}

@@ -1,0 +1,35 @@
+{
+  "bundle": {
+    "architecture": "Cohere2ForCausalLM",
+    "companion_components": [],
+    "component_architectures": {
+      "root": "Cohere2ForCausalLM"
+    },
+    "component_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/cohere2/modeling_cohere2.py"
+      ]
+    },
+    "component_model_types": {
+      "root": "cohere2"
+    },
+    "files": [
+      "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/cohere2/modeling_cohere2.py"
+    ],
+    "import_roots": {},
+    "model_id": "CohereLabs/c4ai-command-a-03-2025",
+    "model_type": "cohere2",
+    "pipeline_components": [],
+    "source": "local",
+    "supporting_files": {
+      "root": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/models/cohere2/configuration_cohere2.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/modeling_rope_utils.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/activations.py",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/transformers/configuration_utils.py"
+      ]
+    },
+    "warnings": []
+  },
+  "scope": "LOCAL_ONLY addresses, not portable identity"
+}

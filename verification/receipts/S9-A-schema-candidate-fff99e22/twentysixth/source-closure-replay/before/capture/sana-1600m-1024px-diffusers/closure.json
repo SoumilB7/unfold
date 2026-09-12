@@ -1,0 +1,57 @@
+{
+  "actual_portable_seal": "21bc6feb8bbb8c1cecd8586326c64c813fd4c209f3a790e9270209054e64cf5c",
+  "baseline_output": {
+    "ir_after_sha256": "409afd58d451fb493fb6b3dfac9c1bf3171952728d8d6e53d8bf41f811f8f236",
+    "ir_before_sha256": "409afd58d451fb493fb6b3dfac9c1bf3171952728d8d6e53d8bf41f811f8f236",
+    "page_bytes": 141013,
+    "page_sha256": "461b0b40608129b4fb1a264392a10cbc3809f2383b3cb44078af75acb3ab6c8f",
+    "scope": "Actual clean fff99e22 outputs; no approval or blessing."
+  },
+  "expected_matrix_seal": "21bc6feb8bbb8c1cecd8586326c64c813fd4c209f3a790e9270209054e64cf5c",
+  "parse_failure_count": 0,
+  "parse_failures": [],
+  "phase": "before",
+  "reason_kind": null,
+  "recomputed_from_rows": "21bc6feb8bbb8c1cecd8586326c64c813fd4c209f3a790e9270209054e64cf5c",
+  "seconds": 2.5016425419998995,
+  "slug": "sana-1600m-1024px-diffusers",
+  "source_multiset": [
+    {
+      "component": "root",
+      "content_sha256": "4cdcf5eadc79cc6b1f43c4e3ec3f89d0786cf2bc4a0f9f18ae0511b70ee3a2c3",
+      "external": false,
+      "external_provenance": "",
+      "locator": "sana_transformer.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "d81e5abd688436da573ae299a65598d01ea871a8874d0cabeb5149967855ca07",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "be45f9ecb7a48c28b115e25241b46afa53a63b4ece43ce0f344c153a8138605f",
+      "external": false,
+      "external_provenance": "",
+      "locator": "configuration_utils.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "3f4bfffad51ceef61f1db793887fb0905cd32c9488357687853c073a61774ec5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_gemma2.py"
+    },
+    {
+      "component": "text_encoder",
+      "content_sha256": "f370d8588169c07fc5245ddb83d9a29282f670f98d99a4d7fa814a777649f3d5",
+      "external": false,
+      "external_provenance": "",
+      "locator": "modeling_rope_utils.py"
+    }
+  ],
+  "source_node_count": 5,
+  "status": "REPRODUCED"
+}

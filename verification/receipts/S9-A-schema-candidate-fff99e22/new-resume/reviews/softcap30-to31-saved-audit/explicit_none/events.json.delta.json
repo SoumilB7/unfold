@@ -1,0 +1,20 @@
+[
+  {
+    "after": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "before": "304cef566b0b33c6e47f282ffb591a5732bb2b0a3f1dd9de6ae8282800c8ca36",
+    "kind": "replace",
+    "path": "/0/document_token"
+  },
+  {
+    "after": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "before": "304cef566b0b33c6e47f282ffb591a5732bb2b0a3f1dd9de6ae8282800c8ca36",
+    "kind": "replace",
+    "path": "/1/document_token"
+  },
+  {
+    "after": "ea8d9c13ef13271ce5c22a913578d2b8c962a85946c2eb8a9e9e61f452835dc4",
+    "before": "304cef566b0b33c6e47f282ffb591a5732bb2b0a3f1dd9de6ae8282800c8ca36",
+    "kind": "replace",
+    "path": "/2/document_token"
+  }
+]

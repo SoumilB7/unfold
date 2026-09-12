@@ -1,0 +1,31 @@
+{
+  "status": "HELD R2 SOURCE ONLY; independent review and root runtime required",
+  "base_source_manifest_sha256": "b1bd9b4de41b098038de1f7ff0e6629be5a40060f98ede6dc94371738d9885e1",
+  "supersedes": {
+    "manifest": "verification/receipts/S9-A-schema-candidate-fff99e22/new-resume/layer-count-alias-default-proposal/manifest.json",
+    "sha256": "57aa4e7a22718f3abdcc569228d063f193a55a6206a3640b8fd6a5fd4575b691",
+    "reason": "synthetic internal parse tests must capture the actual ledger"
+  },
+  "files": [
+    {
+      "path": "model_unfolder/adapters/transformer/parser.py",
+      "before_sha256": "5962b5f5b1fd6083c6fadc9740821d902c63fe29bb97a91eae61522b8eebb6b0",
+      "proposed_sha256": "53b5c6c7aad9e68ba81fb7a9c2c79360d617b341be055f38695188938f95852a"
+    },
+    {
+      "path": "tests/test_s9_layer_count_alias_defaults.py",
+      "before_sha256": null,
+      "proposed_sha256": "c8a98a331d26ed5b9e5cdc9f42a3e63cf0a7336e09ea49e9933dd7e126e22721"
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "sha256": "4f2db345cadf1a9dae5c168116c3a4bfc58770ff1a533404018ea72b8831b0ae"
+    },
+    {
+      "path": "changes.patch",
+      "sha256": "6eb1a0ddedc6469a13ee41c20ad877510de2ca9346b5da6de1eaf1d8791dfddb"
+    }
+  ]
+}

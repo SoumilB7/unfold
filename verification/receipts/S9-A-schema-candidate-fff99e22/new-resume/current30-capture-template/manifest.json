@@ -1,0 +1,15 @@
+{
+  "status": "SOURCE_ONLY_TEMPLATE_RUNTIME_LOCKED_ON_EXPLICIT_FROZEN30_PIN",
+  "base": "held current28-capture; prior files untouched",
+  "files": {
+    "census.py": "85910ca6b086f5a1417a46a89b0e7b7e1f8701761195434b53ee6ec5c2b839ce",
+    "run-census.py": "b202fa7e100a60b6e0195e294413920b84dd6d429c0085323ab2ccd6c76bb7c0",
+    "portable_source.py": "4206926c1b7f0719a93a99a1fbd66cfb5effa8cf0f5ae76b3bb00976470967f4",
+    "capture_contract.py": "41f933460e73db98f570fe45950f6d7f02e70e6715e1c812fc7d5ea64f86821d",
+    "plan.json": "5c38f75c6a8037cc03ac0b727cca596a01b64fbfdb01d9b447c1cc4de4fb01b3",
+    "contract.json": "2f2569672572612800423e4debb9e5db15eb775c870573f7d39d0a5632de6629"
+  },
+  "no_execution": "Only source reads/writes and stdlib ast.parse performed by event_executor.",
+  "required_runtime_input": "--source-manifest-sha256; absent/malformed/placeholder/wrong digest must refuse before product import.",
+  "revision": "r2 source review includes exact negative/deletion source pins"
+}

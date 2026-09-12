@@ -1,0 +1,558 @@
+{
+  "scope": "saved Llama artifacts; exactly three event targets; no proof qualification or blessing",
+  "raw_sparse_status": "FAIL",
+  "script_sha256": "6b9334f9cf9e71feecbd5eca57c6a5560486a3ec4ceced28c7c32b3303597886",
+  "conditions": {
+    "ordinary": {
+      "association_status": "PASS",
+      "root_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef",
+      "targets": {
+        "decoder.attention.mechanism": {
+          "value": "mha",
+          "status": "code_and_config",
+          "hash": "a615d6a9effdcd21",
+          "claim_kind": "connection",
+          "semantic_proof": "present_in_capture",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "decoder_attention_mechanism_for_path"
+          ],
+          "operand_basis": "saved original proof operand derivation",
+          "expected_operands": {
+            "num_attention_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_attention_heads"
+              ]
+            },
+            "num_key_value_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_key_value_heads"
+              ]
+            }
+          }
+        },
+        "decoder.attention.head_geometry": {
+          "value": {
+            "kind": "mha",
+            "num_heads": 32,
+            "num_kv_heads": 32,
+            "head_dim": 128,
+            "q_lora_rank": null,
+            "kv_lora_rank": null,
+            "qk_nope_head_dim": null,
+            "qk_rope_head_dim": null,
+            "v_head_dim": null
+          },
+          "status": "code_and_config",
+          "hash": "38a8326edd3aad06",
+          "claim_kind": "relation",
+          "semantic_proof": "present_in_capture",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "decoder_attention_head_geometry_for_path"
+          ],
+          "operand_basis": "saved original proof operand derivation",
+          "expected_operands": {
+            "num_attention_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_attention_heads"
+              ]
+            },
+            "num_key_value_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_key_value_heads"
+              ]
+            },
+            "head_dim": {
+              "origin": "config_declared",
+              "value": 128,
+              "source_path": [
+                "head_dim"
+              ]
+            }
+          }
+        },
+        "decoder.ffn.activation": {
+          "value": "silu",
+          "status": "code_and_config",
+          "hash": "b9c82d4207301835",
+          "claim_kind": "applied_function",
+          "semantic_proof": "missing",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "adapters.transformer.parser.parse"
+          ],
+          "operand_basis": "bounded hidden_act value channel; no application proof",
+          "expected_operands": {
+            "hidden_act": {
+              "origin": "config_declared",
+              "value": "silu",
+              "source_path": [
+                "hidden_act"
+              ]
+            }
+          }
+        }
+      },
+      "findings": [],
+      "events": [
+        {
+          "index": 13,
+          "event": {
+            "component": "root",
+            "config_path": "hidden_act",
+            "canonical": "hidden_act",
+            "alias": "hidden_act",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.ffn",
+            "fact_key": "activation",
+            "reader": "adapters.transformer.parser.parse",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "ffn_activation",
+            "value_status_hash": "b9c82d4207301835",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 49,
+          "event": {
+            "component": "root",
+            "config_path": "num_attention_heads",
+            "canonical": "num_attention_heads",
+            "alias": "num_attention_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "mechanism",
+            "reader": "decoder_attention_mechanism_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_mechanism",
+            "value_status_hash": "a615d6a9effdcd21",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 50,
+          "event": {
+            "component": "root",
+            "config_path": "num_key_value_heads",
+            "canonical": "num_key_value_heads",
+            "alias": "num_key_value_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "mechanism",
+            "reader": "decoder_attention_mechanism_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_mechanism",
+            "value_status_hash": "a615d6a9effdcd21",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 52,
+          "event": {
+            "component": "root",
+            "config_path": "num_attention_heads",
+            "canonical": "num_attention_heads",
+            "alias": "num_attention_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "38a8326edd3aad06",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 53,
+          "event": {
+            "component": "root",
+            "config_path": "num_key_value_heads",
+            "canonical": "num_key_value_heads",
+            "alias": "num_key_value_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "38a8326edd3aad06",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 54,
+          "event": {
+            "component": "root",
+            "config_path": "head_dim",
+            "canonical": "head_dim",
+            "alias": "head_dim",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "38a8326edd3aad06",
+            "document_fingerprint": "13a6e384479b35b12b4000ad1f78912053ecd9e7f82e5f5889df5c15006dfeef"
+          },
+          "findings": [],
+          "classification": "decision"
+        }
+      ],
+      "input_event_count": 84,
+      "enumerated_event_count": 6,
+      "failing_event_count": 0,
+      "decision_counts": {
+        "decoder.attention.mechanism": {
+          "num_attention_heads": 1,
+          "num_key_value_heads": 1
+        },
+        "decoder.attention.head_geometry": {
+          "num_attention_heads": 1,
+          "num_key_value_heads": 1,
+          "head_dim": 1
+        },
+        "decoder.ffn.activation": {
+          "hidden_act": 1
+        }
+      },
+      "semantic_proof_missing": [
+        "decoder.ffn.activation"
+      ]
+    },
+    "sparse-valid": {
+      "association_status": "PASS",
+      "root_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1",
+      "targets": {
+        "decoder.attention.mechanism": {
+          "value": "mha",
+          "status": "class_default",
+          "hash": "7e943a2de3a9029e",
+          "claim_kind": "connection",
+          "semantic_proof": "present_in_capture",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "decoder_attention_mechanism_for_path"
+          ],
+          "operand_basis": "saved original proof operand derivation",
+          "expected_operands": {
+            "num_attention_heads": {
+              "origin": "class_default",
+              "value": 32,
+              "source_path": [
+                "num_attention_heads"
+              ]
+            },
+            "num_key_value_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_key_value_heads"
+              ]
+            }
+          }
+        },
+        "decoder.attention.head_geometry": {
+          "value": {
+            "kind": "mha",
+            "num_heads": 32,
+            "num_kv_heads": 32,
+            "head_dim": 128,
+            "q_lora_rank": null,
+            "kv_lora_rank": null,
+            "qk_nope_head_dim": null,
+            "qk_rope_head_dim": null,
+            "v_head_dim": null
+          },
+          "status": "class_default",
+          "hash": "58e42c61f60ced05",
+          "claim_kind": "relation",
+          "semantic_proof": "present_in_capture",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "decoder_attention_head_geometry_for_path"
+          ],
+          "operand_basis": "saved original proof operand derivation",
+          "expected_operands": {
+            "num_attention_heads": {
+              "origin": "class_default",
+              "value": 32,
+              "source_path": [
+                "num_attention_heads"
+              ]
+            },
+            "num_key_value_heads": {
+              "origin": "config_declared",
+              "value": 32,
+              "source_path": [
+                "num_key_value_heads"
+              ]
+            },
+            "head_dim": {
+              "origin": "config_declared",
+              "value": 128,
+              "source_path": [
+                "head_dim"
+              ]
+            }
+          }
+        },
+        "decoder.ffn.activation": {
+          "value": "silu",
+          "status": "class_default",
+          "hash": "47322c7513880114",
+          "claim_kind": "applied_function",
+          "semantic_proof": "missing",
+          "association_is_not_semantic_qualification": true,
+          "expected_event_readers": [
+            "adapters.transformer.parser.parse"
+          ],
+          "operand_basis": "bounded hidden_act value channel; no application proof",
+          "expected_operands": {
+            "hidden_act": {
+              "origin": "class_default",
+              "value": "silu",
+              "source_path": [
+                "hidden_act"
+              ]
+            }
+          }
+        }
+      },
+      "findings": [],
+      "events": [
+        {
+          "index": 17,
+          "event": {
+            "component": "root",
+            "config_path": "hidden_act",
+            "canonical": "hidden_act",
+            "alias": null,
+            "present": false,
+            "intent": "absent_default",
+            "fact_owner": "decoder.ffn",
+            "fact_key": "activation",
+            "reader": "adapters.transformer.parser.parse",
+            "reason": "absent from checkpoint — installed class default 'silu'",
+            "value_state": "missing",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "class_default",
+            "mechanism": "ffn_activation",
+            "value_status_hash": "47322c7513880114",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 54,
+          "event": {
+            "component": "root",
+            "config_path": "num_attention_heads",
+            "canonical": "num_attention_heads",
+            "alias": null,
+            "present": false,
+            "intent": "absent_default",
+            "fact_owner": "decoder.attention",
+            "fact_key": "mechanism",
+            "reader": "decoder_attention_mechanism_for_path",
+            "reason": "absent from checkpoint — installed class default 32",
+            "value_state": "missing",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "class_default",
+            "mechanism": "attention_mechanism",
+            "value_status_hash": "7e943a2de3a9029e",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 55,
+          "event": {
+            "component": "root",
+            "config_path": "num_key_value_heads",
+            "canonical": "num_key_value_heads",
+            "alias": "num_key_value_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "mechanism",
+            "reader": "decoder_attention_mechanism_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_mechanism",
+            "value_status_hash": "7e943a2de3a9029e",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 57,
+          "event": {
+            "component": "root",
+            "config_path": "num_attention_heads",
+            "canonical": "num_attention_heads",
+            "alias": null,
+            "present": false,
+            "intent": "absent_default",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "absent from checkpoint — installed class default 32",
+            "value_state": "missing",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "class_default",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "58e42c61f60ced05",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 58,
+          "event": {
+            "component": "root",
+            "config_path": "num_key_value_heads",
+            "canonical": "num_key_value_heads",
+            "alias": "num_key_value_heads",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "58e42c61f60ced05",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        },
+        {
+          "index": 59,
+          "event": {
+            "component": "root",
+            "config_path": "head_dim",
+            "canonical": "head_dim",
+            "alias": "head_dim",
+            "present": true,
+            "intent": "consumed",
+            "fact_owner": "decoder.attention",
+            "fact_key": "head_geometry",
+            "reader": "decoder_attention_head_geometry_for_path",
+            "reason": "",
+            "value_state": "value",
+            "path_exact": true,
+            "document_path": [],
+            "provenance": "checkpoint_declared",
+            "mechanism": "attention_head_geometry",
+            "value_status_hash": "58e42c61f60ced05",
+            "document_fingerprint": "73127c703b1a41e1e1e377115a81c2640e74762fc17ccbdb25c31b8f9271c6d1"
+          },
+          "findings": [],
+          "classification": "decision"
+        }
+      ],
+      "input_event_count": 89,
+      "enumerated_event_count": 6,
+      "failing_event_count": 0,
+      "decision_counts": {
+        "decoder.attention.mechanism": {
+          "num_attention_heads": 1,
+          "num_key_value_heads": 1
+        },
+        "decoder.attention.head_geometry": {
+          "num_attention_heads": 1,
+          "num_key_value_heads": 1,
+          "head_dim": 1
+        },
+        "decoder.ffn.activation": {
+          "hidden_act": 1
+        }
+      },
+      "semantic_proof_missing": [
+        "decoder.ffn.activation"
+      ]
+    }
+  },
+  "association_status": "PASS",
+  "input_sha256": {
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/result.json": "ed0895dfc6cb35c3cdb512aaba07dc39fed414b314f4c63defb9f785d32e20f9",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/input.json": "196fd6ae5c096016b8413b69705434c2cbd31539e7f436585d1e79c6adf85662",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/native-facts.json": "346bcf7814bdf1295516311f392fba8b71ff69f80272d72d006eae5cdeac313f",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/facts.json": "e2124f7c65b9945cefaf879721e0646752888e61ec942290cbef04570007f88e",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/config-access-events.json": "624fd35b8bde577e4d42de0127aa1238ab47bed07c6d9f8271db23ac7aaeca91",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/prepared-documents.json": "6874f00453577caf95381a82fb230c53b2d17e872c1a0c3c00c77aa280e3fc3d",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/ordinary/original-proof-operands.json": "9e3144152a2ffa7fa42aca5f1f6f90e58d0e64db870027cd4c45335b38b5dd90",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/input.json": "71950ab553a035aad73ce4aabda65ba80cae9068f7e88cc4176ff196a9178fef",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/native-facts.json": "88d14b20e8dba5edddf52f6ab1b5c949435b74aa6ee0cb06818ee9d75d80b296",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/facts.json": "55600fd9ce93c0112dcac07d1efad8c116a79eb2c344a184e886d83152eb79b3",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/config-access-events.json": "59a72583809c94a69bf0eb19bc4c4aca28b4fd7c98a27fb42a91c71f7857da78",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/prepared-documents.json": "8844cf04d54775f947a1c8c1507c709aa96b318b009d5c178dcde28f180ca3d0",
+    "/private/tmp/unfold-s9a-sparse-twentysixth-llama/llama-7b/sparse-valid/original-proof-operands.json": "005b81a17971e5395b2464526b046acebc574700ad2eba374d2e594c5fd8c17e"
+  },
+  "input_pins_equal": true
+}

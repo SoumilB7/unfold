@@ -1,0 +1,304 @@
+........................................................................ [ 22%]
+...F.................................................................... [ 44%]
+.....................F............................F..................... [ 66%]
+...........................................F............................ [ 88%]
+....................FFF....F...F...F.                                    [100%]
+=================================== FAILURES ===================================
+________________ test_norm_placement_defaults_two_unknown_tiers ________________
+
+    def test_norm_placement_defaults_two_unknown_tiers():
+        """B2 (U2 endpoint): placement has TWO unknown tiers.
+    
+        * source ABSENT (oracle_missing / zero evidence) → the pale
+          "code-defined wiring" block — no fabricated pre-norm cells, no
+          residual-tap claims (the tower_cell primitive on the main path);
+        * source PRESENT but the reader abstained on the idiom → the
+          conventional pre cell stays DRAWN (the op/nested-conformance oracle
+          still checks its norms/residual ops against the readable forward())
+          — recorded ambiguous + tagged asserted;
+        * a proven placement (real source) carries no tag at all.
+    
+        Diffusion cell placement is now owned by U10's exact source projection and
+        has its own tests; this remains the transformer two-tier regression."""
+        from model_unfolder.adapters.transformer.parser import parse as parse_transformer
+        from model_unfolder.evidence.context import ParseContext
+        from model_unfolder.evidence.models import SourceBundle
+    
+        cfg = {"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
+               "num_attention_heads": 8, "num_key_value_heads": 8,
+               "intermediate_size": 512, "vocab_size": 1000}
+        # Tier 1: no source at all → pale wiring block, nothing conventional.
+        ctx = ParseContext(source_bundle=SourceBundle(source="local", files=()),
+                           source="local")
+>       ir = parse_transformer(cfg, context=ctx)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_code_evidence.py:2034: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:1445: in parse
+    _facts.record_typed(qualify_config_value_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fact = EvidenceFact(key='hidden_size', owner='model', value=256, status='config_declared', completeness='complete', source_sp... claim_readers=('adapters.transformer.parser.parse',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+events = [], prepared_document = None
+
+    def qualify_config_value_fact(fact, events, prepared_document):
+        """Return a value-qualified copy only when exact consumption closes it."""
+        import dataclasses
+    
+        from .document import PreparedDocument
+    
+        if not isinstance(prepared_document, PreparedDocument):
+>           raise TypeError("value qualification requires the exact prepared document")
+E           TypeError: value qualification requires the exact prepared document
+
+model_unfolder/evidence/claim_evidence.py:334: TypeError
+_______________ test_moe_dit_counts_do_not_manufacture_a_router ________________
+
+    def test_moe_dit_counts_do_not_manufacture_a_router():
+        """Expert counts are geometry, not proof that this exact DiT routes."""
+        cfg = {"_class_name": "HiDreamImageTransformer2DModel",
+               "num_layers": 4, "num_attention_heads": 20, "attention_head_dim": 128,
+               "num_routed_experts": 4, "num_activated_experts": 2,
+               "joint_attention_dim": 4096}
+        ir = unfold(cfg).to_ir()
+>       assert len(ir["layers"]) == 4
+E       AssertionError: assert 36 == 4
+E        +  where 36 = len([{'attention': {'bias': None, 'cached': None, 'compress_ratio': None, 'conv_kernel_size': None, ...}, 'blocks': [{'des...ivation': None, 'activation_assumed': False, 'activation_from_class': False, 'bias': None, ...}, 'index': 5, ...}, ...])
+
+tests/test_diffusion.py:1344: AssertionError
+_____ test_config_tokens_do_not_change_typed_grouping_or_period_detection ______
+
+    def test_config_tokens_do_not_change_typed_grouping_or_period_detection():
+        """Typed grouping follows source-proven layer facts, not a config list."""
+        from model_unfolder.ir import detect_layer_period, distinct_layer_groups
+        from model_unfolder.evidence.context import ParseContext
+        sub = HYBRID_ENC["_text_encoder_configs"]["text_encoder"]
+>       ir = transformer.parse(sub, context=ParseContext.build(sub, source="local"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_diffusion.py:2020: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/adapters/transformer/parser.py:1445: in parse
+    _facts.record_typed(qualify_config_value_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fact = EvidenceFact(key='hidden_size', owner='model', value=2048, status='config_declared', completeness='complete', source_s... claim_readers=('adapters.transformer.parser.parse',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+events = [], prepared_document = None
+
+    def qualify_config_value_fact(fact, events, prepared_document):
+        """Return a value-qualified copy only when exact consumption closes it."""
+        import dataclasses
+    
+        from .document import PreparedDocument
+    
+        if not isinstance(prepared_document, PreparedDocument):
+>           raise TypeError("value qualification requires the exact prepared document")
+E           TypeError: value qualification requires the exact prepared document
+
+model_unfolder/evidence/claim_evidence.py:334: TypeError
+_________ test_measured_baseline_rows_match_the_committed_sample_bytes _________
+
+    def test_measured_baseline_rows_match_the_committed_sample_bytes():
+        import gzip
+        section = _budgets()['unet_instance']
+        receipt = section['baseline_receipt']
+        map_path = Path(receipt['artifact_map'])
+>       assert sha(map_path.read_bytes()) == receipt['artifact_map_sha256']
+                   ^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_s81_latency.py:351: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1019: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('verification/receipts/S10-1-unet-deletion-fff99e22/artifact-map.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'verification/receipts/S10-1-unet-deletion-fff99e22/artifact-map.json'
+
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/pathlib.py:1013: FileNotFoundError
+__ test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source ___
+
+    def test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source():
+        pixtral_style = {
+            "architectures": ["LlavaForConditionalGeneration"], "model_type": "llava",
+            "image_token_index": 10, "projector_hidden_act": "gelu",
+            "text_config": {
+                "model_type": "mistral", "hidden_size": 5120, "num_hidden_layers": 4,
+                "num_attention_heads": 32, "num_key_value_heads": 8,
+                "intermediate_size": 14336, "vocab_size": 131072,
+                "rms_norm_eps": 1e-5, "head_dim": 128,
+            },
+            "vision_config": {
+                "model_type": "pixtral", "hidden_size": 1024, "image_size": 1024,
+                "patch_size": 16, "num_hidden_layers": 24,
+                "num_attention_heads": 16, "intermediate_size": 4096,
+            },
+        }
+>       result = name_blind_diff(pixtral_style)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:417: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1445: in parse
+    _facts.record_typed(qualify_config_value_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fact = EvidenceFact(key='hidden_size', owner='model', value=5120, status='config_declared', completeness='complete', source_s... claim_readers=('adapters.transformer.parser.parse',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+events = [], prepared_document = None
+
+    def qualify_config_value_fact(fact, events, prepared_document):
+        """Return a value-qualified copy only when exact consumption closes it."""
+        import dataclasses
+    
+        from .document import PreparedDocument
+    
+        if not isinstance(prepared_document, PreparedDocument):
+>           raise TypeError("value qualification requires the exact prepared document")
+E           TypeError: value qualification requires the exact prepared document
+
+model_unfolder/evidence/claim_evidence.py:334: TypeError
+__ test_name_blind_guard_preserves_source_address_and_clean_decoder_structure __
+
+    def test_name_blind_guard_preserves_source_address_and_clean_decoder_structure():
+        from transformers import AutoConfig
+    
+>       result = name_blind_diff(AutoConfig.for_model("llama").to_dict())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:425: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1445: in parse
+    _facts.record_typed(qualify_config_value_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fact = EvidenceFact(key='hidden_size', owner='model', value=4096, status='config_declared', completeness='complete', source_s... claim_readers=('adapters.transformer.parser.parse',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+events = [], prepared_document = None
+
+    def qualify_config_value_fact(fact, events, prepared_document):
+        """Return a value-qualified copy only when exact consumption closes it."""
+        import dataclasses
+    
+        from .document import PreparedDocument
+    
+        if not isinstance(prepared_document, PreparedDocument):
+>           raise TypeError("value qualification requires the exact prepared document")
+E           TypeError: value qualification requires the exact prepared document
+
+model_unfolder/evidence/claim_evidence.py:334: TypeError
+__________________ test_name_blind_guard_over_blessed_corpus ___________________
+
+    def test_name_blind_guard_over_blessed_corpus():
+        """BLOCKING corpus net, STRICT: every blessed fixture parses structurally
+        IDENTICAL with all semantic identity scrubbed."""
+        from model_unfolder.sable import load_corpus
+    
+        corpus = load_corpus()
+        assert corpus, "no blessed fixtures — the corpus lock is gone"
+        for fname, fix in corpus:
+>           result = name_blind_diff(fix["config"])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_identity_guard.py:438: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+model_unfolder/evidence/identity_guard.py:722: in name_blind_diff
+    original_ir = adapter.parse(cfg, context=context)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+model_unfolder/adapters/transformer/parser.py:1445: in parse
+    _facts.record_typed(qualify_config_value_fact(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fact = EvidenceFact(key='hidden_size', owner='model', value=14336, status='config_declared', completeness='complete', source_... claim_readers=('adapters.transformer.parser.parse',), claim_evidence=None, unknown_reason=None, migrated_legacy=False)
+events = [], prepared_document = None
+
+    def qualify_config_value_fact(fact, events, prepared_document):
+        """Return a value-qualified copy only when exact consumption closes it."""
+        import dataclasses
+    
+        from .document import PreparedDocument
+    
+        if not isinstance(prepared_document, PreparedDocument):
+>           raise TypeError("value qualification requires the exact prepared document")
+E           TypeError: value qualification requires the exact prepared document
+
+model_unfolder/evidence/claim_evidence.py:334: TypeError
+__________________ test_the_writer_gate_is_clean_at_baseline ___________________
+
+    def test_the_writer_gate_is_clean_at_baseline():
+        """U2-R4 vet: the multiset is THE gate.  At baseline no writer is new or
+        stale — the pinned surface matches the live tree exactly."""
+>       assert sw.new_structural_writers() == []
+E       AssertionError: assert [StructuralWr...='<dynamic>')] == []
+E         
+E         Left contains 3 more items, first extra item: StructuralWriteKey(module='model_unfolder/adapters/transformer/parser.py', enclosing_symbol='_note_fact', sink_kind='ledger', normalized_target='<dynamic>')
+E         Use -v to get more diff
+
+tests/test_u2_r4_structural_multiset.py:76: AssertionError
+_______________ test_all_u2_nets_are_blocking_on_a_live_witness ________________
+
+    def test_all_u2_nets_are_blocking_on_a_live_witness():
+        """The R8 gates stay blocking; S4 separately promotes the asserted-fact
+        and accessed-unprojected hunt lists under visible-receipt semantics."""
+        rep = sable(_cfg("qwen2-vl-7b-instruct"), render_images=False)
+        for name in ("document_boundary_completeness", "config_standing_unconsumed",
+                     "structural_debt_register", "config_audit_incomplete",
+                     "config_migration_claims", "config_consumed_unreceipted",
+                     "receipt_fabrication", "config_ambiguity",
+                     "zero_asserted_census", "evidence_ambiguity"):
+            check = _check(rep, name)
+            assert check.blocking, f"{name} must be blocking (U2-R8)"
+>           assert check.findings == [], f"{name} red on a clean witness: {check.findings[:3]}"
+E           AssertionError: structural_debt_register red on a clean witness: ['unregistered structural writer: model_unfolder/adapters/transformer/parser.py::_note_fact -> ledger:<dynamic>', 'unregistered structural writer: model_unfolder/adapters/transformer/parser.py::_note_ffn_mechanism_fact -> ledger:<dynamic>', 'unregistered structural writer: model_unfolder/adapters/transformer/parser.py::parse -> ledger:<dynamic>']
+E           assert ['unregistere...er:<dynamic>'] == []
+E             
+E             Left contains 3 more items, first extra item: 'unregistered structural writer: model_unfolder/adapters/transformer/parser.py::_note_fact -> ledger:<dynamic>'
+E             Use -v to get more diff
+
+tests/test_u2_r8_blocking_nets.py:40: AssertionError
+_____________ test_poison_net7_8_debt_register_fires_on_live_state _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1312303b0>
+
+    def test_poison_net7_8_debt_register_fires_on_live_state(monkeypatch):
+        """An unregistered writer or a sick register row reaches every model's
+        sable report — the net consults the LIVE census/register functions."""
+        findings = _structural_debt_findings()
+>       assert findings == []            # clean tree
+        ^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ['unregistere...er:<dynamic>'] == []
+E         
+E         Left contains 3 more items, first extra item: 'unregistered structural writer: model_unfolder/adapters/transformer/parser.py::_note_fact -> ledger:<dynamic>'
+E         Use -v to get more diff
+
+tests/test_u2_r8_blocking_nets.py:92: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_code_evidence.py::test_norm_placement_defaults_two_unknown_tiers
+FAILED tests/test_diffusion.py::test_moe_dit_counts_do_not_manufacture_a_router
+FAILED tests/test_diffusion.py::test_config_tokens_do_not_change_typed_grouping_or_period_detection
+FAILED tests/test_s81_latency.py::test_measured_baseline_rows_match_the_committed_sample_bytes
+FAILED tests/test_identity_guard.py::test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source
+FAILED tests/test_identity_guard.py::test_name_blind_guard_preserves_source_address_and_clean_decoder_structure
+FAILED tests/test_identity_guard.py::test_name_blind_guard_over_blessed_corpus
+FAILED tests/test_u2_r4_structural_multiset.py::test_the_writer_gate_is_clean_at_baseline
+FAILED tests/test_u2_r8_blocking_nets.py::test_all_u2_nets_are_blocking_on_a_live_witness
+FAILED tests/test_u2_r8_blocking_nets.py::test_poison_net7_8_debt_register_fires_on_live_state
+10 failed, 315 passed in 719.92s (0:11:59)
