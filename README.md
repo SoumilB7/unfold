@@ -70,7 +70,7 @@ checks, the current receipt is:
 
 | Proven | Visibly flagged | Silent |
 |---:|---:|---:|
-| **645** | **294** | **0** |
+| **671** | **294** | **0** |
 
 `flagged` is not a hidden success: the drawing tells the reader which evidence
 is unresolved. `silent = 0` means no known blocking audit result or crash is

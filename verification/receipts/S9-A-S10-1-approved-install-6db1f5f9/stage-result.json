@@ -1,0 +1,83 @@
+{
+ "head": "6db1f5f9e54fdf662dec0bd3a4485cf5bc92cb13",
+ "pins_equal": true,
+ "repo_status_after": "?? docs/U0_U1_FINAL_RECOVERY_CORRECTION_PLAN.md\n?? docs/U0_U1_RECOVERY_EXECUTION_PLAN.md\n?? docs/U2_DEFINITIVE_COMPLETION_SPEC.md\n?? docs/architecture_atlas.html\n",
+ "steps": {
+  "coverage": {
+   "flagged": 294,
+   "models": 44,
+   "problems": [],
+   "proven": 671,
+   "seconds": 454.599,
+   "sha256": "d5610ec1f866f0348f53a5d6c94420960f4ca63761b25dc05b47dd71b6c7f70a",
+   "silent": 0
+  },
+  "examples": {
+   "rows": [
+    {
+     "file": "deepseek-v3.html",
+     "fixture": "tests/sable_test_corpus/deepseek-v3.json",
+     "rendered_name": "DeepSeek-V3",
+     "sha256": "9c5595b33836fc39b2811aba12db79680fa793178ae247f16c88afb5e4f510af"
+    },
+    {
+     "file": "granite-3-0-8b-instruct.html",
+     "fixture": "tests/sable_test_corpus/granite-3-0-8b-instruct.json",
+     "rendered_name": "granite-3.0-8b-instruct",
+     "sha256": "b67167db5a96f1bf3b6ffbefef96197137ad1f6d5cb16e22be0b391cb818b593"
+    },
+    {
+     "file": "hunyuanvideo.html",
+     "fixture": "tests/sable_test_corpus/hunyuanvideo.json",
+     "rendered_name": "HunyuanVideo",
+     "sha256": "a77af2aab3f8025d53e4ddf2afba150f6ff051f37652ca7e6421eae0741928f0"
+    },
+    {
+     "file": "llama-7b.html",
+     "fixture": "tests/sable_test_corpus/llama-7b.json",
+     "hero_png": {
+      "file": "images/llama-7b.png",
+      "render": {
+       "background": "white",
+       "highlight_clickable": true,
+       "scale": 2.0
+      },
+      "source_svg_sha256": "4458f17bf38a350fb1c3c7e4a4494ccbe9069154cb80a83a2bf7c7e7de2a9d56"
+     },
+     "rendered_name": "llama-7b",
+     "sha256": "50f3ae92bb7456d57b5b1a3da8f9de61f8f68711f4bf3b5b6c619394e3f18565"
+    },
+    {
+     "file": "musicgen-small.html",
+     "fixture": "tests/sable_test_corpus/musicgen-small.json",
+     "rendered_name": "MusicgenForConditionalGeneration",
+     "sha256": "1a52287ca73ecdf9e68468a70b8a8eab497bff988f5586a056e2d9a6bff72f82"
+    },
+    {
+     "file": "pixart-sigma-xl-2-1024-ms.html",
+     "fixture": "tests/sable_test_corpus/pixart-sigma-xl-2-1024-ms.json",
+     "rendered_name": "PixArt-Sigma-XL-2-1024-MS",
+     "sha256": "34d90344411da070f2a4382b7393d6b77a3584bed04e02e6e15725c8f9efebb9"
+    },
+    {
+     "file": "qwen2-vl-7b-instruct.html",
+     "fixture": "tests/sable_test_corpus/qwen2-vl-7b-instruct.json",
+     "rendered_name": "Qwen2-VL-7B-Instruct",
+     "sha256": "2ed408d9a8ecb16e2cf17800a49df7908d1dbb21f9210fe948db34b8a990b913"
+    },
+    {
+     "file": "stable-diffusion-xl-base-1-0.html",
+     "fixture": "tests/sable_test_corpus/stable-diffusion-xl-base-1-0.json",
+     "rendered_name": "stable-diffusion-xl-base-1.0",
+     "sha256": "fd64a99bb57e231f53101b738d7ddce3332fc94169af6bc53b76934132a1e60d"
+    }
+   ],
+   "seconds": 10.194
+  },
+  "preservation_manifest": {
+   "seconds": 345.581,
+   "sha256": "80e239f7d1c63eb3a670f65696c4d0ac329febeb22b5f63c8e055ac3b829523e",
+   "witness_count": 29
+  }
+ }
+}

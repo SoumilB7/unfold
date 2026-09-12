@@ -122,8 +122,8 @@ def test_readme_support_set_and_counts_are_exactly_coverage_json():
     readme = (ROOT / "README.md").read_text()
     totals = {name: sum(row[name] for row in coverage["models"])
               for name in ("proven", "flagged", "silent")}
-    assert totals == {"proven": 645, "flagged": 294, "silent": 0}
-    assert "| **645** | **294** | **0** |" in readme
+    assert totals == {"proven": 671, "flagged": 294, "silent": 0}
+    assert "| **671** | **294** | **0** |" in readme
     corpus = [row for row in coverage["models"] if row["cohort"] == "corpus"]
     assert len(corpus) == 29
     support_section = readme.split("### Reviewed support set (29)", 1)[1].split(
