@@ -61,8 +61,11 @@ def _pooled_dims(c):
 
 
 def _latent_shapes(c):
-    C = _first(c, "in_channels", "in_chans", "latent_channels", "num_channels", "c_in", default=4)
+    # parts that do not declare in_channels (e.g. some VAEs) take a picture: 3 channels
+    C = _first(c, "in_channels", "in_chans", "input_channels", "num_channels", "c_in", default=3)
     out = [("image", (1, C, S, S)), ("video", (1, C, 3, S, S)), ("tokens", (1, (S // 2) * (S // 2), C)), ("audio", (1, C, 64))]
+    # video parts patch/compress time: other frame counts, so the one matching the config's temporal factor runs
+    out += [(f"video{t}", (1, C, t, S, S)) for t in (1, 2, 4, 5, 8, 9, 13, 17)]
     return out
 
 
@@ -93,15 +96,20 @@ def candidates(module, fn=None, limit=16, seed=0):
     wants_text = any("encoder_hidden_states" in p or p in ("context", "clip_text") for p in names)
     tdims = _text_dims(c) if wants_text else [None]
     n = 0
-    for (lk, lshape), td in itertools.product(_latent_shapes(c), tdims):
+    # every latent shape with the primary text width first, then the other widths (breadth before depth)
+    order = [(ls, tdims[0]) for ls in _latent_shapes(c)] + [(ls, td) for td in tdims[1:] for ls in _latent_shapes(c)]
+    for (lk, lshape), td in order:
         kw = {}
-        seq = lshape[1] if lk == "tokens" else (lshape[-1] * lshape[-2] // 4 if lk in ("image", "video") else 8)
+        seq = lshape[1] if lk == "tokens" else (lshape[-1] * lshape[-2] // 4 if lk.startswith(("image", "video")) else 8)
         for p in names:
             if p in ("self", "kwargs", "return_dict"): continue
             q = p.lower(); prm = sig[p]; required = p in req
             if q.endswith("input_ids") and (required or not any(x in sig for x in LATENT)):
                 kw[p] = torch.randint(0, max(2, min(1000, _first(c, "vocab_size", default=1000))), (1, L), generator=g)
-            elif q in ("pixel_values", "image_input") and (required or not any(x in sig for x in LATENT)):
+            elif q == "clip_input":
+                hw = _image_hw(c)
+                kw[p] = rnd(1, 3, *hw)
+            elif q in ("pixel_values", "image_input") and (required or not any(x in sig for x in LATENT) and not any(x.endswith("input_ids") for x in sig)):
                 hw = _image_hw(c)
                 kw[p] = rnd(1, _first(c, "num_channels", default=3), *hw)
             elif q == "input_features" and (required or not any(x in sig for x in LATENT)):
@@ -128,8 +136,12 @@ def candidates(module, fn=None, limit=16, seed=0):
                 kw[p] = torch.zeros(L, 3)
             elif q == "guidance":
                 kw[p] = torch.tensor([1.0])
-            elif q in ("class_labels",) and required:
-                kw[p] = torch.tensor([0])
+            elif q in ("class_labels",) and (required or _first(c, "num_class_embeds") or getattr(c, "class_embed_type", None)):
+                cet = getattr(c, "class_embed_type", None)
+                if cet in ("projection", "simple_projection"):
+                    kw[p] = rnd(1, _first(c, "projection_class_embeddings_input_dim", default=1024))
+                else:
+                    kw[p] = torch.tensor([0])
             elif q == "proj_embedding":
                 kw[p] = rnd(1, _first(c, "embedding_dim", "embedding_proj_dim", default=768))
             elif q == "added_cond_kwargs" and _first(c, "projection_class_embeddings_input_dim") and getattr(c, "addition_embed_type", None) == "text_time":
@@ -145,14 +157,16 @@ def candidates(module, fn=None, limit=16, seed=0):
                 kw[p] = 8
             elif required and (q.endswith("_ids") or q.endswith("_id") or "index" in q or "token" in q):
                 kw[p] = torch.zeros(1, L, dtype=torch.long)
+            elif required and "embed" in q and not q.endswith(("_ids", "_id")) and "index" not in q:
+                kw[p] = rnd(1, _first(c, "embedding_dim", "projection_dim", "embed_dim", "hidden_size", default=768))
             elif required:
                 # an input this synthesizer has no name rule for: the shape varies across candidates (each one is a
                 # real forward call that fails loudly when wrong): sequence of values / sequence of vectors / picture
                 H = td or _first(c, "hidden_size", "d_model", default=64)
                 ctx = _first(c, "context_length", "context_len", "max_position_embeddings", default=32)
                 ctx = min(ctx, 512)
-                kw[p] = {"image": rnd(1, 3, S * 8, S * 8), "video": rnd(1, L, H), "tokens": rnd(1, ctx),
-                         "audio": torch.zeros(1, ctx, dtype=torch.long)}[lk]
+                kw[p] = {"image": rnd(1, 3, S * 8, S * 8), "tokens": rnd(1, ctx),
+                         "audio": torch.zeros(1, ctx, dtype=torch.long)}.get(lk, rnd(1, L, H))
         yield f"latent={lk},text={td}", kw
         n += 1
         if n >= limit: return
