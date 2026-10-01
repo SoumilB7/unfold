@@ -377,32 +377,71 @@ for cn, m in models.items():
     if any(c == cn or c.startswith(cn + ".") for c in rec_a.called) or not any(True for _ in m.parameters()):
         continue
     tried, ok = [], None
-    for label, kw in synth.candidates(m, limit=12):
+    # a part with no forward (e.g. a renderer or normalizer) is entered through its own public methods, found by
+    # reflection on its class; mutating/loading verbs skipped
+    entries = [("forward", m)]
+    if type(m).forward is torch.nn.Module.forward:
+        BLOCK = ("save", "load", "from", "to", "set", "register", "enable", "disable", "train", "eval", "half", "float",
+                 "cuda", "cpu", "fuse", "unfuse", "reset", "clear", "apply", "tie", "init", "prune", "push")
+        entries = []
+        BASE_MODULES = ("diffusers.models.modeling_utils", "diffusers.configuration_utils", "diffusers.loaders",
+                        "diffusers.utils", "diffusers.models.attention_processor", "diffusers.models.adapters")
+        for k_ in type(m).__mro__:
+            # only the part's OWN classes, not diffusers' shared base classes (num_parameters, save_pretrained, ...)
+            if not k_.__module__.startswith("diffusers.") or k_.__module__.startswith(BASE_MODULES): continue
+            for name, fn in vars(k_).items():
+                if name.startswith("_") or name.startswith(BLOCK) or not inspect.isfunction(fn): continue
+                entries.append((name, getattr(m, name)))
+    def _cands():
+        for ename, callee in entries:
+            fn = callee.forward if ename == "forward" else callee
+            for label, kw in synth.candidates(m, fn=fn, limit=40):
+                yield f"{ename}|{label}", callee, kw
+    method_runs, done_methods = [], set()
+    for label, callee, kw in _cands():
+        ename = label.split("|", 1)[0]
+        if ename in done_methods:
+            continue
         r = DagRecorder(container, synth.flat_tensors(kw, f"{cn}.arg"))     # synthesized tensors are named inputs
         _sig.alarm(240)
         try:
             with torch.no_grad(), math_attention(), r:
-                m(**kw)
-            ok = (label, r); break
+                if ename != "forward": r.stack.append(cn)    # module hooks do not fire for a method call
+                try:
+                    callee(**kw)
+                finally:
+                    if ename != "forward" and r.stack and r.stack[-1] == cn: r.stack.pop(); r.called.add(cn)
+            if ok is None: ok = (label, r)
+            else: method_runs.append(r)                 # forward-less part: one run per entry method
+            done_methods.add(ename)
+            if ename == "forward": break
         except Exception as e:
             tried.append(f"{label}: {type(e).__name__}: {str(e)[:90]}")
         finally:
             _sig.alarm(0); r.remove_hooks()
+    if ok is not None and method_runs:
+        R["components"][cn]["entry_methods_run"] = sorted(done_methods)
     if ok is None:
         R["components"][cn]["direct_run_error"] = tried[:4]
         continue
     label, r1 = ok
-    kw2 = dict(next(kw for lb, kw in synth.candidates(m, limit=12, seed=1) if lb == label))
+    ename, _, slabel = label.partition("|")
+    callee2 = m if ename == "forward" else getattr(m, ename)
+    kw2 = dict(next(kw for lb, kw in synth.candidates(m, fn=(callee2.forward if ename == "forward" else callee2), limit=40, seed=1) if lb == slabel))
     r2 = DagRecorder(container, synth.flat_tensors(kw2, f"{cn}.arg"))
     try:
         with torch.no_grad(), math_attention(), r2:
-            m(**kw2)
+            if ename != "forward": r2.stack.append(cn)
+            try:
+                callee2(**kw2)
+            finally:
+                if ename != "forward" and r2.stack and r2.stack[-1] == cn: r2.stack.pop()
     except Exception:
         r2 = None
     finally:
         if r2 is not None: r2.remove_hooks()
     direct[cn] = (r1, r2)
-    extra[cn] = (extra[cn] if isinstance(extra.get(cn), list) else ([extra[cn]] if cn in extra else [])) + [r1]
+    extra[cn] = (extra[cn] if isinstance(extra.get(cn), list) else ([extra[cn]] if cn in extra else [])) + [r1] + method_runs
     R["components"][cn]["direct_run"] = {"inputs": label, "attempts_before": len(tried),
                                         "reason": "the pipeline call never reached this component"}
 

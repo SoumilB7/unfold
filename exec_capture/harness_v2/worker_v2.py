@@ -711,7 +711,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
     # (synth.py); the first candidate that executes becomes the pass, a second run with other values gives T5
     import synth
     tried = []
-    for label, kw in synth.candidates(m, limit=12):
+    for label, kw in synth.candidates(m, limit=40):
         clear_library_caches()
         rec = DagRecorder(m, synth.flat_tensors(kw, "synth"))
         try:
@@ -722,7 +722,7 @@ if not ok_passes and not ROOT_NO_FORWARD:
             sigs["synth"] = (a["structure_signature"], [(n.module, n.func) for n in rec.nodes])
             used_params |= rec.used_params; used_buffers |= rec.used_buffers; called |= rec.called
             passes.append(("synth", kw))
-            kw2 = next(k2 for lb, k2 in synth.candidates(m, limit=12, seed=1) if lb == label)
+            kw2 = next(k2 for lb, k2 in synth.candidates(m, limit=40, seed=1) if lb == label)
             m2 = _fresh(); rec2 = DagRecorder(m2, synth.flat_tensors(kw2, "synth"))
             try:
                 with torch.no_grad(), math_attention(), rec2, _limit():
