@@ -1,0 +1,10 @@
+{
+ "repo": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "DeepSeekV4MTPModel",
+ "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, This model does not support `--runner generate`. [type=value_error, input_value=ArgsKwargs((), {'model': ...nderer_num_workers': 1}), input_type=ArgsKwargs]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+ "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
+ "secs": 22.4,
+ "peak_rss_gb": 0.46
+}

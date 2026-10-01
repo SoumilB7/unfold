@@ -1,0 +1,10 @@
+{
+ "repo": "facebook/sapiens2-seg-0.4b",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 9.3,
+ "peak_rss_gb": 0.5
+}

@@ -1,0 +1,10 @@
+{
+ "repo": "efwkjn/cohere-asr-ja-v0.1",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "ValidationError: 1 validation error for ModelConfig\n  Value error, Model architectures ['CohereAsrForConditionalGeneration'] failed to be inspected. Please check the logs for more details. [type=value_error, input_value=ArgsKwargs((), {'model': ...nderer_num_workers': 1}), input_type=ArgsKwargs]\n    For further info",
+ "where": "/Users/soumil/Code/Projects/Understand/llmvisualizer/model-benchmark/.venv_vllm/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py:121",
+ "secs": 11.0,
+ "peak_rss_gb": 0.51
+}

@@ -1,0 +1,10 @@
+{
+ "repo": "nvidia/GLM-5.2-NVFP4",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": "DeepseekV32MTPModel",
+ "error": "NotImplementedError: Sparse Attention is not supported on CPU.",
+ "where": "vllm/platforms/cpu.py:145",
+ "secs": 25.2,
+ "peak_rss_gb": 0.91
+}

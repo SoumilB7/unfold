@@ -1,0 +1,10 @@
+{
+ "repo": "google/gemma-4-E4B-it",
+ "closed": false,
+ "failed_stage": "config",
+ "vllm_mtp_arch": null,
+ "error": "NotImplementedError: Unsupported speculative method: 'mtp'",
+ "where": "vllm/config/speculative.py:1369",
+ "secs": 17.2,
+ "peak_rss_gb": 0.95
+}
