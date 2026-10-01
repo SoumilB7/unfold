@@ -1,0 +1,10 @@
+# local-only state of the benchmark (regenerable; never committed)
+.venv*/
+cache_v2/
+.tmp_hf/
+results_latest/
+results_v2/*/
+!results_v2/_witness/
+results_v2/_superseded*/
+results_v2/_logs/
+__pycache__/
